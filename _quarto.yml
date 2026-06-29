@@ -18,7 +18,7 @@ book:
 
   # Görsel ve bağlantılar
   cover-image: images/cover.png
- # favicon: images/favicon.png
+  favicon: images/favicon.png
   site-url: "https://mfatihtuzen.github.io/r-programlama/"
   repo-url: "https://github.com/MFatihTuzen/r-programlama"
   repo-actions: [edit, issue]
