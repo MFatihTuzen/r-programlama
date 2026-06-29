@@ -5,37 +5,45 @@ project:
 book:
   title: "R Programlama"
   subtitle: "Veri Analizi ve İstatistiksel Düşünmeye Uygulamalı Giriş"
-  author: 
+  author:
     name: "Muhammed Fatih Tüzen"
-    url: https://www.linkedin.com/in/dr-m-fatih-t-2b2a4328/
+    url: "https://www.linkedin.com/in/dr-m-fatih-t-2b2a4328/"
+
+  # Kitap kimliği
+  date: today
   reader-mode: true
   page-navigation: true
   search: true
   sharing: [twitter, linkedin]
+
+  # Görsel ve bağlantılar
+  cover-image: images/cover.png
+ # favicon: images/favicon.png
+  site-url: "https://mfatihtuzen.github.io/r-programlama/"
+  repo-url: "https://github.com/MFatihTuzen/r-programlama"
+  repo-actions: [edit, issue]
+
+  # Sayfa altlığı
   page-footer:
     left: |
       &copy; 2026, [Muhammed Fatih Tüzen](https://www.linkedin.com/in/dr-m-fatih-t-2b2a4328/)
     right: |
       Bu kitap [Quarto](https://quarto.org/) ile hazırlanmıştır.
-  cover-image: images/cover.png
-  site-url: https://mfatihtuzen.github.io/r-programlama/
-  repo-url: https://github.com/MFatihTuzen/r-programlama
-  repo-actions: [edit, issue]
 
+  # Şimdilik yalnızca taşınan dosyalar aktif.
+  # Diğer bölümler yeni repoya taşındıkça aşağıdaki listeye eklenecek.
   chapters:
     - index.qmd
     - r_about.qmd
     - R_intro.qmd
-    # - part: R_intro.qmd
-    #   chapters: 
-    #     - basics.qmd
-    #     - data_types.qmd
-    #     - functions.qmd
-    #     - if_else_for.qmd
-    #     - date_time.qmd
-    #     - strings.qmd
-    #     - apply.qmd
-    #     - import_export.qmd
+    # - basics.qmd
+    # - data_types.qmd
+    # - functions.qmd
+    # - if_else_for.qmd
+    # - date_time.qmd
+    # - strings.qmd
+    # - apply.qmd
+    # - import_export.qmd
     # - data_manipulation.qmd
     # - data_transformation.qmd
     # - data_join.qmd
@@ -45,32 +53,70 @@ book:
     # - statistics.qmd
     # - regresyon.qmd
 
-language: 
+language:
   title-block-author-single: "Yazar"
   toc-title-document: "İçindekiler"
+  section-title-appendices: "Ekler"
+  section-title-references: "Kaynakça"
+  section-title-footnotes: "Dipnotlar"
+  callout-tip-title: "İpucu"
+  callout-note-title: "Not"
+  callout-warning-title: "Dikkat"
+  callout-important-title: "Önemli"
+  callout-caution-title: "Uyarı"
 
 format:
   html:
+    lang: tr
+    theme:
+      light: [sandstone, custom.scss]
+      dark: [cyborg, custom.scss]
+    css: styles.css
+
+    # İçindekiler ve navigasyon
     toc: true
     toc-depth: 4
     toc-expand: 2
-    theme: 
-      light: sandstone
-      dark: cyborg
-    css: styles.css
+    number-sections: true
+    anchor-sections: true
+    smooth-scroll: true
+    link-external-newwindow: true
+
+    # Kod blokları
     code-copy: true
     code-overflow: wrap
     code-link: true
-    anchor-sections: true
-    smooth-scroll: true
+    code-fold: false
+    highlight-style: github
+
+    # Sayfa yerleşimi
     grid:
       sidebar-width: 280px
       body-width: 820px
       margin-width: 260px
       gutter-width: 1.5rem
+
+    # HTML çıktısı
+    df-print: paged
+    fig-align: center
+    fig-responsive: true
+
+    # SEO / sosyal medya için temel metadata
+    description: "R programlama, veri analizi ve istatistiksel düşünme üzerine Türkçe açık kaynak kitap."
+    open-graph: true
+    twitter-card: true
+
+  # PDF çıktısını daha sonra ayrıca aktif edeceğiz.
+  # Önce HTML yayını ve GitHub Pages yapısı tamamen otursun.
   # pdf:
   #   documentclass: scrreprt
   #   pdf-engine: xelatex
   #   keep-tex: true
+
+execute:
+  warning: false
+  message: false
+  echo: true
+  freeze: auto
 
 editor: visual
