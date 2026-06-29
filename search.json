@@ -1,0 +1,302 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "R Programlama",
+    "section": "",
+    "text": "Önsöz\nVeri, çağımızın en değerli üretim araçlarından biri haline geldi. Ancak verinin tek başına bir anlamı yoktur. Veriyi anlamlı hale getiren şey; onu okuyabilmek, yorumlayabilmek ve doğru sorularla analiz edebilmektir. İşte bu noktada programlama dilleri, yalnızca teknik araçlar değil; aynı zamanda düşünme biçimleri haline gelir.\nR programlama dili de bu dünyanın en güçlü araçlarından biridir.\nR, yalnızca bir programlama dili değildir. Aynı zamanda veri analizi, istatistiksel modelleme, görselleştirme ve raporlama süreçlerini bir araya getiren güçlü bir ekosistemdir. Akademik çalışmalardan resmi istatistiklere, finansal modellemeden veri bilimine kadar birçok alanda yaygın olarak kullanılmasının nedeni de budur.\nBu kitap, R programlama dilini yalnızca komut ezberleyerek öğrenmek isteyenler için hazırlanmadı.\nAmacım; veriyle düşünmeyi, analiz süreçlerini anlamayı ve R’nin arkasındaki mantığı kavrayabilmeyi merkeze alan bir öğrenme deneyimi sunmaktır. Çünkü iyi bir veri analizi yalnızca kod yazabilmek değildir. Aynı zamanda:\n\ndoğru sorular sorabilmek,\nveriyi anlamlandırabilmek,\nsonuçları yorumlayabilmek,\nyapılan işlemleri tekrar üretilebilir hale getirebilmek\n\nanlamına gelir.\nKitap boyunca mümkün olduğunca yüzeysel anlatımlardan kaçınmaya çalıştım. Kullanılan fonksiyonların yalnızca ne yaptığı değil, neden kullanıldığı, hangi problemi çözdüğü ve hangi durumlarda dikkatli olunması gerektiği de ele alınmaya çalışıldı. Çünkü programlama öğrenmek çoğu zaman yalnızca “nasıl yapılır?” sorusuyla değil, “neden böyle yapılır?” sorusuyla derinleşir.\nBu kitapta:\n\nR programlamanın temelleri,\nveri tipleri ve veri yapıları,\nfonksiyonlar,\nkontrol yapıları,\ntarih ve zaman işlemleri,\nmetin işlemleri,\nveri manipülasyonu,\nveri dönüştürme,\nveri görselleştirme,\nkeşifçi veri analizi,\nveri ön işleme,\ntemel istatistik,\ndoğrusal regresyon\n\ngibi konular adım adım ele alınacaktır.\nÖrnekler mümkün olduğunca açıklamalı, yorumlu ve öğretici şekilde hazırlanmıştır. Kodların yalnızca çalışması değil; okunabilir, anlaşılır ve sürdürülebilir olması da önemsenmiştir.\nBu kitabın özellikle:\n\nR öğrenmeye yeni başlayanlar,\nveri analizi ile ilgilenen öğrenciler,\nakademisyenler,\naraştırmacılar,\nkamu veya özel sektörde çalışan veri analistleri\n\niçin faydalı olmasını umuyorum.\nVeri analizi uzun bir yolculuktur. Bu süreçte zaman zaman hata mesajlarıyla, karmaşık veri yapılarıyla veya beklenmeyen sonuçlarla karşılaşabilirsiniz. Bu oldukça doğaldır. Programlama çoğu zaman doğru cevabı hemen bulmak değil, problemi sistematik biçimde çözmeyi öğrenmektir.\nUmarım bu kitap, yalnızca R programlama dilini öğrenmenize değil; veriyle daha bilinçli düşünmenize de katkı sağlar.\nKeyifli okumalar.\nMuhammed Fatih Tüzen",
+    "crumbs": [
+      "Önsöz"
+    ]
+  },
+  {
+    "objectID": "r_about.html",
+    "href": "r_about.html",
+    "title": "1  R Programlama Hakkında",
+    "section": "",
+    "text": "1.1 R Nedir?\nR programlama dili, istatistiksel hesaplama, veri analizi ve veri görselleştirme amacıyla geliştirilmiş açık kaynaklı bir programlama dilidir. Günümüzde yalnızca akademik çalışmalarda değil; resmi istatistik kurumlarında, özel sektörde, finans alanında, sağlık araştırmalarında, makine öğrenmesi uygulamalarında ve veri bilimi projelerinde de yaygın olarak kullanılmaktadır.\nR’nin güçlü olmasının nedeni yalnızca bir programlama dili olması değildir. R aynı zamanda geniş bir bilimsel ekosisteme, güçlü bir paket kültürüne ve veri analizi odaklı bir çalışma biçimine sahiptir. Bu nedenle R, çoğu zaman yalnızca bir yazılım olarak değil; veri analizi, modelleme, görselleştirme, raporlama ve otomasyon süreçlerini bir araya getiren bütünlüklü bir çalışma ortamı olarak değerlendirilir.\nBu bölümde R’nin ne olduğu, nasıl ortaya çıktığı, neden veri analizi dünyasında bu kadar yaygın kullanıldığı, RStudio ile ilişkisinin ne olduğu ve başlangıç için nasıl kurulacağı ele alınacaktır. Amaç, R’ye yalnızca teknik bir araç olarak değil, veriyle düşünmeyi kolaylaştıran bir programlama dili olarak bakabilmektir.\nR, veri analizi ve istatistiksel hesaplama amacıyla geliştirilmiş bir programlama dilidir. Özellikle istatistiksel yöntemlerin uygulanması, veri setlerinin işlenmesi, grafiklerin oluşturulması ve analiz sonuçlarının raporlanması gibi görevlerde güçlüdür.\nR’nin kökeni, Bell Laboratories bünyesinde geliştirilen S programlama diline dayanır. S dili, istatistiksel hesaplama için geliştirilmiş önemli bir dildi. R ise bu geleneği açık kaynak dünyasına taşıyan, Ross Ihaka ve Robert Gentleman tarafından geliştirilen bir programlama dili olarak ortaya çıkmıştır.\nR isminin kökeni genellikle iki şekilde açıklanır. Birincisi, geliştiriciler Ross Ihaka ve Robert Gentleman’ın isimlerinin baş harflerine gönderme yapmasıdır. İkincisi ise R’nin, S dilinin devamı niteliğinde görülmesidir. Bu isimlendirme bile R’nin istatistiksel programlama geleneği içindeki yerini gösterir.\nR’nin en önemli özelliklerinden biri, istatistiksel düşünceye yakın bir dil olmasıdır. Birçok genel amaçlı programlama dili önce yazılım geliştirme ihtiyaçları düşünülerek tasarlanmışken, R’nin merkezinde veri, istatistiksel hesaplama ve grafik üretimi yer alır. Bu nedenle R ile çalışırken tekil değerlerden çok vektörler, veri çerçeveleri, modeller ve grafikler üzerinden düşünürüz.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>R Programlama Hakkında</span>"
+    ]
+  },
+  {
+    "objectID": "r_about.html#r-nedir",
+    "href": "r_about.html#r-nedir",
+    "title": "1  R Programlama Hakkında",
+    "section": "",
+    "text": "NotNot\n\n\n\nR’nin güçlü yönlerinden biri, akademik dünya ve istatistik topluluğu ile yakın ilişkili biçimde gelişmiş olmasıdır. Yeni istatistiksel yöntemlerin önemli bir kısmı kısa sürede R paketleri olarak kullanıma sunulabilmektedir.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>R Programlama Hakkında</span>"
+    ]
+  },
+  {
+    "objectID": "r_about.html#açık-kaynak-yaklaşımı",
+    "href": "r_about.html#açık-kaynak-yaklaşımı",
+    "title": "1  R Programlama Hakkında",
+    "section": "1.2 Açık Kaynak Yaklaşımı",
+    "text": "1.2 Açık Kaynak Yaklaşımı\nR açık kaynaklı bir yazılımdır. Açık kaynak, yazılımın kaynak kodunun herkes tarafından incelenebilmesi, kullanılabilmesi, geliştirilebilmesi ve paylaşılabilmesi anlamına gelir. Bu yaklaşım yalnızca teknik bir lisans meselesi değildir; aynı zamanda bilimsel iş birliği ve paylaşım kültürünün de önemli bir parçasıdır.\nAçık kaynak yapının R’ye sağladığı en önemli avantajlardan biri, topluluk katkısıdır. Dünyanın farklı yerlerinden araştırmacılar, veri bilimciler, istatistikçiler ve yazılımcılar R için paketler geliştirir, hataları bildirir, dokümantasyon yazar ve örnekler paylaşır. Böylece R sürekli gelişen canlı bir ekosistem haline gelir.\nBu durum, R’yi özellikle bilimsel çalışmalar için değerli kılar. Çünkü kullanılan yöntemlerin, kodların ve paketlerin açık biçimde incelenebilmesi, analizlerin şeffaflığına katkı sağlar. Veri analizi yalnızca sonuç üretmek değil, aynı zamanda bu sonucun nasıl üretildiğini gösterebilmekle de ilgilidir.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>R Programlama Hakkında</span>"
+    ]
+  },
+  {
+    "objectID": "r_about.html#r-ekosistemi-ve-paket-kültürü",
+    "href": "r_about.html#r-ekosistemi-ve-paket-kültürü",
+    "title": "1  R Programlama Hakkında",
+    "section": "1.3 R Ekosistemi ve Paket Kültürü",
+    "text": "1.3 R Ekosistemi ve Paket Kültürü\nR’nin gücünün önemli bir kısmı paket ekosisteminden gelir. Paketler, belirli görevleri yerine getirmek için hazırlanmış fonksiyon, veri seti ve dokümantasyon koleksiyonlarıdır. Base R birçok temel işlevi içerse de, R’nin gerçek esnekliği paketler sayesinde ortaya çıkar.\nR paketlerinin önemli bir kısmı CRAN üzerinden dağıtılır. CRAN, Comprehensive R Archive Network ifadesinin kısaltmasıdır ve R paketlerinin merkezi arşivlerinden biridir. CRAN dışında GitHub, Bioconductor ve kurumların kendi depoları üzerinden de paketler dağıtılabilir.\nR ekosisteminde farklı amaçlara yönelik çok sayıda paket bulunmaktadır. Örneğin ggplot2 veri görselleştirme, dplyr veri manipülasyonu, tidyr veri düzenleme, shiny etkileşimli web uygulamaları, forecast zaman serisi analizi, sf mekânsal veri analizi ve quarto raporlama süreçlerinde sık kullanılan paketlerdendir.\nBu paket kültürü, R’nin yalnızca mevcut yöntemleri uygulayan bir dil olmasının ötesine geçmesini sağlar. R aynı zamanda yeni yöntemlerin hızlı biçimde denendiği, paylaşıldığı ve yaygınlaştığı bir platformdur.\n\n\n\n\n\n\nİpucuİpucu\n\n\n\nR öğrenirken tüm işlemleri yalnızca base R ile yapmak zorunda değilsiniz. Base R temel mantığı öğrenmek için önemlidir; ancak gerçek projelerde paket ekosisteminden yararlanmak R’nin en büyük avantajlarından biridir.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>R Programlama Hakkında</span>"
+    ]
+  },
+  {
+    "objectID": "r_about.html#r-neden-veri-analizi-için-güçlüdür",
+    "href": "r_about.html#r-neden-veri-analizi-için-güçlüdür",
+    "title": "1  R Programlama Hakkında",
+    "section": "1.4 R Neden Veri Analizi İçin Güçlüdür?",
+    "text": "1.4 R Neden Veri Analizi İçin Güçlüdür?\nR’nin veri analizi alanında güçlü olmasının birkaç temel nedeni vardır. Bunlardan ilki, R’nin veri odaklı tasarımıdır. R’de temel veri yapıları ve fonksiyonlar, istatistiksel hesaplama ihtiyaçlarına uygun biçimde geliştirilmiştir. Vektörleşmiş işlemler, veri çerçevesi yapısı, modelleme fonksiyonları ve grafik sistemleri bu tasarımın parçalarıdır.\nBasit bir örnekle düşünelim. Bir sayı dizisinin ortalamasını hesaplamak için R’de tek bir fonksiyon yeterlidir:\n\n# Örnek bir sayısal vektör oluşturalım.\nx &lt;- c(10, 20, 30, 40, 50)\n\n# mean() fonksiyonu vektörün ortalamasını hesaplar.\nmean(x)\n\n[1] 30\n\n\nBu kısa örnek bile R’nin veriyle çalışma biçimini gösterir. R, tek tek değerlerle uğraşmak yerine veri kümeleri üzerinde işlem yapmayı kolaylaştırır.\nİkinci güçlü yön, R’nin grafik üretme kapasitesidir. R hem base grafik sistemiyle hem de ggplot2 gibi paketlerle bilimsel düzeyde görseller üretmeye olanak tanır. Veri analizi yalnızca sayısal sonuçlar üretmek değildir; sonuçların doğru ve anlaşılır biçimde görselleştirilmesi de analiz sürecinin ayrılmaz bir parçasıdır.\nÜçüncü önemli unsur, R’nin raporlama ve tekrar üretilebilirlik konusundaki gücüdür. Quarto ve R Markdown gibi araçlar sayesinde kod, açıklama metni, tablo ve grafikler aynı belge içinde bir araya getirilebilir. Böylece analiz yalnızca yapılmış olmaz; aynı zamanda belgelenmiş ve tekrar üretilebilir hale gelir.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>R Programlama Hakkında</span>"
+    ]
+  },
+  {
+    "objectID": "r_about.html#tekrar-üretilebilir-çalışma-mantığı",
+    "href": "r_about.html#tekrar-üretilebilir-çalışma-mantığı",
+    "title": "1  R Programlama Hakkında",
+    "section": "1.5 Tekrar Üretilebilir Çalışma Mantığı",
+    "text": "1.5 Tekrar Üretilebilir Çalışma Mantığı\nModern veri analizinde yalnızca sonucu elde etmek yeterli değildir. Aynı sonucun aynı veri ve aynı kod ile yeniden üretilebilmesi gerekir. Bu yaklaşım İngilizcede reproducibility olarak adlandırılır.\nTekrar üretilebilirlik, veri analizinin güvenilirliği açısından kritik öneme sahiptir. Bir grafik, tablo veya model sonucu elle kopyalanarak rapora aktarılıyorsa, hata yapma olasılığı artar. Buna karşılık kod, veri ve rapor aynı çalışma akışı içinde tutulursa sonuçların güncellenmesi, kontrol edilmesi ve paylaşılması çok daha kolay hale gelir.\nR bu anlamda güçlü bir çalışma ortamı sunar. Script dosyaları, Quarto belgeleri, paket yönetimi ve proje klasörleri kullanılarak analizler düzenli ve tekrar üretilebilir biçimde yürütülebilir. Bu kitap boyunca da yalnızca komutları öğrenmek değil, aynı zamanda iyi ve sürdürülebilir çalışma alışkanlıkları geliştirmek hedeflenmektedir.\n\n\n\n\n\n\nNotNot\n\n\n\nİyi bir veri analizi yalnızca doğru sonucu üretmez; bu sonuca nasıl ulaşıldığını da açık biçimde gösterir.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>R Programlama Hakkında</span>"
+    ]
+  },
+  {
+    "objectID": "r_about.html#r-ve-rstudio-arasındaki-fark",
+    "href": "r_about.html#r-ve-rstudio-arasındaki-fark",
+    "title": "1  R Programlama Hakkında",
+    "section": "1.6 R ve RStudio Arasındaki Fark",
+    "text": "1.6 R ve RStudio Arasındaki Fark\nR öğrenmeye yeni başlayanların en sık karıştırdığı konulardan biri R ile RStudio arasındaki farktır. Bu iki kavram çoğu zaman birlikte kullanıldığı için aynı şey sanılabilir; ancak değildir.\nR, hesaplamaları yapan programlama dilidir. Kodların çalıştırılması, fonksiyonların uygulanması, modellerin kurulması ve grafiklerin üretilmesi R tarafından gerçekleştirilir.\nRStudio ise R ile çalışmayı kolaylaştıran bir geliştirme ortamıdır. İngilizcede bu tür yazılımlara IDE denir. IDE, Integrated Development Environment ifadesinin kısaltmasıdır ve Türkçede bütünleşik geliştirme ortamı olarak düşünülebilir.\nRStudio; kod yazmayı, dosya yönetimini, grafik görüntülemeyi, paket kullanımını, yardım sayfalarına erişimi ve proje yönetimini daha kolay hale getirir. Ancak arka planda hesaplamaları yapan motor yine R’dir.\nBasit bir benzetme yapmak gerekirse:\nR = motor\nRStudio = sürücü paneli ve çalışma ortamı\nRStudio olmadan da R kullanılabilir. Ancak özellikle yeni başlayanlar için RStudio, R ile çalışmayı daha düzenli ve anlaşılır hale getirir.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>R Programlama Hakkında</span>"
+    ]
+  },
+  {
+    "objectID": "r_about.html#r-ve-rstudio-kurulumu",
+    "href": "r_about.html#r-ve-rstudio-kurulumu",
+    "title": "1  R Programlama Hakkında",
+    "section": "1.7 R ve RStudio Kurulumu",
+    "text": "1.7 R ve RStudio Kurulumu\nR ile çalışmaya başlamak için önce R’nin, ardından RStudio’nun kurulması gerekir. Kurulum sırası önemlidir; çünkü RStudio arka planda kurulu olan R sürümünü kullanır.\nGenel kurulum sırası şu şekildedir:\n\nÖnce R kurulur.\nDaha sonra RStudio kurulur.\nRStudio açıldığında kurulu R sürümünü otomatik olarak algılar.\n\nBu kitapta kurulum adımları ayrıntılı ekran ekran anlatılmayacaktır. Bunun nedeni, indirme sayfalarının ve arayüzlerin zamanla değişebilmesidir. Bunun yerine güncel bağlantılar ve temel yönlendirme verilecektir.\n\n1.7.1 R Kurulumu\nR’nin resmi indirme adresi CRAN üzerindedir:\nhttps://cran.r-project.org\nBu sayfada işletim sisteminize uygun sürüm seçilebilir. Windows, macOS ve Linux için farklı kurulum seçenekleri bulunmaktadır. Çoğu kullanıcı için varsayılan kurulum ayarları yeterlidir.\n\n\n\n1.7.2 RStudio Kurulumu\nRStudio’nun güncel masaüstü sürümü Posit tarafından dağıtılmaktadır. İndirme adresi şudur:\nhttps://posit.co/download/rstudio-desktop/\nYeni başlayanlar için ücretsiz RStudio Desktop sürümü yeterlidir. Kurulum tamamlandıktan sonra RStudio açıldığında arka planda kurulu olan R sürümünü kullanacaktır.\n\nKurulum sonrasında RStudio açıldığında genellikle Console, script editörü, Environment paneli ve Files/Plots/Packages bölümlerinden oluşan bir arayüz görülür. Bu arayüzün ayrıntıları bir sonraki giriş bölümünde ele alınacaktır.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>R Programlama Hakkında</span>"
+    ]
+  },
+  {
+    "objectID": "r_about.html#rstudio-arayüzüne-kısa-bakış",
+    "href": "r_about.html#rstudio-arayüzüne-kısa-bakış",
+    "title": "1  R Programlama Hakkında",
+    "section": "1.8 RStudio Arayüzüne Kısa Bakış",
+    "text": "1.8 RStudio Arayüzüne Kısa Bakış\nRStudio arayüzü, R ile çalışmayı kolaylaştırmak için farklı panellerden oluşur. Bu panellerin isimleri ve yerleri kullanılan sürüme göre küçük değişiklikler gösterebilir; ancak temel mantık aynıdır.\nGenellikle RStudio arayüzünde şu bölümler yer alır:\n\nScript Editor: Kodların yazıldığı ve saklandığı bölümdür.\nConsole: Kodların çalıştırıldığı bölümdür.\nEnvironment: Oturumda oluşturulan nesnelerin listelendiği bölümdür.\nFiles / Plots / Packages / Help: Dosya yönetimi, grafik görüntüleme, paketler ve yardım sayfaları için kullanılan bölümdür.\n\n\n\n\n\n\nBu arayüz ilk bakışta karmaşık görünebilir; ancak temel mantığı oldukça basittir. Kodlar genellikle script dosyasında yazılır, Console’da çalıştırılır, oluşan nesneler Environment panelinde görülür ve grafikler Plots sekmesinde görüntülenir.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>R Programlama Hakkında</span>"
+    ]
+  },
+  {
+    "objectID": "r_about.html#r-ile-çalışma-kültürü",
+    "href": "r_about.html#r-ile-çalışma-kültürü",
+    "title": "1  R Programlama Hakkında",
+    "section": "1.9 R ile Çalışma Kültürü",
+    "text": "1.9 R ile Çalışma Kültürü\nR öğrenmek yalnızca fonksiyon adlarını öğrenmek değildir. Daha önemlisi, veriyle düzenli ve tekrar üretilebilir biçimde çalışmayı öğrenmektir. Bu nedenle iyi çalışma alışkanlıkları başlangıçtan itibaren geliştirilmelidir.\nBunlardan bazıları şunlardır:\n\nkodları Console yerine script dosyalarında saklamak,\naçıklama satırları kullanmak,\nproje klasörü mantığıyla çalışmak,\ndosya yollarını düzenli tutmak,\nnesne adlarını anlamlı seçmek,\nanaliz adımlarını tekrar çalıştırılabilir biçimde yazmak.\n\nBu alışkanlıklar başlangıçta küçük ayrıntılar gibi görünür. Ancak veri setleri büyüdükçe, analizler karmaşıklaştıkça ve çalışmalar paylaşılabilir hale geldikçe bu alışkanlıkların değeri artar.\nVeri analizi sürecinde iyi kod, yalnızca çalışan kod değildir. İyi kod aynı zamanda okunabilir, düzenli, açıklanabilir ve tekrar üretilebilir olmalıdır.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>R Programlama Hakkında</span>"
+    ]
+  },
+  {
+    "objectID": "r_about.html#r-için-faydalı-kaynaklar",
+    "href": "r_about.html#r-için-faydalı-kaynaklar",
+    "title": "1  R Programlama Hakkında",
+    "section": "1.10 R İçin Faydalı Kaynaklar",
+    "text": "1.10 R İçin Faydalı Kaynaklar\nR öğrenme sürecinde resmi dokümantasyonlar, paket belgeleri ve topluluk kaynakları oldukça faydalıdır. Her fonksiyonu ezberlemek mümkün değildir; önemli olan doğru kaynaklara nasıl ulaşılacağını bilmektir.\n\n1.10.1 Resmi Kaynaklar\n\nR Project: https://www.r-project.org\nCRAN: https://cran.r-project.org\nPosit: https://posit.co\n\n\n\n1.10.2 Paket Dokümantasyonları\nPaketlerin resmi web sayfaları ve yardım dokümanları çoğu zaman en güvenilir kaynaklardır. Örneğin:\n\nggplot2: https://ggplot2.tidyverse.org\ndplyr: https://dplyr.tidyverse.org\nQuarto: https://quarto.org\n\n\n\n1.10.3 Topluluk Kaynakları\nR topluluğu oldukça aktiftir. Sorunlara çözüm bulmak, örnek kodları incelemek ve yeni yöntemleri öğrenmek için şu kaynaklar yararlı olabilir:\n\nPosit Community\nStack Overflow\nGitHub\nR-bloggers\n\n\n\n1.10.4 Türkçe Kaynaklar\nTürkçe R kaynakları da giderek artmaktadır. Türkçe blog yazıları, üniversite ders notları, eğitim videoları ve açık eğitim materyalleri R öğrenme sürecinde destekleyici olabilir.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>R Programlama Hakkında</span>"
+    ]
+  },
+  {
+    "objectID": "r_about.html#bölüm-özeti",
+    "href": "r_about.html#bölüm-özeti",
+    "title": "1  R Programlama Hakkında",
+    "section": "1.11 Bölüm Özeti",
+    "text": "1.11 Bölüm Özeti\nBu bölümde R programlama dilinin ne olduğu, tarihsel arka planı, açık kaynak yaklaşımı, paket ekosistemi, veri analizi dünyasındaki önemi ve RStudio ile ilişkisi ele alındı. Ayrıca R ve RStudio kurulumu için temel yönlendirme yapıldı ve RStudio arayüzünün temel bileşenleri kısaca tanıtıldı.\nBir sonraki bölümde R ile çalışmanın daha pratik yönüne geçilecek; script kullanımı, Console yapısı, ilk kodların yazılması ve temel çalışma akışı ele alınacaktır.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>R Programlama Hakkında</span>"
+    ]
+  },
+  {
+    "objectID": "R_intro.html",
+    "href": "R_intro.html",
+    "title": "2  R Programlamaya Giriş",
+    "section": "",
+    "text": "2.1 RStudio ile İlk Karşılaşma\nBir programlama dilini öğrenmeye başlarken çoğu zaman ilk odak noktası fonksiyonlar, paketler veya veri analizi teknikleri olur. Ancak güçlü bir temel oluşturabilmek için önce programlama ortamının nasıl çalıştığını anlamak gerekir. R ile çalışırken kodların nerede yazıldığı, nasıl çalıştırıldığı, neden script dosyalarının kullanıldığı ve çalışma sürecinin nasıl organize edildiği oldukça önemlidir.\nBu bölümün amacı, R ile ilk çalışma deneyimini oluşturmaktır. Burada yalnızca bazı düğmelere basmayı öğrenmek değil; R ile nasıl düşünülmesi gerektiğini anlamak hedeflenmektedir. Çünkü veri analizi sürecinde yalnızca sonuç üretmek yeterli değildir. Analizlerin düzenli, tekrar üretilebilir ve sürdürülebilir olması da gerekir.\nBu bölümde özellikle şu konular ele alınacaktır:\nRStudio ilk açıldığında birden fazla panelden oluşan bir çalışma ortamı görülür. Bu görünüm başlangıçta karmaşık gelebilir; ancak her panelin belirli bir görevi vardır.\nGenellikle RStudio arayüzünde şu bölümler yer alır:\nİlk aşamada bu panellerin tamamını ayrıntılı şekilde bilmek gerekmez. Önemli olan temel çalışma mantığını kavramaktır:\nBu yapı zamanla doğal hale gelecektir.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>R Programlamaya Giriş</span>"
+    ]
+  },
+  {
+    "objectID": "R_intro.html#rstudio-ile-ilk-karşılaşma",
+    "href": "R_intro.html#rstudio-ile-ilk-karşılaşma",
+    "title": "2  R Programlamaya Giriş",
+    "section": "",
+    "text": "Script Editor\nConsole\nEnvironment\nFiles / Plots / Packages / Help\n\n\n\n\n\n\n\nKodlar genellikle script dosyasında yazılır,\nConsole üzerinde çalıştırılır,\noluşan nesneler Environment panelinde görüntülenir.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>R Programlamaya Giriş</span>"
+    ]
+  },
+  {
+    "objectID": "R_intro.html#console-nedir",
+    "href": "R_intro.html#console-nedir",
+    "title": "2  R Programlamaya Giriş",
+    "section": "2.2 Console Nedir?",
+    "text": "2.2 Console Nedir?\nConsole, R komutlarının doğrudan çalıştırıldığı alandır. Yazılan kod çalıştırıldığında sonuç hemen görüntülenir.\nÖrneğin Console alanına aşağıdaki ifadeyi yazalım:\n\n2 + 2\n\n[1] 4\n\n\nR sonucu doğrudan hesaplayacaktır.\nBenzer şekilde:\n\nsqrt(25)\n\n[1] 5\n\n\nveya:\n\nx &lt;- 10\n\nx * 2\n\n[1] 20\n\n\nifadeleri de Console üzerinde çalıştırılabilir.\nConsole hızlı denemeler yapmak için oldukça kullanışlıdır. Küçük hesaplamalar, fonksiyon denemeleri veya kısa kontroller için pratik bir çalışma alanı sağlar.\nAncak yalnızca Console kullanarak çalışmanın önemli bir sorunu vardır:\n\nConsole geçicidir.\n\nR oturumu kapandığında Console geçmişi kaybolabilir veya düzensiz hale gelebilir. Özellikle uzun analizlerde yalnızca Console üzerinde çalışmak ciddi karmaşaya neden olur.\n\n\n\n\n\n\nDikkatUyarı\n\n\n\nSadece Console üzerinde çalışmak, analiz sürecinin tekrar üretilebilirliğini zorlaştırır. Kodların script dosyalarında saklanması daha sağlıklı bir yaklaşımdır.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>R Programlamaya Giriş</span>"
+    ]
+  },
+  {
+    "objectID": "R_intro.html#script-dosyası-nedir",
+    "href": "R_intro.html#script-dosyası-nedir",
+    "title": "2  R Programlamaya Giriş",
+    "section": "2.3 Script Dosyası Nedir?",
+    "text": "2.3 Script Dosyası Nedir?\nScript dosyası, R kodlarının düzenli biçimde saklandığı metin dosyasıdır. Genellikle .R uzantısına sahiptir.\nScript kullanmanın temel amacı şudur:\n\nkodları kaybetmemek,\nanaliz sürecini belgelemek,\naynı işlemleri tekrar çalıştırabilmek,\nanalizleri paylaşabilmek.\n\nBir veri analizinin günler veya haftalar sürdüğü düşünüldüğünde, tüm kodların düzenli biçimde saklanması kritik hale gelir.\nScript dosyası oluşturmak için RStudio’da genellikle şu yol izlenir:\nFile &gt; New File &gt; R Script\nAçılan bölüm Script Editor alanıdır. Script dosyasına aşağıdaki kodları yazalım:\n\n# İlk değişkenimizi oluşturalım.\nx &lt;- 10\n\n# İkinci değişken\ny &lt;- 5\n\n# Toplama işlemi\nx + y\n\n[1] 15\n\n\nBu kodlar henüz çalıştırılmış değildir. Script dosyası, kodların saklandığı çalışma alanıdır.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>R Programlamaya Giriş</span>"
+    ]
+  },
+  {
+    "objectID": "R_intro.html#kod-nasıl-çalıştırılır",
+    "href": "R_intro.html#kod-nasıl-çalıştırılır",
+    "title": "2  R Programlamaya Giriş",
+    "section": "2.4 Kod Nasıl Çalıştırılır?",
+    "text": "2.4 Kod Nasıl Çalıştırılır?\nScript dosyasındaki kodları çalıştırmanın farklı yolları vardır.\nEn yaygın yöntemlerden biri:\nCtrl + Enter\nkısayoludur.\nİmlecin bulunduğu satır veya seçili kod bloğu çalıştırılır ve sonuç Console üzerinde görüntülenir.\nAlternatif olarak üst kısımdaki Run düğmesi de kullanılabilir.\n\n\n\n\n\n\nNotNot\n\n\n\nKodlar genellikle script dosyasında yazılır; ancak çalıştırıldığında sonuçlar Console üzerinde görüntülenir.\n\n\nAşağıdaki örneği deneyelim:\n\n# Dikdörtgen alanı hesaplama örneği\n\nuzunluk &lt;- 12\ngenislik &lt;- 5\n\nalan &lt;- uzunluk * genislik\n\nalan\n\n[1] 60\n\n\nBu örnek birkaç önemli kavramı birlikte göstermektedir:\n\nnesne oluşturma,\natama operatörü,\nmatematiksel işlem,\nsonuçların görüntülenmesi.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>R Programlamaya Giriş</span>"
+    ]
+  },
+  {
+    "objectID": "R_intro.html#console-ve-script-arasındaki-fark",
+    "href": "R_intro.html#console-ve-script-arasındaki-fark",
+    "title": "2  R Programlamaya Giriş",
+    "section": "2.5 Console ve Script Arasındaki Fark",
+    "text": "2.5 Console ve Script Arasındaki Fark\nYeni başlayanların en sık karıştırdığı konulardan biri Console ve Script arasındaki farktır.\nBu farkı anlamak oldukça önemlidir.\n\n2.5.1 Console\n\ngeçici çalışma alanıdır,\nhızlı denemeler için uygundur,\nsonuçları hemen gösterir,\nuzun vadeli analizler için uygun değildir.\n\n\n\n2.5.2 Script\n\nkodları kalıcı olarak saklar,\ndüzenli çalışma sağlar,\nanalizlerin tekrar çalıştırılmasına olanak tanır,\npaylaşılabilir yapı sunar.\n\nBunu bir benzetmeyle düşünelim:\nConsole = taslak kâğıdı\nScript = düzenli çalışma defteri\nKüçük denemeler Console üzerinde yapılabilir; ancak ciddi veri analizi süreçlerinde kodların script dosyalarında tutulması gerekir.\n\n\n\n\n\n\nİpucuİpucu\n\n\n\nİyi bir veri analizi süreci, yalnızca doğru sonucu üretmek değil; aynı zamanda o sonucun nasıl üretildiğini tekrar gösterebilmektir.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>R Programlamaya Giriş</span>"
+    ]
+  },
+  {
+    "objectID": "R_intro.html#ilk-script-dosyasını-kaydetmek",
+    "href": "R_intro.html#ilk-script-dosyasını-kaydetmek",
+    "title": "2  R Programlamaya Giriş",
+    "section": "2.6 İlk Script Dosyasını Kaydetmek",
+    "text": "2.6 İlk Script Dosyasını Kaydetmek\nKod yazarken düzenli aralıklarla script dosyasını kaydetmek önemlidir.\nRStudio’da:\nFile &gt; Save\nveya:\nCtrl + S\nkısayolu kullanılabilir.\nScript dosyaları genellikle .R uzantısı ile kaydedilir.\nÖrneğin:\nilk_scriptim.R\ngibi bir isim kullanılabilir.\nAnlamlı dosya isimleri kullanmak ileride dosya yönetimini kolaylaştırır.\nÖrneğin:\nveri_analizi.R\nzaman_serisi_modeli.R\nggplot2_ornekleri.R\ngibi isimler daha açıklayıcıdır.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>R Programlamaya Giriş</span>"
+    ]
+  },
+  {
+    "objectID": "R_intro.html#kod-yazarken-açıklama-satırları-kullanmak",
+    "href": "R_intro.html#kod-yazarken-açıklama-satırları-kullanmak",
+    "title": "2  R Programlamaya Giriş",
+    "section": "2.7 Kod Yazarken Açıklama Satırları Kullanmak",
+    "text": "2.7 Kod Yazarken Açıklama Satırları Kullanmak\nGerçek projelerde kod yalnızca çalıştırılmak için değil, daha sonra okunmak için de yazılır. Bu nedenle açıklama satırları kullanmak önemlidir.\nR’de açıklama satırları # işareti ile yazılır.\n\n# Öğrenci notlarını içeren vektör\nnotlar &lt;- c(70, 80, 90, 65)\n\n# Ortalama notu hesaplayalım\nmean(notlar)\n\n[1] 76.25\n\n\nAçıklama satırları özellikle:\n\nuzun analizlerde,\nekip çalışmalarında,\neski kodlara geri dönüldüğünde\n\nbüyük kolaylık sağlar.\nAncak açıklamalar gereksiz yere her satırı tekrar etmemelidir. İyi açıklama, kodun ne yaptığını değil; neden yapıldığını açıklar.\nKötü örnek:\n# x'e 5 ata\nx &lt;- 5\nDaha anlamlı örnek:\n# Modelde kullanılacak başlangıç değeri\nbaslangic_degeri &lt;- 5",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>R Programlamaya Giriş</span>"
+    ]
+  },
+  {
+    "objectID": "R_intro.html#environment-paneli",
+    "href": "R_intro.html#environment-paneli",
+    "title": "2  R Programlamaya Giriş",
+    "section": "2.8 Environment Paneli",
+    "text": "2.8 Environment Paneli\nRStudio’daki Environment paneli, mevcut oturum sırasında oluşturulan nesneleri gösterir.\nÖrneğin:\n\nisim &lt;- \"Ali\"\nyas &lt;- 30\nmaas &lt;- 45000\n\nBu nesneler oluşturulduktan sonra Environment panelinde görüntülenir. Environment paneli, özellikle yeni başlayanlar için hangi nesnelerin bellekte bulunduğunu görmeyi kolaylaştırır.\nAncak yalnızca Environment paneline güvenmek iyi bir alışkanlık değildir. Çünkü gerçek analiz sürecinde esas önemli olan şey, nesnelerin script dosyasında nasıl oluşturulduğunun açık biçimde yazılmış olmasıdır.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>R Programlamaya Giriş</span>"
+    ]
+  },
+  {
+    "objectID": "R_intro.html#hata-yapmak-programlamanın-parçasıdır",
+    "href": "R_intro.html#hata-yapmak-programlamanın-parçasıdır",
+    "title": "2  R Programlamaya Giriş",
+    "section": "2.9 Hata Yapmak Programlamanın Parçasıdır",
+    "text": "2.9 Hata Yapmak Programlamanın Parçasıdır\nProgramlama öğrenirken hata mesajları görmek kaçınılmazdır. Bu durum normaldir. Hatta çoğu zaman programlama öğrenmenin önemli bir kısmı hata mesajlarını anlamayı öğrenmektir.\nÖrneğin:\n\nortalama(1,2,3)\n\nError in ortalama(1, 2, 3): \"ortalama\" fonksiyonu bulunamadı\n\n\nBurada hata oluşmasının nedeni, R’de ortalama() adlı bir fonksiyon bulunmamasıdır.\nBenzer şekilde:\n\nx + y\n\n[1] 15\n\n\nifadeleri, ilgili nesneler oluşturulmadan çalıştırılırsa hata verebilir.\nHata mesajları başlangıçta korkutucu görünebilir; ancak zamanla hangi hatanın ne anlama geldiğini öğrenmek programlama becerisinin önemli bir parçası haline gelir.\n\n\n\n\n\n\nNot\n\n\n\nProgramlama öğrenirken amaç hata yapmamak değildir. Önemli olan, hataları okuyabilmek ve neden oluştuğunu anlayabilmektir.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>R Programlamaya Giriş</span>"
+    ]
+  },
+  {
+    "objectID": "R_intro.html#tekrar-üretilebilir-çalışma-mantığı",
+    "href": "R_intro.html#tekrar-üretilebilir-çalışma-mantığı",
+    "title": "2  R Programlamaya Giriş",
+    "section": "2.10 Tekrar Üretilebilir Çalışma Mantığı",
+    "text": "2.10 Tekrar Üretilebilir Çalışma Mantığı\nVeri analizinde en önemli kavramlardan biri tekrar üretilebilirliktir. Analizlerin yalnızca bir kez çalışması yeterli değildir; aynı veri ve aynı kod kullanıldığında aynı sonuçların yeniden elde edilebilmesi gerekir.\nBu nedenle:\n\nkodlar script dosyalarında tutulmalı,\nanaliz adımları düzenli yazılmalı,\naçıklama satırları kullanılmalı,\nişlemler rastgele Console üzerinde bırakılmamalıdır.\n\nİyi organize edilmiş bir script dosyası:\n\ndaha kolay anlaşılır,\ndaha kolay paylaşılır,\ndaha kolay güncellenir,\nhata ayıklaması daha kolay olur.\n\nR ve Quarto ekosistemi bu yaklaşımı desteklemek için güçlü araçlar sunmaktadır.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>R Programlamaya Giriş</span>"
+    ]
+  },
+  {
+    "objectID": "R_intro.html#temel-çalışma-alışkanlıkları",
+    "href": "R_intro.html#temel-çalışma-alışkanlıkları",
+    "title": "2  R Programlamaya Giriş",
+    "section": "2.11 Temel Çalışma Alışkanlıkları",
+    "text": "2.11 Temel Çalışma Alışkanlıkları\nR öğrenmeye başlarken kazanılan çalışma alışkanlıkları ilerleyen süreçte büyük fark yaratır. Başlangıçtan itibaren düzenli çalışma kültürü oluşturmak önemlidir.\nÖnerilen bazı temel alışkanlıklar şunlardır:\n\nkodları script dosyalarında saklamak,\nanlamlı nesne isimleri kullanmak,\naçıklama satırları eklemek,\nanalizleri küçük parçalara ayırmak,\nproje klasörleri oluşturmak,\nkodları düzenli kaydetmek.\n\nÖrneğin:\n\n# Satış verileri\nsatis &lt;- c(120, 150, 180, 200)\n\n# Ortalama satış miktarı\nortalama_satis &lt;- mean(satis)\n\nortalama_satis\n\n[1] 162.5\n\n\nBu kod kısa olsa bile okunabilir ve anlaşılırdır. Kod yazarken yalnızca bilgisayarın değil, insanların da bu kodu okuyacağını unutmamak gerekir.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>R Programlamaya Giriş</span>"
+    ]
+  },
+  {
+    "objectID": "R_intro.html#mini-uygulama-ilk-analiz-akışı",
+    "href": "R_intro.html#mini-uygulama-ilk-analiz-akışı",
+    "title": "2  R Programlamaya Giriş",
+    "section": "2.12 Mini Uygulama: İlk Analiz Akışı",
+    "text": "2.12 Mini Uygulama: İlk Analiz Akışı\nŞimdi küçük bir örnek üzerinden temel çalışma mantığını birlikte görelim.\n\n# Öğrenci notlarını içeren bir vektör oluşturalım.\nnotlar &lt;- c(45, 60, 80, 30, 90)\n\n# Ortalama notu hesaplayalım.\nortalama_not &lt;- mean(notlar)\n\nortalama_not\n\n[1] 61\n\n\nGeçme notunun 50 olduğunu varsayalım.\n\n# Her öğrencinin geçip geçmediğini kontrol edelim.\nnotlar &gt;= 50\n\n[1] FALSE  TRUE  TRUE FALSE  TRUE\n\n\nGeçen öğrencilerin notlarını seçelim.\n\n# 50 ve üzeri notları filtreleyelim.\ngecenler &lt;- notlar[notlar &gt;= 50]\n\ngecenler\n\n[1] 60 80 90\n\n\nBu küçük örnek bile birçok temel kavramı birlikte göstermektedir:\n\nnesne oluşturma,\nvektör kullanımı,\nfonksiyon çağırma,\nmantıksal karşılaştırma,\nveri filtreleme.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>R Programlamaya Giriş</span>"
+    ]
+  },
+  {
+    "objectID": "R_intro.html#sık-yapılan-hatalar",
+    "href": "R_intro.html#sık-yapılan-hatalar",
+    "title": "2  R Programlamaya Giriş",
+    "section": "2.13 Sık Yapılan Hatalar",
+    "text": "2.13 Sık Yapılan Hatalar\nYeni başlayanların sık yaptığı bazı hatalar vardır. Bunların farkında olmak öğrenme sürecini kolaylaştırır.\n\n2.13.1 Kodları Kaydetmemek\nSadece Console üzerinde çalışmak, kodların kaybolmasına neden olabilir.\n\n\n2.13.2 Anlamsız Nesne İsimleri Kullanmak\n\na &lt;- 10\nb &lt;- 20\nc &lt;- a + b\n\nyerine:\n\ngelir &lt;- 10\ngider &lt;- 20\n\ntoplam &lt;- gelir + gider\n\ndaha okunabilir bir yapı sağlar.\n\n\n2.13.3 Kodları Açıklamasız Yazmak\nÖzellikle uzun analizlerde açıklama satırları büyük kolaylık sağlar.\n\n\n2.13.4 Her Şeyi Tek Parçada Yazmak\nUzun ve karmaşık kod blokları yerine işlemleri küçük ve anlamlı parçalara ayırmak daha sağlıklıdır.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>R Programlamaya Giriş</span>"
+    ]
+  },
+  {
+    "objectID": "R_intro.html#egzersizler",
+    "href": "R_intro.html#egzersizler",
+    "title": "2  R Programlamaya Giriş",
+    "section": "2.14 Egzersizler",
+    "text": "2.14 Egzersizler\n\nYeni bir script dosyası oluşturunuz.\nScript dosyasına iki sayı oluşturup toplamlarını hesaplayan kod yazınız.\nKodları Ctrl + Enter ile çalıştırınız.\nAçıklama satırı ekleyiniz.\nyas ve maas adlı iki nesne oluşturunuz.\nBu nesneleri kullanarak küçük bir hesaplama yapınız.\nmean() fonksiyonunu kullanarak bir sayı dizisinin ortalamasını hesaplayınız.\nScript dosyanızı anlamlı bir isimle kaydediniz.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>R Programlamaya Giriş</span>"
+    ]
+  },
+  {
+    "objectID": "R_intro.html#egzersiz-çözümleri",
+    "href": "R_intro.html#egzersiz-çözümleri",
+    "title": "2  R Programlamaya Giriş",
+    "section": "2.15 Egzersiz Çözümleri",
+    "text": "2.15 Egzersiz Çözümleri\n\n# İki sayının toplamı\nx &lt;- 10\ny &lt;- 20\n\nx + y\n\n[1] 30\n\n\n\n# Yaş ve maaş bilgisi\nyas &lt;- 30\nmaas &lt;- 45000\n\n# Maaşın 12 aylık toplamı\nmaas * 12\n\n[1] 540000\n\n\n\n# Ortalama hesaplama\nnotlar &lt;- c(70, 80, 90, 65)\n\nmean(notlar)\n\n[1] 76.25",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>R Programlamaya Giriş</span>"
+    ]
+  },
+  {
+    "objectID": "R_intro.html#bölüm-özeti",
+    "href": "R_intro.html#bölüm-özeti",
+    "title": "2  R Programlamaya Giriş",
+    "section": "2.16 Bölüm Özeti",
+    "text": "2.16 Bölüm Özeti\nBu bölümde RStudio çalışma mantığı, Console ve Script farkı, ilk kodların yazılması, kod çalıştırma yöntemleri ve temel çalışma alışkanlıkları ele alındı.\nProgramlama öğrenirken amaç yalnızca komutları ezberlemek değildir. Daha önemli olan, düzenli ve tekrar üretilebilir çalışma alışkanlıkları geliştirmektir. Bu nedenle script kullanımı, açıklama satırları ve organize çalışma kültürü başlangıçtan itibaren önemlidir.\nBir sonraki bölümde R’de temel kullanım ve ilk komutlar ele alınacak; çalışma dizini, yardım sistemi, operatörler ve temel nesne mantığı daha ayrıntılı biçimde incelenecektir.",
+    "crumbs": [
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>R Programlamaya Giriş</span>"
+    ]
+  }
+]

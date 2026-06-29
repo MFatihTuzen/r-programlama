@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="tr" xml:lang="tr"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="R programlama, veri analizi ve istatistiksel düşünme üzerine Türkçe açık kaynak kitap.">
+
+<title>1&nbsp; R Programlama Hakkında – R Programlama</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./R_intro.html" rel="next">
+<link href="./index.html" rel="prev">
+<link href="./images/favicon.png" rel="icon" type="image/png">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-de63f62b328812d8e578a4d74e282472.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-6b6957c917596b414ec0b78690761e87.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-de63f62b328812d8e578a4d74e282472.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-66acd25c1c3a2d1925b2352462660c8c.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-e7ce6c94eb074ce29a3c18d6466b9f09.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="site_libs/bootstrap/bootstrap-66acd25c1c3a2d1925b2352462660c8c.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "Sonuç yok",
+    "search-matching-documents-text": "eşleşen belgeler",
+    "search-copy-link-title": "Aramak için bağlantıyı kopyalayın",
+    "search-hide-matches-text": "Ek eşleşmeleri gizle",
+    "search-more-match-text": "bu belgede bir tane daha eşleşme",
+    "search-more-matches-text": "bu belgede daha fazla eşleşme",
+    "search-clear-button-title": "Temizle",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "İptal et",
+    "search-submit-button-title": "Gönder",
+    "search-label": "Ara"
+  }
+}</script>
+<style>html{ scroll-behavior: smooth; }</style>
+<link href="site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet">
+<script src="site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+
+
+<link rel="stylesheet" href="styles.css">
+<meta property="og:title" content="1&nbsp; R Programlama Hakkında – R Programlama">
+<meta property="og:description" content="R programlama, veri analizi ve istatistiksel düşünme üzerine Türkçe açık kaynak kitap.">
+<meta property="og:image" content="https://mfatihtuzen.github.io/r-programlama/images/clipboard-3682385766.png">
+<meta property="og:site_name" content="R Programlama">
+<meta name="twitter:title" content="1&nbsp; R Programlama Hakkında – R Programlama">
+<meta name="twitter:description" content="R programlama, veri analizi ve istatistiksel düşünme üzerine Türkçe açık kaynak kitap.">
+<meta name="twitter:image" content="https://mfatihtuzen.github.io/r-programlama/images/clipboard-3682385766.png">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="nav-sidebar floating quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Kenar çubuğunu değiştir" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./r_about.html"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">R Programlama Hakkında</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Kenar çubuğunu değiştir" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Ara" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">R Programlama</a> 
+        <div class="sidebar-tools-main tools-wide">
+    <a href="https://github.com/MFatihTuzen/r-programlama" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+    <div class="dropdown">
+      <a href="" title="Share" id="quarto-navigation-tool-dropdown-0" class="quarto-navigation-tool dropdown-toggle px-1" data-bs-toggle="dropdown" aria-expanded="false" role="link" aria-label="Share"><i class="bi bi-share"></i></a>
+      <ul class="dropdown-menu" aria-labelledby="quarto-navigation-tool-dropdown-0">
+          <li>
+            <a class="dropdown-item sidebar-tools-main-item" href="https://twitter.com/intent/tweet?url=|url|">
+              <i class="bi bi-twitter pe-1"></i>
+            Twitter
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item sidebar-tools-main-item" href="https://www.linkedin.com/sharing/share-offsite/?url=|url|">
+              <i class="bi bi-linkedin pe-1"></i>
+            LinkedIn
+            </a>
+          </li>
+      </ul>
+    </div>
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Karanlık modu değiştir"><i class="bi"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Okuyucu modunu değiştir">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Ara"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Önsöz</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./r_about.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">R Programlama Hakkında</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./R_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">R Programlamaya Giriş</span></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="2">
+    <h2 id="toc-title">İçindekiler</h2>
+   
+  <ul>
+  <li><a href="#r-nedir" id="toc-r-nedir" class="nav-link active" data-scroll-target="#r-nedir"><span class="header-section-number">1.1</span> R Nedir?</a></li>
+  <li><a href="#açık-kaynak-yaklaşımı" id="toc-açık-kaynak-yaklaşımı" class="nav-link" data-scroll-target="#açık-kaynak-yaklaşımı"><span class="header-section-number">1.2</span> Açık Kaynak Yaklaşımı</a></li>
+  <li><a href="#r-ekosistemi-ve-paket-kültürü" id="toc-r-ekosistemi-ve-paket-kültürü" class="nav-link" data-scroll-target="#r-ekosistemi-ve-paket-kültürü"><span class="header-section-number">1.3</span> R Ekosistemi ve Paket Kültürü</a></li>
+  <li><a href="#r-neden-veri-analizi-için-güçlüdür" id="toc-r-neden-veri-analizi-için-güçlüdür" class="nav-link" data-scroll-target="#r-neden-veri-analizi-için-güçlüdür"><span class="header-section-number">1.4</span> R Neden Veri Analizi İçin Güçlüdür?</a></li>
+  <li><a href="#tekrar-üretilebilir-çalışma-mantığı" id="toc-tekrar-üretilebilir-çalışma-mantığı" class="nav-link" data-scroll-target="#tekrar-üretilebilir-çalışma-mantığı"><span class="header-section-number">1.5</span> Tekrar Üretilebilir Çalışma Mantığı</a></li>
+  <li><a href="#r-ve-rstudio-arasındaki-fark" id="toc-r-ve-rstudio-arasındaki-fark" class="nav-link" data-scroll-target="#r-ve-rstudio-arasındaki-fark"><span class="header-section-number">1.6</span> R ve RStudio Arasındaki Fark</a></li>
+  <li><a href="#r-ve-rstudio-kurulumu" id="toc-r-ve-rstudio-kurulumu" class="nav-link" data-scroll-target="#r-ve-rstudio-kurulumu"><span class="header-section-number">1.7</span> R ve RStudio Kurulumu</a>
+  <ul>
+  <li><a href="#r-kurulumu" id="toc-r-kurulumu" class="nav-link" data-scroll-target="#r-kurulumu"><span class="header-section-number">1.7.1</span> R Kurulumu</a></li>
+  <li><a href="#rstudio-kurulumu" id="toc-rstudio-kurulumu" class="nav-link" data-scroll-target="#rstudio-kurulumu"><span class="header-section-number">1.7.2</span> RStudio Kurulumu</a></li>
+  </ul></li>
+  <li><a href="#rstudio-arayüzüne-kısa-bakış" id="toc-rstudio-arayüzüne-kısa-bakış" class="nav-link" data-scroll-target="#rstudio-arayüzüne-kısa-bakış"><span class="header-section-number">1.8</span> RStudio Arayüzüne Kısa Bakış</a></li>
+  <li><a href="#r-ile-çalışma-kültürü" id="toc-r-ile-çalışma-kültürü" class="nav-link" data-scroll-target="#r-ile-çalışma-kültürü"><span class="header-section-number">1.9</span> R ile Çalışma Kültürü</a></li>
+  <li><a href="#r-için-faydalı-kaynaklar" id="toc-r-için-faydalı-kaynaklar" class="nav-link" data-scroll-target="#r-için-faydalı-kaynaklar"><span class="header-section-number">1.10</span> R İçin Faydalı Kaynaklar</a>
+  <ul>
+  <li><a href="#resmi-kaynaklar" id="toc-resmi-kaynaklar" class="nav-link" data-scroll-target="#resmi-kaynaklar"><span class="header-section-number">1.10.1</span> Resmi Kaynaklar</a></li>
+  <li><a href="#paket-dokümantasyonları" id="toc-paket-dokümantasyonları" class="nav-link" data-scroll-target="#paket-dokümantasyonları"><span class="header-section-number">1.10.2</span> Paket Dokümantasyonları</a></li>
+  <li><a href="#topluluk-kaynakları" id="toc-topluluk-kaynakları" class="nav-link" data-scroll-target="#topluluk-kaynakları"><span class="header-section-number">1.10.3</span> Topluluk Kaynakları</a></li>
+  <li><a href="#türkçe-kaynaklar" id="toc-türkçe-kaynaklar" class="nav-link" data-scroll-target="#türkçe-kaynaklar"><span class="header-section-number">1.10.4</span> Türkçe Kaynaklar</a></li>
+  </ul></li>
+  <li><a href="#bölüm-özeti" id="toc-bölüm-özeti" class="nav-link" data-scroll-target="#bölüm-özeti"><span class="header-section-number">1.11</span> Bölüm Özeti</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/MFatihTuzen/r-programlama/edit/main/r_about.qmd" class="toc-action"><i class="bi bi-github"></i>Bu sayfayı düzenle</a></li><li><a href="https://github.com/MFatihTuzen/r-programlama/issues/new" class="toc-action"><i class="bi empty"></i>Sorun bildir</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">R Programlama Hakkında</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>R programlama dili, istatistiksel hesaplama, veri analizi ve veri görselleştirme amacıyla geliştirilmiş açık kaynaklı bir programlama dilidir. Günümüzde yalnızca akademik çalışmalarda değil; resmi istatistik kurumlarında, özel sektörde, finans alanında, sağlık araştırmalarında, makine öğrenmesi uygulamalarında ve veri bilimi projelerinde de yaygın olarak kullanılmaktadır.</p>
+<p>R’nin güçlü olmasının nedeni yalnızca bir programlama dili olması değildir. R aynı zamanda geniş bir bilimsel ekosisteme, güçlü bir paket kültürüne ve veri analizi odaklı bir çalışma biçimine sahiptir. Bu nedenle R, çoğu zaman yalnızca bir yazılım olarak değil; veri analizi, modelleme, görselleştirme, raporlama ve otomasyon süreçlerini bir araya getiren bütünlüklü bir çalışma ortamı olarak değerlendirilir.</p>
+<p>Bu bölümde R’nin ne olduğu, nasıl ortaya çıktığı, neden veri analizi dünyasında bu kadar yaygın kullanıldığı, RStudio ile ilişkisinin ne olduğu ve başlangıç için nasıl kurulacağı ele alınacaktır. Amaç, R’ye yalnızca teknik bir araç olarak değil, veriyle düşünmeyi kolaylaştıran bir programlama dili olarak bakabilmektir.</p>
+<section id="r-nedir" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="r-nedir"><span class="header-section-number">1.1</span> R Nedir?</h2>
+<p>R, veri analizi ve istatistiksel hesaplama amacıyla geliştirilmiş bir programlama dilidir. Özellikle istatistiksel yöntemlerin uygulanması, veri setlerinin işlenmesi, grafiklerin oluşturulması ve analiz sonuçlarının raporlanması gibi görevlerde güçlüdür.</p>
+<p>R’nin kökeni, Bell Laboratories bünyesinde geliştirilen <strong>S programlama diline</strong> dayanır. S dili, istatistiksel hesaplama için geliştirilmiş önemli bir dildi. R ise bu geleneği açık kaynak dünyasına taşıyan, Ross Ihaka ve Robert Gentleman tarafından geliştirilen bir programlama dili olarak ortaya çıkmıştır.</p>
+<p>R isminin kökeni genellikle iki şekilde açıklanır. Birincisi, geliştiriciler Ross Ihaka ve Robert Gentleman’ın isimlerinin baş harflerine gönderme yapmasıdır. İkincisi ise R’nin, S dilinin devamı niteliğinde görülmesidir. Bu isimlendirme bile R’nin istatistiksel programlama geleneği içindeki yerini gösterir.</p>
+<p>R’nin en önemli özelliklerinden biri, istatistiksel düşünceye yakın bir dil olmasıdır. Birçok genel amaçlı programlama dili önce yazılım geliştirme ihtiyaçları düşünülerek tasarlanmışken, R’nin merkezinde veri, istatistiksel hesaplama ve grafik üretimi yer alır. Bu nedenle R ile çalışırken tekil değerlerden çok vektörler, veri çerçeveleri, modeller ve grafikler üzerinden düşünürüz.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Not</span>Not
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>R’nin güçlü yönlerinden biri, akademik dünya ve istatistik topluluğu ile yakın ilişkili biçimde gelişmiş olmasıdır. Yeni istatistiksel yöntemlerin önemli bir kısmı kısa sürede R paketleri olarak kullanıma sunulabilmektedir.</p>
+</div>
+</div>
+</section>
+<section id="açık-kaynak-yaklaşımı" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="açık-kaynak-yaklaşımı"><span class="header-section-number">1.2</span> Açık Kaynak Yaklaşımı</h2>
+<p>R açık kaynaklı bir yazılımdır. Açık kaynak, yazılımın kaynak kodunun herkes tarafından incelenebilmesi, kullanılabilmesi, geliştirilebilmesi ve paylaşılabilmesi anlamına gelir. Bu yaklaşım yalnızca teknik bir lisans meselesi değildir; aynı zamanda bilimsel iş birliği ve paylaşım kültürünün de önemli bir parçasıdır.</p>
+<p>Açık kaynak yapının R’ye sağladığı en önemli avantajlardan biri, topluluk katkısıdır. Dünyanın farklı yerlerinden araştırmacılar, veri bilimciler, istatistikçiler ve yazılımcılar R için paketler geliştirir, hataları bildirir, dokümantasyon yazar ve örnekler paylaşır. Böylece R sürekli gelişen canlı bir ekosistem haline gelir.</p>
+<p>Bu durum, R’yi özellikle bilimsel çalışmalar için değerli kılar. Çünkü kullanılan yöntemlerin, kodların ve paketlerin açık biçimde incelenebilmesi, analizlerin şeffaflığına katkı sağlar. Veri analizi yalnızca sonuç üretmek değil, aynı zamanda bu sonucun nasıl üretildiğini gösterebilmekle de ilgilidir.</p>
+</section>
+<section id="r-ekosistemi-ve-paket-kültürü" class="level2" data-number="1.3">
+<h2 data-number="1.3" class="anchored" data-anchor-id="r-ekosistemi-ve-paket-kültürü"><span class="header-section-number">1.3</span> R Ekosistemi ve Paket Kültürü</h2>
+<p>R’nin gücünün önemli bir kısmı paket ekosisteminden gelir. Paketler, belirli görevleri yerine getirmek için hazırlanmış fonksiyon, veri seti ve dokümantasyon koleksiyonlarıdır. Base R birçok temel işlevi içerse de, R’nin gerçek esnekliği paketler sayesinde ortaya çıkar.</p>
+<p>R paketlerinin önemli bir kısmı CRAN üzerinden dağıtılır. CRAN, <strong>Comprehensive R Archive Network</strong> ifadesinin kısaltmasıdır ve R paketlerinin merkezi arşivlerinden biridir. CRAN dışında GitHub, Bioconductor ve kurumların kendi depoları üzerinden de paketler dağıtılabilir.</p>
+<p>R ekosisteminde farklı amaçlara yönelik çok sayıda paket bulunmaktadır. Örneğin <code>ggplot2</code> veri görselleştirme, <code>dplyr</code> veri manipülasyonu, <code>tidyr</code> veri düzenleme, <code>shiny</code> etkileşimli web uygulamaları, <code>forecast</code> zaman serisi analizi, <code>sf</code> mekânsal veri analizi ve <code>quarto</code> raporlama süreçlerinde sık kullanılan paketlerdendir.</p>
+<p>Bu paket kültürü, R’nin yalnızca mevcut yöntemleri uygulayan bir dil olmasının ötesine geçmesini sağlar. R aynı zamanda yeni yöntemlerin hızlı biçimde denendiği, paylaşıldığı ve yaygınlaştığı bir platformdur.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">İpucu</span>İpucu
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>R öğrenirken tüm işlemleri yalnızca base R ile yapmak zorunda değilsiniz. Base R temel mantığı öğrenmek için önemlidir; ancak gerçek projelerde paket ekosisteminden yararlanmak R’nin en büyük avantajlarından biridir.</p>
+</div>
+</div>
+</section>
+<section id="r-neden-veri-analizi-için-güçlüdür" class="level2" data-number="1.4">
+<h2 data-number="1.4" class="anchored" data-anchor-id="r-neden-veri-analizi-için-güçlüdür"><span class="header-section-number">1.4</span> R Neden Veri Analizi İçin Güçlüdür?</h2>
+<p>R’nin veri analizi alanında güçlü olmasının birkaç temel nedeni vardır. Bunlardan ilki, R’nin veri odaklı tasarımıdır. R’de temel veri yapıları ve fonksiyonlar, istatistiksel hesaplama ihtiyaçlarına uygun biçimde geliştirilmiştir. Vektörleşmiş işlemler, veri çerçevesi yapısı, modelleme fonksiyonları ve grafik sistemleri bu tasarımın parçalarıdır.</p>
+<p>Basit bir örnekle düşünelim. Bir sayı dizisinin ortalamasını hesaplamak için R’de tek bir fonksiyon yeterlidir:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Örnek bir sayısal vektör oluşturalım.</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">20</span>, <span class="dv">30</span>, <span class="dv">40</span>, <span class="dv">50</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># mean() fonksiyonu vektörün ortalamasını hesaplar.</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(x)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 30</code></pre>
+</div>
+</div>
+<p>Bu kısa örnek bile R’nin veriyle çalışma biçimini gösterir. R, tek tek değerlerle uğraşmak yerine veri kümeleri üzerinde işlem yapmayı kolaylaştırır.</p>
+<p>İkinci güçlü yön, R’nin grafik üretme kapasitesidir. R hem base grafik sistemiyle hem de <code>ggplot2</code> gibi paketlerle bilimsel düzeyde görseller üretmeye olanak tanır. Veri analizi yalnızca sayısal sonuçlar üretmek değildir; sonuçların doğru ve anlaşılır biçimde görselleştirilmesi de analiz sürecinin ayrılmaz bir parçasıdır.</p>
+<p>Üçüncü önemli unsur, R’nin raporlama ve tekrar üretilebilirlik konusundaki gücüdür. Quarto ve R Markdown gibi araçlar sayesinde kod, açıklama metni, tablo ve grafikler aynı belge içinde bir araya getirilebilir. Böylece analiz yalnızca yapılmış olmaz; aynı zamanda belgelenmiş ve tekrar üretilebilir hale gelir.</p>
+</section>
+<section id="tekrar-üretilebilir-çalışma-mantığı" class="level2" data-number="1.5">
+<h2 data-number="1.5" class="anchored" data-anchor-id="tekrar-üretilebilir-çalışma-mantığı"><span class="header-section-number">1.5</span> Tekrar Üretilebilir Çalışma Mantığı</h2>
+<p>Modern veri analizinde yalnızca sonucu elde etmek yeterli değildir. Aynı sonucun aynı veri ve aynı kod ile yeniden üretilebilmesi gerekir. Bu yaklaşım İngilizcede <strong>reproducibility</strong> olarak adlandırılır.</p>
+<p>Tekrar üretilebilirlik, veri analizinin güvenilirliği açısından kritik öneme sahiptir. Bir grafik, tablo veya model sonucu elle kopyalanarak rapora aktarılıyorsa, hata yapma olasılığı artar. Buna karşılık kod, veri ve rapor aynı çalışma akışı içinde tutulursa sonuçların güncellenmesi, kontrol edilmesi ve paylaşılması çok daha kolay hale gelir.</p>
+<p>R bu anlamda güçlü bir çalışma ortamı sunar. Script dosyaları, Quarto belgeleri, paket yönetimi ve proje klasörleri kullanılarak analizler düzenli ve tekrar üretilebilir biçimde yürütülebilir. Bu kitap boyunca da yalnızca komutları öğrenmek değil, aynı zamanda iyi ve sürdürülebilir çalışma alışkanlıkları geliştirmek hedeflenmektedir.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Not</span>Not
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>İyi bir veri analizi yalnızca doğru sonucu üretmez; bu sonuca nasıl ulaşıldığını da açık biçimde gösterir.</p>
+</div>
+</div>
+</section>
+<section id="r-ve-rstudio-arasındaki-fark" class="level2" data-number="1.6">
+<h2 data-number="1.6" class="anchored" data-anchor-id="r-ve-rstudio-arasındaki-fark"><span class="header-section-number">1.6</span> R ve RStudio Arasındaki Fark</h2>
+<p>R öğrenmeye yeni başlayanların en sık karıştırdığı konulardan biri R ile RStudio arasındaki farktır. Bu iki kavram çoğu zaman birlikte kullanıldığı için aynı şey sanılabilir; ancak değildir.</p>
+<p>R, hesaplamaları yapan programlama dilidir. Kodların çalıştırılması, fonksiyonların uygulanması, modellerin kurulması ve grafiklerin üretilmesi R tarafından gerçekleştirilir.</p>
+<p>RStudio ise R ile çalışmayı kolaylaştıran bir geliştirme ortamıdır. İngilizcede bu tür yazılımlara <strong>IDE</strong> denir. IDE, <strong>Integrated Development Environment</strong> ifadesinin kısaltmasıdır ve Türkçede bütünleşik geliştirme ortamı olarak düşünülebilir.</p>
+<p>RStudio; kod yazmayı, dosya yönetimini, grafik görüntülemeyi, paket kullanımını, yardım sayfalarına erişimi ve proje yönetimini daha kolay hale getirir. Ancak arka planda hesaplamaları yapan motor yine R’dir.</p>
+<p>Basit bir benzetme yapmak gerekirse:</p>
+<pre class="text"><code>R = motor
+RStudio = sürücü paneli ve çalışma ortamı</code></pre>
+<p>RStudio olmadan da R kullanılabilir. Ancak özellikle yeni başlayanlar için RStudio, R ile çalışmayı daha düzenli ve anlaşılır hale getirir.</p>
+</section>
+<section id="r-ve-rstudio-kurulumu" class="level2" data-number="1.7">
+<h2 data-number="1.7" class="anchored" data-anchor-id="r-ve-rstudio-kurulumu"><span class="header-section-number">1.7</span> R ve RStudio Kurulumu</h2>
+<p>R ile çalışmaya başlamak için önce R’nin, ardından RStudio’nun kurulması gerekir. Kurulum sırası önemlidir; çünkü RStudio arka planda kurulu olan R sürümünü kullanır.</p>
+<p>Genel kurulum sırası şu şekildedir:</p>
+<ol type="1">
+<li>Önce R kurulur.</li>
+<li>Daha sonra RStudio kurulur.</li>
+<li>RStudio açıldığında kurulu R sürümünü otomatik olarak algılar.</li>
+</ol>
+<p>Bu kitapta kurulum adımları ayrıntılı ekran ekran anlatılmayacaktır. Bunun nedeni, indirme sayfalarının ve arayüzlerin zamanla değişebilmesidir. Bunun yerine güncel bağlantılar ve temel yönlendirme verilecektir.</p>
+<section id="r-kurulumu" class="level3" data-number="1.7.1">
+<h3 data-number="1.7.1" class="anchored" data-anchor-id="r-kurulumu"><span class="header-section-number">1.7.1</span> R Kurulumu</h3>
+<p>R’nin resmi indirme adresi CRAN üzerindedir:</p>
+<pre class="text"><code>https://cran.r-project.org</code></pre>
+<p>Bu sayfada işletim sisteminize uygun sürüm seçilebilir. Windows, macOS ve Linux için farklı kurulum seçenekleri bulunmaktadır. Çoğu kullanıcı için varsayılan kurulum ayarları yeterlidir.</p>
+<p><img src="images/clipboard-3682385766.png" class="img-fluid"></p>
+</section>
+<section id="rstudio-kurulumu" class="level3" data-number="1.7.2">
+<h3 data-number="1.7.2" class="anchored" data-anchor-id="rstudio-kurulumu"><span class="header-section-number">1.7.2</span> RStudio Kurulumu</h3>
+<p>RStudio’nun güncel masaüstü sürümü Posit tarafından dağıtılmaktadır. İndirme adresi şudur:</p>
+<pre class="text"><code>https://posit.co/download/rstudio-desktop/</code></pre>
+<p>Yeni başlayanlar için ücretsiz RStudio Desktop sürümü yeterlidir. Kurulum tamamlandıktan sonra RStudio açıldığında arka planda kurulu olan R sürümünü kullanacaktır.</p>
+<p><img src="images/clipboard-2160242823.png" class="img-fluid"></p>
+<p>Kurulum sonrasında RStudio açıldığında genellikle Console, script editörü, Environment paneli ve Files/Plots/Packages bölümlerinden oluşan bir arayüz görülür. Bu arayüzün ayrıntıları bir sonraki giriş bölümünde ele alınacaktır.</p>
+</section>
+</section>
+<section id="rstudio-arayüzüne-kısa-bakış" class="level2" data-number="1.8">
+<h2 data-number="1.8" class="anchored" data-anchor-id="rstudio-arayüzüne-kısa-bakış"><span class="header-section-number">1.8</span> RStudio Arayüzüne Kısa Bakış</h2>
+<p>RStudio arayüzü, R ile çalışmayı kolaylaştırmak için farklı panellerden oluşur. Bu panellerin isimleri ve yerleri kullanılan sürüme göre küçük değişiklikler gösterebilir; ancak temel mantık aynıdır.</p>
+<p>Genellikle RStudio arayüzünde şu bölümler yer alır:</p>
+<ul>
+<li><strong>Script Editor:</strong> Kodların yazıldığı ve saklandığı bölümdür.</li>
+<li><strong>Console:</strong> Kodların çalıştırıldığı bölümdür.</li>
+<li><strong>Environment:</strong> Oturumda oluşturulan nesnelerin listelendiği bölümdür.</li>
+<li><strong>Files / Plots / Packages / Help:</strong> Dosya yönetimi, grafik görüntüleme, paketler ve yardım sayfaları için kullanılan bölümdür.</li>
+</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/RStudio.PNG" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
+</figure>
+</div>
+<p>Bu arayüz ilk bakışta karmaşık görünebilir; ancak temel mantığı oldukça basittir. Kodlar genellikle script dosyasında yazılır, Console’da çalıştırılır, oluşan nesneler Environment panelinde görülür ve grafikler Plots sekmesinde görüntülenir.</p>
+</section>
+<section id="r-ile-çalışma-kültürü" class="level2" data-number="1.9">
+<h2 data-number="1.9" class="anchored" data-anchor-id="r-ile-çalışma-kültürü"><span class="header-section-number">1.9</span> R ile Çalışma Kültürü</h2>
+<p>R öğrenmek yalnızca fonksiyon adlarını öğrenmek değildir. Daha önemlisi, veriyle düzenli ve tekrar üretilebilir biçimde çalışmayı öğrenmektir. Bu nedenle iyi çalışma alışkanlıkları başlangıçtan itibaren geliştirilmelidir.</p>
+<p>Bunlardan bazıları şunlardır:</p>
+<ul>
+<li>kodları Console yerine script dosyalarında saklamak,</li>
+<li>açıklama satırları kullanmak,</li>
+<li>proje klasörü mantığıyla çalışmak,</li>
+<li>dosya yollarını düzenli tutmak,</li>
+<li>nesne adlarını anlamlı seçmek,</li>
+<li>analiz adımlarını tekrar çalıştırılabilir biçimde yazmak.</li>
+</ul>
+<p>Bu alışkanlıklar başlangıçta küçük ayrıntılar gibi görünür. Ancak veri setleri büyüdükçe, analizler karmaşıklaştıkça ve çalışmalar paylaşılabilir hale geldikçe bu alışkanlıkların değeri artar.</p>
+<p>Veri analizi sürecinde iyi kod, yalnızca çalışan kod değildir. İyi kod aynı zamanda okunabilir, düzenli, açıklanabilir ve tekrar üretilebilir olmalıdır.</p>
+</section>
+<section id="r-için-faydalı-kaynaklar" class="level2" data-number="1.10">
+<h2 data-number="1.10" class="anchored" data-anchor-id="r-için-faydalı-kaynaklar"><span class="header-section-number">1.10</span> R İçin Faydalı Kaynaklar</h2>
+<p>R öğrenme sürecinde resmi dokümantasyonlar, paket belgeleri ve topluluk kaynakları oldukça faydalıdır. Her fonksiyonu ezberlemek mümkün değildir; önemli olan doğru kaynaklara nasıl ulaşılacağını bilmektir.</p>
+<section id="resmi-kaynaklar" class="level3" data-number="1.10.1">
+<h3 data-number="1.10.1" class="anchored" data-anchor-id="resmi-kaynaklar"><span class="header-section-number">1.10.1</span> Resmi Kaynaklar</h3>
+<ul>
+<li>R Project: https://www.r-project.org</li>
+<li>CRAN: https://cran.r-project.org</li>
+<li>Posit: https://posit.co</li>
+</ul>
+</section>
+<section id="paket-dokümantasyonları" class="level3" data-number="1.10.2">
+<h3 data-number="1.10.2" class="anchored" data-anchor-id="paket-dokümantasyonları"><span class="header-section-number">1.10.2</span> Paket Dokümantasyonları</h3>
+<p>Paketlerin resmi web sayfaları ve yardım dokümanları çoğu zaman en güvenilir kaynaklardır. Örneğin:</p>
+<ul>
+<li>ggplot2: https://ggplot2.tidyverse.org</li>
+<li>dplyr: https://dplyr.tidyverse.org</li>
+<li>Quarto: https://quarto.org</li>
+</ul>
+</section>
+<section id="topluluk-kaynakları" class="level3" data-number="1.10.3">
+<h3 data-number="1.10.3" class="anchored" data-anchor-id="topluluk-kaynakları"><span class="header-section-number">1.10.3</span> Topluluk Kaynakları</h3>
+<p>R topluluğu oldukça aktiftir. Sorunlara çözüm bulmak, örnek kodları incelemek ve yeni yöntemleri öğrenmek için şu kaynaklar yararlı olabilir:</p>
+<ul>
+<li>Posit Community</li>
+<li>Stack Overflow</li>
+<li>GitHub</li>
+<li>R-bloggers</li>
+</ul>
+</section>
+<section id="türkçe-kaynaklar" class="level3" data-number="1.10.4">
+<h3 data-number="1.10.4" class="anchored" data-anchor-id="türkçe-kaynaklar"><span class="header-section-number">1.10.4</span> Türkçe Kaynaklar</h3>
+<p>Türkçe R kaynakları da giderek artmaktadır. Türkçe blog yazıları, üniversite ders notları, eğitim videoları ve açık eğitim materyalleri R öğrenme sürecinde destekleyici olabilir.</p>
+</section>
+</section>
+<section id="bölüm-özeti" class="level2" data-number="1.11">
+<h2 data-number="1.11" class="anchored" data-anchor-id="bölüm-özeti"><span class="header-section-number">1.11</span> Bölüm Özeti</h2>
+<p>Bu bölümde R programlama dilinin ne olduğu, tarihsel arka planı, açık kaynak yaklaşımı, paket ekosistemi, veri analizi dünyasındaki önemi ve RStudio ile ilişkisi ele alındı. Ayrıca R ve RStudio kurulumu için temel yönlendirme yapıldı ve RStudio arayüzünün temel bileşenleri kısaca tanıtıldı.</p>
+<p>Bir sonraki bölümde R ile çalışmanın daha pratik yönüne geçilecek; script kullanımı, Console yapısı, ilk kodların yazılması ve temel çalışma akışı ele alınacaktır.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Kopyalandı");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Kopyalandı");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/mfatihtuzen\.github\.io\/r-programlama\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./index.html" class="pagination-link" aria-label="Önsöz">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Önsöz</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./R_intro.html" class="pagination-link" aria-label="R Programlamaya Giriş">
+        <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">R Programlamaya Giriş</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>© 2026, <a href="https://www.linkedin.com/in/dr-m-fatih-t-2b2a4328/">Muhammed Fatih Tüzen</a></p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/MFatihTuzen/r-programlama/edit/main/r_about.qmd" class="toc-action"><i class="bi bi-github"></i>Bu sayfayı düzenle</a></li><li><a href="https://github.com/MFatihTuzen/r-programlama/issues/new" class="toc-action"><i class="bi empty"></i>Sorun bildir</a></li></ul></div></div>
+    <div class="nav-footer-right">
+<p>Bu kitap <a href="https://quarto.org/">Quarto</a> ile hazırlanmıştır.</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+<script src="site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>
