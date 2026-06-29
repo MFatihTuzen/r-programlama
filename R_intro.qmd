@@ -1,0 +1,476 @@
+# R Programlamaya Giriş
+
+Bir programlama dilini öğrenmeye başlarken çoğu zaman ilk odak noktası fonksiyonlar, paketler veya veri analizi teknikleri olur. Ancak güçlü bir temel oluşturabilmek için önce programlama ortamının nasıl çalıştığını anlamak gerekir. R ile çalışırken kodların nerede yazıldığı, nasıl çalıştırıldığı, neden script dosyalarının kullanıldığı ve çalışma sürecinin nasıl organize edildiği oldukça önemlidir.
+
+Bu bölümün amacı, R ile ilk çalışma deneyimini oluşturmaktır. Burada yalnızca bazı düğmelere basmayı öğrenmek değil; R ile nasıl düşünülmesi gerektiğini anlamak hedeflenmektedir. Çünkü veri analizi sürecinde yalnızca sonuç üretmek yeterli değildir. Analizlerin düzenli, tekrar üretilebilir ve sürdürülebilir olması da gerekir.
+
+Bu bölümde özellikle şu konular ele alınacaktır:
+
+-   RStudio çalışma mantığı,
+-   Console ve Script farkı,
+-   ilk R kodlarının yazılması,
+-   kod çalıştırma yöntemleri,
+-   script dosyalarının önemi,
+-   tekrar üretilebilir çalışma mantığı,
+-   temel çalışma alışkanlıkları.
+
+## RStudio ile İlk Karşılaşma
+
+RStudio ilk açıldığında birden fazla panelden oluşan bir çalışma ortamı görülür. Bu görünüm başlangıçta karmaşık gelebilir; ancak her panelin belirli bir görevi vardır.
+
+Genellikle RStudio arayüzünde şu bölümler yer alır:
+
+-   Script Editor
+-   Console
+-   Environment
+-   Files / Plots / Packages / Help
+
+![](images/RStudio.PNG){fig-align="center"}
+
+İlk aşamada bu panellerin tamamını ayrıntılı şekilde bilmek gerekmez. Önemli olan temel çalışma mantığını kavramaktır:
+
+``` text
+Kodlar genellikle script dosyasında yazılır,
+Console üzerinde çalıştırılır,
+oluşan nesneler Environment panelinde görüntülenir.
+```
+
+Bu yapı zamanla doğal hale gelecektir.
+
+## Console Nedir?
+
+Console, R komutlarının doğrudan çalıştırıldığı alandır. Yazılan kod çalıştırıldığında sonuç hemen görüntülenir.
+
+Örneğin Console alanına aşağıdaki ifadeyi yazalım:
+
+```{r}
+2 + 2
+```
+
+R sonucu doğrudan hesaplayacaktır.
+
+Benzer şekilde:
+
+```{r}
+sqrt(25)
+```
+
+veya:
+
+```{r}
+x <- 10
+
+x * 2
+```
+
+ifadeleri de Console üzerinde çalıştırılabilir.
+
+Console hızlı denemeler yapmak için oldukça kullanışlıdır. Küçük hesaplamalar, fonksiyon denemeleri veya kısa kontroller için pratik bir çalışma alanı sağlar.
+
+Ancak yalnızca Console kullanarak çalışmanın önemli bir sorunu vardır:
+
+> Console geçicidir.
+
+R oturumu kapandığında Console geçmişi kaybolabilir veya düzensiz hale gelebilir. Özellikle uzun analizlerde yalnızca Console üzerinde çalışmak ciddi karmaşaya neden olur.
+
+::: callout-warning
+## Uyarı
+
+Sadece Console üzerinde çalışmak, analiz sürecinin tekrar üretilebilirliğini zorlaştırır. Kodların script dosyalarında saklanması daha sağlıklı bir yaklaşımdır.
+:::
+
+## Script Dosyası Nedir?
+
+Script dosyası, R kodlarının düzenli biçimde saklandığı metin dosyasıdır. Genellikle `.R` uzantısına sahiptir.
+
+Script kullanmanın temel amacı şudur:
+
+-   kodları kaybetmemek,
+-   analiz sürecini belgelemek,
+-   aynı işlemleri tekrar çalıştırabilmek,
+-   analizleri paylaşabilmek.
+
+Bir veri analizinin günler veya haftalar sürdüğü düşünüldüğünde, tüm kodların düzenli biçimde saklanması kritik hale gelir.
+
+Script dosyası oluşturmak için RStudio’da genellikle şu yol izlenir:
+
+``` text
+File > New File > R Script
+```
+
+Açılan bölüm Script Editor alanıdır. Script dosyasına aşağıdaki kodları yazalım:
+
+```{r}
+# İlk değişkenimizi oluşturalım.
+x <- 10
+
+# İkinci değişken
+y <- 5
+
+# Toplama işlemi
+x + y
+```
+
+Bu kodlar henüz çalıştırılmış değildir. Script dosyası, kodların saklandığı çalışma alanıdır.
+
+## Kod Nasıl Çalıştırılır?
+
+Script dosyasındaki kodları çalıştırmanın farklı yolları vardır.
+
+En yaygın yöntemlerden biri:
+
+``` text
+Ctrl + Enter
+```
+
+kısayoludur.
+
+İmlecin bulunduğu satır veya seçili kod bloğu çalıştırılır ve sonuç Console üzerinde görüntülenir.
+
+Alternatif olarak üst kısımdaki **Run** düğmesi de kullanılabilir.
+
+::: callout-note
+## Not
+
+Kodlar genellikle script dosyasında yazılır; ancak çalıştırıldığında sonuçlar Console üzerinde görüntülenir.
+:::
+
+Aşağıdaki örneği deneyelim:
+
+```{r}
+# Dikdörtgen alanı hesaplama örneği
+
+uzunluk <- 12
+genislik <- 5
+
+alan <- uzunluk * genislik
+
+alan
+```
+
+Bu örnek birkaç önemli kavramı birlikte göstermektedir:
+
+-   nesne oluşturma,
+-   atama operatörü,
+-   matematiksel işlem,
+-   sonuçların görüntülenmesi.
+
+## Console ve Script Arasındaki Fark
+
+Yeni başlayanların en sık karıştırdığı konulardan biri Console ve Script arasındaki farktır.
+
+Bu farkı anlamak oldukça önemlidir.
+
+### Console
+
+-   geçici çalışma alanıdır,
+-   hızlı denemeler için uygundur,
+-   sonuçları hemen gösterir,
+-   uzun vadeli analizler için uygun değildir.
+
+### Script
+
+-   kodları kalıcı olarak saklar,
+-   düzenli çalışma sağlar,
+-   analizlerin tekrar çalıştırılmasına olanak tanır,
+-   paylaşılabilir yapı sunar.
+
+Bunu bir benzetmeyle düşünelim:
+
+``` text
+Console = taslak kâğıdı
+Script = düzenli çalışma defteri
+```
+
+Küçük denemeler Console üzerinde yapılabilir; ancak ciddi veri analizi süreçlerinde kodların script dosyalarında tutulması gerekir.
+
+::: callout-tip
+## İpucu
+
+İyi bir veri analizi süreci, yalnızca doğru sonucu üretmek değil; aynı zamanda o sonucun nasıl üretildiğini tekrar gösterebilmektir.
+:::
+
+## İlk Script Dosyasını Kaydetmek
+
+Kod yazarken düzenli aralıklarla script dosyasını kaydetmek önemlidir.
+
+RStudio’da:
+
+``` text
+File > Save
+```
+
+veya:
+
+``` text
+Ctrl + S
+```
+
+kısayolu kullanılabilir.
+
+Script dosyaları genellikle `.R` uzantısı ile kaydedilir.
+
+Örneğin:
+
+``` text
+ilk_scriptim.R
+```
+
+gibi bir isim kullanılabilir.
+
+Anlamlı dosya isimleri kullanmak ileride dosya yönetimini kolaylaştırır.
+
+Örneğin:
+
+``` text
+veri_analizi.R
+zaman_serisi_modeli.R
+ggplot2_ornekleri.R
+```
+
+gibi isimler daha açıklayıcıdır.
+
+## Kod Yazarken Açıklama Satırları Kullanmak
+
+Gerçek projelerde kod yalnızca çalıştırılmak için değil, daha sonra okunmak için de yazılır. Bu nedenle açıklama satırları kullanmak önemlidir.
+
+R’de açıklama satırları `#` işareti ile yazılır.
+
+```{r}
+# Öğrenci notlarını içeren vektör
+notlar <- c(70, 80, 90, 65)
+
+# Ortalama notu hesaplayalım
+mean(notlar)
+```
+
+Açıklama satırları özellikle:
+
+-   uzun analizlerde,
+-   ekip çalışmalarında,
+-   eski kodlara geri dönüldüğünde
+
+büyük kolaylık sağlar.
+
+Ancak açıklamalar gereksiz yere her satırı tekrar etmemelidir. İyi açıklama, kodun ne yaptığını değil; neden yapıldığını açıklar.
+
+Kötü örnek:
+
+``` r
+# x'e 5 ata
+x <- 5
+```
+
+Daha anlamlı örnek:
+
+``` r
+# Modelde kullanılacak başlangıç değeri
+baslangic_degeri <- 5
+```
+
+## Environment Paneli
+
+RStudio’daki Environment paneli, mevcut oturum sırasında oluşturulan nesneleri gösterir.
+
+Örneğin:
+
+```{r}
+isim <- "Ali"
+yas <- 30
+maas <- 45000
+```
+
+Bu nesneler oluşturulduktan sonra Environment panelinde görüntülenir. Environment paneli, özellikle yeni başlayanlar için hangi nesnelerin bellekte bulunduğunu görmeyi kolaylaştırır.
+
+Ancak yalnızca Environment paneline güvenmek iyi bir alışkanlık değildir. Çünkü gerçek analiz sürecinde esas önemli olan şey, nesnelerin script dosyasında nasıl oluşturulduğunun açık biçimde yazılmış olmasıdır.
+
+## Hata Yapmak Programlamanın Parçasıdır
+
+Programlama öğrenirken hata mesajları görmek kaçınılmazdır. Bu durum normaldir. Hatta çoğu zaman programlama öğrenmenin önemli bir kısmı hata mesajlarını anlamayı öğrenmektir.
+
+Örneğin:
+
+```{r, error=TRUE}
+ortalama(1,2,3)
+```
+
+Burada hata oluşmasının nedeni, R’de `ortalama()` adlı bir fonksiyon bulunmamasıdır.
+
+Benzer şekilde:
+
+```{r, error=TRUE}
+x + y
+```
+
+ifadeleri, ilgili nesneler oluşturulmadan çalıştırılırsa hata verebilir.
+
+Hata mesajları başlangıçta korkutucu görünebilir; ancak zamanla hangi hatanın ne anlama geldiğini öğrenmek programlama becerisinin önemli bir parçası haline gelir.
+
+::: callout-note
+Programlama öğrenirken amaç hata yapmamak değildir. Önemli olan, hataları okuyabilmek ve neden oluştuğunu anlayabilmektir.
+:::
+
+## Tekrar Üretilebilir Çalışma Mantığı
+
+Veri analizinde en önemli kavramlardan biri tekrar üretilebilirliktir. Analizlerin yalnızca bir kez çalışması yeterli değildir; aynı veri ve aynı kod kullanıldığında aynı sonuçların yeniden elde edilebilmesi gerekir.
+
+Bu nedenle:
+
+-   kodlar script dosyalarında tutulmalı,
+-   analiz adımları düzenli yazılmalı,
+-   açıklama satırları kullanılmalı,
+-   işlemler rastgele Console üzerinde bırakılmamalıdır.
+
+İyi organize edilmiş bir script dosyası:
+
+-   daha kolay anlaşılır,
+-   daha kolay paylaşılır,
+-   daha kolay güncellenir,
+-   hata ayıklaması daha kolay olur.
+
+R ve Quarto ekosistemi bu yaklaşımı desteklemek için güçlü araçlar sunmaktadır.
+
+## Temel Çalışma Alışkanlıkları
+
+R öğrenmeye başlarken kazanılan çalışma alışkanlıkları ilerleyen süreçte büyük fark yaratır. Başlangıçtan itibaren düzenli çalışma kültürü oluşturmak önemlidir.
+
+Önerilen bazı temel alışkanlıklar şunlardır:
+
+-   kodları script dosyalarında saklamak,
+-   anlamlı nesne isimleri kullanmak,
+-   açıklama satırları eklemek,
+-   analizleri küçük parçalara ayırmak,
+-   proje klasörleri oluşturmak,
+-   kodları düzenli kaydetmek.
+
+Örneğin:
+
+```{r}
+# Satış verileri
+satis <- c(120, 150, 180, 200)
+
+# Ortalama satış miktarı
+ortalama_satis <- mean(satis)
+
+ortalama_satis
+```
+
+Bu kod kısa olsa bile okunabilir ve anlaşılırdır. Kod yazarken yalnızca bilgisayarın değil, insanların da bu kodu okuyacağını unutmamak gerekir.
+
+## Mini Uygulama: İlk Analiz Akışı
+
+Şimdi küçük bir örnek üzerinden temel çalışma mantığını birlikte görelim.
+
+```{r}
+# Öğrenci notlarını içeren bir vektör oluşturalım.
+notlar <- c(45, 60, 80, 30, 90)
+
+# Ortalama notu hesaplayalım.
+ortalama_not <- mean(notlar)
+
+ortalama_not
+```
+
+Geçme notunun 50 olduğunu varsayalım.
+
+```{r}
+# Her öğrencinin geçip geçmediğini kontrol edelim.
+notlar >= 50
+```
+
+Geçen öğrencilerin notlarını seçelim.
+
+```{r}
+# 50 ve üzeri notları filtreleyelim.
+gecenler <- notlar[notlar >= 50]
+
+gecenler
+```
+
+Bu küçük örnek bile birçok temel kavramı birlikte göstermektedir:
+
+-   nesne oluşturma,
+-   vektör kullanımı,
+-   fonksiyon çağırma,
+-   mantıksal karşılaştırma,
+-   veri filtreleme.
+
+## Sık Yapılan Hatalar
+
+Yeni başlayanların sık yaptığı bazı hatalar vardır. Bunların farkında olmak öğrenme sürecini kolaylaştırır.
+
+### Kodları Kaydetmemek
+
+Sadece Console üzerinde çalışmak, kodların kaybolmasına neden olabilir.
+
+### Anlamsız Nesne İsimleri Kullanmak
+
+```{r}
+a <- 10
+b <- 20
+c <- a + b
+```
+
+yerine:
+
+```{r}
+gelir <- 10
+gider <- 20
+
+toplam <- gelir + gider
+```
+
+daha okunabilir bir yapı sağlar.
+
+### Kodları Açıklamasız Yazmak
+
+Özellikle uzun analizlerde açıklama satırları büyük kolaylık sağlar.
+
+### Her Şeyi Tek Parçada Yazmak
+
+Uzun ve karmaşık kod blokları yerine işlemleri küçük ve anlamlı parçalara ayırmak daha sağlıklıdır.
+
+## Egzersizler
+
+1.  Yeni bir script dosyası oluşturunuz.
+2.  Script dosyasına iki sayı oluşturup toplamlarını hesaplayan kod yazınız.
+3.  Kodları `Ctrl + Enter` ile çalıştırınız.
+4.  Açıklama satırı ekleyiniz.
+5.  `yas` ve `maas` adlı iki nesne oluşturunuz.
+6.  Bu nesneleri kullanarak küçük bir hesaplama yapınız.
+7.  `mean()` fonksiyonunu kullanarak bir sayı dizisinin ortalamasını hesaplayınız.
+8.  Script dosyanızı anlamlı bir isimle kaydediniz.
+
+## Egzersiz Çözümleri
+
+```{r}
+# İki sayının toplamı
+x <- 10
+y <- 20
+
+x + y
+```
+
+```{r}
+# Yaş ve maaş bilgisi
+yas <- 30
+maas <- 45000
+
+# Maaşın 12 aylık toplamı
+maas * 12
+```
+
+```{r}
+# Ortalama hesaplama
+notlar <- c(70, 80, 90, 65)
+
+mean(notlar)
+```
+
+## Bölüm Özeti
+
+Bu bölümde RStudio çalışma mantığı, Console ve Script farkı, ilk kodların yazılması, kod çalıştırma yöntemleri ve temel çalışma alışkanlıkları ele alındı.
+
+Programlama öğrenirken amaç yalnızca komutları ezberlemek değildir. Daha önemli olan, düzenli ve tekrar üretilebilir çalışma alışkanlıkları geliştirmektir. Bu nedenle script kullanımı, açıklama satırları ve organize çalışma kültürü başlangıçtan itibaren önemlidir.
+
+Bir sonraki bölümde R’de temel kullanım ve ilk komutlar ele alınacak; çalışma dizini, yardım sistemi, operatörler ve temel nesne mantığı daha ayrıntılı biçimde incelenecektir.

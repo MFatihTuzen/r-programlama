@@ -1,0 +1,32 @@
+# ==================================================
+# RStudio
+# ==================================================
+.Rproj.user/
+.Rhistory
+.RData
+.Ruserdata
+
+# ==================================================
+# Quarto
+# ==================================================
+.quarto/
+**/*.quarto_ipynb
+
+# Render çıktıları
+_book/
+
+# PDF render geçici dosyaları
+*.aux
+*.log
+*.toc
+*.tex
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+
+# Cache
+*_cache/
+/.quarto/

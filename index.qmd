@@ -1,0 +1,60 @@
+# Önsöz {.unnumbered}
+
+Veri, çağımızın en değerli üretim araçlarından biri haline geldi. Ancak verinin tek başına bir anlamı yoktur. Veriyi anlamlı hale getiren şey; onu okuyabilmek, yorumlayabilmek ve doğru sorularla analiz edebilmektir. İşte bu noktada programlama dilleri, yalnızca teknik araçlar değil; aynı zamanda düşünme biçimleri haline gelir.
+
+R programlama dili de bu dünyanın en güçlü araçlarından biridir.
+
+R, yalnızca bir programlama dili değildir. Aynı zamanda veri analizi, istatistiksel modelleme, görselleştirme ve raporlama süreçlerini bir araya getiren güçlü bir ekosistemdir. Akademik çalışmalardan resmi istatistiklere, finansal modellemeden veri bilimine kadar birçok alanda yaygın olarak kullanılmasının nedeni de budur.
+
+Bu kitap, R programlama dilini yalnızca komut ezberleyerek öğrenmek isteyenler için hazırlanmadı.
+
+Amacım; veriyle düşünmeyi, analiz süreçlerini anlamayı ve R'nin arkasındaki mantığı kavrayabilmeyi merkeze alan bir öğrenme deneyimi sunmaktır. Çünkü iyi bir veri analizi yalnızca kod yazabilmek değildir. Aynı zamanda:
+
+-   doğru sorular sorabilmek,
+-   veriyi anlamlandırabilmek,
+-   sonuçları yorumlayabilmek,
+-   yapılan işlemleri tekrar üretilebilir hale getirebilmek
+
+anlamına gelir.
+
+Kitap boyunca mümkün olduğunca yüzeysel anlatımlardan kaçınmaya çalıştım. Kullanılan fonksiyonların yalnızca ne yaptığı değil, neden kullanıldığı, hangi problemi çözdüğü ve hangi durumlarda dikkatli olunması gerektiği de ele alınmaya çalışıldı. Çünkü programlama öğrenmek çoğu zaman yalnızca “nasıl yapılır?” sorusuyla değil, “neden böyle yapılır?” sorusuyla derinleşir.
+
+Bu kitapta:
+
+-   R programlamanın temelleri,
+-   veri tipleri ve veri yapıları,
+-   fonksiyonlar,
+-   kontrol yapıları,
+-   tarih ve zaman işlemleri,
+-   metin işlemleri,
+-   veri manipülasyonu,
+-   veri dönüştürme,
+-   veri görselleştirme,
+-   keşifçi veri analizi,
+-   veri ön işleme,
+-   temel istatistik,
+-   doğrusal regresyon
+
+gibi konular adım adım ele alınacaktır.
+
+Örnekler mümkün olduğunca açıklamalı, yorumlu ve öğretici şekilde hazırlanmıştır. Kodların yalnızca çalışması değil; okunabilir, anlaşılır ve sürdürülebilir olması da önemsenmiştir.
+
+Bu kitabın özellikle:
+
+-   R öğrenmeye yeni başlayanlar,
+-   veri analizi ile ilgilenen öğrenciler,
+-   akademisyenler,
+-   araştırmacılar,
+-   kamu veya özel sektörde çalışan veri analistleri
+
+için faydalı olmasını umuyorum.
+
+Veri analizi uzun bir yolculuktur. Bu süreçte zaman zaman hata mesajlarıyla, karmaşık veri yapılarıyla veya beklenmeyen sonuçlarla karşılaşabilirsiniz. Bu oldukça doğaldır. Programlama çoğu zaman doğru cevabı hemen bulmak değil, problemi sistematik biçimde çözmeyi öğrenmektir.
+
+Umarım bu kitap, yalnızca R programlama dilini öğrenmenize değil; veriyle daha bilinçli düşünmenize de katkı sağlar.
+
+Keyifli okumalar.
+
+\vspace{1cm}
+
+**Muhammed Fatih Tüzen**
