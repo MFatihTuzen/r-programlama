@@ -1,0 +1,2817 @@
+# Veri Tipleri ve Yapıları
+
+## Veri Nedir? Değer mi, Yapı mı?
+
+Veri analizi denildiğinde çoğu kişinin aklına sayılar, tablolar veya grafikler gelir. Ancak programlama açısından veri yalnızca “değer” değildir. R gibi bir dilde veri:
+
+-   bir değerdir (örneğin: 10, "Ali", TRUE),
+-   ama aynı zamanda bir **tiptir**,
+-   ve daha önemlisi bir **yapıdır**.
+
+Bu üç katman birlikte çalışır:
+
+1.  **Değer (value)** → 10
+2.  **Tip (type)** → numeric
+3.  **Yapı (structure)** → vector
+
+Bu ayrımı anlamadan yapılan analizler genellikle şu tür hatalara yol açar:
+
+-   “Neden bu işlem çalışmadı?”
+-   “Neden sonuç NA çıktı?”
+-   “Neden model farklı sonuç verdi?”
+
+Bu soruların cevabı çoğu zaman veri tipinde gizlidir.
+
+------------------------------------------------------------------------
+
+### Programlama Perspektifinden Veri
+
+Matematikte veri çoğu zaman soyuttur. Ancak bilgisayarlar soyut kavramlarla değil, somut temsillerle çalışır.
+
+Bir bilgisayar için veri şu soruların cevabıdır:
+
+-   Bu veri bellekte nasıl saklanıyor?
+-   Kaç byte yer kaplıyor?
+-   Üzerinde hangi işlemler yapılabilir?
+-   Bu veri diğer verilerle nasıl etkileşir?
+
+Bu nedenle programlama dillerinde veri, yalnızca içerik değil, aynı zamanda **davranış** anlamına gelir.
+
+```{r}
+x <- 10 
+y <- "10"
+```
+
+Bu iki değer “görünüşte” aynı olabilir. Ama R için tamamen farklıdır:
+
+```{r}
+class(x)  # numeric 
+class(y)  # character
+```
+
+x ile matematiksel işlem yapılabilir ama y ile yapılamaz.
+
+```{r}
+#| eval: false 
+x + 5   # çalışır 
+y + 5   # hata verir
+```
+
+Bu basit örnek bile veri tipinin neden kritik olduğunu gösterir.
+
+### R’nin Veri Modeli: Vektörel Düşünme
+
+R’nin diğer birçok programlama dilinden ayrıldığı temel nokta şudur:
+
+> R tek değerle değil, veri seti ile düşünür.
+
+Bu yaklaşımın merkezinde **vektör kavramı** vardır.
+
+```{r}
+x <- c(1, 2, 3, 4)
+x + 10
+```
+
+Bu işlem aslında şuna denktir:
+
+1+10, 2+10, 3+10, 4+10
+
+Ama R bunu tek tek değil, tek adımda yapar.
+
+### Neden Vektörel Tasarım?
+
+Bu tasarımın arkasında üç temel neden vardır:
+
+**İstatistiksel düşünce**
+
+İstatistik tek bir gözlemle değil, veri setleriyle çalışır.
+
+-   Ortalama tek sayıdan değil, veri setinden hesaplanır
+-   Regresyon tek noktadan değil, veri setinden kurulur
+
+Bu yüzden R’nin doğası:
+
+> “tek değer” değil, “veri kümesi” odaklıdır
+
+**Performans**
+
+Vektörel işlemler düşük seviyede (C/Fortran) optimize edilmiştir.
+
+```{r}
+#| eval: false 
+# yavaş (döngü) for(i in 1:1000) { ... }  
+# hızlı (vektörel) x + 10
+```
+
+**Kod okunabilirliği**
+
+```{r}
+x <- c(1,2,3,4) 
+x[x > 2]
+```
+
+Bu ifade ile “2’den büyükleri seç” demektir. Bu, hem matematiksel hem sezgiseldir.
+
+### Veri Tipi Neden Var?
+
+Bir programlama dili veri tipleri olmadan da çalışabilir miydi? Evet. Ama:
+
+-   bellek yönetimi yapılamazdı
+-   hatalar kontrol edilemezdi
+-   performans düşerdi
+-   işlemler belirsiz olurdu
+
+Bu nedenle veri tipleri:
+
+> bilgisayarın veriyle nasıl davranacağını belirler
+
+### Veri Tipi = Davranış
+
+Bir veri tipi sadece “ne olduğunu” değil, “ne yapabileceğini” belirler.
+
+```{r}
+x <- 10 
+y <- "10"
+```
+
+```{r}
+#| eval: false 
+x + 5   # matematiksel işlem 
+y + 5   # hata
+```
+
+Bu fark şunu gösterir:
+
+> Veri tipi = izin verilen işlemler kümesi
+
+### Sessiz Hatalar (En Tehlikelisi)
+
+Bazı durumlarda R hata vermez, ama yanlış sonuç üretir.
+
+```{r}
+x <- c(1, 2, NA, 4)  
+mean(x)
+```
+
+Burada hata yok. Ama sonuç yanlış olabilir. Doğru kullanım:
+
+```{r}
+mean(x, na.rm = TRUE)
+```
+
+**`NA`** yönetimi yapılmazsa analiz yanlış olur.
+
+### Veri Tipi Hatalarının Gerçek Hayattaki Etkisi
+
+Bir değişken yanlış tipteyse:
+
+-   model yanlış kurulabilir
+-   grafik yanlış çizilebilir
+-   filtreleme yanlış çalışabilir
+-   sonuçlar güvenilmez olur
+
+**Örneğin:**
+
+```{r}
+yas <- c("25", "30", "40")  
+mean(yas)
+```
+
+Hata verir. Ama:
+
+```{r}
+yas <- as.numeric(yas) 
+mean(yas)
+```
+
+## Veri Tipleri: R'nin Temel Yapı Taşları
+
+R programlama dilinde kullanılan veri tipleri, dilin veri ile nasıl çalıştığını anlamanın en temel adımlarından biridir. Çoğu kullanıcı veri tiplerini yalnızca teknik bir sınıflandırma olarak görür; ancak gerçekte veri tipi, bir değişkenin **nasıl davranacağını**, **hangi işlemlere izin vereceğini** ve **hangi durumlarda hata üreteceğini** belirler.
+
+R'de kullanılan temel veri tipleri, literatürde **atomic vector** olarak adlandırılır. “Atomic” ifadesi burada kritik bir anlam taşır: bu tür vektörler **homojendir**, yani yalnızca tek bir veri tipinden oluşabilirler. Başka bir deyişle, bir atomic vector içinde bulunan tüm elemanlar aynı türdedir.
+
+Bu tasarım, R’nin vektörel çalışma mantığıyla doğrudan ilişkilidir. R, tek bir değerle değil, veri kümeleri ile çalışacak şekilde tasarlanmıştır. Dolayısıyla veri tipleri de bu vektörel yapıya uygun olarak tanımlanmıştır.
+
+R’de beş temel atomic veri tipi bulunmaktadır:
+
+-   numeric (ya da double): reel sayılar
+-   integer: tamsayılar
+-   complex: karmaşık sayılar
+-   character: metinsel ifadeler
+-   logical: TRUE ve FALSE değerleri
+
+Bu sınıflandırma ilk bakışta basit görünse de, her bir veri tipi farklı davranışlara sahiptir ve veri analizi sürecinde farklı hatalara veya avantajlara yol açabilir.
+
+**Atomic Yapının Önemi**
+
+Atomic vektörlerin en önemli özelliği homojen olmalarıdır. Yani bir vektör içinde farklı veri tipleri birlikte bulunamaz. Eğer böyle bir durum oluşursa, R otomatik olarak veri tiplerini dönüştürür (coercion).
+
+```{r}
+x <- c(1, 2, "3")
+
+x
+```
+
+Bu örnekte sayısal değerler metne dönüştürülmüştür. Bu davranış, veri kaybını önlemek için yapılan bilinçli bir tasarım tercihidir. Bu konu ilerleyen bölümlerde detaylı olarak ele alınacaktır.
+
+**Veri Tipi Nasıl Öğrenilir?**
+
+Bir nesnenin veri tipini öğrenmek için R'de farklı fonksiyonlar kullanılabilir. En yaygın kullanılan iki fonksiyon `typeof()` ve `class()` fonksiyonlarıdır.
+
+```{r}
+x <- 10
+
+typeof(x)
+class(x)
+```
+
+Bu iki fonksiyon çoğu zaman benzer sonuçlar üretse de, aslında farklı amaçlara hizmet eder:
+
+-   `typeof()` → nesnenin **düşük seviyeli (internal) tipini** verir
+
+-   `class()` → nesnenin **R içindeki sınıfını (davranışını)** belirtir
+
+Bu ayrım özellikle ileri düzey konularda (S3/S4 sistemleri gibi) önemli hale gelir.
+
+::: callout-important
+## typeof ve class fonksiyonları hakkında önemli not
+
+**`typeof()`** ve **`class()`** fonksiyonları, R programlama dilinde nesnelerin özelliklerini sorgulamak için kullanılır. Farklı amaçlara hizmet ederler ve bazı durumlarda farklı sonuçlar üretebilirler.
+
+-   **`typeof()`** fonksiyonu, bir nesnenin temel veri türünü belirler. Örneğin, bir nesnenin karakter dizisi (string), sayı, liste, fonksiyon veya vektör gibi temel veri türlerinden hangisine ait olduğunu gösterir. Ancak, nesnenin özel sınıfını (class) ifade etmez. Örneğin, bir faktörün **`typeof()`** değeri "integer" olabilir.
+
+-   **`class()`** fonksiyonu ise bir nesnenin özel sınıfını belirtir. Eğer bir nesne özel bir sınıfa aitse (örneğin, bir veri çerçevesi veya faktör), **`class()`** fonksiyonu bu özel sınıfın adını verir. Eğer nesne birden fazla sınıfa aitse, sınıflar bir sıra halinde listelenir.
+
+Bu fonksiyonlar genellikle birlikte kullanılır çünkü bir nesnenin veri tipi ve sınıfı arasında farklılıklar olabilir. Örneğin, bir veri çerçevesi **`typeof()`** ile incelendiğinde **`list`** çıkabilir, çünkü veri çerçeveleri bir liste türündedir. Ancak, **`class()`** fonksiyonu bu nesnenin özel sınıfını, yani **`data.frame`** olarak gösterecektir. Bu farklılıklar, bir nesnenin hangi özelliklere sahip olduğunu daha iyi anlamak için kullanılabilir.
+:::
+
+### Numeric (Double) ve Integer: Sayısal Verinin İki Yüzü
+
+R'de sayısal veriler iki temel tip altında incelenir: `numeric` (ya da double) ve `integer`. Bu iki veri tipi çoğu kullanıcı tarafından aynı kabul edilse de, aslında hem temsil biçimi hem de davranış açısından önemli farklar içerir.
+
+#### Numeric (Double): Varsayılan Sayısal Tip
+
+R'de bir sayıyı doğrudan tanımladığınızda, bu değer varsayılan olarak `numeric` tipinde saklanır.
+
+```{r}
+x <- 10
+y <- 3.14
+
+typeof(x)
+typeof(y)
+```
+
+Bu değerler aslında **double precision floating-point** formatında tutulur. Bu ifade ilk bakışta karmaşık görünebilir; ancak temel anlamı şudur:
+
+-   Sayılar yaklaşık olarak saklanır
+
+-   Çok geniş bir aralıkta değer temsil edilebilir
+
+-   Ondalıklı işlemler desteklenir
+
+Bu tasarımın arkasındaki temel motivasyon, R'nin istatistiksel hesaplamalara odaklı olmasıdır. Çünkü ortalama, varyans, regresyon gibi işlemler çoğu zaman tam sayılarla değil, ondalıklı değerlerle çalışır.
+
+**Hassasiyet Problemi: Görünmeyen Tehlike**
+
+Double tipin en önemli yan etkilerinden biri hassasiyet (precision) problemidir.
+
+```{r}
+0.1 + 0.2
+```
+
+```         
+# Beklenen: 0.3
+# Gerçek:   0.30000000000000004
+```
+
+Bu durum bir hata değil, bilgisayarların sayıları ikili sistemde (binary) temsil etmesinin doğal bir sonucudur. Bu nedenle sayısal karşılaştırmalarda dikkatli olunmalıdır:
+
+```{r}
+0.1 + 0.2 == 0.3
+
+```
+
+Daha güvenli yaklaşım:
+
+```{r}
+all.equal(0.1 + 0.2, 0.3)
+```
+
+Bu örnek, veri tiplerinin yalnızca saklama biçimi değil, aynı zamanda analiz sonuçları üzerinde de etkili olduğunu gösterir.
+
+#### Integer: Daha Az Bellek, Daha Sınırlı Temsil
+
+Integer veri tipi, tam sayıları temsil etmek için kullanılır.
+
+```{r}
+x <- 10L
+
+typeof(x)
+```
+
+R'de integer tanımlamak için sayının sonuna `L` eklenmesi gerekir. Aksi halde sayı otomatik olarak numeric (double) olarak değerlendirilir. Integer tipinin bazı avantajları vardır:
+
+-   Daha az bellek kullanır
+
+-   Büyük veri setlerinde performans avantajı sağlayabilir
+
+-   Kesin değerler içerir (floating-point hatası yoktur)
+
+Ancak bu avantajlara rağmen, R'de integer kullanımı sınırlıdır. Bunun temel nedeni, istatistiksel işlemlerin çoğunun ondalıklı sonuç üretmesidir.
+
+#### Numeric ve Integer Arasındaki Fark
+
+Aşağıdaki örnek, bu iki tip arasındaki farkı daha net ortaya koymaktadır:
+
+```{r}
+x <- 5L
+y <- 2L
+
+x / y
+```
+
+```{r}
+# Sonuç: 2.5
+typeof(x / y)
+```
+
+Burada dikkat edilmesi gereken nokta şudur. İki integer ile işlem yapılmasına rağmen sonuç numeric (double) olmuştur. Bu, R'nin hesaplamalarda daha genel bir tipe geçme eğiliminden kaynaklanır.
+
+#### Otomatik Dönüşüm (Implicit Coercion)
+
+R, farklı sayısal tipleri birlikte kullandığında otomatik dönüşüm yapar:
+
+```{r}
+x <- 5L
+y <- 2.5
+
+x + y
+```
+
+Bu işlemde integer olan `x`, numeric tipe dönüştürülür. Bu davranış çoğu zaman kullanıcı için avantajlıdır; ancak bazı durumlarda beklenmeyen sonuçlara yol açabilir.
+
+#### Bellek Perspektifi (İleri Seviye Not)
+
+Numeric ve integer arasındaki fark yalnızca kavramsal değildir, aynı zamanda bellekte kapladıkları alanı da etkiler:
+
+-   integer → genellikle 4 byte
+
+-   numeric → genellikle 8 byte
+
+Bu fark küçük veri setlerinde önemsizdir; ancak milyonlarca gözlem içeren veri setlerinde önemli hale gelebilir.
+
+#### Ne Zaman Hangisini Kullanmalı?
+
+Pratikte şu yaklaşım benimsenebilir:
+
+-   İstatistiksel hesaplamalar → numeric
+
+-   Sayaçlar, indeksler → integer
+
+-   Büyük veri ve performans kritikse → integer tercih edilebilir
+
+Ancak çoğu veri analizi senaryosunda numeric kullanımı yeterlidir.
+
+#### Egzersizler
+
+1.  numeric ve integer değişkenler oluşturup `typeof()` ile inceleyiniz
+
+2.  0.1 + 0.2 işlemini test ediniz ve sonucu yorumlayınız
+
+3.  integer iki sayı ile bölme işlemi yapınız ve çıkan tipin ne olduğunu gözlemleyiniz
+
+4.  integer ve numeric birlikte kullanıldığında hangi tipe dönüştüğünü test ediniz
+
+#### Bölüm Özeti
+
+-   R'de varsayılan sayısal tip numeric (double)'dır
+
+-   integer daha az bellek kullanır ancak sınırlıdır
+
+-   double precision hassasiyet sorunlarına yol açabilir
+
+-   R işlemler sırasında daha genel tipe geçme eğilimindedir
+
+-   veri tipi seçimi analiz doğruluğunu etkileyebilir
+
+### Character: Metin Veri ile Çalışmanın Görünmeyen Zorlukları
+
+R’de `character` veri tipi, metinsel ifadeleri temsil eder. İlk bakışta oldukça basit görünür: tırnak içine alınmış her şey metindir.
+
+```{r}
+isim <- "Fatih"
+sehir <- "Ankara"
+
+class(isim)
+```
+
+Ancak pratikte metin veriler, veri analizinin en problemli alanlarından biridir. Çünkü metin veriler:
+
+-   sayıya benzeyebilir,
+
+-   yanlış tipte içeri alınabilir,
+
+-   farklı encoding yapıları içerebilir,
+
+-   beklenmeyen boşluklar veya karakterler barındırabilir.
+
+Bu nedenle `character` veri tipi yalnızca “metin” değil, aynı zamanda **veri kalitesi problemi** anlamına da gelir.
+
+#### Sayıya Benzeyen Metin: En Yaygın Hata
+
+Veri setlerinde en sık karşılaşılan durumlardan biri, sayısal olması gereken bir değişkenin metin olarak saklanmasıdır.
+
+```{r}
+x <- "100"
+y <- "200"
+
+# Hata verir
+# x + y
+```
+
+Bu değerler matematiksel işlem yapmaya uygun değildir. Çünkü R bu verileri sayı olarak değil, metin olarak görür. Doğru kullanım:
+
+```{r}
+x <- as.numeric(x)
+y <- as.numeric(y)
+
+x + y
+```
+
+Burada kritik nokta şudur:
+
+> Veri tipi yanlışsa, analiz yanlış başlar.
+
+#### Sessiz Tehlike: Başarısız Dönüşümler
+
+Daha tehlikeli olan durum, dönüşümün hata vermeden başarısız olmasıdır.
+
+```{r}
+x <- c("10", "20", "30a")
+
+as.numeric(x)
+```
+
+Burada:
+
+-   "30a" değeri NA’ya dönüşmüştür
+
+-   ancak R yalnızca uyarı verir, işlemi durdurmaz
+
+Bu durum veri kaybına yol açabilir. Daha güvenli yaklaşım:
+
+```{r}
+suppressWarnings(as.numeric(x))
+```
+
+#### Boşluk ve Gizli Karakter Problemleri
+
+Metin verilerde en sinsi hatalardan biri görünmeyen karakterlerdir.
+
+```{r}
+x <- "10 "
+as.numeric(x)
+```
+
+Bu dönüşüm çalışabilir; ancak her zaman güvenli değildir.
+
+Özellikle veri dış kaynaklardan (CSV, Excel) geldiğinde:
+
+-   başında boşluk olabilir
+
+-   sonunda boşluk olabilir
+
+-   görünmeyen karakterler bulunabilir
+
+Temizleme işlemi:
+
+```{r}
+x <- trimws(x)
+as.numeric(x)
+```
+
+#### Encoding Problemleri
+
+Metin veriler yalnızca karakterlerden ibaret değildir; aynı zamanda encoding (kodlama) bilgisi taşır.
+
+Örneğin:
+
+-   UTF-8
+
+-   Latin-1
+
+-   Windows-1254
+
+Türkçe karakterler bu noktada problem yaratabilir.
+
+```         
+"İ", "ı", "ş", "ğ"
+```
+
+Yanlış encoding ile:
+
+-   veri bozulabilir
+
+-   karakterler yanlış görünebilir
+
+-   karşılaştırmalar hatalı olabilir
+
+Bu konu özellikle veri okuma ve yazma işlemlerinde önem kazanır.
+
+#### Karşılaştırma Problemleri
+
+Metin verilerde karşılaştırma her zaman beklenildiği gibi çalışmayabilir. R büyük/küçük harfe duyarlıdır. Bu nedenle karşılaştırma yaparken:
+
+```{r}
+tolower("X") == "x"
+```
+
+#### Egzersizler
+
+1.  Sayı gibi görünen metinler oluşturup `as.numeric()` ile dönüştürünüz
+
+2.  İçinde hata olan metin vektörü oluşturup NA oluşumunu gözlemleyiniz
+
+3.  trimws() kullanarak boşlukları temizleyiniz
+
+4.  Büyük/küçük harf farkını test ediniz
+
+#### Bölüm Özeti
+
+-   Character veri yalnızca metin değil, veri kalitesi problemidir
+
+-   Sayıya benzeyen metinler hataya yol açabilir
+
+-   Dönüşümler sessiz veri kaybı oluşturabilir
+
+-   Encoding problemi özellikle Türkçe karakterlerde kritiktir
+
+-   Metin karşılaştırmaları dikkat gerektirir
+
+### Logical: Karar Mekanizmasının Temeli
+
+R’de `logical` veri tipi yalnızca iki değer alır: `TRUE` ve `FALSE`. İlk bakışta bu oldukça basit görünür; ancak veri analizi açısından logical yapı, programın **karar verme mekanizmasının temelini** oluşturur.
+
+Birçok kullanıcı logical ifadeleri yalnızca `if` yapılarıyla ilişkilendirir. Oysa R’de logical veri:
+
+-   veri filtreleme,
+-   alt kümeleme,
+-   koşullu işlemler,
+-   model kurma süreçleri
+
+gibi pek çok kritik işlemin merkezinde yer alır.
+
+------------------------------------------------------------------------
+
+#### Mantıksal İfadeler Nasıl Oluşur?
+
+Logical değerler genellikle karşılaştırma operatörleri ile elde edilir:
+
+```{r}
+5 > 3    # TRUE
+10 == 7  # FALSE
+8 != 2   # TRUE
+```
+
+Bu ifadeler yalnızca tek bir değer üretmekle kalmaz; vektörel olarak da çalışır. Burada her eleman için ayrı ayrı karşılaştırma yapılır.
+
+```{r}
+x <- c(1, 5, 10, 15)
+
+x > 5
+```
+
+#### Logical Vektörler ile Veri Seçimi
+
+Logical yapıların en güçlü kullanım alanı veri filtrelemedir. Bu yapı şu şekilde okunabilir:
+
+> “5’ten büyük olanları seç”
+
+Bu ifade hem matematiksel hem de oldukça sezgiseldir.
+
+```{r}
+x <- c(1, 5, 10, 15)
+
+x[x > 5]
+```
+
+#### Logical Operatörler
+
+R’de birden fazla koşulu birleştirmek için mantıksal operatörler kullanılır:
+
+-   `&` → ve (AND)
+
+-   `|` → veya (OR)
+
+-   `!` → değil (NOT)
+
+```{r}
+x <- c(1, 5, 10, 15)
+
+x[x > 5 & x < 15] # 5’ten büyük VE 15’ten küçük olanları seç
+```
+
+#### Logical ve NA Etkileşimi
+
+Logical veri ile çalışırken en kritik konulardan biri NA değerleridir.
+
+```{r}
+TRUE & NA
+FALSE & NA
+```
+
+Bu davranışın mantığı şudur:
+
+-   TRUE & NA → sonuç bilinemez
+
+-   FALSE & NA → kesinlikle FALSE
+
+Bu durum veri filtreleme sırasında beklenmeyen sonuçlara yol açabilir.
+
+#### NA İçeren Filtreleme Problemi
+
+```{r}
+x <- c(10, NA, 20, 30)
+
+x[x > 15]
+```
+
+Burada NA değeri de sonuçta kalır. Daha güvenli yaklaşım:
+
+```{r}
+x[!is.na(x) & x > 15]
+```
+
+Bu ifade; önce NA değerleri dışlar sonra koşulu uygular.
+
+#### Logical ve Sayısal Dönüşüm
+
+R’de logical değerler sayıya dönüştürülebilir:
+
+```{r}
+as.numeric(TRUE)
+as.numeric(FALSE)
+```
+
+Bu özellik bazı istatistiksel hesaplamalarda kullanılabilir. Örneğin:
+
+```{r}
+x <- c(1, 5, 10, 15)
+
+mean(x > 5) # “5’ten büyük değerlerin oranı”
+```
+
+#### Logical ile Sessiz Hatalar
+
+Logical ifadeler bazen hata vermez ama yanlış sonuç üretir.
+
+```{r}
+x <- c(10, 20, 30)
+
+x[x > 50]
+```
+
+Bu sonuç boş vektördür. Bu durum çoğu zaman fark edilmez ve analiz yanlış devam eder.
+
+#### Egzersizler
+
+1.  Bir vektör oluşturup 10’dan büyük değerleri seçiniz
+
+2.  İki koşulu birlikte kullanarak filtreleme yapınız
+
+3.  NA içeren veri ile filtreleme deneyiniz
+
+4.  logical sonucu numeric’e çevirerek oran hesaplayınız
+
+#### Bölüm Özeti
+
+-   Logical veri yalnızca TRUE/FALSE değildir, karar mekanizmasıdır
+
+-   Vektörel çalışır ve veri filtrelemede kullanılır
+
+-   NA ile birlikte kullanımı dikkat gerektirir
+
+-   Logical değerler sayısal analizlerde kullanılabilir
+
+### Complex (Karmaşık Sayılar) Üzerine Kısa Bir Not
+
+R programlama dilinde karmaşık sayılar (`complex`) da bir veri tipi olarak tanımlanmıştır. Bu sayılar, reel ve sanal kısımlardan oluşur ve genellikle mühendislik, sinyal işleme ve bazı ileri matematiksel uygulamalarda kullanılır. Ancak veri analizi, istatistiksel modelleme ve günlük veri işleme süreçlerinde karmaşık sayılar çok nadiren kullanılır.
+
+```{r}
+z <- 2 + 3i
+z
+```
+
+## Veri Yapıları
+
+![https://app.dataquest.io/m/493/dataframes-in-r/1/introduction](/images/data_structures.png){fig-align="center"}
+
+Veri analizi yalnızca sayılarla çalışmak değildir; asıl mesele bu sayıların nasıl organize edildiğidir. Aynı veriyi farklı şekillerde düzenlemek, analiz sürecini tamamen değiştirebilir. Bu nedenle veri yapıları konusu, yalnızca teknik bir detay değil, aynı zamanda **veri ile düşünmenin bir biçimidir**.
+
+Yukarıdaki görsel, R’de en sık kullanılan dört temel veri yapısını özetlemektedir: vektör, matris, liste ve veri çerçevesi. Bu yapıların her biri, verinin farklı bir şekilde organize edilmesini sağlar ve farklı problemlere çözüm sunar.
+
+Vektörler tek boyutlu ve homojen yapılardır; yani tüm elemanları aynı veri tipine sahiptir. Matrisler bu yapının iki boyutlu halidir ve yine homojenlik korunur. Buna karşılık veri çerçeveleri (data frame), sütun bazlı düşünmeyi mümkün kılar ve her sütunda farklı veri tipleri bulunabilir. Listeler ise en esnek yapılardır; farklı veri tiplerini ve hatta farklı veri yapılarını bir arada tutabilir. Bu noktada kritik olan şudur:
+
+Aynı veri, farklı veri yapıları içinde temsil edildiğinde farklı şekilde davranır. Örneğin bir vektör üzerinde yapılan işlem ile bir veri çerçevesi üzerinde yapılan işlem aynı değildir. Bu fark, yalnızca yazdığınız kodu değil, elde ettiğiniz sonucu da doğrudan etkiler. Bu nedenle veri yapıları konusunu öğrenmek, yalnızca yeni fonksiyonlar öğrenmek anlamına gelmez. Aksine, R’nin veriyle nasıl çalıştığını, hangi durumlarda hangi yapının tercih edilmesi gerektiğini anlamak anlamına gelir.
+
+Bu bölümde veri yapılarına, en temel yapı olan **vektörlerden** başlayarak adım adım ilerleyeceğiz. Çünkü R’deki diğer birçok yapı, aslında vektörlerin farklı biçimlerde genişletilmiş halidir.
+
+### Vektörler
+
+R programlama dilinde veriyle çalışırken yalnızca veri tiplerini bilmek yeterli değildir. Veri tipleri bir değerin **ne türden** olduğunu gösterirken, veri yapıları bu değerlerin **nasıl organize edildiğini** gösterir. Başka bir ifadeyle, veri tipi tek tek elemanların karakterini; veri yapısı ise bu elemanların bir araya geliş biçimini belirler.
+
+R'de veri yapıları, dilin veri analizi için tasarlanmış olmasının doğal bir sonucudur. Çünkü istatistiksel analizler genellikle tek bir değerle değil, gözlemlerden oluşan veri kümeleriyle yapılır. Bu nedenle R'nin temel düşünme biçimi “tekil değer” değil, “birden fazla değerin düzenli biçimde saklanması ve işlenmesi” üzerine kuruludur.
+
+En temel veri yapıları şunlardır: vektörler, listeler, matrisler, veri çerçeveleri ve tibble yapıları. Bu bölümde R'nin en temel veri yapısı olan **vektörler** ele alınacaktır. Vektörleri iyi anlamak, R'deki diğer veri yapılarının mantığını kavramak için zorunludur. Çünkü R'deki birçok daha karmaşık yapı, temelde vektörlerin farklı biçimlerde düzenlenmiş halidir.
+
+::: callout-note
+Vektörler R'nin en temel veri yapısıdır. Birçok kullanıcı doğrudan fark etmese de, R'de tek bir sayı bile aslında uzunluğu 1 olan bir vektör olarak düşünülebilir.
+:::
+
+#### Vektör Nedir?
+
+Vektör, aynı veri tipine sahip elemanların sıralı biçimde bir araya gelmesiyle oluşan tek boyutlu veri yapısıdır. Bu tanımda iki önemli ifade vardır: **aynı veri tipi** ve **tek boyutluluk**.
+
+Aynı veri tipi ifadesi, vektörün homojen bir yapı olduğunu gösterir. Yani bir atomic vektörün içinde yer alan tüm elemanlar aynı veri tipinde olmak zorundadır. Tek boyutluluk ise vektörün satır-sütun yapısına sahip olmadığını, elemanların tek bir eksen boyunca sıralandığını ifade eder.
+
+Örneğin aşağıdaki nesne sayısal bir vektördür:
+
+```{r}
+# c() fonksiyonu değerleri bir araya getirerek vektör oluşturur.
+# c ifadesi "combine" veya "concatenate" anlamında düşünülebilir.
+v <- c(1, 4, 7, 2, 5, 8, 3, 6, 9)
+
+v
+```
+
+Bu vektör dokuz elemandan oluşmaktadır. Her eleman sayısaldır. Bu nedenle `v` nesnesi numeric bir vektördür.
+
+```{r}
+# class() nesnenin sınıfını gösterir.
+class(v)
+
+# typeof() nesnenin düşük seviyeli veri tipini gösterir.
+typeof(v)
+
+# length() vektörde kaç eleman olduğunu verir.
+length(v)
+```
+
+Burada `class()` ve `typeof()` çıktıları benzer görünebilir; ancak aynı şey değildir. `typeof()` nesnenin bellekteki temel tipine daha yakındır. `class()` ise R'nin o nesneye nasıl davranacağını belirleyen sınıf bilgisini verir. Basit vektörlerde bu iki bilgi çoğu zaman benzer görünür; fakat tarih, faktör, veri çerçevesi gibi yapılarda aralarındaki fark daha belirgin hale gelir.
+
+#### Vektörlerin Homojen Yapısı
+
+Vektörler homojen yapılardır. Yani aynı vektör içinde farklı veri tipleri birlikte tutulamaz. Eğer farklı tipte değerler aynı vektörde bir araya getirilirse R bunları ortak bir tipe dönüştürür. Bu davranışa **coercion** denir.
+
+```{r}
+# Sayısal değerler ve character değer birlikte yazıldığında
+# R tüm elemanları character tipe dönüştürür.
+karisik <- c(1, 2, "3")
+
+karisik
+typeof(karisik)
+```
+
+Bu örnekte 1 ve 2 sayısal gibi görünse de artık metin haline gelmiştir. Çünkü bir vektör içinde hem numeric hem character değer aynı anda atomic düzeyde tutulamaz.
+
+Bu davranış ilk bakışta şaşırtıcı görünebilir; ancak R'nin tutarlı işlem yapabilmesi için gereklidir. Bir vektörün tüm elemanları aynı tipte olduğunda, o vektör üzerinde yapılacak işlemler daha öngörülebilir hale gelir.
+
+::: callout-warning
+Bir vektörde beklenmeyen şekilde character tip oluşuyorsa, genellikle vektörün içinde en az bir metinsel değer vardır. Bu durum özellikle veri okuma ve temizleme aşamalarında sık görülür.
+:::
+
+#### Vektör Oluşturma
+
+R'de vektör oluşturmanın en temel yolu `c()` fonksiyonudur. Ancak vektör üretimi yalnızca `c()` ile sınırlı değildir. Belirli düzenlere sahip vektörler üretmek için `:` operatörü, `seq()` ve `rep()` fonksiyonları da sık kullanılır.
+
+##### **`c()` Fonksiyonu ile Vektör Oluşturma**
+
+```{r}
+# Sayısal vektör
+sayilar <- c(10, 20, 30, 40)
+
+# Character vektör
+iller <- c("Ankara", "İstanbul", "İzmir")
+
+# Logical vektör
+sonuc <- c(TRUE, FALSE, TRUE)
+
+sayilar
+iller
+sonuc
+```
+
+`c()` fonksiyonu yalnızca yeni vektör oluşturmak için değil, mevcut bir vektöre yeni eleman eklemek için de kullanılabilir.
+
+```{r}
+# Mevcut vektöre yeni bir değer ekleyelim.
+sayilar2 <- c(sayilar, 50)
+
+sayilar2
+```
+
+Burada orijinal `sayilar` nesnesi değişmemiştir. Yeni değer eklenmiş hali `sayilar2` adlı yeni bir nesneye atanmıştır.
+
+```{r}
+sayilar
+sayilar2
+```
+
+Bu ayrım önemlidir. R'de bir nesne üzerinde işlem yaptığınızda, sonucu bir nesneye atamazsanız orijinal nesne değişmeyebilir.
+
+##### `:` Operatörü ile Ardışık Vektörler
+
+Başlangıç ve bitiş değerleri belli olan basit ardışık vektörler için `:` operatörü kullanılabilir.
+
+```{r}
+# 1'den 10'a kadar tam sayılardan oluşan vektör
+v1 <- 1:10
+
+v1
+```
+
+Ters yönde de kullanılabilir.
+
+```{r}
+# 10'dan 1'e doğru azalan vektör
+v2 <- 10:1
+
+v2
+```
+
+`:` operatörü pratik ve okunabilirdir; ancak yalnızca birer birer artan veya azalan tam sayı dizileri için uygundur. Daha esnek diziler için `seq()` fonksiyonu kullanılır.
+
+##### `seq()` Fonksiyonu ile Düzenli Diziler
+
+`seq()` fonksiyonu belirli bir başlangıç, bitiş ve artış değerine göre vektör üretir.
+
+```{r}
+# from: başlangıç değeri
+# to  : bitiş değeri
+# by  : artış miktarı
+seq(from = 1, to = 10, by = 2)
+```
+
+Bu örnekte 1'den 10'a kadar ikişer artan bir vektör oluşturulmuştur.
+
+Belirli uzunlukta bir dizi üretmek için `length.out` argümanı kullanılabilir.
+
+```{r}
+# 0 ile 1 arasında eşit aralıklı 5 değer üretelim.
+seq(from = 0, to = 1, length.out = 5)
+```
+
+Bu kullanım özellikle grafiklerde eksen değerleri üretirken, simülasyonlarda veya düzenli aralıklarla örnek noktaları oluştururken yararlıdır.
+
+```{r}
+# Basit bir örnek: 0 ile 2*pi arasında 10 nokta üretelim.
+x <- seq(0, 2*pi, length.out = 10)
+
+x
+```
+
+::: callout-tip
+`:` operatörü hızlı ve pratiktir; ancak `seq()` daha kontrollüdür. Artış miktarı, uzunluk ve yön üzerinde daha fazla kontrol gerektiğinde `seq()` tercih edilmelidir.
+:::
+
+##### `rep()` Fonksiyonu ile Tekrarlı Vektörler
+
+`rep()` fonksiyonu değerleri tekrar etmek için kullanılır. Bu fonksiyon özellikle grup etiketleri, deney tasarımları, örnek veri setleri ve simülasyonlarda çok kullanışlıdır.
+
+```{r}
+# 1 değerini 5 kez tekrar edelim.
+rep(1, times = 5)
+```
+
+Birden fazla değeri birlikte tekrar etmek de mümkündür.
+
+```{r}
+# A, B ve C değerlerini 2 kez tekrar eder.
+rep(c("A", "B", "C"), times = 2)
+```
+
+Burada tüm vektör iki kez tekrar edilmiştir. Eğer her elemanın ayrı ayrı tekrar edilmesini istersek `each` argümanı kullanılır.
+
+```{r}
+# Her elemanı 2 kez tekrar eder.
+rep(c("A", "B", "C"), each = 2)
+```
+
+Bu iki kullanım arasındaki fark önemlidir.
+
+```{r}
+rep(c("A", "B", "C"), times = 2)
+rep(c("A", "B", "C"), each = 2)
+```
+
+İlkinde `A B C A B C` sırası oluşurken, ikincisinde `A A B B C C` sırası oluşur. Özellikle veri seti oluştururken bu fark sonuçları doğrudan etkileyebilir.
+
+#### Vektör Elemanlarına Erişim: İndeksleme
+
+Bir vektörün belirli elemanlarına ulaşmak için köşeli parantez `[]` kullanılır. R'de indeksler 1'den başlar. Bu durum bazı programlama dillerinden farklıdır; örneğin Python'da indeksler 0'dan başlar.
+
+```{r}
+v <- c(1, 4, 7, 2, 5, 8, 3, 6, 9)
+
+# Birinci eleman
+v[1]
+
+# Üçüncü eleman
+v[3]
+```
+
+Birden fazla eleman seçmek için indeks vektörü kullanılabilir.
+
+```{r}
+# 3. ve 7. elemanları seçer.
+v[c(3, 7)]
+```
+
+Ardışık elemanlar için `:` operatörü kullanılabilir.
+
+```{r}
+# 1. elemandan 6. elemana kadar seçer.
+v[1:6]
+```
+
+Negatif indeksler, belirtilen elemanların hariç tutulmasını sağlar.
+
+```{r}
+# 2. eleman hariç tüm elemanlar
+v[-2]
+```
+
+Birden fazla elemanı hariç tutmak da mümkündür.
+
+```{r}
+# 2. ve 5. elemanlar hariç
+v[-c(2, 5)]
+```
+
+::: callout-warning
+Pozitif ve negatif indeksler aynı seçim içinde birlikte kullanılmamalıdır. R, hangi elemanların seçileceği ve hangilerinin çıkarılacağı konusunda belirsizlik oluşmaması için buna izin vermez.
+:::
+
+#### Mantıksal İndeksleme
+
+R'de en güçlü seçim yöntemlerinden biri mantıksal indekslemedir. Bir koşul yazılır ve bu koşulu sağlayan elemanlar seçilir.
+
+```{r}
+v <- c(1, 4, 7, 2, 5, 8, 3, 6, 9)
+
+# 5'ten büyük olan değerleri seçelim.
+v[v > 5]
+```
+
+Bu kod şu şekilde okunabilir: “v vektörünün 5'ten büyük olan elemanlarını seç.”
+
+Önce koşulun ne ürettiğine bakalım:
+
+```{r}
+v > 5
+```
+
+Bu ifade `TRUE` ve `FALSE` değerlerinden oluşan bir logical vektör üretir. R daha sonra `TRUE` olan konumlardaki değerleri seçer.
+
+Birden fazla koşul birlikte kullanılabilir.
+
+```{r}
+# 3'ten büyük ve 8'den küçük değerler
+v[v > 3 & v < 8]
+```
+
+Bu yapı veri analizinde filtreleme mantığının temelidir. Veri çerçevelerinde satır filtreleme, değişken seçme ve koşullu analizlerin çoğu bu mantık üzerine kuruludur.
+
+#### `which()` Fonksiyonu: Koşulu Sağlayan Konumları Bulmak
+
+Mantıksal indeksleme değerleri seçmek için kullanılır. Ancak bazen değerlerin kendisine değil, konumlarına ihtiyaç duyarız. Bu durumda `which()` fonksiyonu kullanılır.
+
+```{r}
+v <- c(1, 4, 7, 2, 5, 8, 3, 6, 9)
+
+# 5'ten büyük değerlerin konumları
+which(v > 5)
+```
+
+Bu çıktı bize 5'ten büyük değerlerin vektörde hangi sırada bulunduğunu gösterir.
+
+```{r}
+# Bu konumlardaki değerleri seçelim.
+v[which(v > 5)]
+```
+
+Bu kullanım genellikle `v[v > 5]` ile aynı sonucu verir; ancak `which()` konum bilgisinin gerekli olduğu durumlarda daha anlamlıdır.
+
+Örneğin maksimum değerin konumunu bulmak isteyelim.
+
+```{r}
+# Maksimum değerin kendisi
+max(v)
+
+# Maksimum değerin konumu
+which(v == max(v))
+```
+
+::: callout-note
+Değerleri seçmek istiyorsanız doğrudan mantıksal indeksleme çoğu zaman yeterlidir. Konum bilgisi gerekiyorsa `which()` kullanmak daha uygundur.
+:::
+
+#### Eksik Değerler ve `is.na()`
+
+Gerçek veri setlerinde eksik değerler kaçınılmazdır. R'de eksik değerler `NA` ile temsil edilir. Bir vektörde eksik değer olup olmadığını kontrol etmek için `is.na()` fonksiyonu kullanılır.
+
+```{r}
+x <- c(10, 20, NA, 40, NA)
+
+is.na(x)
+```
+
+Bu çıktı, her eleman için eksik olup olmadığını gösteren logical bir vektördür.
+
+Eksik olmayan değerleri seçmek için `!is.na()` kullanılabilir.
+
+```{r}
+# Eksik olmayan değerleri seçelim.
+x[!is.na(x)]
+```
+
+Eksik değerlerin kaç tane olduğunu bulmak için `sum()` fonksiyonu kullanılabilir. Çünkü logical değerler sayısal işlemde `TRUE = 1`, `FALSE = 0` gibi davranır.
+
+```{r}
+# Eksik değer sayısı
+sum(is.na(x))
+```
+
+Eksik değer içeren vektörlerde bazı fonksiyonlar varsayılan olarak `NA` döndürür.
+
+```{r}
+mean(x)
+```
+
+Bu durumda `na.rm = TRUE` argümanı kullanılmalıdır.
+
+```{r}
+mean(x, na.rm = TRUE)
+```
+
+Burada `na.rm`, “NA değerleri kaldır” anlamına gelir. Bu argüman birçok temel istatistiksel fonksiyonda bulunur.
+
+::: callout-warning
+`na.rm = TRUE` kullanmak eksik değer sorununu otomatik olarak çözmez; yalnızca hesaplama sırasında eksik değerleri dışlar. Eksik değerlerin neden oluştuğu ayrıca incelenmelidir.
+:::
+
+#### Vektörel Matematiksel İşlemler
+
+R vektörel çalışan bir dil olduğu için vektörler üzerinde matematiksel işlemler doğrudan yapılabilir.
+
+```{r}
+v3 <- 1:10
+v4 <- 11:20
+
+v3
+v4
+```
+
+İki vektör aynı uzunluktaysa işlemler eleman bazında yapılır.
+
+```{r}
+# Eleman bazında toplama
+v3 + v4
+
+# Eleman bazında bölme
+v3 / v4
+
+# Daha karmaşık bir işlem
+2 * v3 - v4
+```
+
+Bu işlemler şu mantıkla çalışır: birinci eleman birinci elemanla, ikinci eleman ikinci elemanla, üçüncü eleman üçüncü elemanla işleme girer.
+
+Bu yaklaşım R'nin istatistiksel hesaplama için ne kadar uygun tasarlandığını gösterir. Çünkü birçok analizde değişkenlerin tüm gözlemleri üzerinde aynı işlemi yapmak gerekir.
+
+#### Recycling Rule: Kısa Vektörün Tekrar Kullanılması
+
+R'de farklı uzunlukta vektörlerle işlem yapılırsa kısa olan vektör tekrar kullanılır. Bu davranışa **recycling rule** denir.
+
+```{r}
+x <- c(1, 2, 3, 4)
+y <- c(10, 20)
+
+x + y
+```
+
+Burada `y` vektörü şu şekilde tekrar kullanılmıştır:
+
+``` text
+x: 1   2   3   4
+y: 10  20  10  20
+```
+
+Sonuç bu eşleşmeye göre hesaplanır.
+
+Bu davranış bazen çok kullanışlıdır.
+
+```{r}
+# Tüm elemanlara 10 eklemek de aslında recycling mantığıyla çalışır.
+x + 10
+```
+
+Burada 10 değeri, vektör uzunluğu kadar tekrar edilmiş gibi düşünülür.
+
+Ancak recycling rule dikkatli kullanılmalıdır. Eğer uzunluklar birbirinin tam katı değilse R uyarı verebilir.
+
+```{r}
+x <- c(1, 2, 3, 4, 5)
+y <- c(10, 20)
+
+x + y
+```
+
+::: callout-warning
+Recycling rule R'nin güçlü ama dikkat isteyen özelliklerinden biridir. Kısa vektörün tekrar kullanılması bazı durumlarda beklenen davranış olabilir; ancak bazı durumlarda sessiz hatalara yol açabilir.
+:::
+
+#### `all()` ve `any()` Fonksiyonları
+
+Mantıksal vektörlerle çalışırken bazen tüm elemanların bir koşulu sağlayıp sağlamadığını ya da en az bir elemanın koşulu sağlayıp sağlamadığını bilmek isteriz. Bu durumda `all()` ve `any()` fonksiyonları kullanılır.
+
+```{r}
+x <- c(10, 20, 30, 40)
+
+# Tüm değerler 0'dan büyük mü?
+all(x > 0)
+```
+
+`all()` fonksiyonu, koşul tüm elemanlar için doğruysa `TRUE` döndürür.
+
+```{r}
+# Tüm değerler 25'ten büyük mü?
+all(x > 25)
+```
+
+`any()` fonksiyonu ise en az bir eleman koşulu sağlıyorsa `TRUE` döndürür.
+
+```{r}
+# En az bir değer 25'ten büyük mü?
+any(x > 25)
+```
+
+Bu fonksiyonlar veri kontrolünde oldukça yararlıdır.
+
+```{r}
+notlar <- c(70, 80, 90, 100)
+
+# Notların tamamı 0 ile 100 arasında mı?
+all(notlar >= 0 & notlar <= 100)
+```
+
+Eksik değer kontrolü için de kullanılabilir.
+
+```{r}
+x <- c(10, 20, NA, 40)
+
+# Vektörde herhangi bir eksik değer var mı?
+any(is.na(x))
+```
+
+Bu tür kontroller, analizden önce veri kalitesini değerlendirmek için önemlidir.
+
+#### `unique()` ve `duplicated()` Fonksiyonları
+
+Bir vektördeki benzersiz değerleri görmek için `unique()` fonksiyonu kullanılır.
+
+```{r}
+sehir <- c("Ankara", "İstanbul", "Ankara", "İzmir", "İstanbul")
+
+unique(sehir)
+```
+
+Bu fonksiyon özellikle kategorik değişkenleri tanımak için yararlıdır. Bir veri setinde kaç farklı kategori olduğunu anlamak, analiz öncesi keşif aşamasının önemli bir parçasıdır.
+
+Tekrarlı değerleri tespit etmek için `duplicated()` fonksiyonu kullanılır.
+
+```{r}
+duplicated(sehir)
+```
+
+Bu çıktı, her elemanın daha önce görülüp görülmediğini gösterir. İlk kez görülen değerler `FALSE`, tekrar edenler `TRUE` olur.
+
+Tekrarlı değerleri seçmek mümkündür.
+
+```{r}
+sehir[duplicated(sehir)]
+```
+
+Benzersiz değer sayısını bulmak için `length()` ve `unique()` birlikte kullanılabilir.
+
+```{r}
+length(unique(sehir))
+```
+
+Bu işlem gerçek veri analizinde sık kullanılır. Örneğin kaç farklı il, kaç farklı ürün, kaç farklı kullanıcı veya kaç farklı kategori olduğunu bulmak için kullanılabilir.
+
+#### `sort()` Fonksiyonu
+
+Vektörleri sıralamak için `sort()` fonksiyonu kullanılır.
+
+```{r}
+x <- c(5, 2, 9, 1, 7)
+
+sort(x)
+```
+
+Varsayılan sıralama küçükten büyüğedir. Büyükten küçüğe sıralamak için `decreasing = TRUE` kullanılır.
+
+```{r}
+sort(x, decreasing = TRUE)
+```
+
+Metinsel değerler de sıralanabilir.
+
+```{r}
+isimler <- c("Zeynep", "Ali", "Mehmet", "Ayşe")
+
+sort(isimler)
+```
+
+Sıralama, veri keşfi ve raporlama açısından önemlidir. Ancak sıralamanın veri tipine duyarlı olduğu unutulmamalıdır. Sayılar character olarak saklanıyorsa beklenmeyen sıralama sonuçları oluşabilir.
+
+```{r}
+# Character olarak saklanan sayılar alfabetik sıralanır.
+x <- c("1", "10", "2", "20")
+
+sort(x)
+```
+
+Bu sonuç sayısal sıralama değildir. Sayısal sıralama isteniyorsa önce dönüşüm yapılmalıdır.
+
+```{r}
+sort(as.numeric(x))
+```
+
+#### Temel İstatistiksel Fonksiyonlar
+
+Vektörler veri analizinin temel yapı taşı olduğu için birçok temel istatistiksel fonksiyon doğrudan vektörler üzerinde çalışır.
+
+```{r}
+x <- c(10, 20, 30, 40, 50)
+
+# Toplam
+sum(x)
+
+# Ortalama
+mean(x)
+
+# Medyan
+median(x)
+
+# Minimum ve maksimum
+min(x)
+max(x)
+
+# Varyans ve standart sapma
+var(x)
+sd(x)
+```
+
+Bu fonksiyonlar yalnızca hesaplama aracı değildir. Aynı zamanda veri hakkında hızlı bir ilk fikir edinmeyi sağlar. Örneğin ortalama merkezi eğilimi, standart sapma yayılımı, minimum ve maksimum değerler aralığı gösterir. Eksik değer varsa bu fonksiyonların davranışı değişir.
+
+```{r}
+x <- c(10, 20, NA, 40, 50)
+
+mean(x)
+mean(x, na.rm = TRUE)
+
+sd(x)
+sd(x, na.rm = TRUE)
+```
+
+Bu nedenle temel istatistiksel hesaplamalarda eksik değer kontrolü mutlaka yapılmalıdır. Daha kapsamlı bir özet için `summary()` fonksiyonu kullanılabilir.
+
+```{r}
+summary(x)
+```
+
+`summary()` fonksiyonu nesnenin yapısına göre farklı çıktılar üretir. Sayısal vektörlerde minimum, birinci çeyrek, medyan, ortalama, üçüncü çeyrek ve maksimum gibi özet istatistikleri verir.
+
+#### Mini Uygulama: Bir Not Vektörünü İnceleme
+
+Şimdi vektörlerle ilgili öğrendiğimiz kavramları küçük bir örnek üzerinde birleştirelim.
+
+```{r}
+notlar <- c(45, 70, 85, 90, NA, 70, 100, 55, 30, 85)
+
+notlar
+```
+
+Önce vektörün temel özelliklerini inceleyelim.
+
+```{r}
+# Vektörün tipi
+typeof(notlar)
+
+# Eleman sayısı
+length(notlar)
+
+# Eksik değer var mı?
+any(is.na(notlar))
+
+# Eksik değer sayısı
+sum(is.na(notlar))
+```
+
+Eksik olmayan değerleri seçelim.
+
+```{r}
+notlar_temiz <- notlar[!is.na(notlar)]
+
+notlar_temiz
+```
+
+Temel istatistikleri hesaplayalım.
+
+```{r}
+mean(notlar_temiz)
+median(notlar_temiz)
+sd(notlar_temiz)
+min(notlar_temiz)
+max(notlar_temiz)
+```
+
+Geçme notu 50 olsun. Geçenleri seçelim.
+
+```{r}
+# 50 ve üzeri notlar
+gecenler <- notlar_temiz[notlar_temiz >= 50]
+
+gecenler
+```
+
+Geçen öğrenci sayısını ve oranını hesaplayalım.
+
+```{r}
+length(gecenler)
+
+length(gecenler) / length(notlar_temiz)
+```
+
+Tekrarlanan notları görelim.
+
+```{r}
+notlar_temiz[duplicated(notlar_temiz)]
+```
+
+Benzersiz notları sıralayalım.
+
+```{r}
+sort(unique(notlar_temiz))
+```
+
+Bu örnek, vektörlerin yalnızca basit veri depolama araçları olmadığını gösterir. Vektörler üzerinde seçim, filtreleme, özetleme, eksik değer kontrolü ve temel analiz adımları doğrudan yapılabilir.
+
+#### Sık Yapılan Hatalar
+
+Vektörlerle çalışırken yapılan hataların önemli bir kısmı veri tipi, indeksleme ve eksik değer yönetimiyle ilgilidir.
+
+İlk yaygın hata, farklı tipte değerleri aynı vektörde birleştirirken otomatik dönüşümü fark etmemektir.
+
+```{r}
+x <- c(1, 2, "3")
+
+x
+typeof(x)
+```
+
+İkinci hata, indeksleme sırasında R'nin 1'den başladığını unutmaktır.
+
+```{r}
+x <- c(10, 20, 30)
+
+# R'de ilk eleman x[1] ile seçilir.
+x[1]
+```
+
+Üçüncü hata, eksik değerleri dikkate almadan hesaplama yapmaktır.
+
+```{r}
+x <- c(10, 20, NA, 40)
+
+mean(x)
+mean(x, na.rm = TRUE)
+```
+
+Dördüncü hata, recycling rule davranışını fark etmemektir.
+
+```{r}
+x <- c(1, 2, 3, 4, 5)
+y <- c(10, 20)
+
+x + y
+```
+
+Beşinci hata, `which()` fonksiyonunu gereksiz yere kullanmaktır. Değer seçmek için çoğu zaman doğrudan logical indeksleme yeterlidir.
+
+```{r}
+x <- c(5, 10, 15)
+
+# Bu yeterlidir.
+x[x > 8]
+
+# Konum bilgisi gerekiyorsa which() kullanılır.
+which(x > 8)
+```
+
+#### Egzersizler
+
+Aşağıdaki egzersizler vektörlerin oluşturulması, seçilmesi, filtrelenmesi ve özetlenmesi konularını pekiştirmek için hazırlanmıştır.
+
+1.  `c()` fonksiyonunu kullanarak 8 elemanlı bir numeric vektör oluşturunuz.
+2.  Bu vektörün uzunluğunu `length()` ile bulunuz.
+3.  Vektörün 2., 4. ve 6. elemanlarını seçiniz.
+4.  Vektörden 3. elemanı hariç tutarak yeni bir seçim yapınız.
+5.  `seq()` fonksiyonu ile 0 ile 100 arasında 10'ar artan bir vektör oluşturunuz.
+6.  `rep()` fonksiyonu ile `"A"`, `"B"` ve `"C"` gruplarını her biri 4 kez tekrar edecek şekilde oluşturunuz.
+7.  İçinde `NA` bulunan bir vektör oluşturup eksik değer sayısını hesaplayınız.
+8.  Bir numeric vektörde 50'den büyük değerleri seçiniz.
+9.  Bir character vektörde benzersiz değerleri bulunuz.
+10. Tekrarlanan değerleri `duplicated()` ile tespit ediniz.
+11. Bir numeric vektörü küçükten büyüğe ve büyükten küçüğe sıralayınız.
+12. Bir not vektörü için ortalama, medyan, standart sapma, minimum ve maksimum değerleri hesaplayınız.
+
+#### Egzersiz Çözümleri
+
+```{r}
+# 1. Numeric vektör oluşturma
+x <- c(12, 45, 67, 23, 89, 34, 56, 78)
+
+x
+```
+
+```{r}
+# 2. Vektör uzunluğu
+length(x)
+```
+
+```{r}
+# 3. 2., 4. ve 6. elemanları seçme
+x[c(2, 4, 6)]
+```
+
+```{r}
+# 4. 3. elemanı hariç tutma
+x[-3]
+```
+
+```{r}
+# 5. seq() ile düzenli dizi üretme
+seq(from = 0, to = 100, by = 10)
+```
+
+```{r}
+# 6. rep() ile grup etiketi üretme
+rep(c("A", "B", "C"), each = 4)
+```
+
+```{r}
+# 7. NA içeren vektörde eksik değer sayısı
+y <- c(10, NA, 20, 30, NA, 40)
+
+sum(is.na(y))
+```
+
+```{r}
+# 8. 50'den büyük değerleri seçme
+x[x > 50]
+```
+
+```{r}
+# 9. Benzersiz değerleri bulma
+sehir <- c("Ankara", "İstanbul", "Ankara", "İzmir", "İstanbul")
+
+unique(sehir)
+```
+
+```{r}
+# 10. Tekrarlanan değerleri tespit etme
+duplicated(sehir)
+
+sehir[duplicated(sehir)]
+```
+
+```{r}
+# 11. Sıralama
+sort(x)
+
+sort(x, decreasing = TRUE)
+```
+
+```{r}
+# 12. Temel istatistiksel özet
+notlar <- c(45, 70, 85, 90, 70, 100, 55, 30, 85)
+
+mean(notlar)
+median(notlar)
+sd(notlar)
+min(notlar)
+max(notlar)
+```
+
+#### Bölüm Özeti
+
+Vektörler R'nin en temel veri yapısıdır. Aynı veri tipine sahip elemanları tek boyutlu bir yapı içinde saklarlar. Vektörler sayesinde R, işlemleri tek tek elemanlara komut vermeden, doğrudan veri kümesi üzerinde gerçekleştirebilir. Bu, R'nin istatistiksel hesaplama için güçlü ve doğal bir dil olmasının temel nedenlerinden biridir.
+
+Bu bölümde vektör oluşturma, indeksleme, mantıksal seçim, eksik değer kontrolü, sıralama, benzersiz değerleri bulma, tekrarlı değerleri tespit etme ve temel istatistiksel özetleme işlemleri ele alındı. Ayrıca `seq()`, `rep()`, `all()`, `any()`, `unique()`, `duplicated()`, `sort()`, `is.na()` ve `which()` gibi fonksiyonlar ayrı bir liste halinde değil, vektörlerle çalışma mantığının doğal parçaları olarak kullanıldı.
+
+Vektörleri iyi anlamak, R'de matris, liste, veri çerçevesi ve tibble gibi daha karmaşık veri yapılarının anlaşılması için güçlü bir temel oluşturur.
+
+### Matrisler: Vektörün İki Boyutlu Hali
+
+Vektörler tek boyutlu veri yapılarıdır. Ancak birçok veri problemi yalnızca tek bir eksen üzerinden değil, iki boyutlu bir yapı üzerinden düşünülmeyi gerektirir. Örneğin bir tablo, bir veri seti ya da bir görüntü verisi satır ve sütun ilişkisi içerir.
+
+Bu noktada matrisler devreye girer.
+
+Bir matris, aynı veri tipine sahip elemanların satır ve sütunlar halinde düzenlenmesiyle oluşan iki boyutlu bir veri yapısıdır. Bu tanımda iki önemli özellik korunur:
+
+-   Homojenlik (tüm elemanlar aynı tipte)
+-   Düzenli yapı (satır ve sütun organizasyonu)
+
+Bu açıdan matrisler, vektörlerin iki boyutlu olarak genişletilmiş hali gibi düşünülebilir.
+
+------------------------------------------------------------------------
+
+#### Matris Oluşturma
+
+R’de matris oluşturmak için en temel fonksiyon `matrix()` fonksiyonudur.
+
+```{r}
+# 1'den 6'ya kadar olan sayılarla 2 satırlı bir matris oluşturalım
+m <- matrix(1:6, nrow = 2)
+
+m
+```
+
+Bu çıktıda dikkat edilmesi gereken önemli bir nokta vardır. R, matrisi **varsayılan olarak sütun sütun doldurur**. Yani aşağıdaki şekilde bir yerleşim oluşur.
+
+```         
+1 3 5
+2 4 6
+```
+
+#### **Satır Bazlı Doldurma**
+
+Eğer matrisi satır bazlı doldurmak istersek `byrow = TRUE` kullanılır.
+
+```{r}
+m2 <- matrix(1:6, nrow = 2, byrow = TRUE)
+
+m2
+```
+
+Bu sefer aşağıdaki şekilde bir yapı oluşur.
+
+```         
+1 2 3
+4 5 6
+```
+
+#### Matris Boyutları
+
+Bir matrisin boyutlarını öğrenmek için `dim()` fonksiyonu kullanılır.
+
+```{r}
+dim(m2)
+```
+
+İlk değer satır, ikinci değer ise sütun sayısını gösterir.
+
+#### Elemanlara Erişim
+
+Matrislerde indeksleme iki boyutludur:
+
+```{r}
+# 1. satır, 2. sütun
+m2[1, 2]
+
+# 2. satırın tamamı
+m2[2, ]
+
+# 1. sütunun tamamı
+m2[, 1]
+```
+
+#### Vektör ve Matris İlişkisi
+
+Matrisler aslında vektörlerin yeniden şekillendirilmiş halidir.
+
+```{r}
+v <- 1:6
+
+matrix(v, nrow = 2)
+```
+
+Bu, önemli bir içgörü sağlar:
+
+> Matris = vektör + boyut bilgisi
+
+#### Matris Üzerinde İşlemler
+
+Matrisler üzerinde matematiksel işlemler vektörlerde olduğu gibi çalışır. İşlemler yine **eleman bazında** yapılır.
+
+```{r}
+m <- matrix(1:4, nrow = 2)
+m2 <- matrix(5:8, nrow = 2)
+
+m + m2
+```
+
+#### Gerçek Matris Çarpımı
+
+Burada kritik bir ayrım vardır.
+
+```{r}
+# Eleman bazlı çarpım
+m * m2
+```
+
+Bu işlem klasik matris çarpımı değildir. Gerçek matris çarpımı için `%*%` operatörü kullanılır. Bu ayrım özellikle lineer cebir ve modelleme açısından çok önemlidir.
+
+```{r}
+m %*% m2
+```
+
+#### Homojenlik Kısıtı
+
+Matrisler de vektörler gibi homojen yapılardır.
+
+```{r}
+matrix(c(1, 2, "a", 4), nrow = 2)
+```
+
+Bu durumda tüm değerler character’a dönüşür.
+
+#### Sık Yapılan Hatalar
+
+```{r}
+# Beklenmeyen doldurma yönü
+matrix(1:6, nrow = 2)
+
+# eleman bazlı çarpımı matris çarpımı sanmak
+m * m2
+
+# farklı tipte veri kullanmak
+matrix(c(1, "a"), nrow = 1)
+```
+
+#### Egzersizler
+
+1.  1’den 12’ye kadar sayılarla 3x4 boyutunda matris oluşturunuz
+
+2.  Aynı matrisi `byrow = TRUE` ile tekrar oluşturunuz
+
+3.  2 ve 3. sütunu seçiniz
+
+4.  İki matris oluşturup hem `*` hem `%*%` ile çarpınız ve farkı inceleyiniz
+
+5.  Character içeren bir matris oluşturup tip dönüşümünü gözlemleyiniz
+
+#### Bölüm Özeti
+
+Matrisler, vektörlerin iki boyutlu hale getirilmiş formudur. Homojen yapıları sayesinde matematiksel işlemler için oldukça uygundur. Ancak eleman bazlı işlemler ile gerçek matris işlemlerinin ayrımı dikkatle yapılmalıdır. Matrisleri anlamak, özellikle lineer cebir temelli analizler ve modelleme süreçlerinde kritik bir rol oynar.
+
+### Listeler: R'nin En Esnek Veri Yapısı
+
+Vektörler ve matrisler homojen yapılardır. Yani bu yapılarda yer alan tüm elemanların aynı veri tipinde olması gerekir. Bu durum, matematiksel işlemler açısından avantaj sağlasa da, gerçek veri problemlerinde önemli bir kısıt oluşturur. Çünkü gerçek hayattaki veriler çoğu zaman homojen değildir.
+
+Örneğin bir öğrenciye ait veri düşündüğümüzde:
+
+-   adı (character),
+-   yaşı (numeric),
+-   notları (numeric vektör),
+-   başarı durumu (logical)
+
+gibi farklı veri tipleri birlikte bulunur. Bu tür durumlarda vektör ya da matris yeterli olmaz. İşte bu noktada **listeler** devreye girer.
+
+------------------------------------------------------------------------
+
+#### Liste Nedir?
+
+Liste, farklı veri tiplerini ve hatta farklı veri yapılarını bir arada tutabilen esnek bir veri yapısıdır.
+
+Yani bir liste içinde:
+
+-   sayılar,
+-   metinler,
+-   vektörler,
+-   matrisler,
+-   hatta başka listeler
+
+birlikte bulunabilir. Bu özelliği sayesinde listeler, R'deki en genel ve en esnek veri yapısıdır.
+
+------------------------------------------------------------------------
+
+#### Liste Oluşturma
+
+Listeler `list()` fonksiyonu ile oluşturulur.
+
+```{r}
+l <- list(
+  isim = "Ali",
+  yas = 25,
+  notlar = c(70, 80, 90),
+  gecti_mi = TRUE
+)
+
+l
+```
+
+Bu yapı dikkatlice incelendiğinde, her elemanın farklı bir veri tipine sahip olduğu görülür.
+
+```{r}
+# Listenin yapısını inceleyelim
+str(l)
+```
+
+`str()` fonksiyonu, listenin iç yapısını anlamak için en önemli araçlardan biridir. Özellikle karmaşık veri yapıları ile çalışırken mutlaka kullanılması gerekir.
+
+#### Listeye Erişim: Kritik Fark
+
+Listelerde veri seçimi vektörlerden farklıdır ve bu fark çok önemlidir. İki farklı erişim yöntemi vardır:
+
+-   `[]` → alt yapı (sublist) döndürür
+
+-   `[[]]` → doğrudan değeri döndürür
+
+```{r}
+# Alt liste döner
+l[1]
+
+# Değer döner
+l[[1]]
+```
+
+Bu fark ilk başta küçük gibi görünse de, özellikle veri manipülasyonu sırasında kritik hale gelir.
+
+```{r}
+# İsim bilgisine erişelim
+l$isim
+l[["isim"]]
+```
+
+`$` operatörü, isimlendirilmiş listelerde oldukça kullanışlıdır ve okunabilirliği artırır.
+
+#### Liste İçinde Liste
+
+Listelerin en güçlü özelliklerinden biri, iç içe (nested) yapılar oluşturabilmesidir.
+
+```{r}
+l2 <- list(
+  ogrenci1 = list(isim = "Ali", not = 80),
+  ogrenci2 = list(isim = "Ayşe", not = 90)
+)
+
+l2
+```
+
+Bu yapı, daha karmaşık veri organizasyonları için temel oluşturur.
+
+```{r}
+# İç içe veri erişimi
+l2$ogrenci1$not
+```
+
+Bu tür yapılar özellikle:
+
+-   JSON veriler,
+
+-   API çıktıları,
+
+-   karmaşık veri setleri
+
+ile çalışırken çok yaygındır.
+
+#### Liste vs Vektör: Temel Fark
+
+Bu farkı net görmek için basit bir karşılaştırma yapalım:
+
+```{r}
+v <- c(1, 2, 3)
+l <- list(1, 2, 3)
+
+v
+l
+```
+
+Görünüşte benzer olabilirler, ancak davranışları farklıdır:
+
+```{r}
+# Vektör elemanları numeric
+typeof(v)
+
+# Liste elemanları bağımsız
+typeof(l)
+```
+
+Vektörde tüm elemanlar aynı tipteyken, listede her eleman kendi tipini korur.
+
+#### Liste Üzerinde İşlemler
+
+Listeler üzerinde doğrudan matematiksel işlemler yapılamaz.
+
+```         
+# Bu hata verir
+# l + 1
+```
+
+Çünkü liste bir veri koleksiyonudur, matematiksel bir yapı değildir. Ancak liste içindeki elemanlar üzerinde işlem yapılabilir.
+
+```{r}
+# Notlar üzerinde işlem
+l$notlar + 10
+```
+
+Bu durum şunu gösterir. Liste, veriyi tutar; işlem eleman üzerinde yapılır.
+
+#### Listeyi Vektöre Dönüştürme
+
+Bazı durumlarda listeyi düzleştirerek vektöre çevirmek gerekebilir.
+
+```{r}
+unlist(l)
+```
+
+Bu işlem tüm elemanları tek bir vektörde birleştirir. Ancak bu işlem sırasında veri tipi dönüşümü olabilir.
+
+#### Sık Yapılan Hatalar
+
+```{r}
+# [] ve [[]] farkını karıştırmak
+l[1]
+l[[1]]
+
+# listeyi vektör sanmak
+#l + 1
+
+# unlist sonrası veri tipi değişimi
+unlist(l)
+```
+
+#### Egzersizler
+
+1.  İçinde en az 4 farklı veri tipi bulunan bir liste oluşturunuz
+
+2.  Liste elemanlarına hem `[]` hem `[[]]` ile erişiniz ve farkı gözlemleyiniz
+
+3.  İç içe (nested) bir liste oluşturup veri çekiniz
+
+4.  Liste içindeki numeric vektör üzerinde işlem yapınız
+
+5.  Listeyi `unlist()` ile vektöre çeviriniz ve veri tipini inceleyiniz
+
+#### Bölüm Özeti
+
+Listeler, R’de farklı veri tiplerini ve farklı veri yapılarını bir arada tutabilen en esnek veri yapısıdır. Bu özellikleri sayesinde karmaşık veri setlerini temsil etmek için vazgeçilmezdir. Ancak bu esneklik, beraberinde dikkat edilmesi gereken noktaları da getirir. Özellikle veri erişim yöntemleri (`[]` vs `[[]]`) ve veri tipi dönüşümleri iyi anlaşılmalıdır. Listeleri doğru anlamak, veri çerçeveleri ve daha ileri veri yapıları ile çalışmanın temelini oluşturur.
+
+### Data Frame: R'de Tablo Mantığının Temeli
+
+#### Data Frame Neden Önemlidir?
+
+R'de veri analizi denildiğinde pratikte en sık karşılaşılan yapı **data frame** yapısıdır. Çünkü gerçek veri setleri çoğu zaman tek bir vektörden veya tek tip değerlerden oluşmaz. Bir veri setinde aynı anda metinsel, sayısal, mantıksal ve kategorik değişkenler bulunabilir.
+
+Örneğin bir öğrenci veri setini düşünelim. Bu veri setinde öğrencinin adı metinsel bir değişkendir, yaşı sayısal olabilir, sınav notu sayısal olabilir, dersten geçip geçmediği mantıksal olarak tutulabilir. Bu değişkenlerin hepsi aynı veri setinin parçasıdır; ancak veri tipleri aynı değildir.
+
+Vektörler ve matrisler homojen yapılardır. Yani tüm elemanları aynı veri tipinde olmak zorundadır. Bu nedenle karma veri tiplerinden oluşan gerçek veri tablolarını temsil etmek için uygun değildir. Data frame tam olarak bu ihtiyaca cevap verir.
+
+Bir data frame, aynı uzunluktaki vektörlerin sütunlar halinde bir araya gelmesiyle oluşan iki boyutlu bir veri yapısıdır. Bu tanım önemlidir: data frame satır ve sütunlardan oluşur; ancak her sütun kendi içinde bir vektördür. Dolayısıyla her sütun tek bir veri tipine sahipken, farklı sütunlar farklı veri tiplerinde olabilir.
+
+Bu nedenle data frame yapısı, istatistiksel veri analizinin doğal tablosal veri biçimidir.
+
+::: callout-note
+Data frame yapısını anlamanın en kolay yolu şudur: Her sütun bir vektördür; bu vektörler yan yana gelerek tabloyu oluşturur.
+
+Data frame yapısı, aslında sütunlardan oluşan özel bir liste olarak da düşünülebilir. Bu nedenle data frame ile list yapıları arasında güçlü bir ilişki vardır.
+:::
+
+#### Data Frame ile Matris Arasındaki Temel Fark
+
+Data frame ve matris ilk bakışta benzer görünebilir. İkisi de satır ve sütunlardan oluşur. Ancak aralarındaki temel fark veri tipi yapısındadır.
+
+Matrisler homojendir; yani tüm elemanlar aynı veri tipinde olmak zorundadır. Data frame ise sütun bazında homojendir. Bir sütunun tüm elemanları aynı tiptedir; ancak farklı sütunlar farklı tiplerde olabilir.
+
+```{r}
+# Matris örneği: tüm elemanlar aynı veri tipindedir.
+m <- matrix(1:6, nrow = 2)
+
+m
+typeof(m)
+```
+
+Şimdi aynı yapıya metinsel bir değer ekleyelim.
+
+```{r}
+# Matrise character bir değer eklenirse tüm değerler character'a dönüşür.
+m2 <- matrix(c(1, 2, 3, "A"), nrow = 2)
+
+m2
+typeof(m2)
+```
+
+Bu durum matrislerin karma veri tipleri için uygun olmadığını gösterir. Data frame ise bu konuda daha esnektir.
+
+```{r}
+# Data frame içinde farklı sütunlar farklı veri tiplerinde olabilir.
+df <- data.frame(
+  isim = c("Ali", "Ayşe", "Mehmet"),
+  yas = c(25, 30, 28),
+  not = c(70, 85, 60),
+  gecti_mi = c(TRUE, TRUE, TRUE)
+)
+
+df
+```
+
+Bu veri setinde `isim` character, `yas` ve `not` numeric, `gecti_mi` ise logical tiptedir. Buna rağmen hepsi aynı data frame içinde düzenli biçimde tutulabilir.
+
+#### Data Frame Oluşturma
+
+R'de data frame oluşturmak için `data.frame()` fonksiyonu kullanılır. Bu fonksiyona verilen her argüman data frame'in bir sütununu oluşturur.
+
+```{r}
+ogrenci <- data.frame(
+  isim = c("Ali", "Ayşe", "Mehmet", "Zeynep"),
+  yas = c(21, 22, 20, 23),
+  not = c(75, 88, 45, 92)
+)
+
+ogrenci
+```
+
+Burada üç sütun vardır: `isim`, `yas` ve `not`. Her sütun aynı uzunlukta olmalıdır. Çünkü data frame satır bazlı bir yapıdır ve her satır bir gözleme karşılık gelir.
+
+```{r}
+# Data frame'in boyutunu görelim.
+dim(ogrenci)
+
+# Satır sayısı
+nrow(ogrenci)
+
+# Sütun sayısı
+ncol(ogrenci)
+```
+
+`dim()` fonksiyonu satır ve sütun sayısını birlikte verir. `nrow()` yalnızca satır sayısını, `ncol()` ise yalnızca sütun sayısını verir.
+
+::: callout-warning
+Bir data frame oluştururken sütun uzunluklarının uyumlu olması gerekir. Aksi halde R hata verir veya bazı durumlarda kısa vektörü tekrar kullanmaya çalışabilir. Bu davranış, beklenmeyen veri setleri oluşturmanıza yol açabilir.
+:::
+
+#### Data Frame'in Yapısını İnceleme
+
+Bir data frame ile çalışırken ilk yapılması gereken iş, veri setinin yapısını incelemektir. Bu aşamada amaç yalnızca veriye bakmak değildir; sütun tiplerini, gözlem sayısını, eksik değerleri ve genel yapıyı anlamaktır.
+
+```{r}
+# str() data frame'in yapısını gösterir.
+str(ogrenci)
+```
+
+`str()` fonksiyonu data frame'in kaç gözlemden ve kaç değişkenden oluştuğunu, her sütunun adını ve veri tipini gösterir. Bu nedenle yeni bir veri setiyle çalışırken en faydalı fonksiyonlardan biridir.
+
+```{r}
+# İlk satırları görüntüleme
+head(ogrenci)
+
+# Son satırları görüntüleme
+tail(ogrenci)
+```
+
+Küçük veri setlerinde tüm tabloya bakmak mümkündür. Ancak gerçek veri setleri binlerce ya da milyonlarca satır içerebilir. Bu durumda `head()` ve `tail()` fonksiyonları veri setine hızlıca göz atmak için kullanılır.
+
+```{r}
+# Sütun adlarını görmek için
+names(ogrenci)
+
+# Alternatif olarak colnames()
+colnames(ogrenci)
+
+# Satır adları
+rownames(ogrenci)
+```
+
+`names()` veya `colnames()` sütun adlarını verir. Veri analizinde sütun adları çok önemlidir; çünkü fonksiyonların çoğu sütun isimleri üzerinden çalışır.
+
+#### Data Frame'de Sütun Seçme
+
+Data frame'den sütun seçmenin birden fazla yolu vardır. Her yöntemin kullanım amacı ve davranışı biraz farklıdır.
+
+```{r}
+# $ operatörü ile sütun seçme
+ogrenci$not
+```
+
+`$` operatörü okunabilir ve pratik bir yöntemdir. Özellikle etkileşimli çalışırken sık kullanılır.
+
+```{r}
+# Çift köşeli parantez ile sütun seçme
+ogrenci[["not"]]
+```
+
+`[[ ]]` yapısı sütunun kendisini vektör olarak döndürür. Sütun adı bir karakter nesnesi olarak tutuluyorsa bu yöntem özellikle kullanışlıdır.
+
+```{r}
+degisken <- "not"
+
+ogrenci[[degisken]]
+```
+
+Tek köşeli parantez kullanıldığında sonuç data frame olarak kalabilir.
+
+```{r}
+# Tek sütun seçilse bile data frame yapısı korunur.
+ogrenci["not"]
+```
+
+Bu üç yöntemin farkı önemlidir:
+
+-   `$` pratik sütun erişimi sağlar.
+-   `[[ ]]` sütunu vektör olarak döndürür.
+-   `[ ]` data frame yapısını korur.
+
+::: callout-note
+Bir sütunu analiz fonksiyonuna vektör olarak vermek istiyorsanız çoğu zaman `$` veya `[[ ]]` uygundur. Data frame yapısını korumak istiyorsanız `[ ]` tercih edilebilir.
+:::
+
+#### Satır ve Sütun İndeksleme
+
+Data frame iki boyutlu bir yapı olduğu için indeksleme `[satır, sütun]` mantığıyla yapılır.
+
+```{r}
+# 1. satır, 2. sütun
+ogrenci[1, 2]
+```
+
+Belirli satırlar seçilebilir.
+
+```{r}
+# İlk iki satır
+ogrenci[1:2, ]
+```
+
+Belirli sütunlar seçilebilir.
+
+```{r}
+# isim ve not sütunları
+ogrenci[, c("isim", "not")]
+```
+
+Hem satır hem sütun birlikte seçilebilir.
+
+```{r}
+# İlk iki öğrencinin isim ve not bilgisi
+ogrenci[1:2, c("isim", "not")]
+```
+
+Burada virgülün sol tarafı satırları, sağ tarafı sütunları ifade eder. Eğer satır tarafı boş bırakılırsa tüm satırlar, sütun tarafı boş bırakılırsa tüm sütunlar seçilir.
+
+#### Koşula Göre Satır Seçme
+
+Data frame'lerde en yaygın işlemlerden biri belirli koşulları sağlayan satırları seçmektir. Bu işlem, vektörlerdeki mantıksal indeksleme mantığına dayanır.
+
+```{r}
+# Notu 70 ve üzeri olan öğrencileri seçelim.
+ogrenci[ogrenci$not >= 70, ]
+```
+
+Burada `ogrenci$not >= 70` ifadesi logical bir vektör üretir.
+
+```{r}
+ogrenci$not >= 70
+```
+
+R, bu logical vektörde `TRUE` olan satırları seçer.
+
+Birden fazla koşul birlikte kullanılabilir.
+
+```{r}
+# Notu 70 ve üzeri olan ve yaşı 22'den büyük olmayan öğrenciler
+ogrenci[ogrenci$not >= 70 & ogrenci$yas <= 22, ]
+```
+
+Bu kullanım veri filtrelemenin temelidir. İleri düzey paketlerde kullanılan `filter()` gibi fonksiyonların arkasındaki mantık da esas olarak budur.
+
+#### Yeni Sütun Oluşturma
+
+Data frame üzerinde en sık yapılan işlemlerden biri mevcut değişkenlerden yeni değişken üretmektir.
+
+```{r}
+# Öğrencinin geçip geçmediğini gösteren yeni bir sütun oluşturalım.
+ogrenci$durum <- ifelse(ogrenci$not >= 50, "Geçti", "Kaldı")
+
+ogrenci
+```
+
+Burada `ifelse()` fonksiyonu vektörel çalışır. Her öğrencinin notunu kontrol eder ve koşula göre "Geçti" veya "Kaldı" değerini üretir.
+
+Yeni sütunlar mevcut sütunlardan matematiksel işlemlerle de üretilebilir.
+
+```{r}
+# Notu 100 üzerinden 4'lük sisteme kabaca dönüştürelim.
+ogrenci$not_4luk <- ogrenci$not / 25
+
+ogrenci
+```
+
+Bu tür işlemler veri hazırlama sürecinin önemli bir parçasıdır. Analizden önce çoğu zaman ham değişkenlerden yeni analitik değişkenler üretilir.
+
+#### Sütun Adlarını Değiştirme
+
+Sütun adları veri analizi sürecinde önemlidir. Anlaşılır sütun adları, kodun okunabilirliğini artırır.
+
+```{r}
+df2 <- ogrenci
+
+names(df2)
+```
+
+Tüm sütun adları birlikte değiştirilebilir.
+
+```{r}
+names(df2) <- c("ad", "yas", "sinav_notu", "durum", "not_4luk")
+
+df2
+```
+
+Belirli bir sütun adı da değiştirilebilir.
+
+```{r}
+names(df2)[names(df2) == "ad"] <- "isim"
+
+names(df2)
+```
+
+Sütun adlarını değiştirirken dikkatli olmak gerekir. Çünkü yanlış adlandırma sonraki kodların çalışmamasına yol açabilir.
+
+#### Satır ve Sütun Silme
+
+Bir sütunu silmek için ilgili sütuna `NULL` atanabilir.
+
+```{r}
+df3 <- ogrenci
+
+# not_4luk sütununu silelim.
+df3$not_4luk <- NULL
+
+df3
+```
+
+Belirli sütunları seçerek de yeni bir data frame oluşturulabilir.
+
+```{r}
+# Yalnızca isim, yas ve not sütunlarını koruyalım.
+df4 <- ogrenci[, c("isim", "yas", "not")]
+
+df4
+```
+
+Satır silme işlemi genellikle koşula göre seçim yaparak gerçekleştirilir.
+
+```{r}
+# Notu 50 ve üzerinde olan satırları seçelim.
+ogrenci[ogrenci$not >= 50, ]
+```
+
+Burada silme yerine seçim mantığı kullanmak daha güvenli ve okunabilir bir yaklaşımdır.
+
+#### Eksik Değerlerle Çalışma
+
+Gerçek veri setlerinde eksik değerler yaygındır. Data frame içinde eksik değerleri kontrol etmek için `is.na()` kullanılabilir.
+
+```{r}
+veri <- data.frame(
+  isim = c("Ali", "Ayşe", "Mehmet", "Zeynep"),
+  yas = c(21, NA, 20, 23),
+  not = c(75, 88, NA, 92)
+)
+
+veri
+```
+
+Eksik değerlerin nerede olduğunu görelim.
+
+```{r}
+is.na(veri)
+```
+
+Toplam eksik değer sayısı hesaplanabilir.
+
+```{r}
+sum(is.na(veri))
+```
+
+Sütun bazında eksik değer sayısı için `colSums()` kullanılabilir.
+
+```{r}
+colSums(is.na(veri))
+```
+
+Eksik değer içeren satırlar `complete.cases()` ile tespit edilebilir.
+
+```{r}
+complete.cases(veri)
+```
+
+Eksik değer içermeyen satırları seçelim.
+
+```{r}
+veri_tam <- veri[complete.cases(veri), ]
+
+veri_tam
+```
+
+Eksik değerleri silmek her zaman doğru çözüm değildir. Bazı durumlarda eksik değerlerin neden oluştuğunu anlamak daha önemlidir. Ancak temel düzeyde `complete.cases()` veri setinde tam gözlemleri seçmek için kullanışlıdır.
+
+::: callout-warning
+Eksik değer içeren satırları doğrudan silmek veri kaybına yol açabilir. Silme işlemi yapılmadan önce eksikliğin nedeni, oranı ve hangi değişkenlerde yoğunlaştığı incelenmelidir.
+:::
+
+#### Data Frame'e Satır ve Sütun Ekleme
+
+Yeni sütun ekleme işlemini daha önce görmüştük. Yeni satır eklemek için `rbind()` kullanılabilir.
+
+```{r}
+yeni_ogrenci <- data.frame(
+  isim = "Can",
+  yas = 24,
+  not = 68,
+  durum = "Geçti",
+  not_4luk = 68 / 25
+)
+
+ogrenci2 <- rbind(ogrenci, yeni_ogrenci)
+
+ogrenci2
+```
+
+Sütun eklemek için `cbind()` kullanılabilir; ancak pratikte doğrudan `$` ile yeni sütun oluşturmak çoğu zaman daha okunabilir ve güvenlidir.
+
+```{r}
+ogrenci2$mezun_mu <- c(FALSE, FALSE, FALSE, FALSE, FALSE)
+
+ogrenci2
+```
+
+`rbind()` ve `cbind()` kullanırken sütun adları, veri tipleri ve uzunluklar uyumlu olmalıdır. Aksi halde beklenmeyen sonuçlar ortaya çıkabilir.
+
+#### Data Frame'i Özetleme
+
+Data frame hakkında hızlı bilgi almak için bazı temel fonksiyonlar sık kullanılır.
+
+```{r}
+# Genel yapı
+str(ogrenci)
+
+# Özet istatistikler
+summary(ogrenci)
+
+# Boyut bilgisi
+dim(ogrenci)
+
+# Satır ve sütun sayısı
+nrow(ogrenci)
+ncol(ogrenci)
+
+# Sütun adları
+names(ogrenci)
+```
+
+`summary()` fonksiyonu sütun tipine göre farklı özetler üretir. Sayısal sütunlarda minimum, maksimum, ortalama ve çeyrekler verilirken; character veya factor sütunlarda farklı bilgiler sunulabilir.
+
+Bu fonksiyonlar veri analizinin ilk adımı olan veriyle tanışma sürecinde önemlidir.
+
+#### Data Frame'de Sıralama
+
+Data frame satırları belirli bir sütuna göre sıralanabilir. Bunun için `order()` fonksiyonu kullanılır.
+
+```{r}
+# Notlara göre küçükten büyüğe sıralama
+ogrenci[order(ogrenci$not), ]
+```
+
+Büyükten küçüğe sıralamak için `decreasing = TRUE` kullanılabilir.
+
+```{r}
+# Notlara göre büyükten küçüğe sıralama
+ogrenci[order(ogrenci$not, decreasing = TRUE), ]
+```
+
+Sıralama, raporlama ve veri keşfi açısından sık kullanılan bir işlemdir. Ancak sıralama yaparken veri tiplerinin doğru olduğundan emin olmak gerekir. Örneğin sayısal değerler character olarak saklanıyorsa beklenmeyen sıralama sonuçları oluşabilir.
+
+#### Data Frame'de Basit Gruplama Mantığı
+
+Base R ile gruplara göre özet hesaplamak için `aggregate()` fonksiyonu kullanılabilir.
+
+```{r}
+sinif <- data.frame(
+  grup = c("A", "A", "B", "B", "B"),
+  not = c(70, 80, 60, 90, 75)
+)
+
+sinif
+```
+
+Gruplara göre ortalama not hesaplayalım.
+
+```{r}
+aggregate(
+  not ~ grup,
+  data = sinif,
+  FUN = mean
+)
+```
+
+Buradaki formül yapısı `not ~ grup` şeklindedir. Bu ifade, `not` değişkeninin `grup` değişkenine göre özetleneceğini belirtir. `FUN = mean` ise her grup için ortalamanın hesaplanacağını gösterir.
+
+Birden fazla değişken için de özet hesaplanabilir.
+
+```{r}
+sinif$devam <- c(90, 85, 70, 95, 80)
+
+aggregate(
+  cbind(not, devam) ~ grup,
+  data = sinif,
+  FUN = mean
+)
+```
+
+Bu örnek data frame'in yalnızca veri saklamak için değil, veri analizini organize etmek için de temel bir yapı olduğunu gösterir.
+
+#### Mini Uygulama: Öğrenci Veri Seti
+
+Şimdi data frame üzerinde temel işlemleri küçük bir örnekle birleştirelim.
+
+```{r}
+ogr <- data.frame(
+  isim = c("Ali", "Ayşe", "Mehmet", "Zeynep", "Can", "Elif"),
+  bolum = c("İstatistik", "İstatistik", "Matematik", "Matematik", "İstatistik", "Matematik"),
+  yas = c(21, 22, 20, 23, 24, 21),
+  not = c(75, 88, 45, 92, 68, NA)
+)
+
+ogr
+```
+
+Önce veri setini tanıyalım.
+
+```{r}
+str(ogr)
+dim(ogr)
+summary(ogr)
+```
+
+Eksik değerleri kontrol edelim.
+
+```{r}
+colSums(is.na(ogr))
+```
+
+Geçti/kaldı değişkeni oluşturalım.
+
+```{r}
+ogr$durum <- ifelse(ogr$not >= 50, "Geçti", "Kaldı")
+
+ogr
+```
+
+Burada dikkat edilmesi gereken bir nokta vardır. `not` değeri `NA` olan öğrenci için `durum` da `NA` olur. Çünkü R, eksik değerle yapılan karşılaştırmanın sonucunu kesin olarak bilemez.
+
+Daha kontrollü bir yapı yazmak istersek:
+
+```{r}
+ogr$durum2 <- ifelse(
+  is.na(ogr$not), "Not yok",
+  ifelse(ogr$not >= 50, "Geçti", "Kaldı")
+)
+
+ogr
+```
+
+Bölümlere göre ortalama not hesaplayalım.
+
+```{r}
+aggregate(
+  not ~ bolum,
+  data = ogr,
+  FUN = mean,
+  na.rm = TRUE
+)
+```
+
+Notlara göre öğrencileri sıralayalım.
+
+```{r}
+ogr[order(ogr$not, decreasing = TRUE), ]
+```
+
+Bu örnekte data frame oluşturma, yapısını inceleme, yeni değişken üretme, eksik değer kontrolü, gruplara göre özetleme ve sıralama işlemleri birlikte kullanılmıştır.
+
+#### Temel Data Frame Fonksiyonları ve Kullanım Yerleri
+
+Data frame ile çalışırken bazı fonksiyonlar tekrar tekrar kullanılır. Ancak bu fonksiyonları ezber listesi olarak değil, veriyle tanışma sürecinin doğal araçları olarak düşünmek gerekir.
+
+| Fonksiyon          | Kullanım amacı                             |
+|--------------------|--------------------------------------------|
+| `str()`            | Veri yapısını ve sütun tiplerini incelemek |
+| `head()`           | İlk satırlara bakmak                       |
+| `tail()`           | Son satırlara bakmak                       |
+| `dim()`            | Satır ve sütun sayısını birlikte görmek    |
+| `nrow()`           | Satır sayısını görmek                      |
+| `ncol()`           | Sütun sayısını görmek                      |
+| `names()`          | Sütun adlarını görmek veya değiştirmek     |
+| `summary()`        | Sütunlara göre temel özet almak            |
+| `is.na()`          | Eksik değerleri tespit etmek               |
+| `complete.cases()` | Tam gözlemleri belirlemek                  |
+| `order()`          | Satırları sıralamak                        |
+| `aggregate()`      | Gruplara göre özet hesaplamak              |
+
+Bu fonksiyonlar, data frame ile çalışmanın temel araç kutusunu oluşturur.
+
+#### Sık Yapılan Hatalar
+
+Data frame ile çalışırken yapılan hataların çoğu sütun seçimi, veri tipi, eksik değer ve satır-sütun indeksleme kaynaklıdır.
+
+İlk yaygın hata, `$`, `[ ]` ve `[[ ]]` farkını bilmemektir.
+
+```{r}
+ogrenci$not
+ogrenci["not"]
+ogrenci[["not"]]
+```
+
+Bu üç ifade benzer görünse de aynı nesne tipini döndürmez.
+
+İkinci hata, eksik değerleri dikkate almadan yeni değişken oluşturmaktır.
+
+```{r}
+x <- c(60, NA, 40)
+
+ifelse(x >= 50, "Geçti", "Kaldı")
+```
+
+Burada eksik değer için sonuç `NA` olur. Bu durum bilinçli biçimde yönetilmelidir.
+
+Üçüncü hata, data frame içindeki sayısal olması gereken sütunun character olarak gelmesidir.
+
+```{r}
+df_hata <- data.frame(
+  gelir = c("1000", "2000", "3000")
+)
+
+str(df_hata)
+
+# Ortalama hesaplamaya çalışırsak hata alırız.
+# mean(df_hata$gelir)
+```
+
+Doğru kullanım:
+
+```{r}
+df_hata$gelir <- as.numeric(df_hata$gelir)
+
+mean(df_hata$gelir)
+```
+
+Dördüncü hata, sıralama veya filtreleme sonrası satır sırasının değiştiğini fark etmemektir. Bu nedenle yapılan işlemlerin sonucu mutlaka kontrol edilmelidir.
+
+#### Egzersizler
+
+Aşağıdaki egzersizler data frame oluşturma, inceleme, seçim, filtreleme ve özetleme işlemlerini pekiştirmek için hazırlanmıştır.
+
+1.  `isim`, `yas`, `gelir` ve `sehir` sütunlarından oluşan bir data frame oluşturunuz.
+2.  Veri setinin yapısını `str()` ile inceleyiniz.
+3.  İlk üç satırı `head()` ile görüntüleyiniz.
+4.  Sütun adlarını `names()` ile görüntüleyiniz.
+5.  `gelir` sütununu `$`, `[ ]` ve `[[ ]]` ile ayrı ayrı seçiniz.
+6.  Yaşı 30'dan büyük olan kişileri seçiniz.
+7.  Geliri 30000'den yüksek olan kişileri seçiniz.
+8.  Yeni bir `gelir_grubu` değişkeni oluşturunuz.
+9.  Eksik değer içeren bir sütun ekleyip eksik değer sayısını hesaplayınız.
+10. Şehre göre ortalama gelir hesaplayınız.
+11. Gelire göre büyükten küçüğe sıralama yapınız.
+
+#### Egzersiz Çözümleri
+
+```{r}
+# 1. Data frame oluşturma
+kisiler <- data.frame(
+  isim = c("Ali", "Ayşe", "Mehmet", "Zeynep", "Can"),
+  yas = c(25, 34, 29, 41, 38),
+  gelir = c(25000, 42000, 31000, 50000, 28000),
+  sehir = c("Ankara", "İstanbul", "Ankara", "İzmir", "İstanbul")
+)
+
+kisiler
+```
+
+```{r}
+# 2. Yapıyı inceleme
+str(kisiler)
+```
+
+```{r}
+# 3. İlk satırlar
+head(kisiler, 3)
+```
+
+```{r}
+# 4. Sütun adları
+names(kisiler)
+```
+
+```{r}
+# 5. Gelir sütununu farklı yollarla seçme
+kisiler$gelir
+
+kisiler["gelir"]
+
+kisiler[["gelir"]]
+```
+
+```{r}
+# 6. Yaşı 30'dan büyük olan kişiler
+kisiler[kisiler$yas > 30, ]
+```
+
+```{r}
+# 7. Geliri 30000'den yüksek olan kişiler
+kisiler[kisiler$gelir > 30000, ]
+```
+
+```{r}
+# 8. Gelir grubu oluşturma
+kisiler$gelir_grubu <- ifelse(
+  kisiler$gelir >= 30000,
+  "Yüksek",
+  "Düşük"
+)
+
+kisiler
+```
+
+```{r}
+# 9. Eksik değer ekleme ve kontrol
+kisiler$puan <- c(80, NA, 75, 90, NA)
+
+sum(is.na(kisiler$puan))
+
+colSums(is.na(kisiler))
+```
+
+```{r}
+# 10. Şehre göre ortalama gelir
+aggregate(
+  gelir ~ sehir,
+  data = kisiler,
+  FUN = mean
+)
+```
+
+```{r}
+# 11. Gelire göre büyükten küçüğe sıralama
+kisiler[order(kisiler$gelir, decreasing = TRUE), ]
+```
+
+#### Bölüm Özeti
+
+Data frame, R'de gerçek veri analizi için en temel yapılardan biridir. Vektörler ve matrisler homojen yapılarken, data frame farklı veri tiplerine sahip sütunları aynı tablo içinde bir araya getirebilir. Bu yönüyle data frame, tablosal veri mantığını R içinde temsil eden ana yapıdır.
+
+Bu bölümde data frame oluşturma, yapısını inceleme, sütun ve satır seçme, koşullu filtreleme, yeni değişken üretme, eksik değerleri kontrol etme, satır-sütun ekleme, sıralama ve gruplara göre özetleme işlemleri ele alındı. Ayrıca `str()`, `head()`, `tail()`, `dim()`, `nrow()`, `ncol()`, `names()`, `summary()`, `is.na()`, `complete.cases()`, `order()` ve `aggregate()` gibi temel fonksiyonlar data frame ile çalışma akışının doğal bir parçası olarak gösterildi.
+
+Data frame yapısını iyi anlamak, R'de veri analizi yapmanın temel koşullarından biridir. Çünkü veri okuma, temizleme, dönüştürme, modelleme ve raporlama süreçlerinin büyük kısmı data frame benzeri tablosal yapılar üzerinde gerçekleşir.
+
+::: callout-tip
+## Not
+
+**`tibble`**, Hadley Wickham tarafından geliştirilen ve **`dplyr`** paketi ile sıkça kullanılan bir veri yapısıdır. **`tibble`**, **`data.frame`**'e benzerdir, ancak bazı önemli farklar vardır. **`tibble`**, daha düzenli ve okunabilir bir çıktı üretir ve bazı varsayılan davranışları **`data.frame`**'den farklıdır. Modern data.frame olarak tanımlanmaktadır.
+
+```{r}
+# tibble örneği
+library(tibble)
+
+ogrenciler_tibble <- tribble(
+  ~Ad,     ~Yas, ~Cinsiyet,
+  "Ali",   20,   "Erkek",
+  "Ayşe",  22,   "Kadın",
+  "Mehmet", 21,  "Erkek",
+  "Zeynep", 23,  "Kadın"
+)
+
+# tibble'ı görüntüleme
+print(ogrenciler_tibble)
+
+```
+
+Yukarıdaki örnekte, "ogrenciler_tibble" adında bir **`tibble`** oluşturuldu. **`tibble`**, sütun adlarını ve içeriği daha okunabilir bir şekilde görüntüler ve sütunların başlık ve veri tipi (**`~Ad`**, **`~Yas`**, **`~Cinsiyet`**) gibi özelliklerini korur.
+
+Hem **`dataframe`** hem de **`tibble`** veri analizi ve işleme işlemlerinde kullanışlıdır. Hangi veri yapısını kullanacağınız, projenizin gereksinimlerine ve kişisel tercihinize bağlıdır. Özellikle veri analizi için **`dplyr`** gibi paketlerle çalışırken **`tibble`** tercih edilir.
+:::
+
+### Factor: Kategorik Verinin Doğru Temsili
+
+Gerçek veri analizlerinde değişkenlerin önemli bir kısmı sayısal değildir. Örneğin:
+
+-   cinsiyet (Kadın / Erkek),
+-   şehir (Ankara / İstanbul / İzmir),
+-   eğitim durumu (Lise / Lisans / Yüksek Lisans),
+-   memnuniyet düzeyi (Düşük / Orta / Yüksek)
+
+gibi değişkenler **kategorik** yapıdadır.
+
+Bu tür veriler ilk bakışta character (metin) olarak saklanabilir gibi görünse de, R bu tür değişkenler için özel bir veri tipi sunar: **factor**.
+
+------------------------------------------------------------------------
+
+#### Factor Nedir?
+
+Factor, sınırlı sayıda kategoriye sahip olan değişkenleri temsil etmek için kullanılan özel bir veri tipidir.
+
+Bir factor iki bileşenden oluşur:
+
+-   değerler (gözlemler)
+-   seviyeler (levels)
+
+```{r}
+cinsiyet <- factor(c("Kadın", "Erkek", "Kadın", "Kadın", "Erkek"))
+
+cinsiyet
+```
+
+Factor nesnesinin yapısını inceleyelim:
+
+```{r}
+str(cinsiyet)
+```
+
+Burada dikkat edilmesi gereken kritik nokta şudur:
+
+> Factor aslında veriyi metin olarak değil, **kategori indeksleri** olarak saklar.
+
+#### Levels (Seviyeler)
+
+Factor'ün en önemli özelliği **levels** kavramıdır.
+
+```{r}
+levels(cinsiyet)
+```
+
+Bu çıktı, değişkenin alabileceği tüm kategorileri gösterir.
+
+Bu durum şunu sağlar:
+
+-   veri tutarlılığı korunur
+
+-   kategoriler kontrol altına alınır
+
+-   modelleme süreçleri daha doğru çalışır
+
+#### Character vs Factor
+
+Aynı veri character olarak tutulduğunda:
+
+```{r}
+c1 <- c("Kadın", "Erkek", "Kadın")
+
+class(c1)
+```
+
+Factor olarak tutulduğunda:
+
+```{r}
+c2 <- factor(c1)
+
+class(c2)
+```
+
+Aradaki fark:
+
+-   character → serbest metin
+
+-   factor → kontrollü kategori
+
+Bu fark özellikle analiz ve modelleme sırasında kritik hale gelir.
+
+#### Levels Kontrolü ve Sıralama
+
+Factor oluştururken seviyeleri kendimiz belirleyebiliriz:
+
+```{r}
+egitim <- factor(
+  c("Lise", "Lisans", "Yüksek Lisans", "Lisans"),
+  levels = c("Lise", "Lisans", "Yüksek Lisans")
+)
+
+egitim
+```
+
+Bu tanımlama sayesinde kategorilerin sırası kontrol altına alınır.
+
+#### Ordered Factor (Sıralı Kategoriler)
+
+Bazı kategorik değişkenler doğal bir sıralamaya sahiptir.
+
+Örneğin:
+
+**Düşük \< Orta \< Yüksek**
+
+Bu tür durumlar için `ordered = TRUE` kullanılır.
+
+```{r}
+memnuniyet <- factor(
+  c("Düşük", "Orta", "Yüksek", "Orta"),
+  levels = c("Düşük", "Orta", "Yüksek"),
+  ordered = TRUE
+)
+
+memnuniyet
+```
+
+Bu yapı sayesinde karşılaştırma yapılabilir:
+
+```{r}
+memnuniyet[1] < memnuniyet[2]
+```
+
+#### Factor ve Sayısal Dönüşüm Hatası
+
+Factor ile ilgili en yaygın hata:
+
+```{r}
+x <- factor(c("10", "20", "30"))
+
+as.numeric(x)
+```
+
+Bu sonuç **yanlıştır**. Çünkü R sayıları değil, factor seviyelerinin indekslerini döndürür. Doğru dönüşüm iki aşamalı şekilde aşağıdaki gibidir.
+
+```{r}
+as.numeric(as.character(x))
+```
+
+#### Data Frame İçinde Factor
+
+Data frame içinde kategorik değişkenler genellikle factor olarak tutulur.
+
+```{r}
+df <- data.frame(
+  isim = c("Ali", "Ayşe", "Mehmet"),
+  sehir = factor(c("Ankara", "İstanbul", "Ankara"))
+)
+
+str(df)
+```
+
+Bu yapı gruplama işlemlerini kolaylaştırır ve özetleme fonksiyonları ile uyumludur.
+
+#### Factor ile Özetleme
+
+```{r}
+sehir <- factor(c("Ankara", "İstanbul", "Ankara", "İzmir"))
+
+table(sehir)
+```
+
+Bu fonksiyon her kategorinin frekansını verir.
+
+#### Sık Yapılan Hatalar
+
+```{r}
+# yanlış numeric dönüşüm
+as.numeric(factor(c("10","20")))
+
+# seviyeleri kontrol etmeden model kurmak
+factor(c("A","B","A"))
+
+# sıralı olması gereken değişkeni unordered bırakmak
+factor(c("Düşük","Orta","Yüksek"))
+```
+
+#### Egzersizler
+
+1.  Bir şehir değişkeni oluşturup factor’e çeviriniz
+
+2.  Levels bilgisini inceleyiniz
+
+3.  Sıralı bir factor oluşturunuz
+
+4.  Yanlış numeric dönüşümü test ediniz
+
+5.  table() ile frekans hesaplayınız
+
+#### Bölüm Özeti
+
+Factor, kategorik veriyi temsil etmek için kullanılan özel bir veri tipidir. Character verilerden farklı olarak, kategorileri ve bu kategorilerin seviyelerini kontrol altına alır. Bu yapı:
+
+-   veri tutarlılığı sağlar
+
+-   analiz sürecini kolaylaştırır
+
+-   modelleme açısından kritik rol oynar
+
+Ancak yanlış kullanıldığında, özellikle dönüşüm işlemlerinde ciddi hatalara yol açabilir.

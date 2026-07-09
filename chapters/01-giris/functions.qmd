@@ -1,0 +1,1024 @@
+# Fonksiyonlar
+
+## Giriş: Kod Yazmaktan Sistem Kurmaya Geçiş
+
+Programlama öğrenirken ilk aşamada genellikle komutları tek tek çalıştırırız. Bir veri seti okuruz, ortalama hesaplarız, grafik çizeriz, bir sonucu ekrana yazdırırız. Bu aşamada kod, çoğu zaman doğrusal bir akışa sahiptir: önce bunu yap, sonra bunu yap, ardından sonucu göster.
+
+Ancak veri analizi gerçek hayatta bu kadar doğrusal ilerlemez. Aynı işlemi farklı değişkenler için tekrar etmek gerekir. Aynı hesaplama farklı veri setlerine uygulanır. Aynı grafik, farklı gruplar için üretilir. Aynı veri temizleme adımları farklı dosyalarda tekrar edilir. İşte bu noktada programlama becerisini geliştiren temel soru ortaya çıkar:
+
+> Aynı kodu tekrar tekrar yazmak yerine, bu işlemi bir kez tanımlayıp gerektiğinde tekrar kullanabilir miyim?
+
+Bu sorunun cevabı **fonksiyonlardır**.
+
+Fonksiyonlar, belirli bir görevi yerine getirmek için tasarlanan, tekrar kullanılabilir kod bloklarıdır. Bir fonksiyon girdi alabilir, bu girdiler üzerinde işlem yapabilir ve çıktı üretebilir. Fakat fonksiyonlar yalnızca kod tekrarını azaltan teknik araçlar değildir. Daha önemlisi, problemi parçalara ayırmayı, her parçaya açık bir görev vermeyi ve kodu daha anlaşılır bir yapıya dönüştürmeyi sağlar.
+
+Bu nedenle fonksiyon yazmak, R öğreniminde önemli bir eşiktir. Fonksiyon yazmaya başlayan kişi artık yalnızca komutları kullanan biri değildir; kendi küçük araçlarını tasarlayan, analiz sürecini modüler hale getiren ve programlama düşüncesine yaklaşan kişidir.
+
+Bu bölümde fonksiyon kavramını, R'de fonksiyon yazımını, argüman mantığını, varsayılan değerleri, `return()` kullanımını, kapsam (scope) kavramını, `...` yani ellipsis kullanımını, hata yönetimini ve iyi fonksiyon tasarımının temel ilkelerini ele alacağız.
+
+------------------------------------------------------------------------
+
+## Fonksiyon Kavramı: Matematikten Programlamaya
+
+Matematikte fonksiyon, bir girdiyi belirli bir kurala göre çıktıya dönüştüren yapı olarak tanımlanır. Örneğin:
+
+\[ f(x) = x\^2 \]
+
+Bu fonksiyon, verilen `x` değerini alır ve karesini üretir. Eğer `x = 4` ise sonuç 16 olur.
+
+Programlamadaki fonksiyonlar da benzer mantığa sahiptir. Bir fonksiyon:
+
+-   girdi alır,
+-   bu girdiler üzerinde işlem yapar,
+-   sonuç üretir.
+
+R'de sık kullandığımız birçok yapı aslında fonksiyondur.
+
+```{r}
+# sqrt() karekök hesaplar.
+sqrt(16)
+
+# mean() ortalama hesaplar.
+mean(c(10, 20, 30))
+
+# length() nesnenin uzunluğunu verir.
+length(c("A", "B", "C"))
+```
+
+Bu fonksiyonlarda ortak mantık aynıdır:
+
+| Fonksiyon  | Girdi          | İşlem         | Çıktı |
+|------------|----------------|---------------|-------|
+| `sqrt()`   | sayı           | karekök alma  | sayı  |
+| `mean()`   | sayısal vektör | ortalama alma | sayı  |
+| `length()` | vektör         | eleman sayma  | sayı  |
+
+Bu açıdan fonksiyonlar, programlamada “girdi → işlem → çıktı” ilişkisinin somutlaşmış halidir.
+
+------------------------------------------------------------------------
+
+## Neden Fonksiyon Yazılır?
+
+Fonksiyon yazmanın temel amacı yalnızca kodu kısaltmak değildir. Kodu daha güvenilir, okunabilir, tekrar kullanılabilir ve sürdürülebilir hale getirmektir.
+
+### Tekrarı Azaltmak
+
+Aynı kodu birçok kez yazmak hem zaman kaybıdır hem de hata riskini artırır.
+
+```{r}
+x1 <- c(10, 20, 30)
+x2 <- c(5, 15, 25)
+x3 <- c(100, 120, 140)
+
+mean(x1)
+mean(x2)
+mean(x3)
+```
+
+Bu örnekte sorun yok gibi görünür. Ancak hesaplama biraz daha karmaşık hale gelirse aynı kodu tekrar etmek yorucu olur.
+
+```{r}
+# Standartlaştırma işlemi:
+# Her değerden ortalama çıkarılır ve standart sapmaya bölünür.
+(x1 - mean(x1)) / sd(x1)
+(x2 - mean(x2)) / sd(x2)
+(x3 - mean(x3)) / sd(x3)
+```
+
+Bunun yerine bir fonksiyon yazabiliriz.
+
+```{r}
+standartlastir <- function(x) {
+  (x - mean(x)) / sd(x)
+}
+
+standartlastir(x1)
+standartlastir(x2)
+standartlastir(x3)
+```
+
+Bu kod daha kısa, daha okunabilir ve daha güvenilirdir.
+
+### Hata Riskini Azaltmak
+
+Aynı formülü birçok yerde yazarsak, hata yapma ihtimalimiz artar. Bir yerde `sd()` yerine yanlışlıkla `var()` yazmak, sonuçları değiştirebilir. Fonksiyon kullanıldığında hesaplama mantığı tek bir yerde tanımlanır.
+
+### Okunabilirliği Artırmak
+
+Şu kod teknik olarak doğrudur:
+
+``` r
+(x - mean(x)) / sd(x)
+```
+
+Fakat şu kod niyeti daha açık gösterir:
+
+``` r
+standartlastir(x)
+```
+
+İyi isimlendirilmiş bir fonksiyon, kodun ne yaptığını açıklayan küçük bir cümle gibi çalışır.
+
+### Yeniden Kullanılabilirlik Sağlamak
+
+Bir kez yazılan fonksiyon farklı veri setlerinde, farklı projelerde ve farklı zamanlarda yeniden kullanılabilir.
+
+### Analiz Sürecini Modüler Hale Getirmek
+
+Fonksiyonlar büyük bir problemi küçük parçalara ayırmamızı sağlar. Her fonksiyon tek bir göreve odaklanırsa, kodun tamamını anlamak ve test etmek kolaylaşır.
+
+------------------------------------------------------------------------
+
+## R'de Fonksiyonlar Birer Nesnedir
+
+R'de fonksiyonlar yalnızca çağrılan komutlar değildir; aynı zamanda nesnedir. Bu nedenle bir fonksiyonun kendisini ekrana yazdırabilir, başka bir nesneye atayabilir veya başka fonksiyonlara argüman olarak verebiliriz.
+
+```{r}
+mean
+```
+
+Bir nesnenin fonksiyon olup olmadığını `is.function()` ile kontrol edebiliriz.
+
+```{r}
+is.function(mean)
+is.function(sum)
+is.function(data.frame)
+```
+
+Bu özellik R'nin fonksiyonel programlama tarafını gösterir. R'de birçok işlem, fonksiyonların birbiriyle birlikte çalışması üzerine kuruludur.
+
+------------------------------------------------------------------------
+
+## Fonksiyonun Temel Yapısı
+
+R'de fonksiyonlar `function()` ifadesiyle tanımlanır.
+
+Genel yapı şöyledir:
+
+``` r
+fonksiyon_adi <- function(argumanlar) {
+  # çalışacak kodlar
+  sonuc
+}
+```
+
+Basit bir örnek yazalım.
+
+```{r}
+# x argümanını alıp karesini döndüren fonksiyon
+kare_al <- function(x) {
+  x^2
+}
+
+kare_al(5)
+kare_al(12)
+```
+
+Bu fonksiyonun bileşenleri:
+
+-   `kare_al`: fonksiyonun adı,
+-   `function`: fonksiyon tanımlama ifadesi,
+-   `x`: argüman,
+-   `x^2`: fonksiyonun yaptığı işlem,
+-   sonuç: hesaplanan değer.
+
+Fonksiyon isimleri anlamlı seçilmelidir. `f1`, `abc`, `test` gibi isimler küçük denemelerde iş görse de gerçek projelerde kodun okunabilirliğini düşürür.
+
+------------------------------------------------------------------------
+
+## Argüman Mantığı
+
+Fonksiyonun dışarıdan aldığı değerlere **argüman** denir. Argümanlar fonksiyonun esnekliğini sağlar.
+
+```{r}
+topla <- function(x, y) {
+  x + y
+}
+
+topla(5, 8)
+```
+
+Burada `x` ve `y` fonksiyonun argümanlarıdır. Fonksiyon, verilen iki değeri toplar.
+
+Daha açıklayıcı bir örnek:
+
+```{r}
+# Dikdörtgen alanı hesaplayan fonksiyon
+dikdortgen_alan <- function(uzunluk, genislik) {
+  uzunluk * genislik
+}
+
+dikdortgen_alan(uzunluk = 10, genislik = 4)
+```
+
+Argüman isimleri yalnızca teknik bir ayrıntı değildir. Fonksiyonun ne beklediğini okuyucuya anlatır.
+
+------------------------------------------------------------------------
+
+## İsimli ve Sıralı Argüman Kullanımı
+
+R'de argümanlar iki şekilde verilebilir:
+
+1.  Sıralı kullanım
+2.  İsimli kullanım
+
+```{r}
+# Sıralı kullanım
+dikdortgen_alan(10, 4)
+
+# İsimli kullanım
+dikdortgen_alan(uzunluk = 10, genislik = 4)
+```
+
+Sıralı kullanım kısa olabilir; ancak isimli kullanım daha okunabilirdir. Özellikle çok sayıda argümanı olan fonksiyonlarda isimli kullanım tercih edilmelidir.
+
+```{r}
+# Argüman sırası değişse bile isimli kullanım doğru sonucu üretir.
+dikdortgen_alan(genislik = 4, uzunluk = 10)
+```
+
+------------------------------------------------------------------------
+
+## Varsayılan Argümanlar
+
+Fonksiyonlarda bazı argümanlara varsayılan değer verilebilir. Böylece kullanıcı o argümanı belirtmezse fonksiyon varsayılan değeri kullanır.
+
+```{r}
+selamla <- function(isim = "Misafir") {
+  paste("Merhaba", isim)
+}
+
+selamla()
+selamla("Fatih")
+```
+
+Varsayılan argümanlar fonksiyonu daha kullanıcı dostu hale getirir. R'deki birçok fonksiyon bu mantıkla çalışır.
+
+Örneğin `mean()` fonksiyonunda `na.rm` argümanı varsayılan olarak `FALSE` değerindedir.
+
+```{r}
+x <- c(10, 20, NA, 30)
+
+mean(x)
+mean(x, na.rm = TRUE)
+```
+
+Kendi fonksiyonlarımızda da benzer bir tasarım kullanabiliriz.
+
+```{r}
+ortalama_hesapla <- function(x, na.rm = TRUE) {
+  mean(x, na.rm = na.rm)
+}
+
+ortalama_hesapla(x)
+ortalama_hesapla(x, na.rm = FALSE)
+```
+
+Bu örnekte `na.rm` argümanı dışarıdan alınmış ve içeride `mean()` fonksiyonuna aktarılmıştır.
+
+------------------------------------------------------------------------
+
+## `return()` Kullanımı
+
+R'de fonksiyonun son satırı otomatik olarak çıktı olarak döndürülür.
+
+```{r}
+kup_al <- function(x) {
+  x^3
+}
+
+kup_al(3)
+```
+
+Aynı fonksiyon `return()` ile daha açık yazılabilir.
+
+```{r}
+kup_al2 <- function(x) {
+  sonuc <- x^3
+  return(sonuc)
+}
+
+kup_al2(3)
+```
+
+Küçük fonksiyonlarda `return()` kullanmak zorunlu değildir. Ancak uzun fonksiyonlarda, özellikle belirli koşullarda fonksiyondan erken çıkmak istediğimizde kullanışlıdır.
+
+```{r}
+pozitif_karekok <- function(x) {
+
+  if (x < 0) {
+    return(NA)
+  }
+
+  sqrt(x)
+}
+
+pozitif_karekok(25)
+pozitif_karekok(-4)
+```
+
+Bu örnekte `x` negatifse fonksiyon erken sonlanır ve `NA` döndürür.
+
+------------------------------------------------------------------------
+
+## Fonksiyon İçinde Ara Değişken Kullanmak
+
+Fonksiyon içinde ara değişkenler kullanmak kodun okunabilirliğini artırır.
+
+```{r}
+varyasyon_katsayisi <- function(x, na.rm = TRUE) {
+
+  ortalama <- mean(x, na.rm = na.rm)
+  standart_sapma <- sd(x, na.rm = na.rm)
+
+  sonuc <- standart_sapma / ortalama
+
+  return(sonuc)
+}
+
+varyasyon_katsayisi(c(10, 12, 15, 20))
+```
+
+Varyasyon katsayısı, standart sapmanın ortalamaya oranıdır. Bir değişkenin göreli değişkenliğini anlamak için kullanılır. Bu tür istatistiksel hesaplamaları fonksiyonlaştırmak, analiz sürecinde tekrar kullanılabilir araçlar üretir.
+
+------------------------------------------------------------------------
+
+## Fonksiyon İçinde Koşul Kullanımı
+
+Fonksiyonlar karar yapıları içerebilir. Örneğin bir sayının negatif, pozitif veya sıfır olduğunu belirleyen bir fonksiyon yazalım.
+
+```{r}
+sayi_tipi <- function(x) {
+
+  if (x > 0) {
+    "Pozitif"
+  } else if (x < 0) {
+    "Negatif"
+  } else {
+    "Sıfır"
+  }
+}
+
+sayi_tipi(10)
+sayi_tipi(-3)
+sayi_tipi(0)
+```
+
+Bu örnek fonksiyonların yalnızca hesaplama değil, karar verme yapıları da içerebileceğini gösterir.
+
+------------------------------------------------------------------------
+
+## Fonksiyonların Vektörel Davranışı
+
+R vektörel çalışan bir dil olduğu için fonksiyon yazarken vektörleri dikkate almak önemlidir.
+
+```{r}
+yuzde_artis <- function(eski, yeni) {
+  ((yeni - eski) / eski) * 100
+}
+
+yuzde_artis(100, 120)
+```
+
+Aynı fonksiyon vektörlerle de çalışabilir.
+
+```{r}
+eski <- c(100, 200, 300)
+yeni <- c(110, 260, 330)
+
+yuzde_artis(eski, yeni)
+```
+
+Bu fonksiyon her eleman için yüzde artışı hesaplar. Ancak vektör uzunlukları farklıysa R'nin geri dönüşüm kuralı devreye girebilir. Bu nedenle daha güvenli fonksiyonlar yazarken girdi kontrolleri eklemek gerekir.
+
+------------------------------------------------------------------------
+
+## Girdi Kontrolü
+
+İyi bir fonksiyon yalnızca doğru girdilerle çalışmakla yetinmemeli, yanlış girdilerde kullanıcıyı uyarmalıdır.
+
+```{r}
+yuzde_artis_guvenli <- function(eski, yeni) {
+
+  if (length(eski) != length(yeni)) {
+    stop("eski ve yeni vektörleri aynı uzunlukta olmalıdır.")
+  }
+
+  if (any(eski == 0)) {
+    stop("eski değerleri içinde 0 olamaz; yüzde değişim tanımsız olur.")
+  }
+
+  ((yeni - eski) / eski) * 100
+}
+
+yuzde_artis_guvenli(c(100, 200), c(120, 260))
+```
+
+Burada `stop()` fonksiyonu hata üretir ve fonksiyonun çalışmasını durdurur. Bu yaklaşım, yanlış sonuç üretmekten çok daha iyidir. Sessiz hata, açık hatadan daha tehlikelidir.
+
+------------------------------------------------------------------------
+
+## `stop()`, `warning()` ve `message()`
+
+Fonksiyon yazarken kullanıcıya farklı düzeylerde bilgi verebiliriz.
+
+### `stop()`
+
+Ciddi bir hata olduğunda kullanılır. Fonksiyon durur.
+
+```{r}
+karekok_guvenli <- function(x) {
+
+  if (any(x < 0)) {
+    stop("Negatif değerler için reel karekök hesaplanamaz.")
+  }
+
+  sqrt(x)
+}
+
+karekok_guvenli(c(4, 9, 16))
+```
+
+### `warning()`
+
+Fonksiyon çalışmaya devam eder; ancak kullanıcıya dikkat edilmesi gereken bir durum bildirilir.
+
+```{r}
+ortalama_uyarili <- function(x) {
+
+  if (any(is.na(x))) {
+    warning("Veride eksik değer var; na.rm = TRUE kullanıldı.")
+  }
+
+  mean(x, na.rm = TRUE)
+}
+
+ortalama_uyarili(c(10, 20, NA, 30))
+```
+
+### `message()`
+
+Kullanıcıya bilgilendirici mesaj vermek için kullanılır.
+
+```{r}
+raporla_ortalama <- function(x) {
+
+  message("Ortalama hesaplanıyor...")
+
+  mean(x, na.rm = TRUE)
+}
+
+raporla_ortalama(c(10, 20, 30))
+```
+
+Genel kullanım mantığı:
+
+| Fonksiyon   | Ne zaman kullanılır?                        |
+|-------------|---------------------------------------------|
+| `stop()`    | işlem devam etmemeliyse                     |
+| `warning()` | işlem devam edebilir ama dikkat gerekiyorsa |
+| `message()` | bilgilendirme yapılacaksa                   |
+
+------------------------------------------------------------------------
+
+## Scope ve Environment Mantığı
+
+Fonksiyonların en önemli ama çoğu zaman en az anlaşılan konularından biri **scope** kavramıdır. Scope, bir değişkenin nerede geçerli olduğunu ifade eder.
+
+Fonksiyon içinde tanımlanan değişkenler genellikle fonksiyonun içinde yaşar ve dışarıyı etkilemez.
+
+```{r}
+x <- 100
+
+ornek <- function() {
+  x <- 5
+  x + 1
+}
+
+ornek()
+x
+```
+
+Fonksiyon içindeki `x` ile dışarıdaki `x` aynı değildir. Fonksiyon kendi küçük çalışma alanına sahiptir. Bu alan R'de **environment** olarak adlandırılır.
+
+Bu davranış önemlidir; çünkü fonksiyonların dış dünyayı gereksiz yere değiştirmesini engeller. Fonksiyonlar mümkün olduğunca girdilerini argüman olarak almalı ve sonuçlarını çıktı olarak döndürmelidir.
+
+------------------------------------------------------------------------
+
+## Global Değişkenlere Bağımlılık
+
+Aşağıdaki fonksiyon çalışır; ancak iyi tasarlanmış değildir.
+
+```{r}
+katsayi <- 2
+
+carp_kotu <- function(x) {
+  x * katsayi
+}
+
+carp_kotu(10)
+```
+
+Bu fonksiyon dışarıdaki `katsayi` değişkenine bağımlıdır. Eğer `katsayi` değişirse fonksiyonun sonucu da değişir.
+
+```{r}
+katsayi <- 5
+carp_kotu(10)
+```
+
+Daha iyi yaklaşım, katsayıyı fonksiyon argümanı yapmaktır.
+
+```{r}
+carp_iyi <- function(x, katsayi = 2) {
+  x * katsayi
+}
+
+carp_iyi(10)
+carp_iyi(10, katsayi = 5)
+```
+
+Bu tasarım daha açık, test edilebilir ve güvenilirdir.
+
+------------------------------------------------------------------------
+
+## Ellipsis (`...`) Nedir?
+
+R'de `...` özel bir argüman yapısıdır. İngilizcede **ellipsis** olarak adlandırılır. Türkçede “üç nokta argümanı” ya da “değişken sayıda argüman geçirme yapısı” gibi düşünülebilir.
+
+`...`, bir fonksiyonun önceden tek tek tanımlanmamış ek argümanları almasına ve bunları başka bir fonksiyona aktarmasına izin verir.
+
+Bu kavram özellikle iki durumda çok kullanılır:
+
+1.  Bir fonksiyonun başka bir fonksiyon için sarmalayıcı (wrapper) olması
+2.  Fonksiyonun esnek argüman kabul etmesi
+
+Basit bir örnekle başlayalım.
+
+```{r}
+ortalama2 <- function(x, ...) {
+  mean(x, ...)
+}
+
+x <- c(10, 20, NA, 30)
+
+ortalama2(x)
+ortalama2(x, na.rm = TRUE)
+```
+
+Burada `ortalama2()` fonksiyonunda `na.rm` argümanı açıkça tanımlanmamıştır. Ancak `...` sayesinde kullanıcıdan gelen `na.rm = TRUE` argümanı `mean()` fonksiyonuna aktarılmıştır.
+
+Yani `...` şu işe yarar:
+
+> Ben bu argümanları tek tek burada tanımlamak istemiyorum; uygun olanları içeride çağırdığım fonksiyona ilet.
+
+------------------------------------------------------------------------
+
+## Ellipsis ile Wrapper Function Yazmak
+
+Wrapper function, var olan bir fonksiyonu daha özel, daha kullanışlı veya daha standart hale getiren sarmalayıcı fonksiyondur.
+
+Örneğin sık sık aynı grafik ayarlarıyla çizim yapmak istediğimizi düşünelim.
+
+```{r}
+grafik_ciz <- function(x, y, ...) {
+
+  plot(
+    x, y,
+    xlab = "X değişkeni",
+    ylab = "Y değişkeni",
+    ...
+  )
+}
+
+x <- 1:10
+y <- x^2
+
+grafik_ciz(x, y)
+grafik_ciz(x, y, main = "Kare Fonksiyonu", pch = 19)
+```
+
+Bu örnekte `main`, `pch` gibi argümanlar `grafik_ciz()` fonksiyonunda tanımlı değildir. Ancak `...` sayesinde `plot()` fonksiyonuna aktarılmıştır.
+
+Bu oldukça güçlüdür. Çünkü hem fonksiyonumuzun temel davranışını standartlaştırırız hem de kullanıcıya esneklik bırakırız.
+
+------------------------------------------------------------------------
+
+## Ellipsis ile Esnek Raporlama Fonksiyonu
+
+Bir özet fonksiyonu yazalım. Bu fonksiyon temel olarak ortalama hesaplasın; fakat kullanıcı isterse `mean()` fonksiyonuna ek argümanlar geçebilsin.
+
+```{r}
+ozet_ortalama <- function(x, baslik = "Ortalama", ...) {
+
+  sonuc <- mean(x, ...)
+
+  paste(baslik, ":", round(sonuc, 2))
+}
+
+x <- c(10, 20, NA, 30)
+
+ozet_ortalama(x, na.rm = TRUE)
+ozet_ortalama(x, baslik = "Gelir ortalaması", na.rm = TRUE)
+```
+
+Burada `baslik` bizim fonksiyonumuza ait argümandır. `na.rm` ise `...` aracılığıyla `mean()` fonksiyonuna aktarılır.
+
+------------------------------------------------------------------------
+
+## Ellipsis Kullanırken Dikkat Edilmesi Gerekenler
+
+`...` güçlüdür; ancak dikkatli kullanılmazsa kodu belirsiz hale getirebilir.
+
+Örneğin kullanıcı yanlış bir argüman adı yazarsa, bu bazen fark edilmeyebilir veya hata mesajı yeterince açık olmayabilir.
+
+```{r}
+# Bu örnek, yanlış argüman kullanımının riskini göstermek içindir.
+# mean(c(1, 2, 3), na.rmm = TRUE)
+```
+
+Bu nedenle `...` şu durumlarda kullanılmalıdır:
+
+-   Gerçekten başka fonksiyona argüman aktarmak gerekiyorsa,
+-   Fonksiyonun esnek kalması isteniyorsa,
+-   Kullanıcının hangi argümanları geçebileceği dokümantasyonda açıklanacaksa.
+
+Her fonksiyona otomatik olarak `...` eklemek iyi bir alışkanlık değildir. Esneklik arttıkça belirsizlik de artabilir.
+
+------------------------------------------------------------------------
+
+## Fonksiyon İçinde Döngü Kullanımı
+
+Fonksiyonlar döngülerle birlikte kullanılabilir. Örneğin 1'den `n`'e kadar olan sayıların kareleri toplamını hesaplayalım.
+
+```{r}
+toplam_kare <- function(n) {
+
+  toplam <- 0
+
+  for (i in seq_len(n)) {
+    toplam <- toplam + i^2
+  }
+
+  toplam
+}
+
+toplam_kare(5)
+```
+
+Bu fonksiyon şu işlemi yapar:
+
+\[ 1\^2 + 2\^2 + 3\^2 + 4\^2 + 5\^2 \]
+
+Döngü burada hesaplama sürecini açıkça gösterir.
+
+------------------------------------------------------------------------
+
+## Veri Çerçevesi Üzerinde Fonksiyon Yazmak
+
+Fonksiyonlar veri çerçeveleriyle çalışırken özellikle güçlüdür. Örneğin bir veri setindeki belirli bir değişken için özet rapor üretelim.
+
+```{r}
+degisken_ozeti <- function(df, degisken) {
+
+  x <- df[[degisken]]
+
+  ort <- mean(x, na.rm = TRUE)
+  ss  <- sd(x, na.rm = TRUE)
+  min_deger <- min(x, na.rm = TRUE)
+  max_deger <- max(x, na.rm = TRUE)
+
+  data.frame(
+    degisken = degisken,
+    ortalama = ort,
+    standart_sapma = ss,
+    minimum = min_deger,
+    maksimum = max_deger
+  )
+}
+
+veri <- data.frame(
+  yas = c(25, 30, 35, 40, NA),
+  gelir = c(20000, 25000, 32000, 40000, 38000)
+)
+
+degisken_ozeti(veri, "yas")
+degisken_ozeti(veri, "gelir")
+```
+
+Burada `df[[degisken]]` kullanımı önemlidir. Çünkü `degisken` bir karakter olarak verilmiştir ve veri çerçevesinden ilgili sütunu seçmek için çift köşeli parantez kullanılmıştır.
+
+------------------------------------------------------------------------
+
+## Mini Proje: Otomatik Sayısal Özet Fonksiyonu
+
+Şimdi biraz daha kapsamlı bir fonksiyon yazalım. Bu fonksiyon bir veri çerçevesindeki tüm sayısal değişkenleri bulsun ve her biri için özet istatistikler hesaplasın.
+
+```{r}
+sayisal_ozet <- function(df) {
+
+  # Hangi sütunların sayısal olduğunu buluyoruz.
+  sayisal_mi <- sapply(df, is.numeric)
+
+  # Sadece sayısal sütunları seçiyoruz.
+  sayisal_df <- df[, sayisal_mi, drop = FALSE]
+
+  # Sonuçları saklamak için boş liste oluşturuyoruz.
+  sonuc_listesi <- list()
+
+  for (degisken in names(sayisal_df)) {
+
+    x <- sayisal_df[[degisken]]
+
+    sonuc_listesi[[degisken]] <- data.frame(
+      degisken = degisken,
+      n = sum(!is.na(x)),
+      ortalama = mean(x, na.rm = TRUE),
+      standart_sapma = sd(x, na.rm = TRUE),
+      minimum = min(x, na.rm = TRUE),
+      maksimum = max(x, na.rm = TRUE)
+    )
+  }
+
+  # Liste içindeki data.frame nesnelerini alt alta birleştiriyoruz.
+  do.call(rbind, sonuc_listesi)
+}
+
+veri <- data.frame(
+  yas = c(25, 30, 35, 40, NA),
+  gelir = c(20000, 25000, 32000, 40000, 38000),
+  cinsiyet = c("E", "K", "E", "K", "E")
+)
+
+sayisal_ozet(veri)
+```
+
+Bu mini proje birkaç önemli fikri bir araya getirir:
+
+-   fonksiyon yazımı,
+-   sayısal değişken seçimi,
+-   döngü kullanımı,
+-   eksik değerlerle çalışma,
+-   sonuçları liste içinde saklama,
+-   sonuçları tek tabloya dönüştürme.
+
+Bu tarz fonksiyonlar gerçek analiz süreçlerinde çok işe yarar. Aynı özet tabloyu farklı veri setleri için tekrar tekrar üretmek gerektiğinde tek satırlık kullanım yeterli olur.
+
+------------------------------------------------------------------------
+
+## Fonksiyon Tasarımında Yan Etki Meselesi
+
+Bir fonksiyon ideal olarak girdiyi almalı, işlemi yapmalı ve sonucu döndürmelidir. Buna karşılık bazı fonksiyonlar dış dünyada değişiklik yapar:
+
+-   dosya yazar,
+-   grafik üretir,
+-   ekrana mesaj basar,
+-   global değişkeni değiştirir.
+
+Bunlara genel olarak **yan etki** (side effect) denir.
+
+Yan etkiler her zaman kötü değildir. Örneğin grafik çizmek doğal olarak bir yan etkidir. Ancak analiz fonksiyonlarında mümkün olduğunca çıktıların açık biçimde döndürülmesi daha güvenli bir yaklaşımdır.
+
+```{r}
+# Daha iyi: sonucu döndüren fonksiyon
+ortalama_dondur <- function(x) {
+  mean(x, na.rm = TRUE)
+}
+
+ortalama_dondur(c(10, 20, NA, 30))
+```
+
+```{r}
+# Sadece ekrana yazdıran fonksiyon
+ortalama_yazdir <- function(x) {
+  print(mean(x, na.rm = TRUE))
+}
+
+ortalama_yazdir(c(10, 20, NA, 30))
+```
+
+İkinci fonksiyon ekrana bilgi verir; ancak sonucu başka bir hesaplamada kullanmak daha zordur. Bu nedenle hesaplama fonksiyonlarında sonucu döndürmek genellikle daha iyi bir tasarımdır.
+
+------------------------------------------------------------------------
+
+## İyi Fonksiyon Yazma İlkeleri
+
+İyi bir fonksiyon yalnızca çalışan fonksiyon değildir. Okunabilir, test edilebilir, yeniden kullanılabilir ve amacı belli olan fonksiyondur.
+
+### Tek Sorumluluk İlkesi
+
+Bir fonksiyon mümkün olduğunca tek bir işi yapmalıdır. Hem veri temizleyen, hem model kuran, hem grafik çizen, hem dosya yazan fonksiyonlar zamanla yönetilemez hale gelir.
+
+### Anlamlı İsimlendirme
+
+Fonksiyon adı yaptığı işi anlatmalıdır.
+
+``` r
+f1()
+```
+
+yerine:
+
+``` r
+standartlastir()
+eksik_ozetle()
+sayisal_ozet()
+```
+
+gibi isimler daha açıklayıcıdır.
+
+### Açık Argümanlar
+
+Fonksiyonun ihtiyaç duyduğu değerler dışarıdan argüman olarak verilmelidir. Gizli global değişken bağımlılığı azaltılmalıdır.
+
+### Girdi Kontrolü
+
+Yanlış veri tipi, eksik değer, sıfıra bölme gibi durumlar düşünülmelidir.
+
+### Okunabilir Kod
+
+Fonksiyon içinde ara değişken kullanmak, yorum eklemek ve gereksiz karmaşıklıktan kaçınmak önemlidir.
+
+------------------------------------------------------------------------
+
+## Sık Yapılan Hatalar
+
+### Çok Uzun Fonksiyon Yazmak
+
+Bir fonksiyon yüzlerce satıra ulaşıyorsa muhtemelen birden fazla iş yapıyordur. Bu durumda fonksiyonu daha küçük parçalara ayırmak gerekir.
+
+### Global Değişkenlere Güvenmek
+
+Fonksiyon dışarıdaki nesnelere gizlice bağlıysa farklı ortamda çalışmayabilir.
+
+### Belirsiz İsimler Kullanmak
+
+`x`, `y`, `z` küçük matematiksel fonksiyonlarda uygun olabilir; ancak veri analizi fonksiyonlarında daha açıklayıcı isimler tercih edilmelidir.
+
+### Hata Kontrolü Yapmamak
+
+Yanlış girdiyle sessizce yanlış sonuç üretmek ciddi bir sorundur.
+
+### `...` Kullanımını Açıklamamak
+
+Fonksiyonda `...` varsa, bunun hangi alt fonksiyona aktarıldığı açık olmalıdır.
+
+------------------------------------------------------------------------
+
+## Egzersizler
+
+Aşağıdaki egzersizler fonksiyon yazma mantığını pekiştirmek için hazırlanmıştır.
+
+1.  İki sayının ortalamasını hesaplayan fonksiyon yazınız.
+2.  Bir dairenin alanını hesaplayan fonksiyon yazınız.
+3.  Bir sayının çift mi tek mi olduğunu döndüren fonksiyon yazınız.
+4.  Bir sayısal vektörün ortalama, standart sapma, minimum ve maksimum değerlerini döndüren fonksiyon yazınız.
+5.  Eksik değerleri dikkate alarak ortalama hesaplayan fonksiyon yazınız.
+6.  Bir puanı harf notuna dönüştüren fonksiyon yazınız.
+7.  Bir veri çerçevesindeki sayısal değişkenleri otomatik özetleyen fonksiyon yazınız.
+8.  `...` kullanarak `plot()` fonksiyonuna ek argüman aktarabilen bir grafik fonksiyonu yazınız.
+
+------------------------------------------------------------------------
+
+## Egzersiz Çözümleri
+
+```{r}
+# 1. İki sayının ortalaması
+ortalama2 <- function(x, y) {
+  (x + y) / 2
+}
+
+ortalama2(10, 20)
+```
+
+```{r}
+# 2. Daire alanı
+# pi R içinde hazır gelen matematiksel sabittir.
+daire_alan <- function(r) {
+  pi * r^2
+}
+
+daire_alan(5)
+```
+
+```{r}
+# 3. Çift / tek kontrolü
+# %% kalanı verir. Bir sayının 2 ile bölümünden kalan 0 ise sayı çifttir.
+cift_mi <- function(x) {
+
+  if (x %% 2 == 0) {
+    "Çift"
+  } else {
+    "Tek"
+  }
+}
+
+cift_mi(8)
+cift_mi(7)
+```
+
+```{r}
+# 4. Sayısal özet
+vektor_ozet <- function(x, na.rm = TRUE) {
+
+  data.frame(
+    n = sum(!is.na(x)),
+    ortalama = mean(x, na.rm = na.rm),
+    standart_sapma = sd(x, na.rm = na.rm),
+    minimum = min(x, na.rm = na.rm),
+    maksimum = max(x, na.rm = na.rm)
+  )
+}
+
+vektor_ozet(c(10, 20, NA, 30))
+```
+
+```{r}
+# 5. Eksik değerleri dikkate alan ortalama
+ortalama_na <- function(x) {
+  mean(x, na.rm = TRUE)
+}
+
+ortalama_na(c(10, 20, NA, 30))
+```
+
+```{r}
+# 6. Harf notu
+harf_notu <- function(puan) {
+
+  if (puan >= 90) {
+    "A"
+  } else if (puan >= 80) {
+    "B"
+  } else if (puan >= 70) {
+    "C"
+  } else if (puan >= 50) {
+    "D"
+  } else {
+    "F"
+  }
+}
+
+harf_notu(85)
+```
+
+```{r}
+# 7. Basit sayısal veri çerçevesi özeti
+sayisal_ozet_kisa <- function(df) {
+
+  sayisal_mi <- sapply(df, is.numeric)
+  sayisal_df <- df[, sayisal_mi, drop = FALSE]
+
+  sonuc <- lapply(names(sayisal_df), function(degisken) {
+
+    x <- sayisal_df[[degisken]]
+
+    data.frame(
+      degisken = degisken,
+      ortalama = mean(x, na.rm = TRUE),
+      standart_sapma = sd(x, na.rm = TRUE)
+    )
+  })
+
+  do.call(rbind, sonuc)
+}
+
+sayisal_ozet_kisa(veri)
+```
+
+```{r}
+# 8. Ellipsis kullanan grafik fonksiyonu
+grafik_ciz2 <- function(x, y, ...) {
+
+  plot(
+    x, y,
+    xlab = "X",
+    ylab = "Y",
+    ...
+  )
+}
+
+grafik_ciz2(1:10, (1:10)^2, main = "Basit Grafik", pch = 19)
+```
+
+------------------------------------------------------------------------
+
+## Bölüm Özeti
+
+Bu bölümde R'de fonksiyon yazma mantığını ayrıntılı olarak ele aldık.
+
+Öne çıkan noktalar şunlardır:
+
+-   Fonksiyonlar tekrar kullanılabilir kod bloklarıdır.
+-   Fonksiyon yazmak kod tekrarını azaltır, hata riskini düşürür ve okunabilirliği artırır.
+-   R'de fonksiyonlar `function()` ile tanımlanır.
+-   Argümanlar fonksiyonun dışarıdan bilgi almasını sağlar.
+-   Varsayılan argümanlar fonksiyonları daha kullanıcı dostu hale getirir.
+-   `return()` açık çıktı döndürmek veya fonksiyondan erken çıkmak için kullanılabilir.
+-   Fonksiyon içindeki değişkenlerin kapsamı önemlidir.
+-   Global değişkenlere bağımlılık fonksiyonları kırılgan hale getirir.
+-   `...` yani ellipsis, ek argümanları başka fonksiyonlara aktarmak için güçlü bir araçtır.
+-   `stop()`, `warning()` ve `message()` fonksiyonları hata ve bilgilendirme yönetiminde kullanılır.
+-   İyi fonksiyonlar kısa, açık, test edilebilir ve tek sorumluluğa sahip olmalıdır.
+-   Fonksiyon yazmak yalnızca kodu kısaltmak değil, düşünceyi yapılandırmaktır.
+
+Fonksiyonlar, R programlamada kullanıcı olmaktan üretici olmaya geçişin en önemli adımlarından biridir. Bir işlemi fonksiyon haline getirebiliyorsanız, o işlemi gerçekten anlamaya başlamışsınız demektir.

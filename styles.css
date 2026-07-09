@@ -115,3 +115,32 @@ blockquote {
   }
 }
 
+/* =========================================================
+   PART (Ana Bölüm) Başlıkları
+   ========================================================= */
+
+.sidebar-item-section > .sidebar-item-container > .sidebar-item-text {
+  font-size: 1.02rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-top: 1rem;
+  letter-spacing: 0.2px;
+}
+
+/* PART başlığı ile ilk alt bölüm arasındaki boşluk */
+.sidebar-item-section > ul {
+  margin-top: 0.25rem;
+  margin-bottom: 0.75rem;
+}
+
+/* Alt bölüm numaraları biraz daha küçük */
+.sidebar-item-section ul .sidebar-item-text {
+  font-size: 0.93rem;
+  font-weight: 400;
+}
+
+/* Aktif bölüm */
+.sidebar-item-text.active,
+.sidebar-item-container .active {
+  font-weight: 600;
+}

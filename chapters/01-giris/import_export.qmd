@@ -1,0 +1,844 @@
+# Verilerin İçe ve Dışa Aktarılması
+
+Veri analizi çoğu zaman R içinde veri üretmekle başlamaz. Gerçek çalışma akışında veri genellikle dış bir kaynaktan gelir: CSV dosyası, Excel çalışma kitabı, metin dosyası, kurum içi sistemden alınmış çıktı veya başka bir yazılım tarafından oluşturulmuş tablo.
+
+Bu nedenle R öğrenirken yalnızca veri yapıları, fonksiyonlar ve kontrol yapıları bilmek yeterli değildir. Veriyi R ortamına doğru biçimde alabilmek ve analiz sonucunda elde edilen çıktıları uygun formatta dışarı aktarabilmek de temel bir beceridir.
+
+Bu bölümde şu konular ele alınacaktır:
+
+-   dosya yolu ve çalışma dizini mantığı,
+-   CSV ve metin dosyalarını okuma,
+-   ayraç, ondalık işareti ve karakter kodlama konuları,
+-   Excel dosyalarını okuma,
+-   R nesnelerini dosyaya kaydetme,
+-   analiz sonuçlarını dışa aktarma,
+-   dosya yönetiminde iyi alışkanlıklar,
+-   sık yapılan hatalar ve egzersizler.
+
+Bu bölümde kullanılan örnekler küçük ve yapay veri setleri üzerinden ilerleyecektir. Bunun nedeni, konunun özünü dosya okuma-yazma mantığı üzerinden anlatmaktır. Gerçek veri setleri daha sonraki veri manipülasyonu, keşifçi veri analizi ve modelleme bölümlerinde daha anlamlı hale gelecektir.
+
+::: callout-note
+Bu bölümde amaç büyük veri setleriyle çalışmak değil, dosya okuma ve yazma mantığını sağlam biçimde öğrenmektir. Gerçek veriyle çalışırken karşılaşılan sorunların önemli bir kısmı aslında burada anlatılan temel konularla ilgilidir.
+:::
+
+## Veri Aktarma Neden Önemlidir?
+
+Dosya yanlış okunursa analiz de yanlış başlar. Örneğin sayısal bir değişken character olarak okunmuşsa ortalama hesaplanamaz. Tarih değişkeni yanlış biçimde okunmuşsa zaman serisi analizi hatalı sonuç verebilir. Ondalık ayracı yanlış yorumlanmışsa değerler olduğundan tamamen farklı görünebilir.
+
+Bu nedenle veri okuma işlemi yalnızca teknik bir dosya açma işlemi değildir. Veri analizinin ilk kalite kontrol adımıdır.
+
+Gerçek veri çalışmalarında şu sorunlar çok sık görülür:
+
+-   dosya yolu yanlış yazılmıştır,
+-   dosya çalışma dizininde değildir,
+-   ayraç karakteri yanlış seçilmiştir,
+-   ondalık işareti yanlış yorumlanmıştır,
+-   Türkçe karakterler bozulmuştur,
+-   değişken adları beklenen formatta değildir,
+-   sayılar metin gibi okunmuştur,
+-   tarih değişkenleri character olarak kalmıştır.
+
+Bu sorunlar başlangıçta küçük görünse de analiz ilerledikçe daha büyük problemlere yol açabilir.
+
+## Dosya Yolu ve Çalışma Dizini
+
+R'de bir dosyayı okuyabilmek için dosyanın nerede bulunduğunu belirtmek gerekir. Bunun için dosya yolu kullanılır. Dosya yolu, bilgisayardaki bir dosyanın konumunu gösterir.
+
+Windows işletim sisteminde bir dosya yolu şöyle olabilir:
+
+``` text
+C:/Users/Fatih/Documents/veri.csv
+```
+
+Mac veya Linux sistemlerinde ise yol yapısı genellikle şu şekildedir:
+
+``` text
+/home/fatih/projeler/veri.csv
+```
+
+R'de dosya yollarında ters bölü `\` yerine düz bölü `/` kullanmak daha güvenlidir. Çünkü `\` karakteri R içinde özel anlamlara sahip olabilir.
+
+::: callout-warning
+Windows dosya yollarını R içinde yazarken `C:\Users\...` biçimi sorun çıkarabilir. Bunun yerine `C:/Users/...` biçimini kullanmak daha güvenlidir.
+:::
+
+Mevcut çalışma dizinini görmek için `getwd()` kullanılır.
+
+```{r}
+# Mevcut çalışma dizinini gösterir.
+getwd()
+```
+
+Çalışma dizini, R'nin göreli dosya yollarını hangi klasöre göre yorumladığını belirler. Örneğin çalışma dizininde `datasets` adlı bir klasör varsa, bu klasördeki `veri.csv` dosyasına şöyle erişilebilir:
+
+``` r
+read.csv("datasets/veri.csv")
+```
+
+Bu tür yollara **göreli dosya yolu** denir. Göreli yollar, projeyi başka bir bilgisayara taşıdığınızda daha esnek çalışır.
+
+::: callout-tip
+Projelerde mümkün olduğunca göreli dosya yolları kullanmak iyi bir alışkanlıktır. Böylece proje klasörü başka bir bilgisayara taşındığında kodların çalışması kolaylaşır.
+:::
+
+## Örnek Veri Oluşturma
+
+Bu bölümde dışa aktarma ve içe aktarma işlemlerini göstermek için küçük bir örnek veri seti oluşturacağız. Böylece okuyacağımız dosyaları önce R içinde oluşturup sonra yeniden okuyabileceğiz.
+
+```{r}
+# Örnek bir veri çerçevesi oluşturalım.
+ogrenciler <- data.frame(
+  id = 1:5,
+  ad = c("Ali", "Ayşe", "Mehmet", "Zeynep", "Elif"),
+  bolum = c("İstatistik", "Matematik", "İstatistik", "Ekonomi", "Matematik"),
+  not = c(78.5, 92.0, 65.5, 88.0, 74.5),
+  gecti = c(TRUE, TRUE, FALSE, TRUE, TRUE)
+)
+
+ogrenciler
+```
+
+Bu veri seti farklı veri tiplerini içerir:
+
+-   `id`: sayısal kimlik değişkeni,
+-   `ad`: metin değişkeni,
+-   `bolum`: kategorik nitelikte metin değişkeni,
+-   `not`: ondalıklı sayısal değişken,
+-   `gecti`: mantıksal değişken.
+
+Bu çeşitlilik dosya okuma-yazma işlemlerinde veri tiplerinin nasıl değişebileceğini gözlemlemek için faydalıdır.
+
+## CSV Dosyaları
+
+CSV, **Comma-Separated Values** ifadesinin kısaltmasıdır. Türkçeye "virgülle ayrılmış değerler" olarak çevrilebilir. Ancak pratikte CSV dosyalarında ayraç her zaman virgül olmak zorunda değildir. Bazı ülkelerde ve yazılımlarda noktalı virgül `;` kullanımı da oldukça yaygındır.
+
+CSV dosyaları düz metin dosyalarıdır. Bu nedenle farklı yazılımlar arasında veri taşımak için sık kullanılır.
+
+Bir CSV dosyasının içeriği kabaca şöyle görünür:
+
+``` text
+id,ad,bolum,not,gecti
+1,Ali,İstatistik,78.5,TRUE
+2,Ayşe,Matematik,92.0,TRUE
+```
+
+Burada ilk satır değişken adlarını, sonraki satırlar ise gözlemleri temsil eder.
+
+## Base R ile CSV Dosyası Yazma
+
+R'de bir veri çerçevesini CSV dosyasına yazmak için base R içinde yer alan `write.csv()` fonksiyonu kullanılabilir.
+
+Render sırasında bilgisayarınızdaki proje klasörüne dosya yazılmasını istemediğimiz için örneklerde geçici bir klasör kullanacağız. Gerçek projelerde ise genellikle `data/`, `datasets/` veya `outputs/` gibi proje klasörleri tercih edilir.
+
+```{r}
+# Geçici klasör içinde dosya yolu oluşturalım.
+csv_yolu <- file.path(tempdir(), "ogrenciler.csv")
+
+# Veri çerçevesini CSV dosyasına yazalım.
+# row.names = FALSE satır isimlerinin ayrı bir sütun olarak yazılmasını engeller.
+write.csv(ogrenciler, file = csv_yolu, row.names = FALSE)
+
+# Dosyanın oluşturulup oluşturulmadığını kontrol edelim.
+file.exists(csv_yolu)
+```
+
+`file.path()` fonksiyonu işletim sisteminden bağımsız dosya yolu oluşturmak için kullanılır. Windows, Mac ve Linux farklı dosya yolu ayraçları kullanabildiği için bu fonksiyon daha güvenli bir yaklaşımdır.
+
+::: callout-tip
+Dosya yolu oluştururken `paste()` yerine `file.path()` kullanmak daha güvenlidir. Çünkü `file.path()` işletim sistemine uygun klasör ayıracını kendisi kullanır.
+:::
+
+## Base R ile CSV Dosyası Okuma
+
+CSV dosyasını okumak için `read.csv()` kullanılabilir.
+
+```{r}
+# CSV dosyasını okuyalım.
+ogrenciler_csv <- read.csv(csv_yolu)
+
+ogrenciler_csv
+```
+
+Okunan verinin yapısını inceleyelim.
+
+```{r}
+# Veri tiplerini ve yapıyı kontrol edelim.
+str(ogrenciler_csv)
+```
+
+Veriyi okuduktan sonra ilk yapılması gereken işlemlerden biri yapıyı kontrol etmektir. Çünkü dosya okuma işlemi başarılı görünse bile değişken tipleri beklediğiniz gibi olmayabilir.
+
+## `read.csv()` Fonksiyonunun Temel Argümanları
+
+`read.csv()` fonksiyonunda sık kullanılan bazı argümanlar şunlardır:
+
+| Argüman            | Anlamı                                       |
+|--------------------|----------------------------------------------|
+| `file`             | Okunacak dosyanın yolu                       |
+| `header`           | İlk satır değişken adlarını içeriyor mu?     |
+| `sep`              | Sütun ayıracı                                |
+| `dec`              | Ondalık işareti                              |
+| `stringsAsFactors` | Metin değişkenleri factor olarak okunsun mu? |
+| `fileEncoding`     | Dosyanın karakter kodlaması                  |
+
+Örneğin:
+
+```{r}
+# Varsayılan olarak ilk satır değişken adları kabul edilir.
+read.csv(csv_yolu, header = TRUE)
+```
+
+R'nin eski sürümlerinde character değişkenlerin otomatik factor olarak okunması önemli bir konuydu. R 4.0.0 ve sonrasında varsayılan davranış değişmiştir; character değişkenler artık otomatik olarak factor yapılmaz.
+
+::: callout-note
+R 4.0.0 öncesinde `read.csv()` character değişkenleri varsayılan olarak factor'a çevirebiliyordu. Güncel R sürümlerinde bu davranış değişmiştir. Yine de eski kodları okurken bu ayrıntıya dikkat etmek gerekir.
+:::
+
+## Ayraç Sorunu: Virgül ve Noktalı Virgül
+
+CSV dosyalarında sütunlar genellikle virgül ile ayrılır. Ancak özellikle Türkçe bölgesel ayarlarda Excel tarafından üretilen CSV dosyalarında noktalı virgül `;` sık görülür.
+
+Noktalı virgül ile ayrılmış bir dosya oluşturalım.
+
+```{r}
+# Noktalı virgül ile ayrılmış CSV dosyası oluşturalım.
+csv2_yolu <- file.path(tempdir(), "ogrenciler_noktali_virgul.csv")
+
+write.table(
+  ogrenciler,
+  file = csv2_yolu,
+  sep = ";",
+  dec = ",",
+  row.names = FALSE
+)
+
+file.exists(csv2_yolu)
+```
+
+Bu dosyada sütun ayıracı `;`, ondalık işareti ise `,` olarak yazılmıştır. Böyle dosyaları okumak için `read.csv2()` kullanılabilir.
+
+```{r}
+# read.csv2() varsayılan olarak sep = ";" ve dec = "," kabul eder.
+ogrenciler_csv2 <- read.csv2(csv2_yolu)
+
+ogrenciler_csv2
+```
+
+Aynı işlem `read.table()` ile açık argümanlar yazılarak da yapılabilir.
+
+```{r}
+# Aynı dosyayı read.table() ile okuyalım.
+read.table(
+  csv2_yolu,
+  header = TRUE,
+  sep = ";",
+  dec = ","
+)
+```
+
+::: callout-warning
+CSV dosyası beklediğinizden farklı okunuyorsa ilk kontrol etmeniz gereken şeyler ayraç (`sep`) ve ondalık işareti (`dec`) olmalıdır.
+:::
+
+## Ondalık İşareti Sorunu
+
+Türkçe Excel çıktılarında ondalık işareti çoğu zaman virgül `,` olabilir. R ise birçok durumda ondalık işareti olarak nokta `.` bekler.
+
+Örneğin aşağıdaki değerler Türkçe biçimde yazılmıştır:
+
+``` text
+78,5
+92,0
+65,5
+```
+
+Eğer bu değerler yanlış okunursa sayısal değil character olarak gelebilir. Bu nedenle dosyanın hangi ondalık işaretini kullandığını bilmek önemlidir.
+
+```{r}
+# read.csv2() Türkçe/Avrupa tipi CSV dosyaları için pratiktir.
+str(ogrenciler_csv2)
+```
+
+`not` değişkeninin sayısal olarak okunup okunmadığını kontrol edelim.
+
+```{r}
+class(ogrenciler_csv2$not)
+```
+
+## Karakter Kodlama ve Türkçe Karakterler
+
+Türkçe karakter içeren dosyalarda karakter kodlama sorunu görülebilir. Örneğin `İstatistik`, `Ayşe`, `Zeynep` gibi metinler bozuk görünebilir.
+
+Bu tür sorunlar genellikle dosyanın hangi kodlama ile kaydedildiği ve R'nin dosyayı hangi kodlama ile okuduğu arasındaki uyumsuzluktan kaynaklanır.
+
+Sık karşılaşılan kodlamalar:
+
+-   `UTF-8`
+-   `Windows-1254`
+-   `ISO-8859-9`
+
+Dosya okurken `fileEncoding` argümanı kullanılabilir.
+
+```{r, eval=FALSE}
+# UTF-8 kodlamalı bir dosyayı okuma
+read.csv("datasets/veri.csv", fileEncoding = "UTF-8")
+
+# Windows Türkçe kodlaması ile kaydedilmiş dosyayı okuma
+read.csv("datasets/veri.csv", fileEncoding = "Windows-1254")
+```
+
+::: callout-tip
+Yeni projelerde mümkün olduğunca UTF-8 kodlaması kullanmak daha sağlıklı ve taşınabilir bir yaklaşımdır.
+:::
+
+## `read.table()` ile Daha Genel Okuma
+
+`read.csv()` aslında `read.table()` fonksiyonunun özel bir kullanım biçimi olarak düşünülebilir. Daha esnek dosya okuma işlemleri için `read.table()` kullanılabilir.
+
+```{r}
+# read.table() ile CSV okuma
+read.table(
+  csv_yolu,
+  header = TRUE,
+  sep = ","
+)
+```
+
+`read.table()` özellikle ayraç karakterini, ondalık işaretini, başlık bilgisini ve veri tiplerini açıkça kontrol etmek istediğiniz durumlarda faydalıdır.
+
+## `readr` Paketi ile Veri Okuma
+
+Base R fonksiyonları yeterli olsa da modern R kullanımında `readr` paketi sık tercih edilir. `readr`, tidyverse ekosisteminin bir parçasıdır ve veri okuma işlemlerinde hızlı, tutarlı ve okunabilir fonksiyonlar sunar.
+
+CSV dosyası okumak için `read_csv()` kullanılabilir.
+
+```{r}
+# readr paketi yüklü değilse önce kurulmalıdır.
+# install.packages("readr")
+
+library(readr)
+
+# read_csv() virgül ayracına sahip CSV dosyalarını okur.
+ogrenciler_readr <- read_csv(csv_yolu, show_col_types = FALSE)
+
+ogrenciler_readr
+```
+
+`readr` fonksiyonları genellikle tibble döndürür. Tibble, veri çerçevesinin modern ve daha düzenli yazdırma davranışına sahip bir türüdür.
+
+```{r}
+class(ogrenciler_readr)
+```
+
+Noktalı virgül ile ayrılmış dosyalar için `read_csv2()` kullanılabilir.
+
+```{r}
+# read_csv2() sep = ";" ve dec = "," yapısındaki dosyalar için uygundur.
+read_csv2(csv2_yolu, show_col_types = FALSE)
+```
+
+::: callout-note
+Base R fonksiyonları veri çerçevesi döndürürken, `readr` fonksiyonları genellikle tibble döndürür. Tibble, tidyverse ekosisteminde yaygın kullanılan modern veri çerçevesi biçimidir.
+:::
+
+## `readr` ile Değişken Tiplerini Kontrol Etme
+
+Dosya okuma sırasında değişken tipleri otomatik tahmin edilir. Ancak bazı durumlarda bu tahminler yanlış olabilir. `readr` paketinde `col_types` argümanı ile değişken tipleri açıkça belirtilebilir.
+
+```{r}
+# Değişken tiplerini açıkça belirterek okuma
+ogrenciler_tipli <- read_csv(
+  csv_yolu,
+  col_types = cols(
+    id = col_integer(),
+    ad = col_character(),
+    bolum = col_character(),
+    not = col_double(),
+    gecti = col_logical()
+  )
+)
+
+ogrenciler_tipli
+```
+
+Bu kullanım daha uzun görünse de özellikle kritik veri setlerinde oldukça faydalıdır. Çünkü dosya okuma aşamasında veri tiplerini kontrol altına alır.
+
+## Excel Dosyaları
+
+Excel dosyaları veri paylaşımında çok yaygındır. Ancak Excel dosyaları CSV dosyalarına göre daha karmaşık yapılardır. Bir Excel dosyasında birden fazla sayfa, biçimlendirme, formül, boş satır ve açıklama alanı bulunabilir.
+
+R'de Excel dosyalarını okumak için en yaygın paketlerden biri `readxl` paketidir.
+
+```{r}
+# readxl paketi yüklü değilse önce kurulmalıdır.
+# install.packages("readxl")
+
+library(readxl)
+```
+
+`readxl` paketi örnek Excel dosyaları ile birlikte gelir. Bu sayede dışarıdan dosya indirmeden örnek yapabiliriz.
+
+```{r}
+# readxl paketindeki örnek Excel dosyasının yolu
+excel_yolu <- readxl_example("datasets.xlsx")
+
+excel_yolu
+```
+
+Excel dosyasındaki sayfaları görmek için `excel_sheets()` kullanılır.
+
+```{r}
+# Excel dosyasındaki sayfa adları
+excel_sheets(excel_yolu)
+```
+
+Belirli bir sayfayı okumak için `read_excel()` kullanılır.
+
+```{r}
+# İlk sayfayı okuyalım.
+excel_veri <- read_excel(excel_yolu, sheet = "iris")
+
+head(excel_veri)
+```
+
+### Excel Okurken Sık Kullanılan Argümanlar
+
+`read_excel()` fonksiyonunda sık kullanılan bazı argümanlar şunlardır:
+
+| Argüman     | Anlamı                     |
+|-------------|----------------------------|
+| `path`      | Excel dosyasının yolu      |
+| `sheet`     | Okunacak sayfa             |
+| `range`     | Okunacak hücre aralığı     |
+| `skip`      | Atlanacak satır sayısı     |
+| `col_names` | İlk satır sütun adları mı? |
+| `col_types` | Sütun tipleri              |
+
+Örneğin ilk birkaç satırı atlamak için:
+
+```{r, eval=FALSE}
+read_excel("datasets/veri.xlsx", sheet = "Sayfa1", skip = 2)
+```
+
+Belirli bir hücre aralığını okumak için:
+
+```{r, eval=FALSE}
+read_excel("datasets/veri.xlsx", range = "A1:D20")
+```
+
+::: callout-warning
+Excel dosyaları çoğu zaman analiz için doğrudan hazır değildir. Boş satırlar, birleşik hücreler, açıklama alanları ve farklı sayfa yapıları okuma sırasında sorun çıkarabilir.
+:::
+
+## Veri Dışa Aktarma
+
+Veri analizi sonunda elde edilen sonuçları dışa aktarmak da en az veri okuma kadar önemlidir. Analiz çıktıları raporlarda, sunumlarda, başka yazılımlarda veya arşivleme süreçlerinde kullanılabilir.
+
+Dışa aktarma işlemlerinde dosya formatı amaca göre seçilmelidir.
+
+| Amaç                             | Uygun format    |
+|----------------------------------|-----------------|
+| Basit veri paylaşımı             | CSV             |
+| Excel kullanıcılarıyla paylaşım  | XLSX            |
+| R içinde yeniden kullanma        | RDS             |
+| Birden fazla R nesnesini saklama | RData           |
+| Raporlama çıktıları              | HTML, PDF, Word |
+
+Bu bölümde temel dışa aktarma işlemlerine odaklanacağız.
+
+## CSV Olarak Dışa Aktarma
+
+Base R ile CSV yazmak için `write.csv()` kullanılabilir.
+
+```{r}
+# Analiz sonucu gibi düşünebileceğimiz küçük bir özet tablo oluşturalım.
+ozet <- data.frame(
+  bolum = c("İstatistik", "Matematik", "Ekonomi"),
+  ortalama_not = c(72.0, 83.25, 88.0)
+)
+
+ozet
+```
+
+Bu tabloyu CSV olarak yazalım.
+
+```{r}
+# Geçici klasörde çıktı dosyası oluşturalım.
+ozet_yolu <- file.path(tempdir(), "bolum_ozet.csv")
+
+# CSV olarak yazalım.
+write.csv(ozet, file = ozet_yolu, row.names = FALSE)
+
+file.exists(ozet_yolu)
+```
+
+`readr` ile CSV yazmak için `write_csv()` kullanılabilir.
+
+```{r}
+# readr ile CSV yazma
+write_csv(ozet, ozet_yolu)
+```
+
+## RDS Dosyaları
+
+CSV ve Excel dosyaları farklı yazılımlar arasında veri taşımak için kullanışlıdır. Ancak bir R nesnesini daha sonra yine R içinde aynı haliyle kullanmak istiyorsak RDS formatı oldukça kullanışlıdır.
+
+RDS dosyaları tek bir R nesnesini saklar. Veri tipleri, sütun yapıları ve nesne özellikleri daha iyi korunur.
+
+```{r}
+# RDS dosyası yolu oluşturalım.
+rds_yolu <- file.path(tempdir(), "ogrenciler.rds")
+
+# R nesnesini RDS olarak kaydedelim.
+saveRDS(ogrenciler, rds_yolu)
+
+file.exists(rds_yolu)
+```
+
+RDS dosyasını okumak için `readRDS()` kullanılır.
+
+```{r}
+# RDS dosyasını yeniden okuyalım.
+ogrenciler_rds <- readRDS(rds_yolu)
+
+ogrenciler_rds
+```
+
+RDS formatının önemli avantajı, R nesnesinin yapısını korumasıdır.
+
+```{r}
+str(ogrenciler_rds)
+```
+
+::: callout-tip
+Bir veri setini yalnızca R içinde tekrar kullanacaksanız RDS formatı çoğu zaman CSV'den daha güvenli ve pratiktir.
+:::
+
+## RData Dosyaları
+
+RData dosyaları birden fazla R nesnesini aynı dosyada saklamak için kullanılabilir. `save()` fonksiyonu ile nesneler kaydedilir, `load()` fonksiyonu ile geri yüklenir.
+
+```{r}
+# Birkaç nesne oluşturalım.
+a <- 1:5
+b <- letters[1:5]
+
+rdata_yolu <- file.path(tempdir(), "nesneler.RData")
+
+# a ve b nesnelerini aynı dosyaya kaydedelim.
+save(a, b, file = rdata_yolu)
+
+file.exists(rdata_yolu)
+```
+
+Yüklemek için:
+
+```{r}
+# RData dosyasını yükler.
+load(rdata_yolu)
+```
+
+RData kullanışlıdır; ancak `load()` fonksiyonu nesneleri doğrudan çalışma ortamına yükler. Bu nedenle büyük projelerde bazen kontrolü zorlaştırabilir.
+
+::: callout-warning
+`load()` fonksiyonu dosya içindeki nesneleri doğrudan çalışma ortamına ekler. Hangi nesnelerin yükleneceğini bilmediğiniz dosyalarda dikkatli olunmalıdır.
+:::
+
+## Dosya ve Klasör Kontrolleri
+
+Veri okuma-yazma işlemlerinde dosya ve klasör kontrolleri önemlidir. Bir dosyanın var olup olmadığını kontrol etmek için `file.exists()` kullanılır.
+
+```{r}
+file.exists(csv_yolu)
+```
+
+Bir klasör oluşturmak için `dir.create()` kullanılabilir.
+
+```{r}
+# Geçici klasör içinde outputs adlı klasör oluşturalım.
+output_klasoru <- file.path(tempdir(), "outputs")
+
+# Klasör yoksa oluşturulur.
+if (!dir.exists(output_klasoru)) {
+  dir.create(output_klasoru)
+}
+
+dir.exists(output_klasoru)
+```
+
+Bu tür kontroller özellikle otomatik rapor üretiminde önemlidir.
+
+## İyi Dosya Yönetimi Alışkanlıkları
+
+Veri projelerinde dosya yönetimi yalnızca teknik bir ayrıntı değildir. Projenin sürdürülebilirliği açısından kritik bir konudur.
+
+Basit bir proje yapısı şöyle olabilir:
+
+``` text
+proje/
+├── data/
+│   ├── raw/
+│   └── processed/
+├── scripts/
+├── outputs/
+├── figures/
+└── rapor.qmd
+```
+
+Bu yapı içinde:
+
+-   `data/raw/`: ham veri dosyaları,
+-   `data/processed/`: temizlenmiş veri dosyaları,
+-   `scripts/`: R kodları,
+-   `outputs/`: analiz çıktıları,
+-   `figures/`: grafikler,
+-   `rapor.qmd`: rapor dosyası
+
+olarak düşünülebilir.
+
+::: callout-important
+Ham veri dosyaları mümkün olduğunca değiştirilmeden saklanmalıdır. Temizleme ve dönüştürme işlemleri sonucunda yeni dosyalar oluşturmak daha güvenli bir yaklaşımdır.
+:::
+
+## Mini Vaka Çalışması: Okuma, Özetleme ve Yazma
+
+Bu bölümde öğrendiklerimizi küçük bir iş akışı üzerinde birleştirelim.
+
+Önce örnek veriyi CSV olarak yazalım.
+
+```{r}
+# Örnek veriyi geçici CSV dosyasına yazıyoruz.
+vaka_csv <- file.path(tempdir(), "vaka_ogrenciler.csv")
+
+write.csv(ogrenciler, vaka_csv, row.names = FALSE)
+```
+
+Dosyayı yeniden okuyalım.
+
+```{r}
+# CSV dosyasını okuyoruz.
+vaka_veri <- read.csv(vaka_csv)
+
+head(vaka_veri)
+```
+
+Bölümlere göre ortalama not hesaplayalım.
+
+```{r}
+# tapply() ile bölümlere göre ortalama not hesaplıyoruz.
+bolum_ort <- tapply(vaka_veri$not, vaka_veri$bolum, mean)
+
+bolum_ort
+```
+
+Sonucu veri çerçevesine dönüştürelim.
+
+```{r}
+# tapply çıktısını veri çerçevesine dönüştürelim.
+bolum_ort_df <- data.frame(
+  bolum = names(bolum_ort),
+  ortalama_not = as.numeric(bolum_ort)
+)
+
+bolum_ort_df
+```
+
+Sonucu dışa aktaralım.
+
+```{r}
+# Özet sonucu CSV olarak yazalım.
+sonuc_yolu <- file.path(tempdir(), "bolum_ortalama_sonuc.csv")
+
+write.csv(bolum_ort_df, sonuc_yolu, row.names = FALSE)
+
+file.exists(sonuc_yolu)
+```
+
+Bu küçük iş akışı gerçek projelerde çok sık karşılaşılan temel mantığı özetler:
+
+1.  veri oku,
+2.  veriyi kontrol et,
+3.  analiz yap,
+4.  sonucu dışa aktar.
+
+## Sık Yapılan Hatalar
+
+### Dosya Yolunu Yanlış Yazmak
+
+```{r, eval=FALSE}
+read.csv("C:\Users\Fatih\veri.csv")
+```
+
+Bu kullanım sorun çıkarabilir. Daha güvenli kullanım:
+
+```{r, eval=FALSE}
+read.csv("C:/Users/Fatih/veri.csv")
+```
+
+veya proje içi göreli yol:
+
+```{r, eval=FALSE}
+read.csv("data/raw/veri.csv")
+```
+
+### Ayraç Karakterini Yanlış Belirtmek
+
+Virgül yerine noktalı virgül kullanılan dosyayı `read.csv()` ile okumak veri setinin tek sütun olarak gelmesine neden olabilir.
+
+```{r, eval=FALSE}
+# Eğer dosya ; ile ayrılmışsa
+read.csv2("veri.csv")
+```
+
+### Ondalık İşaretini Yanlış Yorumlamak
+
+Ondalık işareti virgül olan dosyalarda `dec = ","` belirtilmelidir.
+
+```{r, eval=FALSE}
+read.table("veri.csv", header = TRUE, sep = ";", dec = ",")
+```
+
+### Türkçe Karakterlerin Bozulması
+
+Kodlama sorunu varsa `fileEncoding` denenebilir.
+
+```{r, eval=FALSE}
+read.csv("veri.csv", fileEncoding = "UTF-8")
+read.csv("veri.csv", fileEncoding = "Windows-1254")
+```
+
+### `row.names` Argümanını Unutmak
+
+CSV dışa aktarırken `row.names = FALSE` yazılmazsa satır adları gereksiz bir sütun olarak dosyaya eklenebilir.
+
+```{r}
+# Genellikle önerilen kullanım
+write.csv(ogrenciler, csv_yolu, row.names = FALSE)
+```
+
+### Dosyayı Okuduktan Sonra Yapıyı Kontrol Etmemek
+
+Dosya okunduktan sonra mutlaka ilk satırlar ve veri yapısı kontrol edilmelidir.
+
+```{r}
+head(ogrenciler_csv)
+str(ogrenciler_csv)
+```
+
+## Egzersizler
+
+1.  `data.frame()` ile en az dört sütundan oluşan küçük bir veri seti oluşturunuz.
+2.  Bu veri setini geçici bir CSV dosyasına yazınız.
+3.  Yazdığınız CSV dosyasını `read.csv()` ile tekrar okuyunuz.
+4.  Okunan verinin yapısını `str()` ile inceleyiniz.
+5.  Aynı veriyi `write.csv()` kullanarak `row.names = FALSE` ve `row.names = TRUE` seçenekleriyle ayrı ayrı yazınız. Farkı gözlemleyiniz.
+6.  Noktalı virgül ile ayrılmış ve ondalık işareti virgül olan bir dosya oluşturup `read.csv2()` ile okuyunuz.
+7.  `readr::read_csv()` ile bir CSV dosyası okuyunuz.
+8.  `readxl_example()` kullanarak `readxl` paketindeki örnek Excel dosyalarından birini okuyunuz.
+9.  Bir veri çerçevesini RDS olarak kaydedip tekrar okuyunuz.
+10. Küçük bir veri setini okuyup özet tablo oluşturunuz ve sonucu CSV olarak dışa aktarınız.
+
+## Egzersiz Çözümleri
+
+```{r}
+# 1. Küçük bir veri seti oluşturma
+veri <- data.frame(
+  urun = c("A", "B", "C", "D"),
+  satis = c(120, 150, 90, 200),
+  fiyat = c(10.5, 12.0, 8.5, 15.0),
+  aktif = c(TRUE, TRUE, FALSE, TRUE)
+)
+
+veri
+```
+
+```{r}
+# 2. CSV dosyasına yazma
+veri_yolu <- file.path(tempdir(), "urun_veri.csv")
+
+write.csv(veri, veri_yolu, row.names = FALSE)
+
+file.exists(veri_yolu)
+```
+
+```{r}
+# 3. CSV dosyasını okuma
+veri_okunan <- read.csv(veri_yolu)
+
+veri_okunan
+```
+
+```{r}
+# 4. Yapıyı inceleme
+str(veri_okunan)
+```
+
+```{r}
+# 5. row.names farkı
+yol_false <- file.path(tempdir(), "row_false.csv")
+yol_true <- file.path(tempdir(), "row_true.csv")
+
+write.csv(veri, yol_false, row.names = FALSE)
+write.csv(veri, yol_true, row.names = TRUE)
+
+readLines(yol_false, n = 3)
+readLines(yol_true, n = 3)
+```
+
+```{r}
+# 6. Noktalı virgül ve virgüllü ondalık yapısı
+yol_csv2 <- file.path(tempdir(), "urun_veri_csv2.csv")
+
+write.table(veri, yol_csv2, sep = ";", dec = ",", row.names = FALSE)
+
+read.csv2(yol_csv2)
+```
+
+```{r}
+# 7. readr ile CSV okuma
+library(readr)
+
+read_csv(veri_yolu, show_col_types = FALSE)
+```
+
+```{r}
+# 8. readxl örnek dosyası okuma
+library(readxl)
+
+excel_yolu <- readxl_example("datasets.xlsx")
+
+read_excel(excel_yolu, sheet = "iris")
+```
+
+```{r}
+# 9. RDS kaydetme ve okuma
+rds_yolu <- file.path(tempdir(), "urun_veri.rds")
+
+saveRDS(veri, rds_yolu)
+
+readRDS(rds_yolu)
+```
+
+```{r}
+# 10. Özet tablo oluşturma ve dışa aktarma
+ozet <- data.frame(
+  toplam_satis = sum(veri$satis),
+  ortalama_fiyat = mean(veri$fiyat)
+)
+
+ozet_yolu <- file.path(tempdir(), "urun_ozet.csv")
+
+write.csv(ozet, ozet_yolu, row.names = FALSE)
+
+read.csv(ozet_yolu)
+```
+
+## Bölüm Özeti
+
+Bu bölümde verilerin R ortamına aktarılması ve R'de oluşturulan sonuçların dışa aktarılması ele alındı. CSV, metin, Excel, RDS ve RData dosyaları üzerinde temel okuma-yazma mantığı gösterildi.
+
+Veri okuma işlemi yalnızca dosyayı açmak değildir. Dosya yolu, ayraç karakteri, ondalık işareti, karakter kodlama ve değişken tipleri doğru yönetilmediğinde analiz süreci daha başlangıçta hatalı hale gelebilir. Bu nedenle veri okunduktan sonra `head()`, `str()` ve benzeri fonksiyonlarla mutlaka kontrol yapılmalıdır.
+
+Dışa aktarma tarafında CSV dosyaları farklı yazılımlar arasında veri paylaşımı için kullanışlıdır. RDS formatı ise R nesnelerini yapısını koruyarak saklamak için daha uygundur. RData birden fazla nesneyi saklayebilir; ancak çalışma ortamına doğrudan nesne yüklediği için dikkatli kullanılmalıdır.
+
+Bu bölümle birlikte kitabın **R Programlamaya Giriş** kısmında temel programlama araçları, veri yapıları, fonksiyonlar, kontrol yapıları, tarih-zaman işlemleri, metin işlemleri, apply ailesi ve veri içe-dışa aktarma konuları tamamlanmış oldu. Bundan sonraki bölümlerde bu temelin üzerine veri manipülasyonu, dönüştürme, birleştirme, görselleştirme ve istatistiksel analiz konuları inşa edilecektir.

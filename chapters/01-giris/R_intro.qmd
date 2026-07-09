@@ -1,4 +1,4 @@
-# R Programlamaya Giriş
+# R Çalışma Ortamı
 
 Bir programlama dilini öğrenmeye başlarken çoğu zaman ilk odak noktası fonksiyonlar, paketler veya veri analizi teknikleri olur. Ancak güçlü bir temel oluşturabilmek için önce programlama ortamının nasıl çalıştığını anlamak gerekir. R ile çalışırken kodların nerede yazıldığı, nasıl çalıştırıldığı, neden script dosyalarının kullanıldığı ve çalışma sürecinin nasıl organize edildiği oldukça önemlidir.
 
@@ -25,7 +25,7 @@ Genellikle RStudio arayüzünde şu bölümler yer alır:
 -   Environment
 -   Files / Plots / Packages / Help
 
-![](images/RStudio.PNG){fig-align="center"}
+![](/images/RStudio.PNG){fig-align="center"}
 
 İlk aşamada bu panellerin tamamını ayrıntılı şekilde bilmek gerekmez. Önemli olan temel çalışma mantığını kavramaktır:
 

@@ -1,0 +1,786 @@
+# Metin İşlemleri
+
+Veri analizi denildiğinde çoğu zaman akla sayılar, tablolar, modeller ve grafikler gelir. Ancak gerçek dünyadaki veri setleri yalnızca sayılardan oluşmaz. Kişi adları, kurum adları, şehirler, ürün kodları, kategori etiketleri, açıklama alanları, tarih içeren metinler, dosya adları, hata kayıtları ve rapor başlıkları da veri analizinin ayrılmaz parçalarıdır.
+
+Bu nedenle R programlama dilinde metin işlemleri, yalnızca “yazıları birleştirme” gibi basit bir konu olarak görülmemelidir. Metin işlemleri; veri temizleme, veri dönüştürme, raporlama, otomasyon, dosya yönetimi ve metin madenciliği gibi birçok alanda temel bir beceridir.
+
+R'de metinler genellikle **character** veri tipiyle temsil edilir. Bu bölümde metinlerin nasıl oluşturulduğunu, birleştirildiğini, arandığını, parçalandığını, dönüştürüldüğünü ve gerçek analiz süreçlerinde nasıl kullanıldığını ele alacağız.
+
+## Character Veri Tipi
+
+R'de metinsel ifadeler tırnak işaretleri içinde tanımlanır. Tek tırnak (`' '`) veya çift tırnak (`" "`) kullanılabilir. R açısından ikisi de çoğu durumda aynı sonucu verir. Ancak bir metnin içinde kesme işareti ya da tırnak geçiyorsa, uygun tırnak seçimi kodu daha okunabilir hale getirir.
+
+```{r}
+# Metinler character veri tipindedir.
+x <- "R Programlama"
+y <- 'İstatistik Akademisi'
+
+# class() fonksiyonu nesnenin veri tipini gösterir.
+class(x)
+class(y)
+```
+
+Metinler de tıpkı sayılar gibi vektörler halinde saklanabilir.
+
+```{r}
+# Birden fazla metni aynı character vektörü içinde tutabiliriz.
+iller <- c("Ankara", "İstanbul", "İzmir", "Bursa")
+
+class(iller)
+length(iller)
+```
+
+Burada `iller` nesnesi dört elemandan oluşan bir karakter vektörüdür. Veri analizinde kategori adları, il adları, ürün isimleri ve benzeri değişkenler genellikle bu yapıdadır.
+
+## Karakter Veri Tipine Dönüştürme
+
+Bazı durumlarda sayısal veya mantıksal değerleri metin olarak kullanmak isteriz. Bunun için `as.character()` fonksiyonu kullanılır.
+
+```{r}
+# Sayısal bir değer character veri tipine dönüştürülür.
+sayi <- 2026
+sayi_metin <- as.character(sayi)
+
+sayi_metin
+class(sayi_metin)
+```
+
+Mantıksal değerler de karaktere dönüştürülebilir.
+
+```{r}
+# TRUE ve FALSE değerleri metne dönüştürülebilir.
+as.character(TRUE)
+as.character(FALSE)
+```
+
+Bu dönüşüm özellikle rapor metni üretirken, grafik başlığı oluştururken veya sayısal sonuçları açıklayıcı ifadelerle birleştirirken kullanılır.
+
+## Metin Birleştirme: `paste()` ve `paste0()`
+
+R'de metinleri birleştirmek için en sık kullanılan iki temel fonksiyon `paste()` ve `paste0()` fonksiyonlarıdır. Bu iki fonksiyon birbirine çok benzer; ancak aralarındaki küçük fark, pratikte oldukça önemlidir.
+
+Temel ayrım şudur:
+
+-   `paste()` varsayılan olarak parçaların arasına boşluk koyar.
+-   `paste0()` parçaları hiçbir ayraç koymadan birleştirir.
+
+## `paste()` Fonksiyonu
+
+`paste()` fonksiyonu birden fazla değeri tek bir metin haline getirir.
+
+```{r}
+# paste() varsayılan olarak parçalar arasına boşluk koyar.
+ad <- "Fatih"
+soyad <- "Tüzen"
+
+paste(ad, soyad)
+```
+
+Bu örnekte `ad` ve `soyad` değişkenleri birleştirilmiştir. Araya otomatik olarak bir boşluk eklenmiştir. Bu, `paste()` fonksiyonunun varsayılan davranışıdır.
+
+```{r}
+# Sayılar da metinlerle birlikte kullanılabilir.
+yas <- 35
+
+paste("Yaş:", yas)
+```
+
+Burada `yas` sayısal bir değişken olmasına rağmen R onu otomatik olarak metin yapısına çevirerek birleştirir. Bu davranış, raporlama ve çıktı üretimi sırasında oldukça kullanışlıdır.
+
+## `paste0()` Fonksiyonu
+
+`paste0()` fonksiyonu da metinleri birleştirir; ancak parçalar arasına herhangi bir boşluk ya da ayraç koymaz.
+
+```{r}
+# paste0() parçaları doğrudan birleştirir.
+paste0(ad, soyad)
+```
+
+Bu çıktı çoğu zaman okunabilir değildir. Ancak `paste0()` özellikle dosya adı, değişken adı veya otomatik etiket üretiminde çok kullanışlıdır.
+
+```{r}
+# Dosya adı üretiminde paste0() oldukça kullanışlıdır.
+yil <- 2026
+
+paste0("rapor_", yil, ".xlsx")
+```
+
+Bu örnekte `rapor_2026.xlsx` biçiminde bir dosya adı üretilmiştir. Raporlama ve otomasyon işlerinde bu tarz kullanımlar sık görülür.
+
+## `sep` Argümanı
+
+`paste()` fonksiyonunda parçalar arasına ne geleceğini `sep` argümanı belirler. Varsayılan değer boşluktur.
+
+```{r}
+# sep argümanı, parçaların arasına konulacak ayırıcıyı belirler.
+# sep = "-" dediğimiz için parçalar tire ile birleştirilir.
+paste("2026", "04", "29", sep = "-")
+```
+
+Farklı ayraçlar kullanılabilir.
+
+```{r}
+# Alt çizgi dosya ve değişken isimlerinde sık kullanılır.
+paste("veri", "temiz", "2026", sep = "_")
+
+# İki nokta daha çok açıklayıcı metinlerde kullanılabilir.
+paste("Ortalama", 25.7, sep = ": ")
+```
+
+Burada dikkat edilmesi gereken nokta şudur: `sep`, fonksiyona verilen parçaların **arasına** koyulacak değeri belirler.
+
+## `collapse` Argümanı
+
+`collapse` argümanı, bir karakter vektörünün tüm elemanlarını tek bir metin haline getirmek için kullanılır.
+
+```{r}
+# Birden fazla şehir adını tek bir metin içinde birleştirelim.
+iller <- c("Ankara", "İstanbul", "İzmir")
+
+paste(iller, collapse = ", ")
+```
+
+Bu örnekte üç elemanlı bir karakter vektörü tek bir metne dönüştürülmüştür.
+
+`sep` ve `collapse` sık karıştırılır. Aralarındaki farkı net görmek için aşağıdaki örneğe bakalım.
+
+```{r}
+# sep, aynı çağrı içindeki parçaların arasına konur.
+paste("A", "B", "C", sep = "-")
+
+# collapse, bir vektörün elemanlarını tek metne indirir.
+paste(c("A", "B", "C"), collapse = "-")
+```
+
+İlk örnekte üç ayrı argüman birleştirilmiştir. İkinci örnekte ise bir vektörün elemanları tek bir metne dönüştürülmüştür.
+
+## Metin Birleştirmede Vektörel Çalışma Mantığı
+
+R vektörel çalışan bir dildir. `paste()` ve `paste0()` fonksiyonları da vektörlerle çalışabilir.
+
+```{r}
+# Her isim kendi karşılığındaki yaş ile birleştirilir.
+isim <- c("Ali", "Ayşe", "Mehmet")
+yas  <- c(25, 30, 22)
+
+paste(isim, yas)
+```
+
+Bu işlem eleman bazlıdır. Birinci isim birinci yaşla, ikinci isim ikinci yaşla, üçüncü isim üçüncü yaşla birleştirilir.
+
+```{r}
+# Daha açıklayıcı etiketler üretelim.
+paste(isim, "kişisinin yaşı", yas)
+```
+
+Bu yapı raporlama, grafik etiketi üretme ve döngü içinde mesaj hazırlama gibi işlerde oldukça faydalıdır.
+
+Ancak vektör uzunlukları farklı olduğunda R'nin geri dönüşüm kuralı devreye girer. Bu durum bazen beklenmeyen sonuçlar üretebilir.
+
+```{r}
+# Dikkat: Kısa vektör tekrar kullanılır.
+harf <- c("A", "B", "C")
+sayi <- 1:2
+
+paste(harf, sayi)
+```
+
+Burada `sayi` vektörü daha kısa olduğu için R onu baştan tekrar eder. Küçük örneklerde bu fark edilebilir; ancak büyük veri setlerinde sessizce hatalı sonuçlara yol açabilir.
+
+## Dinamik Etiket ve Çıktı Üretimi
+
+Metin birleştirme yalnızca estetik bir işlem değildir. Analiz çıktılarının daha anlaşılır hale gelmesini sağlar.
+
+```{r}
+# Analiz sonucu üreten basit bir örnek
+notlar <- c(70, 80, 90, 85)
+
+ortalama <- mean(notlar)
+
+paste("Sınıf ortalaması:", ortalama)
+```
+
+Daha okunabilir bir çıktı için sayıyı yuvarlayabiliriz.
+
+```{r}
+# round() fonksiyonu sayıyı belirtilen basamağa yuvarlar.
+# digits = 2, virgülden sonra iki basamak gösterileceği anlamına gelir.
+paste("Sınıf ortalaması:", round(ortalama, digits = 2))
+```
+
+Benzer şekilde grafik başlığı da dinamik üretilebilir.
+
+```{r}
+# Grafik başlığı otomatik olarak veri üzerinden üretilebilir.
+baslik <- paste("Gözlem sayısı:", length(notlar))
+
+baslik
+```
+
+Bu tür kullanımlar özellikle raporlama ve otomatik analiz çıktıları üretirken çok değerlidir.
+
+## Karakter Uzunluğu: `nchar()`
+
+Bir metindeki karakter sayısını bulmak için `nchar()` fonksiyonu kullanılır.
+
+```{r}
+# nchar() metnin karakter sayısını verir.
+nchar("R Programlama")
+```
+
+Boşluklar da karakter olarak sayılır.
+
+```{r}
+# Boşluk da karakter sayısına dahildir.
+nchar("R Programlama")
+nchar("RProgramlama")
+```
+
+Vektörlerle de kullanılabilir.
+
+```{r}
+# Her elemanın karakter uzunluğu ayrı ayrı hesaplanır.
+diller <- c("R", "Python", "Julia", "JavaScript")
+
+nchar(diller)
+```
+
+Bu fonksiyon veri temizleme sürecinde çok işe yarar. Örneğin belirli uzunluktaki kodları kontrol etmek için kullanılabilir.
+
+```{r}
+# Kimlik benzeri kodların uzunluklarını kontrol edelim.
+kodlar <- c("A123", "B12", "C9876", "D000")
+
+nchar(kodlar)
+
+# Uzunluğu 4 olan kodları seçelim.
+kodlar[nchar(kodlar) == 4]
+```
+
+## Büyük ve Küçük Harfe Dönüştürme
+
+Metin verilerinde aynı kategori farklı biçimlerde yazılmış olabilir. Örneğin `"ankara"`, `"Ankara"` ve `"ANKARA"` bilgisayar için farklı değerlerdir. Bu durum analizde kategori sayısını yapay olarak artırabilir.
+
+Bu nedenle metinleri standartlaştırmak önemlidir.
+
+```{r}
+iller <- c("Ankara", "ankara", "ANKARA", "İstanbul")
+
+# Tüm harfleri küçük harfe dönüştürür.
+tolower(iller)
+
+# Tüm harfleri büyük harfe dönüştürür.
+toupper(iller)
+```
+
+Bu işlem özellikle kategori temizleme ve karşılaştırma işlemlerinde kullanılır.
+
+```{r}
+# Aynı şehri farklı yazımlardan dolayı farklı kategori gibi görmemek için standartlaştırma yapılabilir.
+iller_standart <- tolower(iller)
+
+unique(iller_standart)
+```
+
+Türkçe karakterler söz konusu olduğunda locale ayarları bazı sistemlerde farklı sonuçlara yol açabilir. Bu nedenle kritik üretim süreçlerinde metin standartlaştırma adımları test edilmelidir. Evet, metin işi bazen küçük bir harften büyük olay çıkarır.
+
+## Metnin Bir Parçasını Alma: `substr()` ve `substring()`
+
+Bir metnin belirli konumları arasındaki kısmını almak için `substr()` veya `substring()` fonksiyonları kullanılabilir.
+
+```{r}
+# substr(x, start, stop)
+# x     : metin
+# start : alınacak ilk karakterin konumu
+# stop  : alınacak son karakterin konumu
+
+metin <- "RProgramlama"
+
+substr(metin, start = 1, stop = 1)
+substr(metin, start = 2, stop = 8)
+```
+
+Bu fonksiyonlar özellikle kodların veya belirli formatlı metinlerin parçalarını almak için kullanılır.
+
+```{r}
+# Örnek: yıl ve ay bilgisi içeren metin
+kod <- "202604"
+
+# İlk dört karakter yılı temsil ediyor.
+yil <- substr(kod, 1, 4)
+
+# Son iki karakter ayı temsil ediyor.
+ay <- substr(kod, 5, 6)
+
+yil
+ay
+```
+
+Vektörlerle de kullanılabilir.
+
+```{r}
+# Her koddaki ilk harfi alalım.
+urun_kodlari <- c("A123", "B456", "C789")
+
+substr(urun_kodlari, 1, 1)
+```
+
+## Metin Bölme: `strsplit()`
+
+Bir metni belirli bir ayraçtan bölmek için `strsplit()` fonksiyonu kullanılır.
+
+```{r}
+# strsplit(x, split)
+# x     : bölünecek metin
+# split : hangi ayraçtan bölüneceği
+
+metin <- "Ankara;İstanbul;İzmir"
+
+strsplit(metin, split = ";")
+```
+
+`strsplit()` çıktısı bir listedir. Çünkü her metin farklı sayıda parçaya ayrılabilir.
+
+```{r}
+# Çıktıyı daha kullanışlı hale getirmek için listenin ilk elemanını alabiliriz.
+parcalar <- strsplit(metin, split = ";")[[1]]
+
+parcalar
+```
+
+Dosya isimlerinden bilgi ayıklamak için de kullanılabilir.
+
+```{r}
+dosya <- "veri_2026_nisan_rapor.csv"
+
+# Alt çizgiye göre parçalayalım.
+strsplit(dosya, split = "_")[[1]]
+```
+
+Bu örnekte dosya adının içinde yıl, ay ve dosya türüne ilişkin bilgiler ayrıştırılabilir.
+
+## Boşluk Temizleme: `trimws()`
+
+Gerçek veri setlerinde metinlerin başında veya sonunda gereksiz boşluklar olabilir. Bu boşluklar gözle fark edilmeyebilir ama analizde sorun çıkarabilir.
+
+```{r}
+# Başında ve sonunda boşluk olan metinler
+x <- c(" Ankara", "İstanbul ", " İzmir ")
+
+x
+```
+
+```{r}
+# trimws() baştaki ve sondaki boşlukları temizler.
+trimws(x)
+```
+
+Bu işlem özellikle dış kaynaklardan gelen Excel, CSV veya form verilerinde çok önemlidir.
+
+```{r}
+# Boşluklar temizlenmezse aynı değer farklı kategori gibi görünebilir.
+sehir <- c("Ankara", " Ankara", "Ankara ")
+
+unique(sehir)
+unique(trimws(sehir))
+```
+
+## Metin Değiştirme: `sub()` ve `gsub()`
+
+Metin içinde belirli bir deseni değiştirmek için `sub()` ve `gsub()` fonksiyonları kullanılır.
+
+-   `sub()` yalnızca ilk eşleşmeyi değiştirir.
+-   `gsub()` tüm eşleşmeleri değiştirir.
+
+```{r}
+metin <- "R dili, R kullanıcıları için güçlüdür."
+
+# sub() ilk eşleşmeyi değiştirir.
+sub("R", "R programlama", metin)
+
+# gsub() tüm eşleşmeleri değiştirir.
+gsub("R", "R programlama", metin)
+```
+
+Bu fark küçük görünse de veri temizleme sırasında oldukça önemlidir.
+
+```{r}
+# Telefon numarası benzeri bir metinden boşlukları silelim.
+tel <- "0312 123 45 67"
+
+gsub(" ", "", tel)
+```
+
+Noktalama işaretlerini veya özel karakterleri temizlemek için de kullanılabilir.
+
+```{r}
+# Basit bir temizlik örneği
+metinler <- c("Merhaba!", "R, çok güzel.", "Veri-analizi")
+
+# Harf, rakam ve boşluk dışındaki karakterleri kaldırır.
+# [^A-Za-z0-9 ] ifadesi; harf, rakam ve boşluk dışındakileri temsil eder.
+gsub("[^A-Za-z0-9 ]", "", metinler)
+```
+
+Türkçe karakterler için bu örnek sınırlı kalabilir. Türkçe metinlerde karakter kümeleri daha dikkatli tanımlanmalıdır.
+
+## Metin Arama: `grep()` ve `grepl()`
+
+Metin işlemlerinin en önemli parçalarından biri belirli bir deseni aramaktır. R'de bu iş için en sık kullanılan iki fonksiyon `grep()` ve `grepl()` fonksiyonlarıdır.
+
+Bu iki fonksiyon aynı arama mantığına dayanır; ancak farklı türde çıktı üretir:
+
+-   `grep()` eşleşen elemanların indekslerini döndürür.
+-   `grepl()` her eleman için `TRUE` veya `FALSE` döndürür.
+
+## `grep()` Fonksiyonu
+
+```{r}
+x <- c("R programı", "program", "istatistik",
+       "programlama dili", "bilgisayar", "matematik")
+
+# grep(pattern, x)
+# pattern : aranacak desen
+# x       : aramanın yapılacağı karakter vektörü
+
+grep("program", x)
+```
+
+Bu çıktı bize `"program"` ifadesinin hangi konumlardaki elemanlarda geçtiğini söyler.
+
+Eşleşen değerlerin kendisini görmek istersek `value = TRUE` kullanabiliriz.
+
+```{r}
+# value = TRUE indeks yerine eşleşen metinleri döndürür.
+grep("program", x, value = TRUE)
+```
+
+## `grepl()` Fonksiyonu
+
+```{r}
+# grepl() her eleman için TRUE/FALSE üretir.
+grepl("program", x)
+```
+
+Bu çıktı özellikle filtreleme için kullanışlıdır.
+
+```{r}
+# TRUE olan elemanlar seçilir.
+x[grepl("program", x)]
+```
+
+Kısaca:
+
+-   `grep()` sorusu: “Nerede var?”
+-   `grepl()` sorusu: “Var mı?”
+
+Bu ayrım kod yazarken doğru fonksiyonu seçmeyi kolaylaştırır.
+
+## Büyük / Küçük Harf Duyarlılığı
+
+Varsayılan olarak arama büyük/küçük harfe duyarlıdır.
+
+```{r}
+isimler <- c("Ali", "ayşe", "MEHMET", "fatih")
+
+grep("ali", isimler)
+```
+
+Bu örnekte `"Ali"` bulunmaz. Çünkü `"Ali"` ile `"ali"` aynı değildir.
+
+```{r}
+# ignore.case = TRUE büyük/küçük harf farkını yok sayar.
+grep("ali", isimler, ignore.case = TRUE, value = TRUE)
+```
+
+Gerçek verilerde bu argüman çok önemlidir. Çünkü veri girişi her zaman standart olmayabilir.
+
+## Başlangıç ve Bitiş Desenleri
+
+Bazı durumlarda metnin içinde geçen herhangi bir ifadeyi değil, metnin belirli bir yerinde bulunan ifadeyi ararız. Bu noktada düzenli ifadelerin temel karakterleri devreye girer.
+
+```{r}
+kelimeler <- c("ankara", "antalya", "istanbul", "adana", "bursa")
+
+# ^ işareti başlangıcı temsil eder.
+grep("^a", kelimeler, value = TRUE)
+```
+
+```{r}
+# $ işareti bitişi temsil eder.
+grep("a$", kelimeler, value = TRUE)
+```
+
+Bu örnekler regex konusunun başlangıcıdır. Bu bölümde yalnızca temel düzeyde kullanıyoruz; daha karmaşık desenler ayrı bir konu olarak ele alınmalıdır.
+
+## Birden Fazla Desen Arama
+
+Dikey çizgi (`|`) “veya” anlamında kullanılır.
+
+```{r}
+kelimeler <- c("elma", "armut", "kiraz", "muz", "erik")
+
+# "elma" veya "muz" geçenleri bulur.
+grep("elma|muz", kelimeler, value = TRUE)
+```
+
+Bu yapı özellikle birden fazla kategori ya da anahtar kelime ararken kullanılır.
+
+## Sayı İçeren Metinleri Bulmak
+
+Metin verilerinde sayı içeren yapılar sık karşımıza çıkar. Örneğin ürün kodları, dosya adları veya kullanıcı kimlikleri bu tür yapılardır.
+
+```{r}
+kodlar <- c("abc1", "test", "2026", "kod9", "veri")
+
+# [0-9] herhangi bir rakamı temsil eder.
+grep("[0-9]", kodlar, value = TRUE)
+```
+
+Sadece rakamlardan oluşan değerleri bulmak için başlangıç ve bitiş işaretlerini birlikte kullanabiliriz.
+
+```{r}
+# ^[0-9]+$ ifadesi baştan sona rakamlardan oluşan metinleri bulur.
+# + işareti bir veya daha fazla tekrar anlamına gelir.
+grep("^[0-9]+$", kodlar, value = TRUE)
+```
+
+## Kolon İsimleri Üzerinde Metin Arama
+
+Metin arama işlemleri veri çerçevelerinin kolon adları üzerinde de çok işe yarar.
+
+```{r}
+df <- data.frame(
+  sales_2023 = c(100, 120),
+  sales_2024 = c(130, 140),
+  cost_2023  = c(70, 80),
+  profit_2024 = c(60, 70)
+)
+
+# names(df), veri çerçevesinin kolon adlarını verir.
+names(df)
+```
+
+Satışla ilgili kolonları bulalım.
+
+```{r}
+# value = TRUE ile kolon isimlerinin kendisini alıyoruz.
+sales_cols <- grep("sales", names(df), value = TRUE)
+
+sales_cols
+```
+
+Bu kolonları veri çerçevesinden seçebiliriz.
+
+```{r}
+df[sales_cols]
+```
+
+Bu yaklaşım özellikle yüzlerce kolonu olan veri setlerinde hayat kurtarır. Tek tek kolon adı yazmak yerine desen tabanlı seçim yapılabilir.
+
+## Mini Vaka Çalışması: Log Analizi
+
+Şimdi metin arama fonksiyonlarını küçük bir vaka çalışması üzerinde kullanalım. Log kayıtları sistemlerin çalışma sürecinde ürettiği metin tabanlı kayıtlardır. Bu kayıtlarda hata, uyarı ve bilgi mesajları bulunabilir.
+
+```{r}
+logs <- c(
+  "INFO: system started",
+  "ERROR: file not found",
+  "WARNING: low memory",
+  "ERROR: timeout",
+  "INFO: process completed",
+  "ERROR: disk full",
+  "WARNING: high CPU usage"
+)
+```
+
+Önce hata mesajlarını bulalım.
+
+```{r}
+# ERROR içeren satırları seçiyoruz.
+error_logs <- logs[grepl("ERROR", logs)]
+
+error_logs
+```
+
+Kaç hata olduğunu hesaplayalım.
+
+```{r}
+# grepl() TRUE/FALSE ürettiği için sum() TRUE değerleri sayar.
+sum(grepl("ERROR", logs))
+```
+
+Hem hata hem uyarı mesajlarını seçelim.
+
+```{r}
+## | operatörü "veya" anlamına gelir.
+logs[grepl("ERROR|WARNING", logs)]
+```
+
+Yalnızca INFO ile başlayan mesajları bulalım.
+
+```{r}
+# ^INFO ifadesi INFO ile başlayan metinleri bulur.
+logs[grepl("^INFO", logs)]
+```
+
+Şimdi her log satırını basitçe sınıflandıralım.
+
+```{r}
+# ifelse(test, yes, no)
+# test TRUE ise yes, değilse no değeri döner.
+
+log_tipi <- ifelse(
+  grepl("ERROR", logs), "ERROR",
+  ifelse(grepl("WARNING", logs), "WARNING", "INFO")
+)
+
+log_tipi
+```
+
+Bu sınıflamayı bir veri çerçevesi halinde görelim.
+
+```{r}
+log_df <- data.frame(
+  log = logs,
+  tip = log_tipi
+)
+
+log_df
+```
+
+Bu küçük örnek şunu gösterir: Metin arama fonksiyonları yalnızca metin bulmak için değil, veri setini anlamlandırmak ve yeni değişkenler üretmek için de kullanılabilir.
+
+## Uygulama: Basit Metin Temizleme Akışı
+
+Gerçek verilerde metinler genellikle temiz değildir. Fazladan boşluklar, farklı büyük/küçük harf kullanımları ve noktalama işaretleri olabilir.
+
+```{r}
+sehirler <- c(" Ankara ", "ankara", "ANKARA!", "İstanbul ", "istanbul.")
+```
+
+Bu değerleri standartlaştırmak için birkaç işlemi birlikte uygulayalım.
+
+```{r}
+# 1. Baştaki ve sondaki boşlukları temizle
+sehir_temiz <- trimws(sehirler)
+
+# 2. Küçük harfe dönüştür
+sehir_temiz <- tolower(sehir_temiz)
+
+# 3. Noktalama işaretlerini temizle
+# Burada basit bir örnek kullanıyoruz.
+sehir_temiz <- gsub("[[:punct:]]", "", sehir_temiz)
+
+sehir_temiz
+```
+
+Kaç farklı şehir kaldığını kontrol edelim.
+
+```{r}
+unique(sehir_temiz)
+```
+
+Bu örnek basit görünse de veri temizleme sürecinin özünü gösterir. Analizden önce metinlerin standart hale getirilmesi, elde edilecek sonuçların güvenilirliğini doğrudan etkiler.
+
+## Egzersizler
+
+Aşağıdaki karakter vektörü üzerinde verilen işlemleri yapınız.
+
+```{r}
+kullanicilar <- c(
+  "user_123",
+  "admin",
+  "guest_456",
+  "user_789",
+  "test",
+  "USER_000"
+)
+```
+
+1.  İçinde `"user"` geçen değerleri bulunuz.
+2.  Büyük/küçük harf farkını yok sayarak `"user"` geçen değerleri bulunuz.
+3.  İçinde rakam olan değerleri bulunuz.
+4.  `"user_"` ile başlayan değerleri bulunuz.
+5.  Sadece harflerden oluşan değerleri bulunuz.
+6.  İçinde rakam olan kaç değer olduğunu hesaplayınız.
+
+Örnek çözüm:
+
+```{r}
+# 1. İçinde "user" geçenler
+grep("user", kullanicilar, value = TRUE)
+
+# 2. Büyük/küçük harf farkını yok sayarak "user" geçenler
+grep("user", kullanicilar, value = TRUE, ignore.case = TRUE)
+
+# 3. İçinde rakam olanlar
+grep("[0-9]", kullanicilar, value = TRUE)
+
+# 4. "user_" ile başlayanlar
+grep("^user_", kullanicilar, value = TRUE, ignore.case = TRUE)
+
+# 5. Sadece harflerden oluşanlar
+grep("^[A-Za-z]+$", kullanicilar, value = TRUE)
+
+# 6. İçinde rakam olanların sayısı
+sum(grepl("[0-9]", kullanicilar))
+```
+
+Bu egzersizlerde özellikle `grep()` ve `grepl()` farkı, `ignore.case` argümanı ve temel desen arama mantığı birlikte kullanılmaktadır.
+
+## Sık Yapılan Hatalar
+
+Metin işlemleri basit görünse de bazı hatalar oldukça yaygındır.
+
+İlk hata, `paste()` ve `paste0()` fonksiyonlarını aynı sanmaktır. Oysa `paste()` varsayılan olarak boşluk koyarken, `paste0()` koymaz.
+
+```{r}
+paste("R", "Studio")
+paste0("R", "Studio")
+```
+
+İkinci hata, `sep` ve `collapse` argümanlarını karıştırmaktır.
+
+```{r}
+paste("A", "B", "C", sep = "-")
+paste(c("A", "B", "C"), collapse = "-")
+```
+
+Üçüncü hata, `grep()` ve `grepl()` farkını bilmemektir. Biri indeks döndürür, diğeri mantıksal çıktı üretir.
+
+```{r}
+x <- c("elma", "armut", "muz")
+
+grep("a", x)
+grepl("a", x)
+```
+
+Dördüncü hata, büyük/küçük harf duyarlılığını unutmak ve bu nedenle bazı eşleşmeleri kaçırmaktır.
+
+```{r}
+grep("elma", c("Elma", "elma"))
+grep("elma", c("Elma", "elma"), ignore.case = TRUE)
+```
+
+## Bölüm Özeti
+
+Bu bölümde R programlama dilinde temel ve orta düzey metin işlemlerini ele aldık. Metin işlemleri, veri analizinin yalnızca yardımcı bir parçası değil; çoğu zaman analiz kalitesini doğrudan belirleyen bir hazırlık aşamasıdır.
+
+Bu bölümde öğrendiğimiz temel noktalar şunlardır:
+
+-   R'de metinler `character` veri tipiyle temsil edilir.
+-   `paste()` ve `paste0()` metin birleştirme için kullanılır.
+-   `sep`, parçaların arasına konulacak ayırıcıyı belirler.
+-   `collapse`, bir vektörün elemanlarını tek bir metne indirir.
+-   `nchar()` metin uzunluğunu hesaplar.
+-   `tolower()` ve `toupper()` metinleri standartlaştırmada kullanılır.
+-   `substr()` ve `substring()` metnin belirli bölümlerini almak için kullanılır.
+-   `strsplit()` metni belirli ayraçlara göre parçalar.
+-   `trimws()` baştaki ve sondaki boşlukları temizler.
+-   `sub()` ve `gsub()` metin değiştirme işlemlerinde kullanılır.
+-   `grep()` eşleşen elemanların indekslerini döndürür.
+-   `grepl()` her eleman için `TRUE/FALSE` sonucu üretir.
+-   Temel regex ifadeleriyle daha esnek metin arama işlemleri yapılabilir.
+
+Metin işlemlerini iyi öğrenmek, veri temizleme ve raporlama becerisini ciddi biçimde güçlendirir. Sayılar analiz için ne kadar önemliyse, metinler de veriyi anlamlandırmak için o kadar önemlidir.

@@ -1,0 +1,814 @@
+# Apply Ailesi
+
+R'de veri analizi yaparken aynı işlemi birden fazla eleman, satır, sütun, grup veya liste bileşeni üzerinde tekrarlamak çok sık karşılaşılan bir ihtiyaçtır. Örneğin bir veri setindeki bütün sayısal değişkenlerin ortalamasını almak, bir listenin her elemanına aynı fonksiyonu uygulamak, bir değişkeni gruplara göre özetlemek veya iki farklı vektörün karşılıklı elemanları üzerinde işlem yapmak isteyebiliriz.
+
+Bu tür işlemler döngülerle yapılabilir. Ancak R, bu tekrar eden işlemleri daha kısa, daha okunabilir ve çoğu zaman daha güvenli biçimde gerçekleştirmek için **apply ailesi** olarak bilinen bir fonksiyon grubu sunar.
+
+Apply ailesi tek bir fonksiyondan oluşmaz. R'de farklı veri yapıları ve farklı çıktı beklentileri için farklı apply fonksiyonları vardır. Bu bölümde özellikle şu fonksiyonlar ele alınacaktır:
+
+-   `apply()`
+-   `lapply()`
+-   `sapply()`
+-   `vapply()`
+-   `tapply()`
+-   `mapply()`
+
+Bu fonksiyonların hepsi aynı temel fikre dayanır:
+
+> Bir veri yapısının parçaları üzerinde aynı fonksiyonu tekrar tekrar uygula.
+
+Ancak her biri farklı veri yapıları ve farklı kullanım amaçları için tasarlanmıştır. Bu nedenle apply ailesini anlamak yalnızca fonksiyon isimlerini ezberlemek değildir; hangi durumda hangi fonksiyonun daha uygun olduğunu kavramaktır.
+
+::: callout-note
+Apply ailesi, döngülerin yerine geçmek zorunda değildir. Asıl amaç, tekrar eden işlemleri daha açık, daha düzenli ve veri yapısına uygun biçimde yazabilmektir.
+:::
+
+## Neden Apply Ailesi?
+
+Programlama öğrenirken tekrar eden işlemler için genellikle önce `for` döngüleri öğrenilir. Bu doğrudur; çünkü döngüler programlamanın temel yapı taşlarından biridir. Ancak R, veri analizi odaklı bir dil olduğu için birçok tekrar eden işlem vektörler, matrisler, listeler ve veri çerçeveleri üzerinde yapılır. Apply ailesi bu veri yapılarına uygun bir tekrar mantığı sağlar.
+
+Örneğin elimizde bir matris olsun ve her sütunun ortalamasını hesaplamak isteyelim.
+
+```{r}
+# Örnek bir matris oluşturalım.
+notlar <- matrix(
+  c(70, 80, 90,
+    60, 75, 85,
+    50, 65, 95),
+  nrow = 3,
+  byrow = TRUE
+)
+
+notlar
+```
+
+Bu matrisin sütun ortalamalarını döngüyle hesaplayabiliriz.
+
+```{r}
+# Sonuçları saklamak için boş bir vektör oluşturuyoruz.
+sutun_ortalamalari <- numeric(ncol(notlar))
+
+# Her sütun için ortalama hesaplıyoruz.
+for (i in 1:ncol(notlar)) {
+  sutun_ortalamalari[i] <- mean(notlar[, i])
+}
+
+sutun_ortalamalari
+```
+
+Aynı işlemi `apply()` ile daha kısa ve doğrudan yazabiliriz.
+
+```{r}
+# 2 değeri sütunlar üzerinde işlem yapılacağını belirtir.
+apply(notlar, 2, mean)
+```
+
+Buradaki fark yalnızca daha az kod yazmak değildir. `apply()` ifadesi doğrudan şunu söyler:
+
+> Bu matrisin sütunlarına `mean()` fonksiyonunu uygula.
+
+Yani kodun niyeti daha açık hale gelir.
+
+::: callout-tip
+Apply ailesi genellikle "daha hızlı" olduğu için değil, kodun niyetini daha açık ifade ettiği için tercih edilir.
+:::
+
+## Apply Ailesinin Genel Mantığı
+
+Apply ailesindeki fonksiyonların çoğu üç temel soruya cevap verir:
+
+1.  Hangi veri yapısı üzerinde çalışacağız?
+2.  Bu veri yapısının hangi parçaları üzerinde işlem yapacağız?
+3.  Her parçaya hangi fonksiyonu uygulayacağız?
+
+Bu mantık özellikle başlangıçta karmaşık görünebilir. Ancak birkaç örnekten sonra oldukça doğal hale gelir.
+
+Aşağıdaki tablo temel apply fonksiyonlarının kullanım alanlarını özetlemektedir.
+
+| Fonksiyon | Temel kullanım alanı | Tipik çıktı |
+|----|----|----|
+| `apply()` | Matris veya array üzerinde satır/sütun işlemleri | vektör, matris veya liste |
+| `lapply()` | Liste veya veri çerçevesinin elemanları üzerinde işlem | liste |
+| `sapply()` | `lapply()` gibi çalışır, sonucu basitleştirmeye çalışır | vektör, matris veya liste |
+| `vapply()` | `sapply()` benzeri; çıktı tipi önceden belirtilir | güvenli ve belirli tipte çıktı |
+| `tapply()` | Bir vektörü gruplara göre özetlemek | vektör, array veya liste |
+| `mapply()` | Birden fazla nesne üzerinde eş zamanlı işlem | vektör, matris veya liste |
+
+Bu tabloyu ezberlemek yerine bölüm boyunca örnekler üzerinden anlamak daha faydalıdır.
+
+## `apply()` Fonksiyonu
+
+`apply()` fonksiyonu genellikle matrisler veya çok boyutlu diziler üzerinde satır ya da sütun bazında işlem yapmak için kullanılır.
+
+Temel söz dizimi şöyledir:
+
+``` r
+apply(X, MARGIN, FUN, ...)
+```
+
+Buradaki argümanlar şunlardır:
+
+-   `X`: Üzerinde işlem yapılacak matris veya array.
+-   `MARGIN`: İşlemin hangi boyutta yapılacağını belirtir.
+-   `FUN`: Uygulanacak fonksiyon.
+-   `...`: Fonksiyona aktarılacak ek argümanlar.
+
+`MARGIN` argümanı `apply()` fonksiyonunun en kritik kısmıdır.
+
+Matrislerde:
+
+-   `MARGIN = 1` satırlar üzerinde işlem yapar.
+-   `MARGIN = 2` sütunlar üzerinde işlem yapar.
+
+```{r}
+# Örnek bir matris oluşturalım.
+m <- matrix(1:12, nrow = 3, byrow = TRUE)
+
+m
+```
+
+### Satır Bazında İşlem
+
+Satır toplamlarını hesaplayalım.
+
+```{r}
+# MARGIN = 1 satırları ifade eder.
+apply(m, 1, sum)
+```
+
+Her satır ayrı ayrı alınmış ve `sum()` fonksiyonu uygulanmıştır.
+
+Satır ortalamalarını da benzer şekilde hesaplayabiliriz.
+
+```{r}
+# Her satırın ortalaması
+apply(m, 1, mean)
+```
+
+### Sütun Bazında İşlem
+
+Sütun toplamlarını hesaplamak için `MARGIN = 2` kullanılır.
+
+```{r}
+# MARGIN = 2 sütunları ifade eder.
+apply(m, 2, sum)
+```
+
+Sütun ortalamaları:
+
+```{r}
+# Her sütunun ortalaması
+apply(m, 2, mean)
+```
+
+::: callout-note
+`apply()` fonksiyonunda `MARGIN = 1` satır, `MARGIN = 2` sütun anlamına gelir. Bu bilgi özellikle matris işlemlerinde temel önemdedir.
+:::
+
+### Ek Argüman Kullanımı
+
+Bazı fonksiyonlar ek argümanlar alır. Örneğin `mean()` fonksiyonunda `na.rm = TRUE` argümanı eksik değerleri dikkate almadan ortalama hesaplamak için kullanılır.
+
+```{r}
+# Eksik değer içeren bir matris oluşturalım.
+m_na <- matrix(
+  c(1, 2, NA,
+    4, NA, 6,
+    7, 8, 9),
+  nrow = 3,
+  byrow = TRUE
+)
+
+m_na
+```
+
+Eksik değerler dikkate alınmadan satır ortalamaları hesaplanabilir.
+
+```{r}
+# mean() fonksiyonuna na.rm = TRUE argümanı aktarılır.
+apply(m_na, 1, mean, na.rm = TRUE)
+```
+
+Burada `na.rm = TRUE` doğrudan `apply()` fonksiyonuna değil, `apply()` tarafından çağrılan `mean()` fonksiyonuna aktarılır.
+
+### Anonim Fonksiyon Kullanımı
+
+`apply()` içinde hazır bir fonksiyon kullanılabileceği gibi, kullanıcı tarafından o anda tanımlanan kısa fonksiyonlar da kullanılabilir. Bunlara **anonim fonksiyon** denir. Anonim fonksiyonlar bir isme atanmaz; doğrudan ihtiyaç duyulan yerde kullanılır.
+
+```{r}
+# Her satır için maksimum ve minimum değer arasındaki farkı hesaplayalım.
+apply(m, 1, function(x) max(x) - min(x))
+```
+
+Burada `function(x)` ifadesi her satırı geçici olarak `x` adıyla alır ve satır içindeki en büyük değer ile en küçük değer arasındaki farkı hesaplar.
+
+Aynı işlemi sütunlar için yapalım.
+
+```{r}
+# Her sütundaki aralık değeri
+apply(m, 2, function(x) max(x) - min(x))
+```
+
+Anonim fonksiyonlar özellikle tek satırlık kısa işlemler için oldukça kullanışlıdır.
+
+::: callout-tip
+Anonim fonksiyonlar, kısa ve yalnızca bir kez kullanılacak işlemler için idealdir. Aynı işlem birçok yerde kullanılacaksa ayrı bir fonksiyon tanımlamak daha uygun olur.
+:::
+
+### `apply()` ve Veri Çerçeveleri
+
+`apply()` fonksiyonu veri çerçeveleri üzerinde de çalışabilir; ancak dikkatli kullanılmalıdır. Çünkü veri çerçeveleri farklı veri tiplerine sahip sütunlardan oluşabilir. `apply()` veri çerçevesini çoğu zaman matrise dönüştürür. Bu dönüşüm beklenmeyen sonuçlara yol açabilir.
+
+```{r}
+df <- data.frame(
+  isim = c("Ali", "Ayşe", "Mehmet"),
+  not1 = c(70, 80, 90),
+  not2 = c(60, 85, 95)
+)
+
+df
+```
+
+Bu veri çerçevesi içinde metinsel bir sütun olduğu için `apply()` kullanımı dikkat gerektirir.
+
+```{r}
+# Sadece sayısal sütunları seçerek apply() kullanmak daha güvenlidir.
+apply(df[, c("not1", "not2")], 1, mean)
+```
+
+::: callout-warning
+Veri çerçeveleri üzerinde `apply()` kullanırken dikkatli olunmalıdır. Veri çerçevesi matrise dönüştürüldüğünde farklı veri tipleri aynı tipe zorlanabilir.
+:::
+
+## `lapply()` Fonksiyonu
+
+`lapply()` fonksiyonu listeler üzerinde işlem yapmak için kullanılır. Adındaki `l`, **list** kelimesinden gelir. Bu fonksiyon, bir listenin her elemanına aynı fonksiyonu uygular ve sonucu her zaman liste olarak döndürür.
+
+Temel söz dizimi şöyledir:
+
+``` r
+lapply(X, FUN, ...)
+```
+
+Burada:
+
+-   `X`: Liste veya liste gibi elemanlardan oluşan nesne.
+-   `FUN`: Her elemana uygulanacak fonksiyon.
+-   `...`: Fonksiyona aktarılacak ek argümanlar.
+
+Önce basit bir liste oluşturalım.
+
+```{r}
+liste <- list(
+  a = 1:5,
+  b = 10:15,
+  c = c(100, 200, 300)
+)
+
+liste
+```
+
+Her elemanın ortalamasını hesaplayalım.
+
+```{r}
+# lapply() her liste elemanına mean() uygular.
+lapply(liste, mean)
+```
+
+Sonuç liste olarak döner.
+
+```{r}
+# Çıktının sınıfını inceleyelim.
+class(lapply(liste, mean))
+```
+
+Bu, `lapply()` fonksiyonunun en belirgin özelliğidir.
+
+> `lapply()` sonucu basitleştirmeye çalışmaz; daima liste döndürür.
+
+### Veri Çerçeveleri ile `lapply()`
+
+R'de veri çerçeveleri aslında sütunlardan oluşan özel listeler olarak düşünülebilir. Bu nedenle `lapply()` veri çerçevesi sütunları üzerinde işlem yapmak için sık kullanılır.
+
+```{r}
+# iris veri setinin ilk birkaç satırına bakalım.
+head(iris)
+```
+
+`iris` veri setindeki her sütunun sınıfını öğrenelim.
+
+```{r}
+# Her sütuna class() fonksiyonunu uygular.
+lapply(iris, class)
+```
+
+Sayısal sütunların ortalamasını almak için önce sayısal sütunları seçelim.
+
+```{r}
+# Sayısal sütunları seçiyoruz.
+iris_sayisal <- iris[, 1:4]
+
+# Her sayısal sütunun ortalaması
+lapply(iris_sayisal, mean)
+```
+
+### `lapply()` ve Anonim Fonksiyonlar
+
+Bir veri çerçevesindeki sayısal sütunların minimum ve maksimum değerlerini birlikte hesaplayalım.
+
+```{r}
+# Her sütun için minimum ve maksimum değerleri döndürür.
+lapply(iris_sayisal, function(x) c(min = min(x), max = max(x)))
+```
+
+Sonuç yine listedir. Her liste elemanı, ilgili sütunun minimum ve maksimum değerlerini içerir.
+
+### Ek Argüman Kullanımı
+
+Eksik değer içeren bir liste oluşturalım.
+
+```{r}
+liste_na <- list(
+  a = c(1, 2, NA, 4),
+  b = c(10, NA, 30),
+  c = c(5, 6, 7)
+)
+
+liste_na
+```
+
+Eksik değerleri dışarıda bırakarak ortalama hesaplayalım.
+
+```{r}
+# na.rm = TRUE argümanı mean() fonksiyonuna aktarılır.
+lapply(liste_na, mean, na.rm = TRUE)
+```
+
+## `sapply()` Fonksiyonu
+
+`sapply()` fonksiyonu `lapply()` fonksiyonuna benzer. Temel fark, `sapply()` fonksiyonunun çıktıyı mümkünse daha basit bir yapıya dönüştürmeye çalışmasıdır. Buradaki `s`, **simplify** kelimesinden gelir.
+
+```{r}
+# lapply() liste döndürür.
+lapply(liste, mean)
+
+# sapply() sonucu basitleştirmeye çalışır.
+sapply(liste, mean)
+```
+
+İlk çıktı listedir. İkinci çıktı ise isimlendirilmiş bir vektördür.
+
+Bu davranış pratikte kullanışlıdır; ancak bazen beklenmeyen çıktı tiplerine neden olabilir.
+
+### `sapply()` Ne Zaman Kullanışlıdır?
+
+Eğer her elemandan tek bir değer dönmesini bekliyorsak `sapply()` oldukça pratiktir.
+
+```{r}
+# Her elemanın uzunluğunu hesaplayalım.
+sapply(liste, length)
+```
+
+Veri çerçevesindeki sütun sınıflarını daha okunabilir biçimde görmek için de kullanılabilir.
+
+```{r}
+sapply(iris, class)
+```
+
+### `simplify = FALSE`
+
+`sapply()` fonksiyonu varsayılan olarak sonucu basitleştirir. Bu davranışı kapatmak için `simplify = FALSE` kullanılabilir.
+
+```{r}
+# simplify = FALSE kullanıldığında sonuç liste olarak kalır.
+sapply(liste, mean, simplify = FALSE)
+```
+
+Bu kullanım pratikte `lapply()` ile benzer sonuç verir.
+
+::: callout-warning
+`sapply()` çıktı yapısını otomatik olarak basitleştirdiği için bazı durumlarda beklenmeyen sonuçlar üretebilir. Çıktı tipinin kesin olması gerekiyorsa `vapply()` daha güvenlidir.
+:::
+
+## `vapply()` Fonksiyonu
+
+`vapply()` fonksiyonu, `sapply()` fonksiyonunun daha güvenli bir versiyonu olarak düşünülebilir. Temel fark, `vapply()` fonksiyonunda beklenen çıktı tipi ve uzunluğu önceden belirtilir.
+
+Temel söz dizimi şöyledir:
+
+``` r
+vapply(X, FUN, FUN.VALUE, ...)
+```
+
+Burada:
+
+-   `X`: Üzerinde işlem yapılacak nesne.
+-   `FUN`: Uygulanacak fonksiyon.
+-   `FUN.VALUE`: Her işlemden beklenen çıktı tipi ve uzunluğu.
+-   `...`: Ek argümanlar.
+
+Örneğin her liste elemanından tek bir sayısal değer bekliyorsak:
+
+```{r}
+# Her elemanın ortalamasını bekliyoruz.
+vapply(liste, mean, numeric(1))
+```
+
+Buradaki `numeric(1)` ifadesi şunu söyler:
+
+> Her elemandan uzunluğu 1 olan sayısal bir çıktı bekliyorum.
+
+Eğer fonksiyon beklenen yapıda çıktı üretmezse `vapply()` hata verir. Bu davranış özellikle daha güvenli ve tahmin edilebilir kod yazmak için faydalıdır.
+
+```{r, error=TRUE}
+# Bu örnekte her elemandan iki değer döndüğü için numeric(1) beklentisi bozulur.
+vapply(liste, function(x) c(min(x), max(x)), numeric(1))
+```
+
+Doğru kullanım:
+
+```{r}
+# Her elemandan iki sayısal değer beklediğimizi belirtiyoruz.
+vapply(liste, function(x) c(min = min(x), max = max(x)), numeric(2))
+```
+
+::: callout-tip
+Paket veya fonksiyon geliştirirken `vapply()` daha güvenli bir tercih olabilir. Çünkü çıktı yapısını açık biçimde belirtmenizi sağlar.
+:::
+
+## `tapply()` Fonksiyonu
+
+`tapply()` fonksiyonu bir vektörü bir veya daha fazla gruba göre özetlemek için kullanılır. Adındaki `t`, tarihsel olarak **table** veya **tapply** yapısına gönderme yapar. Pratikte `tapply()` fonksiyonunu gruplandırılmış özet işlemleri için düşünebiliriz.
+
+Temel söz dizimi şöyledir:
+
+``` r
+tapply(X, INDEX, FUN, ...)
+```
+
+Burada:
+
+-   `X`: Özetlenecek vektör.
+-   `INDEX`: Grupları belirleyen factor veya factor listesi.
+-   `FUN`: Her gruba uygulanacak fonksiyon.
+-   `...`: Ek argümanlar.
+
+Basit bir örnek oluşturalım.
+
+```{r}
+# Öğrencilerin bölümleri ve notları
+bolum <- c("İstatistik", "İstatistik", "Matematik", "Matematik", "İstatistik")
+not <- c(80, 70, 60, 90, 85)
+
+# Bölüme göre ortalama not
+tapply(not, bolum, mean)
+```
+
+Burada `not` vektörü `bolum` değişkenine göre gruplanmış ve her grup için ortalama hesaplanmıştır.
+
+### Birden Fazla Grup ile `tapply()`
+
+Birden fazla gruplama değişkeni de kullanılabilir.
+
+```{r}
+cinsiyet <- c("Kadın", "Erkek", "Kadın", "Erkek", "Kadın")
+
+# Bölüm ve cinsiyete göre ortalama not
+tapply(not, list(bolum, cinsiyet), mean)
+```
+
+Sonuç iki boyutlu bir tablo gibi görünür.
+
+### Eksik Değerlerle Kullanım
+
+```{r}
+not_na <- c(80, 70, NA, 90, 85)
+
+# Eksik değerleri dışarıda bırakarak ortalama
+tapply(not_na, bolum, mean, na.rm = TRUE)
+```
+
+::: callout-note
+`tapply()` özellikle base R ile gruplara göre özet istatistik üretmek için kullanışlıdır. `dplyr` paketindeki `group_by()` ve `summarise()` mantığına geçmeden önce bu yapı iyi anlaşılmalıdır.
+:::
+
+## `mapply()` Fonksiyonu
+
+`mapply()` fonksiyonu, bir fonksiyonu birden fazla nesnenin karşılıklı elemanları üzerinde uygulamak için kullanılır. Adındaki `m`, **multivariate** veya **multiple** fikrine işaret eder.
+
+Basit bir örnekle başlayalım.
+
+```{r}
+# İki vektör oluşturalım.
+x <- c(1, 2, 3)
+y <- c(10, 20, 30)
+
+# Karşılıklı elemanları toplayalım.
+mapply(sum, x, y)
+```
+
+Bu işlem şu hesaplamaları yapar:
+
+-   `sum(1, 10)`
+-   `sum(2, 20)`
+-   `sum(3, 30)`
+
+### Parametreli Fonksiyonlarda `mapply()`
+
+Bir vektördeki değerleri farklı üslerle yükseltelim.
+
+```{r}
+taban <- c(2, 3, 4)
+us <- c(2, 3, 2)
+
+# Her tabanı karşılık gelen üsse yükseltir.
+mapply(function(a, b) a^b, taban, us)
+```
+
+### Karakter Üretiminde `mapply()`
+
+```{r}
+ad <- c("Ali", "Ayşe", "Mehmet")
+not <- c(80, 90, 75)
+
+# Her öğrenci için etiket oluşturalım.
+mapply(function(a, n) paste(a, "notu:", n), ad, not)
+```
+
+Bu tür kullanım, raporlama ve dinamik metin üretimi için faydalıdır.
+
+::: callout-tip
+Bir fonksiyonun birden fazla girdisi varsa ve bu girdilerin karşılıklı elemanları üzerinde işlem yapmak istiyorsanız `mapply()` iyi bir seçenektir.
+:::
+
+## Apply Ailesi ve Döngüler
+
+Apply ailesi bazen "döngü kullanmadan işlem yapmak" şeklinde anlatılır. Bu ifade kısmen doğrudur; ancak eksiktir. Çünkü apply fonksiyonları da arka planda tekrar eden işlemler gerçekleştirir. Fark, bu tekrar mantığının daha yüksek seviyeli ve veri yapısına uygun biçimde ifade edilmesidir.
+
+Aşağıdaki iki kod aynı amaca hizmet eder.
+
+```{r}
+# Döngü ile sütun ortalamaları
+sonuc_for <- numeric(ncol(iris_sayisal))
+
+for (i in 1:ncol(iris_sayisal)) {
+  sonuc_for[i] <- mean(iris_sayisal[[i]])
+}
+
+sonuc_for
+```
+
+```{r}
+# sapply ile sütun ortalamaları
+sonuc_apply <- sapply(iris_sayisal, mean)
+
+sonuc_apply
+```
+
+İkinci kullanımda kod daha kısa ve niyet daha açıktır. Ancak bazı durumlarda `for` döngüsü daha okunabilir olabilir. Özellikle karmaşık işlemler, ara kontroller veya birden fazla adım içeren süreçlerde döngü kullanmak daha anlaşılır olabilir.
+
+::: callout-important
+Apply ailesi döngülerin düşmanı değildir. Döngüler ve apply fonksiyonları farklı durumlarda farklı avantajlar sağlar.
+:::
+
+## Hangi Apply Fonksiyonu Ne Zaman Kullanılır?
+
+Aşağıdaki tablo karar vermeyi kolaylaştırabilir.
+
+| İhtiyaç | Uygun fonksiyon |
+|----|----|
+| Matrisin satır veya sütunlarına işlem uygulamak | `apply()` |
+| Listenin her elemanına işlem uygulamak | `lapply()` |
+| Liste sonucunu vektör/matris gibi daha basit yapıya çevirmek | `sapply()` |
+| Çıktı tipini güvence altına almak | `vapply()` |
+| Bir vektörü gruplara göre özetlemek | `tapply()` |
+| Birden fazla vektörün karşılıklı elemanlarıyla işlem yapmak | `mapply()` |
+
+Bu tablo kesin kurallar değil, pratik yönlendirmeler sunar. Gerçek kullanımda veri yapısı, beklenen çıktı ve kodun okunabilirliği birlikte değerlendirilmelidir.
+
+## Mini Vaka Çalışması: Sınav Sonuçlarını Özetleme
+
+Şimdi apply ailesindeki bazı fonksiyonları küçük bir örnek üzerinde birlikte kullanalım.
+
+```{r}
+# Öğrenci bazlı sınav sonuçları
+sinav <- data.frame(
+  ogrenci = c("Ali", "Ayşe", "Mehmet", "Zeynep", "Can", "Elif"),
+  bolum = c("İstatistik", "İstatistik", "Matematik", "Matematik", "İstatistik", "Matematik"),
+  vize = c(70, 85, 60, 90, 75, 65),
+  final = c(80, 90, 55, 95, 70, 75)
+)
+
+sinav
+```
+
+Öğrencilerin yıl sonu notunu hesaplayalım.
+
+```{r}
+# Vize %40, final %60 ağırlıklı olsun.
+sinav$yil_sonu <- 0.4 * sinav$vize + 0.6 * sinav$final
+
+sinav
+```
+
+Sayısal değişkenlerin özetini alalım.
+
+```{r}
+# Sayısal sütunları seçelim.
+sinav_sayisal <- sinav[, c("vize", "final", "yil_sonu")]
+
+# Her sayısal sütun için ortalama
+sapply(sinav_sayisal, mean)
+```
+
+Her öğrenci için vize ve final arasındaki farkı hesaplayalım.
+
+```{r}
+# apply() satır bazında işlem yapar.
+apply(sinav[, c("vize", "final")], 1, function(x) x[2] - x[1])
+```
+
+Bölümlere göre yıl sonu ortalaması:
+
+```{r}
+# tapply() ile gruplara göre ortalama
+tapply(sinav$yil_sonu, sinav$bolum, mean)
+```
+
+Öğrenciler için kısa açıklama metni oluşturalım.
+
+```{r}
+# mapply() ile karşılıklı elemanlardan metin üretimi
+mapply(
+  function(ad, not) paste(ad, "yıl sonu notu:", not),
+  sinav$ogrenci,
+  sinav$yil_sonu
+)
+```
+
+Bu küçük vaka çalışması, apply ailesinin yalnızca soyut fonksiyonlardan oluşmadığını; veri özetleme, raporlama ve tekrar eden işlemleri düzenleme açısından pratik bir araç seti sunduğunu göstermektedir.
+
+## Sık Yapılan Hatalar
+
+### `apply()` Fonksiyonunu Her Veri Çerçevesinde Güvenle Kullanmak
+
+Veri çerçeveleri farklı veri tiplerine sahip olabilir. `apply()` veri çerçevesini matrise dönüştürebileceği için sayısal olmayan sütunlar sonucu etkileyebilir.
+
+```{r}
+df_hata <- data.frame(
+  grup = c("A", "B", "C"),
+  x = c(10, 20, 30),
+  y = c(5, 15, 25)
+)
+
+# Bu kullanım veri tipleri nedeniyle beklenmeyen sonuçlar verebilir.
+apply(df_hata, 2, class)
+```
+
+Daha güvenli kullanım:
+
+```{r}
+# Sayısal sütunları seçerek işlem yapmak daha uygundur.
+apply(df_hata[, c("x", "y")], 2, mean)
+```
+
+### `sapply()` Çıktısını Her Zaman Aynı Sanmak
+
+`sapply()` sonucu otomatik basitleştirmeye çalışır. Her elemandan farklı uzunlukta çıktı dönerse sonuç liste olabilir.
+
+```{r}
+karisik <- list(
+  a = 1:3,
+  b = 1:5
+)
+
+sapply(karisik, function(x) x[1:2])
+```
+
+Ancak farklı uzunlukta çıktı üretildiğinde yapı değişebilir.
+
+```{r}
+sapply(karisik, function(x) x)
+```
+
+Çıktı tipinin kesin olması gerekiyorsa `vapply()` düşünülmelidir.
+
+### `MARGIN` Değerini Karıştırmak
+
+`apply()` fonksiyonunda `MARGIN = 1` satır, `MARGIN = 2` sütun anlamına gelir. Bu karışıklık sık görülür.
+
+```{r}
+m
+
+# Satır toplamları
+apply(m, 1, sum)
+
+# Sütun toplamları
+apply(m, 2, sum)
+```
+
+### Ek Argümanların Nereye Gittiğini Karıştırmak
+
+```{r}
+# na.rm = TRUE mean() fonksiyonuna aktarılır.
+apply(m_na, 1, mean, na.rm = TRUE)
+```
+
+Burada `na.rm = TRUE`, `apply()` fonksiyonunun değil, `mean()` fonksiyonunun argümanıdır.
+
+## Egzersizler
+
+Aşağıdaki egzersizler apply ailesinin temel kullanımını pekiştirmek için hazırlanmıştır.
+
+1.  4 satır ve 5 sütundan oluşan sayısal bir matris oluşturunuz.
+2.  Bu matrisin satır toplamlarını `apply()` ile hesaplayınız.
+3.  Bu matrisin sütun ortalamalarını `apply()` ile hesaplayınız.
+4.  Bir liste oluşturunuz ve her elemanın uzunluğunu `lapply()` ile hesaplayınız.
+5.  Aynı işlemi `sapply()` ile yapınız ve çıktı farkını inceleyiniz.
+6.  `iris` veri setindeki sayısal sütunların ortalamasını `sapply()` ile hesaplayınız.
+7.  Aynı işlemi `vapply()` ile yapınız.
+8.  Bir not vektörünü bölüm değişkenine göre `tapply()` ile özetleyiniz.
+9.  İki vektörü kullanarak `mapply()` ile dinamik etiketler üretiniz.
+10. `apply()` fonksiyonunda `MARGIN = 1` ve `MARGIN = 2` farkını kendi örneğinizle açıklayınız.
+
+## Egzersiz Çözümleri
+
+```{r}
+# 1. Matris oluşturma
+mat <- matrix(1:20, nrow = 4, byrow = TRUE)
+
+mat
+```
+
+```{r}
+# 2. Satır toplamları
+apply(mat, 1, sum)
+```
+
+```{r}
+# 3. Sütun ortalamaları
+apply(mat, 2, mean)
+```
+
+```{r}
+# 4. Liste oluşturma ve lapply kullanımı
+ornek_liste <- list(
+  a = 1:5,
+  b = letters[1:3],
+  c = c(TRUE, FALSE, TRUE, TRUE)
+)
+
+lapply(ornek_liste, length)
+```
+
+```{r}
+# 5. Aynı işlemi sapply ile yapma
+sapply(ornek_liste, length)
+```
+
+```{r}
+# 6. iris veri setindeki sayısal sütunların ortalaması
+iris_sayisal <- iris[, 1:4]
+
+sapply(iris_sayisal, mean)
+```
+
+```{r}
+# 7. Aynı işlem vapply ile
+vapply(iris_sayisal, mean, numeric(1))
+```
+
+```{r}
+# 8. Bölüme göre not ortalaması
+bolum <- c("A", "A", "B", "B", "A")
+not <- c(70, 80, 60, 90, 85)
+
+tapply(not, bolum, mean)
+```
+
+```{r}
+# 9. mapply ile etiket üretimi
+ad <- c("Ali", "Ayşe", "Mehmet")
+puan <- c(75, 90, 60)
+
+mapply(function(a, p) paste(a, "-", p, "puan"), ad, puan)
+```
+
+```{r}
+# 10. MARGIN farkı
+mat
+
+# Satır bazında maksimum değerler
+apply(mat, 1, max)
+
+# Sütun bazında maksimum değerler
+apply(mat, 2, max)
+```
+
+## Bölüm Özeti
+
+Apply ailesi, R'de tekrar eden işlemleri veri yapısına uygun biçimde ifade etmeyi sağlayan önemli bir fonksiyon grubudur. Bu bölümde `apply()`, `lapply()`, `sapply()`, `vapply()`, `tapply()` ve `mapply()` fonksiyonları ele alındı.
+
+`apply()` daha çok matris ve array yapılarında satır veya sütun bazlı işlemler için kullanılır. `lapply()` liste elemanları üzerinde işlem yapar ve her zaman liste döndürür. `sapply()` benzer şekilde çalışır; ancak çıktıyı basitleştirmeye çalışır. `vapply()` beklenen çıktı tipini önceden belirterek daha güvenli bir yapı sunar. `tapply()` gruplara göre özetleme yapmak için kullanılır. `mapply()` ise birden fazla nesnenin karşılıklı elemanları üzerinde işlem yapmayı sağlar.
+
+Apply ailesini öğrenirken önemli olan hangi fonksiyonun hangi veri yapısı ve hangi çıktı beklentisi için uygun olduğunu anlamaktır. Bu fonksiyonlar döngülerin yerine geçmek zorunda değildir; ancak birçok veri analizi probleminde kodu daha kısa, daha düzenli ve daha okunabilir hale getirir.

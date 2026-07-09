@@ -1,0 +1,768 @@
+# Tarih ve Zaman İşlemleri
+
+## Giriş
+
+Veri analizinde tarih ve zaman değişkenleri çoğu zaman “sadece bir sütun” gibi görünür. Oysa tarih bilgisi, verinin bağlamını taşıyan en önemli unsurlardan biridir. Bir satışın hangi gün yapıldığı, bir ekonomik göstergenin hangi aya ait olduğu, bir sensör ölçümünün hangi saniyede gerçekleştiği ya da bir olayın hafta sonuna mı hafta içine mi denk geldiği, analiz sonuçlarını doğrudan etkileyebilir.
+
+Tarih ve zaman verileri özellikle şu alanlarda kritik öneme sahiptir:
+
+-   zaman serisi analizi,
+-   raporlama ve gösterge üretimi,
+-   veri birleştirme,
+-   dönemsel karşılaştırmalar,
+-   mevsimsellik analizi,
+-   çalışma günü / hafta sonu ayrımı,
+-   olay bazlı veri analizi,
+-   otomatik dosya ve rapor üretimi.
+
+R'de tarih ve zaman işlemlerini doğru öğrenmek önemlidir; çünkü tarih verisi ekranda metin gibi görünse bile, bilgisayarın onu gerçekten tarih olarak anlayıp anlamadığı ayrı bir konudur. Bu ayrım ihmal edildiğinde sıralama, filtreleme, toplulaştırma ve grafik üretimi gibi işlemlerde beklenmeyen sonuçlar ortaya çıkabilir.
+
+Basit bir örnekle başlayalım.
+
+```{r}
+# Ekranda tarih gibi görünen bir değer aslında character olabilir.
+x <- "2026-04-30"
+
+class(x)
+```
+
+Bu nesne tarih gibi görünse de R açısından bir metindir. Tarih işlemleri yapabilmek için onu uygun tarih sınıfına dönüştürmemiz gerekir.
+
+```{r}
+# as.Date() fonksiyonu metni Date sınıfına dönüştürür.
+tarih <- as.Date(x)
+
+class(tarih)
+tarih
+```
+
+Bu bölümde R'de tarih ve zaman verilerinin nasıl temsil edildiğini, nasıl dönüştürüldüğünü, nasıl ayrıştırıldığını, nasıl hesaplama yapıldığını ve analizlerde nasıl kullanıldığını ayrıntılı olarak ele alacağız.
+
+## Tarih ve Zaman Kavramlarının Mantığı
+
+Tarih ve zaman kavramları gündelik hayatta sezgisel olarak anlaşılır görünür. Ancak bilgisayar açısından tarih ve zaman, belirli bir başlangıç noktasına göre sayısal biçimde temsil edilir.
+
+R'de `Date` sınıfı tarih bilgisini gün düzeyinde saklar. Yani yıl, ay ve gün bilgisi vardır; saat, dakika ve saniye bilgisi yoktur.
+
+```{r}
+# Date sınıfı gün düzeyinde tarih bilgisini temsil eder.
+tarih <- as.Date("2026-04-30")
+
+tarih
+class(tarih)
+```
+
+R, `Date` nesnelerini perde arkasında 1970-01-01 tarihinden itibaren geçen gün sayısı olarak saklar. Bu tarih, bilgisayar sistemlerinde sık kullanılan referans tarihlerden biridir ve Unix epoch olarak bilinir.
+
+```{r}
+# unclass() nesnenin arka planda nasıl saklandığını gösterir.
+# 1970-01-01 tarihinden itibaren geçen gün sayısını verir.
+unclass(as.Date("1970-01-01"))
+unclass(as.Date("1970-01-02"))
+unclass(as.Date("2026-04-30"))
+```
+
+Bu bilgi neden önemlidir? Çünkü tarih nesneleri aslında sayısal bir temele sahip olduğu için iki tarih arasındaki fark hesaplanabilir, tarihler sıralanabilir ve tarihlerin üzerine gün eklenebilir.
+
+```{r}
+# Tarihe gün eklenebilir.
+as.Date("2026-04-30") + 10
+
+# İki tarih arasındaki fark hesaplanabilir.
+as.Date("2026-05-10") - as.Date("2026-04-30")
+```
+
+## R'de Temel Tarih-Zaman Sınıfları
+
+R'de tarih ve zaman işlemlerinde en sık karşılaşılan temel sınıflar şunlardır:
+
+| Sınıf     | Açıklama                                                | Örnek                  |
+|------------------------|------------------------|------------------------|
+| `Date`    | Yalnızca tarih bilgisini tutar                          | 2026-04-30             |
+| `POSIXct` | Tarih ve zamanı saniye düzeyinde, sayısal biçimde tutar | 2026-04-30 14:30:00    |
+| `POSIXlt` | Tarih ve zamanı liste benzeri bileşenler halinde tutar  | yıl, ay, gün, saat vb. |
+
+`POSIX` ifadesi, taşınabilir işletim sistemi arayüzü standardı olan “Portable Operating System Interface” kavramından gelir. R'de tarih-zaman nesneleri için kullanılan `POSIXct` ve `POSIXlt` sınıfları bu standarda dayalı zaman gösterimlerinden türemiştir.
+
+`POSIXct` daha çok veri analizi ve veri çerçeveleri içinde kullanım için uygundur. `POSIXlt` ise yıl, ay, gün, saat gibi bileşenlere daha doğrudan erişmek için kullanılabilir.
+
+```{r}
+# Sys.time() mevcut tarih ve zamanı verir.
+simdi <- Sys.time()
+
+simdi
+class(simdi)
+```
+
+```{r}
+# POSIXlt nesnesi tarih-zamanı bileşenlerine ayırır.
+simdi_lt <- as.POSIXlt(simdi)
+
+class(simdi_lt)
+simdi_lt$year  # 1900'den itibaren geçen yıl sayısı
+simdi_lt$mon   # 0'dan başlayan ay bilgisi
+simdi_lt$mday  # ayın günü
+simdi_lt$hour  # saat
+```
+
+Burada dikkat edilmesi gereken iki nokta vardır:
+
+-   `year` değeri doğrudan yıl değildir; 1900 üzerine eklenir.
+-   `mon` değeri 0'dan başlar; Ocak ayı 0, Şubat 1, Aralık 11 olarak temsil edilir.
+
+Bu nedenle günlük analizlerde genellikle `lubridate` paketinin fonksiyonları daha okunabilir ve güvenli bir kullanım sunar.
+
+## Bugünün Tarihi ve Şimdiki Zaman
+
+R'de güncel tarih için `Sys.Date()`, güncel tarih ve saat için `Sys.time()` kullanılır.
+
+```{r}
+# Bugünün tarihini verir.
+Sys.Date()
+
+# Şu anki tarih ve zamanı verir.
+Sys.time()
+```
+
+Bu fonksiyonlar özellikle otomatik rapor üretiminde kullanışlıdır.
+
+```{r}
+# Otomatik rapor tarihi üretimi
+rapor_tarihi <- Sys.Date()
+
+paste("Rapor tarihi:", rapor_tarihi)
+```
+
+Dosya adı üretiminde de kullanılabilir.
+
+```{r}
+# Tarih bilgisini dosya adına eklemek rapor takibini kolaylaştırır.
+dosya_adi <- paste0("rapor_", Sys.Date(), ".html")
+
+dosya_adi
+```
+
+Ancak burada tarih biçimi her zaman istenen formatta olmayabilir. Biçimlendirme için `format()` fonksiyonu kullanılır.
+
+```{r}
+# format() tarihlerin görünümünü değiştirmek için kullanılır.
+# %Y: dört haneli yıl
+# %m: iki haneli ay
+# %d: iki haneli gün
+
+format(Sys.Date(), "%Y%m%d")
+
+paste0("rapor_", format(Sys.Date(), "%Y%m%d"), ".html")
+```
+
+## Metinden Tarihe Dönüşüm: `as.Date()`
+
+Gerçek veri setlerinde tarihler çoğu zaman character olarak gelir. Bu değerleri tarih sınıfına dönüştürmek için `as.Date()` fonksiyonu kullanılır.
+
+```{r}
+# ISO biçimi: yıl-ay-gün
+tarih <- as.Date("2026-04-30")
+
+tarih
+class(tarih)
+```
+
+ISO biçimi olarak bilinen `YYYY-MM-DD` yapısı R tarafından kolayca tanınır. Ancak her veri bu kadar düzenli gelmez.
+
+```{r}
+# Gün/ay/yıl biçimindeki tarihi dönüştürmek için format belirtmek gerekir.
+as.Date("30/04/2026", format = "%d/%m/%Y")
+```
+
+Burada `format` argümanı, metnin hangi sırayla yazıldığını R'ye anlatır.
+
+En sık kullanılan tarih format kodları şunlardır:
+
+| Kod  | Anlamı             | Örnek |
+|------|--------------------|-------|
+| `%Y` | Dört haneli yıl    | 2026  |
+| `%y` | İki haneli yıl     | 26    |
+| `%m` | İki haneli ay      | 04    |
+| `%d` | İki haneli gün     | 30    |
+| `%B` | Ay adı             | April |
+| `%b` | Kısaltılmış ay adı | Apr   |
+
+```{r}
+# Farklı tarih biçimlerini dönüştürelim.
+as.Date("2026/04/30", format = "%Y/%m/%d")
+as.Date("30-04-2026", format = "%d-%m-%Y")
+as.Date("04-30-2026", format = "%m-%d-%Y")
+```
+
+Tarih formatı yanlış belirtilirse sonuç `NA` olabilir.
+
+```{r}
+# Yanlış format belirtildiğinde dönüşüm başarısız olur.
+as.Date("30/04/2026", format = "%Y-%m-%d")
+```
+
+Bu nedenle tarih dönüştürme işlemi sonrasında mutlaka `NA` kontrolü yapılmalıdır.
+
+```{r}
+tarihler <- c("30/04/2026", "01/05/2026", "hatalı")
+
+tarihler_date <- as.Date(tarihler, format = "%d/%m/%Y")
+
+tarihler_date
+
+# Hangi değerler dönüştürülemedi?
+is.na(tarihler_date)
+```
+
+## Tarih ve Zaman Dönüşümü: `as.POSIXct()`
+
+Saat, dakika ve saniye bilgisi içeren değerler için `as.POSIXct()` kullanılabilir.
+
+```{r}
+zaman <- as.POSIXct("2026-04-30 14:30:00")
+
+zaman
+class(zaman)
+```
+
+Farklı biçimlerde gelen tarih-zaman değerleri için yine `format` argümanı kullanılabilir.
+
+```{r}
+as.POSIXct("30/04/2026 14:30", format = "%d/%m/%Y %H:%M")
+```
+
+Saat dilimi önemliyse `tz` argümanı kullanılmalıdır.
+
+```{r}
+# tz argümanı zaman dilimini belirtir.
+# Europe/Istanbul Türkiye için kullanılan IANA zaman dilimi adıdır.
+zaman_ist <- as.POSIXct(
+  "2026-04-30 14:30:00",
+  tz = "Europe/Istanbul"
+)
+
+zaman_ist
+```
+
+Saat dilimi ihmal edildiğinde bazı karşılaştırmalar, özellikle uluslararası veriyle çalışırken hatalı olabilir. Bu konu küçük görünür ama zaman verisinde “küçük fark” bazen bir gün fark demektir.
+
+## Tarihleri Biçimlendirme: `format()`
+
+`format()` fonksiyonu tarih-zaman nesnelerinin ekranda nasıl görüneceğini belirlemek için kullanılır. Bu işlem nesnenin sınıfını değiştirmez; çoğu zaman character çıktı üretir.
+
+```{r}
+tarih <- as.Date("2026-04-30")
+
+format(tarih, "%d.%m.%Y")
+format(tarih, "%Y/%m/%d")
+format(tarih, "%B %d, %Y")
+```
+
+```{r}
+# format() çıktısı genellikle character olur.
+formatted <- format(tarih, "%d.%m.%Y")
+
+formatted
+class(formatted)
+```
+
+Bu ayrım önemlidir. Biçimlendirilmiş tarih artık tarih değil, metin olabilir. Bu durumda tarih hesaplaması yapmak için tekrar tarih sınıfına dönüştürmek gerekir.
+
+## Tarih Bileşenlerini Ayırma
+
+Base R ile tarih bileşenlerini almak için `format()` kullanılabilir.
+
+```{r}
+tarih <- as.Date("2026-04-30")
+
+# Yıl, ay ve gün bilgisini ayrı ayrı alalım.
+format(tarih, "%Y")
+format(tarih, "%m")
+format(tarih, "%d")
+```
+
+Bu çıktılar character türündedir. Sayısal işlem yapılacaksa dönüştürmek gerekir.
+
+```{r}
+yil <- as.integer(format(tarih, "%Y"))
+ay  <- as.integer(format(tarih, "%m"))
+gun <- as.integer(format(tarih, "%d"))
+
+yil
+ay
+gun
+```
+
+Haftanın günü de alınabilir.
+
+```{r}
+# %A haftanın gün adını verir.
+format(tarih, "%A")
+
+# %u haftanın gününü sayı olarak verir: Pazartesi = 1, Pazar = 7
+format(tarih, "%u")
+```
+
+## Tarihlerle Aritmetik İşlemler
+
+`Date` nesneleriyle gün bazında aritmetik yapılabilir.
+
+```{r}
+baslangic <- as.Date("2026-04-01")
+bitis     <- as.Date("2026-04-30")
+
+# İki tarih arasındaki fark
+bitis - baslangic
+```
+
+```{r}
+# Tarihe gün ekleme ve çıkarma
+baslangic + 7
+bitis - 10
+```
+
+Bu özellik zaman aralıkları, teslim tarihleri ve raporlama dönemleri gibi işlemlerde kullanılır.
+
+```{r}
+# Son 30 günlük tarih aralığını oluşturalım.
+bugun <- Sys.Date()
+
+baslangic <- bugun - 30
+bitis <- bugun
+
+baslangic
+bitis
+```
+
+## Tarih Dizileri Oluşturma: `seq.Date()`
+
+Belirli bir başlangıç ve bitiş tarihi arasında düzenli tarih dizisi oluşturmak için `seq.Date()` kullanılabilir.
+
+```{r}
+# Günlük tarih dizisi
+seq.Date(
+  from = as.Date("2026-04-01"),
+  to   = as.Date("2026-04-10"),
+  by   = "day"
+)
+```
+
+`by` argümanı artış sıklığını belirler.
+
+```{r}
+# Haftalık tarih dizisi
+seq.Date(
+  from = as.Date("2026-04-01"),
+  to   = as.Date("2026-05-31"),
+  by   = "week"
+)
+```
+
+```{r}
+# Aylık tarih dizisi
+seq.Date(
+  from = as.Date("2026-01-01"),
+  to   = as.Date("2026-12-01"),
+  by   = "month"
+)
+```
+
+Bu fonksiyon özellikle zaman serisi veri setleri, takvim tabloları ve raporlama dönemleri oluşturmak için kullanılır.
+
+## Lubridate Paketi
+
+Base R tarih işlemleri için yeterli araçlar sunar; ancak tarih-zaman verileriyle daha okunabilir ve esnek biçimde çalışmak için `lubridate` paketi çok yaygın kullanılır.
+
+`lubridate`, tarihleri insanın okuma biçimine yakın fonksiyonlarla dönüştürmeye çalışır. Örneğin:
+
+-   `ymd()` → yıl-ay-gün,
+-   `dmy()` → gün-ay-yıl,
+-   `mdy()` → ay-gün-yıl.
+
+Bu fonksiyon adları, tarih bileşenlerinin sırasını ifade eder:
+
+-   `y`: year / yıl,
+-   `m`: month / ay,
+-   `d`: day / gün.
+
+```{r}
+#| message: false
+# install.packages("lubridate")
+library(lubridate)
+```
+
+```{r}
+# ymd(): yıl-ay-gün biçimini okur.
+ymd("2026-04-30")
+
+# dmy(): gün-ay-yıl biçimini okur.
+dmy("30/04/2026")
+
+# mdy(): ay-gün-yıl biçimini okur.
+mdy("04-30-2026")
+```
+
+Bu fonksiyonlar özellikle farklı kaynaklardan gelen tarihleri dönüştürürken okunabilirlik sağlar.
+
+## Tarih-Zaman Okuma: `ymd_hms()` ve Benzerleri
+
+Saat bilgisi içeren tarih-zaman değerleri için `ymd_hms()`, `dmy_hm()` gibi fonksiyonlar kullanılabilir.
+
+```{r}
+# ymd_hms(): yıl-ay-gün saat-dakika-saniye
+ymd_hms("2026-04-30 14:30:15")
+
+# dmy_hm(): gün-ay-yıl saat-dakika
+dmy_hm("30/04/2026 14:30")
+```
+
+Saat dilimi belirtmek için `tz` argümanı kullanılabilir.
+
+```{r}
+ymd_hms("2026-04-30 14:30:15", tz = "Europe/Istanbul")
+```
+
+## Lubridate ile Tarih Bileşenleri
+
+`lubridate` tarih bileşenlerini almak için okunabilir fonksiyonlar sağlar.
+
+```{r}
+tarih <- ymd("2026-04-30")
+
+year(tarih)
+month(tarih)
+day(tarih)
+```
+
+Ay ve gün etiketleri de alınabilir.
+
+```{r}
+# label = TRUE ay adını etiket olarak verir.
+month(tarih, label = TRUE)
+
+# wday() haftanın gününü verir.
+# label = TRUE gün adını verir.
+# week_start = 1 haftanın Pazartesi başladığını belirtir.
+wday(tarih, label = TRUE, week_start = 1)
+```
+
+Bu fonksiyonlar grafiklerde, raporlarda ve dönemsel analizlerde çok kullanışlıdır.
+
+## Tarihleri Yuvarlama: `floor_date()`, `ceiling_date()`, `round_date()`
+
+Zaman serisi ve raporlama işlemlerinde tarihleri belirli dönemlerin başlangıcına veya sonrasına yuvarlamak gerekebilir.
+
+```{r}
+zaman <- ymd_hms("2026-04-30 14:35:20")
+
+# İçinde bulunulan günün başlangıcına indirger.
+floor_date(zaman, unit = "day")
+
+# İçinde bulunulan ayın başlangıcına indirger.
+floor_date(zaman, unit = "month")
+
+# Bir sonraki ay başlangıcına yuvarlar.
+ceiling_date(zaman, unit = "month")
+
+# En yakın saate yuvarlar.
+round_date(zaman, unit = "hour")
+```
+
+Bu fonksiyonlar özellikle günlük veriyi aylığa, saatlik veriyi güne veya işlem zamanlarını raporlama dönemlerine dönüştürürken kullanılır.
+
+## Süreler, Periyotlar ve Aralıklar
+
+Tarih-zaman analizinde “iki tarih arasındaki fark” her zaman basit bir sayı değildir. `lubridate` bu konuda üç önemli kavram sunar:
+
+-   **duration**: kesin süre; saniye temellidir.
+-   **period**: takvimsel süre; ay, yıl gibi takvim birimlerini dikkate alır.
+-   **interval**: iki zaman noktası arasındaki aralık.
+
+Bu fark özellikle ay ve yıl içeren hesaplamalarda önemlidir. Çünkü her ay 30 gün değildir, her yıl da aynı takvim yapısına sahip olmayabilir.
+
+```{r}
+baslangic <- ymd("2026-01-31")
+
+# days(30): 30 günlük takvim periyodu ekler.
+baslangic + days(30)
+
+# months(1): bir takvim ayı eklemeye çalışır.
+baslangic + months(1)
+```
+
+Bazı tarihlerde bir ay sonrası takvimde doğrudan karşılık bulamayabilir. Örneğin 31 Ocak'a bir ay eklediğimizde Şubat ayında 31. gün yoktur. Bu nedenle sonuç `NA` olabilir.
+
+Bu durumda `%m+%` operatörü kullanılabilir.
+
+```{r}
+# %m+% ay eklerken geçersiz tarih oluşursa ayın son gününe gider.
+ymd("2026-01-31") %m+% months(1)
+```
+
+Bu detay, aylık raporlama ve zaman serisi işlemlerinde çok önemlidir.
+
+## Hafta Sonu ve Hafta İçi Ayrımı
+
+Tarih değişkenlerinden yeni değişkenler üretmek, analizde sık kullanılan bir yaklaşımdır. Örneğin bir tarihin hafta sonuna denk gelip gelmediğini belirleyebiliriz.
+
+```{r}
+tarihler <- seq.Date(
+  from = as.Date("2026-04-27"),
+  to   = as.Date("2026-05-03"),
+  by   = "day"
+)
+
+tarihler
+```
+
+```{r}
+# weekdays() tarihlerin gün adını verir.
+gun_adi <- weekdays(tarihler)
+
+gun_adi
+```
+
+```{r}
+# Türkçe sistemlerde gün adları Türkçe gelebilir.
+# Bu nedenle daha güvenli bir yöntem için lubridate::wday() kullanılabilir.
+
+hafta_gunu_no <- wday(tarihler, week_start = 1)
+
+# Pazartesi = 1, ..., Cumartesi = 6, Pazar = 7
+hafta_sonu <- hafta_gunu_no %in% c(6, 7)
+
+data.frame(
+  tarih = tarihler,
+  hafta_gunu_no = hafta_gunu_no,
+  hafta_sonu = hafta_sonu
+)
+```
+
+Bu tür değişkenler talep analizi, web trafiği, üretim verileri ve ekonomik göstergelerde davranış farklılıklarını incelemek için kullanılabilir.
+
+## Veri Çerçevesi Üzerinde Tarih İşlemleri
+
+Şimdi küçük bir veri seti üzerinde tarih işlemlerini bir araya getirelim.
+
+```{r}
+veri <- data.frame(
+  tarih = c("2026-01-15", "2026-02-20", "2026-03-10", "2026-04-25"),
+  satis = c(120, 150, 130, 170)
+)
+
+veri
+```
+
+Önce tarih sütununu uygun sınıfa dönüştürelim.
+
+```{r}
+# tarih sütunu başlangıçta character olabilir.
+class(veri$tarih)
+
+# ymd() ile Date sınıfına dönüştürüyoruz.
+veri$tarih <- ymd(veri$tarih)
+
+class(veri$tarih)
+```
+
+Tarih bileşenlerinden yeni değişkenler oluşturalım.
+
+```{r}
+veri$yil <- year(veri$tarih)
+veri$ay  <- month(veri$tarih)
+veri$ay_adi <- month(veri$tarih, label = TRUE)
+veri$hafta_gunu <- wday(veri$tarih, label = TRUE, week_start = 1)
+
+veri
+```
+
+Bu yaklaşım veri analizinde çok yaygındır. Tarih sütunundan yıl, ay, çeyrek, hafta günü gibi değişkenler üretilerek analiz zenginleştirilir.
+
+```{r}
+# quarter() tarihin yıl içindeki çeyreğini verir.
+veri$ceyrek <- quarter(veri$tarih)
+
+veri
+```
+
+## Aylık Toplulaştırma Mantığı
+
+Tarih verileriyle çalışırken en sık yapılan işlemlerden biri daha yüksek frekansa veya daha düşük frekansa geçmektir. Örneğin günlük satış verisini aylık satışa çevirmek isteyebiliriz.
+
+```{r}
+gunluk_satis <- data.frame(
+  tarih = seq.Date(
+    from = as.Date("2026-01-01"),
+    to   = as.Date("2026-03-31"),
+    by   = "day"
+  )
+)
+
+# Örnek olması için rastgele satış değeri üretelim.
+set.seed(123)
+gunluk_satis$satis <- sample(80:200, size = nrow(gunluk_satis), replace = TRUE)
+
+head(gunluk_satis)
+```
+
+Aylık dönem değişkeni oluşturalım.
+
+```{r}
+# floor_date() her tarihi ait olduğu ayın ilk gününe indirger.
+gunluk_satis$ay <- floor_date(gunluk_satis$tarih, unit = "month")
+
+head(gunluk_satis)
+```
+
+Base R ile aylık toplulaştırma yapabiliriz.
+
+```{r}
+# aggregate() belirli gruplara göre özet istatistik hesaplar.
+# satis ~ ay ifadesi, satis değişkeninin ay bazında özetleneceğini belirtir.
+aylik_satis <- aggregate(
+  satis ~ ay,
+  data = gunluk_satis,
+  FUN = sum
+)
+
+aylik_satis
+```
+
+Bu örnek tarih değişkenlerinin yalnızca veri setinde duran bir bilgi olmadığını, aynı zamanda analiz düzeyini belirleyen anahtar değişkenlerden biri olduğunu gösterir.
+
+## Tarih Verisiyle Sık Yapılan Hatalar
+
+Tarih-zaman verileriyle çalışırken bazı hatalar çok yaygındır.
+
+İlk hata, tarih gibi görünen character verilerle işlem yapmaktır.
+
+```{r}
+# Character tarihleri alfabetik olarak sıralanabilir.
+tarihler_chr <- c("01/02/2026", "15/01/2026", "03/03/2026")
+
+sort(tarihler_chr)
+```
+
+Bu sıralama kronolojik olmayabilir. Doğru yaklaşım önce tarih sınıfına dönüştürmektir.
+
+```{r}
+tarihler_date <- dmy(tarihler_chr)
+
+sort(tarihler_date)
+```
+
+İkinci hata, ay ve gün sırasını karıştırmaktır.
+
+```{r}
+# 04/05/2026 ifadesi iki farklı şekilde yorumlanabilir:
+# dmy: 4 Mayıs 2026
+# mdy: 5 Nisan 2026
+
+dmy("04/05/2026")
+mdy("04/05/2026")
+```
+
+Bu nedenle veri kaynağındaki tarih formatı açıkça bilinmelidir. Bilinmiyorsa birkaç örnek gözlemle kontrol yapılmalıdır.
+
+Üçüncü hata, saat dilimini ihmal etmektir.
+
+```{r}
+# Aynı görünen zaman farklı saat dilimlerinde farklı anları temsil edebilir.
+zaman_tr <- ymd_hms("2026-04-30 12:00:00", tz = "Europe/Istanbul")
+zaman_utc <- with_tz(zaman_tr, tzone = "UTC")
+
+zaman_tr
+zaman_utc
+```
+
+Dördüncü hata, ay ekleme işlemini gün ekleme gibi düşünmektir.
+
+```{r}
+# 31 Ocak + 1 ay basit bir işlem gibi görünür ama takvimde 31 Şubat yoktur.
+ymd("2026-01-31") + months(1)
+
+# Daha güvenli ay ekleme
+ymd("2026-01-31") %m+% months(1)
+```
+
+## Egzersizler
+
+Aşağıdaki veri setini kullanarak soruları cevaplayınız.
+
+```{r}
+siparisler <- data.frame(
+  siparis_id = paste0("S", 1:8),
+  tarih = c(
+    "2026-01-05",
+    "2026-01-18",
+    "2026-02-02",
+    "2026-02-28",
+    "2026-03-01",
+    "2026-03-15",
+    "2026-04-10",
+    "2026-04-30"
+  ),
+  tutar = c(120, 250, 180, 300, 90, 210, 400, 350)
+)
+
+siparisler
+```
+
+1.  `tarih` değişkenini tarih sınıfına dönüştürünüz.
+2.  Her sipariş için yıl, ay ve haftanın günü değişkenlerini oluşturunuz.
+3.  Siparişlerin hangi çeyrekte gerçekleştiğini bulunuz.
+4.  Hafta sonuna denk gelen siparişleri seçiniz.
+5.  Aylık toplam sipariş tutarını hesaplayınız.
+6.  Son sipariş tarihi ile ilk sipariş tarihi arasındaki gün farkını bulunuz.
+
+Örnek çözüm:
+
+```{r}
+# 1. Tarih dönüşümü
+siparisler$tarih <- ymd(siparisler$tarih)
+
+# 2. Tarih bileşenleri
+siparisler$yil <- year(siparisler$tarih)
+siparisler$ay <- month(siparisler$tarih)
+siparisler$hafta_gunu <- wday(siparisler$tarih, label = TRUE, week_start = 1)
+
+# 3. Çeyrek bilgisi
+siparisler$ceyrek <- quarter(siparisler$tarih)
+
+# 4. Hafta sonu bilgisi
+siparisler$hafta_sonu <- wday(siparisler$tarih, week_start = 1) %in% c(6, 7)
+
+siparisler[siparisler$hafta_sonu, ]
+
+# 5. Aylık toplam sipariş tutarı
+siparisler$ay_baslangic <- floor_date(siparisler$tarih, unit = "month")
+
+aggregate(
+  tutar ~ ay_baslangic,
+  data = siparisler,
+  FUN = sum
+)
+
+# 6. İlk ve son sipariş tarihi arasındaki fark
+max(siparisler$tarih) - min(siparisler$tarih)
+```
+
+## Bölüm Özeti
+
+Bu bölümde R'de tarih ve zaman işlemlerinin temel mantığını ve yaygın kullanım biçimlerini ele aldık.
+
+Öne çıkan noktalar şunlardır:
+
+-   Tarih gibi görünen bir değer her zaman tarih sınıfında olmayabilir.
+-   `Date` sınıfı gün düzeyinde tarih bilgisini tutar.
+-   `POSIXct` ve `POSIXlt` tarih-saat bilgisi için kullanılır.
+-   `as.Date()` ve `as.POSIXct()` base R içinde temel dönüşüm fonksiyonlarıdır.
+-   `format()` tarihlerin görünümünü düzenler; ancak çoğu zaman character çıktı üretir.
+-   `seq.Date()` düzenli tarih dizileri üretmek için kullanılır.
+-   `lubridate` paketi tarih-zaman işlemlerini daha okunabilir hale getirir.
+-   `ymd()`, `dmy()` ve `mdy()` fonksiyonları tarih formatının sırasına göre dönüşüm yapar.
+-   `year()`, `month()`, `day()`, `wday()` ve `quarter()` tarih bileşenlerini çıkarmak için kullanılır.
+-   `floor_date()` gibi fonksiyonlar raporlama dönemleri oluşturmak için güçlü araçlardır.
+-   Saat dilimi, ay sonu tarihleri ve yanlış tarih formatları dikkat edilmesi gereken kritik konulardır.
+
+Tarih ve zaman değişkenleri veri setindeki sıradan sütunlar değildir. Çoğu zaman analiz düzeyini, karşılaştırma biçimini ve sonuçların yorumunu belirleyen temel değişkenlerdir. Bu nedenle tarih-zaman işlemlerini sağlam öğrenmek, hem veri temizleme hem de zaman serisi ve raporlama becerisi açısından vazgeçilmezdir.

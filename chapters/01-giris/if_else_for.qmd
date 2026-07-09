@@ -1,0 +1,1027 @@
+# Karar Yapıları ve Döngüler
+
+## Giriş
+
+Programlama yalnızca komutları arka arkaya yazmak değildir. Programlama esas olarak bir problemi küçük adımlara ayırmak, hangi durumda ne yapılacağını belirlemek ve tekrar eden işleri sistematik hale getirmektir. Bu nedenle **karar yapıları** ve **döngüler**, programlama mantığının omurgasını oluşturur.
+
+Günlük hayatta sürekli karar veririz:
+
+-   Hava yağmurluysa şemsiye alırız.
+-   Sınav notu 50'nin altındaysa “kaldı” deriz.
+-   Bir dosya mevcutsa okuruz, mevcut değilse uyarı veririz.
+-   Listedeki her öğrenci için başarı durumunu hesaplarız.
+-   Bir işlem belirli koşul sağlanana kadar devam eder.
+
+Bilgisayar programları da benzer mantıkla çalışır. Ancak bilgisayarın karar verebilmesi için koşulların açıkça tanımlanması gerekir. R'de bu amaçla kullanılan temel yapılar şunlardır:
+
+-   `if`
+-   `else`
+-   `else if`
+-   `ifelse()`
+-   `for`
+-   `while`
+-   `repeat`
+-   `break`
+-   `next`
+
+Bu bölümde bu yapıların yalnızca nasıl yazıldığını değil, hangi mantıkla çalıştığını, ne zaman tercih edilmesi gerektiğini ve sık yapılan hataları ele alacağız.
+
+------------------------------------------------------------------------
+
+## Akış Kontrolü Nedir?
+
+Bir R kodu normalde yukarıdan aşağıya doğru çalışır. Ancak bazı durumlarda bu akışı değiştirmek isteriz.
+
+Örneğin:
+
+``` r
+1. Veriyi oku
+2. Eğer veri eksikse uyarı ver
+3. Eksik değilse analize devam et
+4. Her değişken için özet istatistik hesapla
+5. Sonucu raporla
+```
+
+Bu tarz yapılarda iki temel ihtiyaç ortaya çıkar:
+
+1.  **Karar verme:** Koşul sağlanıyorsa bir işlem yap, sağlanmıyorsa başka işlem yap.
+2.  **Tekrar etme:** Aynı işlemi birden fazla kez uygula.
+
+Karar yapıları bir programın “mantık kapılarıdır”. Döngüler ise programın “tekrarlayan iş gücüdür”. Yani biri ne yapılacağına karar verir, diğeri yapılacak işi tekrar eder.
+
+------------------------------------------------------------------------
+
+## TRUE / FALSE Mantığı
+
+R'de karar yapıları mantıksal sonuçlara dayanır. Bir koşul genellikle `TRUE` veya `FALSE` üretir.
+
+```{r}
+5 > 3
+10 == 7
+8 != 2
+```
+
+Burada kullanılan temel karşılaştırma operatörleri şunlardır:
+
+| Operatör | Anlamı        |
+|----------|---------------|
+| `>`      | büyüktür      |
+| `<`      | küçüktür      |
+| `>=`     | büyük eşittir |
+| `<=`     | küçük eşittir |
+| `==`     | eşittir       |
+| `!=`     | eşit değildir |
+
+Dikkat edilmesi gereken önemli nokta şudur: R'de eşitlik kontrolü için `==` kullanılır. Tek eşittir işareti (`=`) genellikle atama için kullanılır. Bu ayrım yeni başlayanlar için küçük ama kritik bir ayrımdır.
+
+```{r}
+x <- 10
+
+# x değeri 10'a eşit mi?
+x == 10
+```
+
+------------------------------------------------------------------------
+
+## Mantıksal Operatörler
+
+Birden fazla koşulu birlikte değerlendirmek için mantıksal operatörler kullanılır.
+
+| Operatör | Anlamı |
+|----------|--------|
+| `&`      | ve     |
+| `|`      | veya   |
+| `!`      | değil  |
+
+```{r}
+yas <- 25
+gelir <- 40000
+
+# Hem yaş 18 veya üzeri olsun hem gelir 30000'den büyük olsun.
+yas >= 18 & gelir > 30000
+```
+
+```{r}
+sehir <- "Ankara"
+
+# Şehir Ankara veya İstanbul mu?
+sehir == "Ankara" | sehir == "İstanbul"
+```
+
+```{r}
+mezun <- FALSE
+
+# Mezun değil mi?
+!mezun
+```
+
+Bu operatörler `if`, `ifelse()` ve döngü koşullarında sık kullanılır.
+
+------------------------------------------------------------------------
+
+## `if` Yapısı
+
+`if`, tek bir koşulu kontrol etmek için kullanılır. Koşul doğruysa kod bloğu çalışır. Yanlışsa çalışmaz.
+
+```{r}
+not <- 75
+
+if (not >= 50) {
+  print("Dersi geçti")
+}
+```
+
+Genel yapı şöyledir:
+
+``` r
+if (koşul) {
+  # koşul TRUE ise çalışacak kod
+}
+```
+
+Burada dikkat edilmesi gereken noktalar:
+
+-   Koşul parantez içinde yazılır.
+-   Çalışacak kod süslü parantezler `{}` içine yazılır.
+-   Koşul `TRUE` ise blok çalışır.
+-   Koşul `FALSE` ise blok atlanır.
+
+```{r}
+yas <- 16
+
+if (yas >= 18) {
+  print("Oy kullanabilir")
+}
+```
+
+Bu örnekte herhangi bir çıktı oluşmaz. Çünkü koşul `FALSE` değerini üretir.
+
+------------------------------------------------------------------------
+
+## Süslü Parantez Kullanımı
+
+Tek satırlık örneklerde süslü parantez kullanılmadan da kod yazılabilir. Ancak özellikle öğretici, okunabilir ve sürdürülebilir kod yazmak için süslü parantez kullanmak iyi bir alışkanlıktır.
+
+```{r}
+# Önerilen yazım
+if (5 > 3) {
+  print("Koşul doğru")
+}
+```
+
+Kod büyüdükçe süslü parantez kullanmamak hata riskini artırır. Programlama biraz da gelecekteki kendine iyilik yapma sanatıdır.
+
+------------------------------------------------------------------------
+
+## `if ... else` Yapısı
+
+Koşul doğruysa bir işlem, yanlışsa başka bir işlem yapılacaksa `else` kullanılır.
+
+```{r}
+not <- 42
+
+if (not >= 50) {
+  print("Geçti")
+} else {
+  print("Kaldı")
+}
+```
+
+Bu yapıda iki olasılık vardır:
+
+-   Koşul `TRUE` ise `if` bloğu çalışır.
+-   Koşul `FALSE` ise `else` bloğu çalışır.
+
+Aynı anda ikisi birden çalışmaz.
+
+------------------------------------------------------------------------
+
+## Günlük Hayattan Basit Bir Benzetme
+
+Şu ifadeyi düşünelim:
+
+> Eğer hava yağmurluysa şemsiye al, değilse normal çık.
+
+Bunu R ile şöyle yazabiliriz:
+
+```{r}
+hava <- "yağmurlu"
+
+if (hava == "yağmurlu") {
+  print("Şemsiye al")
+} else {
+  print("Normal çık")
+}
+```
+
+Bu örnekte `hava == "yağmurlu"` ifadesi `TRUE` olduğu için ilk blok çalışır.
+
+------------------------------------------------------------------------
+
+## `else if` Yapısı
+
+Bazı durumlarda iki seçenek yeterli olmaz. Birden fazla olasılığı sırayla kontrol etmek için `else if` kullanılır.
+
+```{r}
+puan <- 82
+
+if (puan >= 90) {
+  print("Harf notu: A")
+} else if (puan >= 80) {
+  print("Harf notu: B")
+} else if (puan >= 70) {
+  print("Harf notu: C")
+} else if (puan >= 50) {
+  print("Harf notu: D")
+} else {
+  print("Harf notu: F")
+}
+```
+
+Bu yapı yukarıdan aşağıya çalışır. İlk doğru koşul bulunduğunda ilgili blok çalışır ve kalan koşullar kontrol edilmez.
+
+------------------------------------------------------------------------
+
+## Koşul Sıralaması Neden Önemlidir?
+
+`else if` yapısında koşulların sırası kritik öneme sahiptir.
+
+```{r}
+puan <- 95
+
+if (puan >= 50) {
+  print("Geçti")
+} else if (puan >= 90) {
+  print("Çok başarılı")
+}
+```
+
+Bu kod `"Geçti"` sonucunu üretir. Çünkü `puan >= 50` koşulu zaten doğrudur ve R daha aşağıdaki `puan >= 90` koşuluna bakmaz.
+
+Daha doğru yapı şöyle olmalıdır:
+
+```{r}
+puan <- 95
+
+if (puan >= 90) {
+  print("Çok başarılı")
+} else if (puan >= 50) {
+  print("Geçti")
+} else {
+  print("Kaldı")
+}
+```
+
+Genel ilke: **Daha özel ve dar koşullar önce yazılmalıdır.**
+
+------------------------------------------------------------------------
+
+## Vektörlerde `if` Kullanımı Konusunda Dikkat
+
+`if` yapısı tek bir `TRUE` veya `FALSE` bekler. Vektörel koşullarda doğrudan kullanılmamalıdır.
+
+```{r}
+notlar <- c(45, 60, 80)
+
+# Bu kullanım hatalıdır veya beklenmeyen uyarı üretir:
+# if (notlar >= 50) {
+#   print("Geçti")
+# }
+```
+
+Burada `notlar >= 50` ifadesi tek bir TRUE/FALSE değil, birden fazla mantıksal değer üretir.
+
+```{r}
+notlar >= 50
+```
+
+Vektörel kararlar için `ifelse()` kullanmak daha uygundur.
+
+------------------------------------------------------------------------
+
+## `ifelse()` Fonksiyonu
+
+`ifelse()` fonksiyonu, bir vektörün her elemanı için koşul kontrolü yapar.
+
+```{r}
+notlar <- c(45, 60, 80, 30)
+
+ifelse(notlar >= 50, "Geçti", "Kaldı")
+```
+
+Genel yapı şöyledir:
+
+``` r
+ifelse(test, yes, no)
+```
+
+Argümanlar:
+
+-   `test`: Kontrol edilecek koşul
+-   `yes`: Koşul doğruysa dönecek değer
+-   `no`: Koşul yanlışsa dönecek değer
+
+```{r}
+# Sayısal kodlama örneği
+basari_kodu <- ifelse(notlar >= 50, 1, 0)
+
+basari_kodu
+```
+
+Bu fonksiyon özellikle veri çerçevelerinde yeni değişken oluştururken kullanışlıdır.
+
+```{r}
+ogrenci <- data.frame(
+  ad = c("Ali", "Ayşe", "Mehmet", "Zeynep"),
+  not = c(45, 72, 88, 39)
+)
+
+# Yeni bir başarı durumu değişkeni oluşturalım.
+ogrenci$durum <- ifelse(ogrenci$not >= 50, "Geçti", "Kaldı")
+
+ogrenci
+```
+
+------------------------------------------------------------------------
+
+## İç İçe `ifelse()`
+
+Birden fazla kategori üretmek için iç içe `ifelse()` kullanılabilir.
+
+```{r}
+puan <- c(95, 82, 67, 40)
+
+harf <- ifelse(
+  puan >= 90, "A",
+  ifelse(
+    puan >= 80, "B",
+    ifelse(
+      puan >= 70, "C",
+      ifelse(puan >= 50, "D", "F")
+    )
+  )
+)
+
+harf
+```
+
+Bu yapı küçük örneklerde işe yarar. Ancak kategori sayısı arttıkça okunabilirlik düşer. Bu nedenle daha büyük projelerde `dplyr::case_when()` gibi daha okunabilir alternatifler tercih edilebilir.
+
+------------------------------------------------------------------------
+
+## `for` Döngüsü Nedir?
+
+`for` döngüsü, belirli bir dizi elemanın her biri için aynı işlemi tekrar etmek amacıyla kullanılır.
+
+Örneğin:
+
+-   1'den 10'a kadar sayıları yazdırmak,
+-   her öğrenci için durum hesaplamak,
+-   her dosyayı sırayla okumak,
+-   her değişken için grafik üretmek.
+
+Genel yapı şöyledir:
+
+``` r
+for (i in vektor) {
+  # her adımda çalışacak kod
+}
+```
+
+Burada `i` geçici bir değişkendir. Döngünün her adımında `vektor` içindeki sıradaki değeri alır.
+
+------------------------------------------------------------------------
+
+## İlk `for` Döngüsü
+
+```{r}
+for (i in 1:5) {
+  print(i)
+}
+```
+
+Bu döngüde:
+
+-   İlk adımda `i = 1`
+-   İkinci adımda `i = 2`
+-   Son adımda `i = 5`
+
+olur.
+
+Döngü tamamlandığında işlem biter.
+
+------------------------------------------------------------------------
+
+## Döngü İçinde Hesaplama
+
+```{r}
+for (i in 1:5) {
+  kare <- i^2
+  print(kare)
+}
+```
+
+Bu örnekte her adımda `i` değerinin karesi hesaplanır.
+
+Ancak burada önemli bir sorun vardır: sonuçlar sadece ekrana yazdırılır, bir nesnede saklanmaz. Analizde çoğu zaman sonuçları saklamak isteriz.
+
+------------------------------------------------------------------------
+
+## Döngü Sonuçlarını Saklama
+
+Döngü çıktılarının saklanması için önce uygun uzunlukta boş bir nesne oluşturmak iyi bir yaklaşımdır.
+
+```{r}
+# numeric(5), uzunluğu 5 olan boş sayısal vektör oluşturur.
+sonuc <- numeric(5)
+
+for (i in 1:5) {
+  sonuc[i] <- i^2
+}
+
+sonuc
+```
+
+Bu yöntem daha düzenlidir. Özellikle büyük döngülerde her adımda nesneyi büyütmek yerine baştan yer ayırmak daha sağlıklı bir alışkanlıktır.
+
+------------------------------------------------------------------------
+
+## Karakter Vektörü Üzerinde Döngü
+
+Döngüler yalnızca sayılarla çalışmaz. Karakter vektörleri üzerinde de kullanılabilir.
+
+```{r}
+isimler <- c("Ali", "Ayşe", "Mehmet")
+
+for (isim in isimler) {
+  mesaj <- paste("Merhaba", isim)
+  print(mesaj)
+}
+```
+
+Bu örnekte `isim` değişkeni her adımda `isimler` vektöründeki sıradaki değeri alır.
+
+------------------------------------------------------------------------
+
+## İndeks Üzerinden Döngü
+
+Bazı durumlarda yalnızca elemanın kendisine değil, konumuna da ihtiyaç duyarız. Bu durumda indeks üzerinden döngü kurabiliriz.
+
+```{r}
+notlar <- c(45, 72, 88)
+
+for (i in seq_along(notlar)) {
+  print(paste(i, ". gözlem:", notlar[i]))
+}
+```
+
+Burada `seq_along(notlar)`, `notlar` vektörünün uzunluğu kadar güvenli bir sıra üretir. `1:length(notlar)` yerine çoğu durumda `seq_along()` daha güvenli bir tercihtir.
+
+------------------------------------------------------------------------
+
+## `for` ve `if` Birlikte Kullanımı
+
+Döngü içinde karar yapıları sık kullanılır.
+
+```{r}
+notlar <- c(45, 72, 88, 39)
+durum <- character(length(notlar))
+
+for (i in seq_along(notlar)) {
+
+  if (notlar[i] >= 50) {
+    durum[i] <- "Geçti"
+  } else {
+    durum[i] <- "Kaldı"
+  }
+}
+
+durum
+```
+
+Bu kod, her not için ayrı ayrı koşul kontrolü yapar.
+
+Aynı işlem `ifelse()` ile daha kısa yapılabilir:
+
+```{r}
+ifelse(notlar >= 50, "Geçti", "Kaldı")
+```
+
+Bu nedenle R'de şu soru her zaman sorulmalıdır:
+
+> Bu işlem için gerçekten döngüye ihtiyacım var mı, yoksa vektörel bir çözüm daha uygun mu?
+
+------------------------------------------------------------------------
+
+## Veri Çerçevesi Üzerinde Döngü
+
+```{r}
+df <- data.frame(
+  isim = c("Ali", "Ayşe", "Mehmet", "Zeynep"),
+  not = c(45, 72, 88, 39)
+)
+
+df$durum <- ""
+
+for (i in seq_len(nrow(df))) {
+
+  if (df$not[i] >= 50) {
+    df$durum[i] <- "Geçti"
+  } else {
+    df$durum[i] <- "Kaldı"
+  }
+}
+
+df
+```
+
+Burada `seq_len(nrow(df))`, veri çerçevesindeki satır sayısı kadar güvenli bir sıra üretir.
+
+------------------------------------------------------------------------
+
+## Mini Vaka Çalışması: Prim Hesaplama
+
+Bir şirkette çalışanlara performans puanına göre prim verildiğini düşünelim:
+
+| Performans puanı | Prim |
+|------------------|------|
+| 90 ve üzeri      | 5000 |
+| 75-89            | 3000 |
+| 60-74            | 1500 |
+| 60 altı          | 0    |
+
+```{r}
+puan <- c(95, 82, 70, 55, 91)
+
+prim <- numeric(length(puan))
+
+for (i in seq_along(puan)) {
+
+  if (puan[i] >= 90) {
+    prim[i] <- 5000
+
+  } else if (puan[i] >= 75) {
+    prim[i] <- 3000
+
+  } else if (puan[i] >= 60) {
+    prim[i] <- 1500
+
+  } else {
+    prim[i] <- 0
+  }
+}
+
+data.frame(puan, prim)
+```
+
+Bu örnek, `for`, `if`, `else if` ve sonuç saklama mantığını birlikte gösterir.
+
+------------------------------------------------------------------------
+
+## `while` Döngüsü
+
+`while` döngüsü, belirli bir koşul doğru olduğu sürece çalışır.
+
+Genel yapı şöyledir:
+
+``` r
+while (koşul) {
+  # koşul TRUE olduğu sürece çalışacak kod
+}
+```
+
+`for` döngüsünde tekrar sayısı çoğu zaman baştan bellidir. `while` döngüsünde ise tekrar sayısı koşula bağlıdır.
+
+```{r}
+i <- 1
+
+while (i <= 5) {
+  print(i)
+  i <- i + 1
+}
+```
+
+Burada `i` değeri 5'e ulaşana kadar döngü devam eder.
+
+------------------------------------------------------------------------
+
+## `while` Döngüsünde Dikkat: Sonsuz Döngü
+
+`while` döngülerinde koşulu değiştiren bir adım bulunmazsa döngü sonsuza kadar çalışabilir.
+
+``` r
+# DİKKAT: Bu kod sonsuz döngüye girer.
+# i <- 1
+# while (i <= 5) {
+#   print(i)
+# }
+```
+
+Doğru kullanımda sayaç güncellenmelidir.
+
+```{r}
+i <- 1
+
+while (i <= 5) {
+  print(i)
+  i <- i + 1  # sayaç güncelleniyor
+}
+```
+
+Sonsuz döngü programlamanın “çay koydum geliyorum” hatasıdır; kod dönmeye devam eder, siz beklersiniz.
+
+------------------------------------------------------------------------
+
+## `while` Kullanım Örneği: Hedefe Ulaşana Kadar Birikim
+
+Bir kişinin her ay 1000 TL biriktirdiğini ve 5000 TL hedefe ulaşmak istediğini düşünelim.
+
+```{r}
+birikim <- 0
+ay <- 0
+
+while (birikim < 5000) {
+  birikim <- birikim + 1000
+  ay <- ay + 1
+}
+
+ay
+birikim
+```
+
+Bu örnekte kaç tekrar yapılacağı başta açıkça yazılmamıştır. Döngü hedefe ulaşıldığında durmuştur.
+
+------------------------------------------------------------------------
+
+## `repeat` Döngüsü
+
+`repeat` döngüsü, açıkça durdurulana kadar çalışır. Bu nedenle içinde genellikle `break` kullanılır.
+
+Genel yapı şöyledir:
+
+``` r
+repeat {
+  # çalışacak kod
+
+  if (durdurma_koşulu) {
+    break
+  }
+}
+```
+
+Basit bir örnek:
+
+```{r}
+i <- 1
+
+repeat {
+  print(i)
+  i <- i + 1
+
+  if (i > 5) {
+    break
+  }
+}
+```
+
+`repeat`, koşulun döngünün başında değil, döngü içinde kontrol edilmesi gereken durumlarda kullanılabilir. Ancak dikkatli kullanılmalıdır; çünkü `break` unutulursa sonsuz döngü oluşur.
+
+------------------------------------------------------------------------
+
+## `break` Kullanımı
+
+`break`, döngüyü tamamen sonlandırır.
+
+```{r}
+for (i in 1:10) {
+
+  if (i == 6) {
+    break
+  }
+
+  print(i)
+}
+```
+
+Bu örnekte `i` değeri 6 olduğunda döngü durur. Bu nedenle 6 ve sonrası yazdırılmaz.
+
+`break`, istenen koşul bulunduğunda aramayı durdurmak için kullanılabilir.
+
+```{r}
+sayilar <- c(3, 8, 12, 5, 20)
+
+for (s in sayilar) {
+
+  if (s > 10) {
+    print(paste("10'dan büyük ilk sayı:", s))
+    break
+  }
+}
+```
+
+------------------------------------------------------------------------
+
+## `next` Kullanımı
+
+`next`, döngünün o adımını atlar ve bir sonraki adıma geçer.
+
+```{r}
+for (i in 1:5) {
+
+  if (i == 3) {
+    next
+  }
+
+  print(i)
+}
+```
+
+Bu örnekte 3 yazdırılmaz; çünkü `i == 3` olduğunda `next` çalışır ve döngü bir sonraki adıma geçer.
+
+`next`, belirli gözlemleri işlem dışı bırakmak için kullanılabilir.
+
+```{r}
+notlar <- c(80, NA, 65, 90)
+
+for (n in notlar) {
+
+  if (is.na(n)) {
+    next
+  }
+
+  print(paste("Not:", n))
+}
+```
+
+Burada eksik değer olan adım atlanır.
+
+------------------------------------------------------------------------
+
+## Döngü Türlerini Ne Zaman Kullanmalı?
+
+| Yapı       | Ne zaman kullanılır?                                          |
+|----------------|--------------------------------------------------------|
+| `for`      | Tekrar sayısı veya üzerinde dönülecek nesne belliyse          |
+| `while`    | Koşul sağlandığı sürece devam edilecekse                      |
+| `repeat`   | Döngü en az bir kez çalışacak ve durdurma içeride yapılacaksa |
+| `break`    | Döngüyü erken bitirmek gerekiyorsa                            |
+| `next`     | Sadece mevcut adımı atlamak gerekiyorsa                       |
+| `ifelse()` | Vektörel karar üretilecekse                                   |
+
+R'de çoğu veri analizi işlemi vektörel fonksiyonlarla daha kısa ve okunabilir yazılabilir. Ancak döngüler programlama mantığını öğrenmek ve daha genel problemleri çözmek için vazgeçilmezdir.
+
+------------------------------------------------------------------------
+
+## Mini Vaka Çalışması: Basit Kalite Kontrol
+
+Bir üretim sürecinde ölçüm değerleri olsun. Ölçüm 100'den büyükse “kontrol gerekli”, 100 veya altındaysa “uygun” diyelim. Eksik değerler varsa bunları atlayalım.
+
+```{r}
+olcumler <- c(95, 102, NA, 88, 110, 99)
+
+sonuc <- character(length(olcumler))
+
+for (i in seq_along(olcumler)) {
+
+  if (is.na(olcumler[i])) {
+    sonuc[i] <- "Eksik"
+    next
+  }
+
+  if (olcumler[i] > 100) {
+    sonuc[i] <- "Kontrol gerekli"
+  } else {
+    sonuc[i] <- "Uygun"
+  }
+}
+
+data.frame(olcum = olcumler, sonuc = sonuc)
+```
+
+Bu örnekte:
+
+-   `for` ile her ölçüm üzerinde dönüldü,
+-   `is.na()` ile eksik değer kontrol edildi,
+-   `next` ile eksik değerler için sonraki adıma geçildi,
+-   `if/else` ile kalite durumu üretildi.
+
+------------------------------------------------------------------------
+
+## Mini Vaka Çalışması: Hedefe Ulaşan İlk Ay
+
+Aylık satış değerleri verilsin. Toplam satış 1000'i geçtiği ilk ayı bulalım.
+
+```{r}
+satis <- c(120, 180, 250, 300, 220, 150)
+
+toplam <- 0
+hedef_ay <- NA
+
+for (i in seq_along(satis)) {
+
+  toplam <- toplam + satis[i]
+
+  if (toplam >= 1000) {
+    hedef_ay <- i
+    break
+  }
+}
+
+hedef_ay
+toplam
+```
+
+Burada `break` kullanılmasının nedeni, hedefe ulaşıldıktan sonra kalan ayları kontrol etmeye gerek olmamasıdır.
+
+------------------------------------------------------------------------
+
+## Sık Yapılan Hatalar
+
+### `=` ile `==` Karıştırmak
+
+```{r}
+x <- 5
+
+# Doğru eşitlik kontrolü
+x == 5
+```
+
+`=` veya `<-` atama için, `==` karşılaştırma için kullanılır.
+
+### Koşul Sırasını Yanlış Kurmak
+
+```{r}
+puan <- 95
+
+if (puan >= 50) {
+  print("Geçti")
+} else if (puan >= 90) {
+  print("Çok başarılı")
+}
+```
+
+Bu örnekte ikinci koşula hiç ulaşılmaz. Koşullar özelden genele doğru yazılmalıdır.
+
+### Döngü Sonucunu Saklamamak
+
+```{r}
+for (i in 1:3) {
+  print(i^2)
+}
+```
+
+Bu kod çıktıyı ekrana verir ama saklamaz. Analiz için çoğu zaman sonuçların bir nesnede tutulması gerekir.
+
+### Sonsuz Döngü Oluşturmak
+
+``` r
+# i güncellenmediği için sonsuz döngü oluşur.
+# i <- 1
+# while (i <= 5) {
+#   print(i)
+# }
+```
+
+### Gereksiz Döngü Kullanmak
+
+R vektörel bir dildir. Bazı işlemler döngüsüz daha doğal yazılır.
+
+```{r}
+notlar <- c(45, 60, 80)
+
+# Döngüsüz çözüm
+ifelse(notlar >= 50, "Geçti", "Kaldı")
+```
+
+------------------------------------------------------------------------
+
+## Egzersizler
+
+Aşağıdaki vektör üzerinden soruları cevaplayınız.
+
+```{r}
+notlar <- c(45, 78, 91, 66, 52, 39, NA)
+```
+
+1.  `ifelse()` ile “Geçti / Kaldı” değişkeni üretiniz.
+2.  Harf notu üretiniz.
+3.  `for` döngüsü ile notların karelerini hesaplayınız.
+4.  80 üzeri notları yazdırınız.
+5.  Eksik değer varsa `next` ile atlayarak yalnızca geçerli notları yazdırınız.
+6.  Ortalama nottan büyük olanları işaretleyiniz.
+7.  `while` döngüsü ile 1'den 10'a kadar sayıları yazdırınız.
+8.  `repeat` döngüsü ile 1'den 5'e kadar sayıları yazdırınız.
+
+------------------------------------------------------------------------
+
+## Egzersiz Çözümleri
+
+```{r}
+notlar <- c(45, 78, 91, 66, 52, 39, NA)
+
+# 1. Geçti / Kaldı
+ifelse(notlar >= 50, "Geçti", "Kaldı")
+```
+
+```{r}
+# 2. Harf notu
+harf <- ifelse(
+  notlar >= 90, "A",
+  ifelse(
+    notlar >= 80, "B",
+    ifelse(
+      notlar >= 70, "C",
+      ifelse(notlar >= 50, "D", "F")
+    )
+  )
+)
+
+harf
+```
+
+```{r}
+# 3. Kare hesaplama
+kare <- numeric(length(notlar))
+
+for (i in seq_along(notlar)) {
+  kare[i] <- notlar[i]^2
+}
+
+kare
+```
+
+```{r}
+# 4. 80 üzeri notları yazdırma
+for (n in notlar) {
+
+  if (!is.na(n) && n > 80) {
+    print(n)
+  }
+}
+```
+
+```{r}
+# 5. Eksik değerleri atlama
+for (n in notlar) {
+
+  if (is.na(n)) {
+    next
+  }
+
+  print(n)
+}
+```
+
+```{r}
+# 6. Ortalama nottan büyük olanları işaretleme
+ortalama <- mean(notlar, na.rm = TRUE)
+
+ifelse(notlar > ortalama, "Ortalama üstü", "Ortalama altı veya eşit")
+```
+
+```{r}
+# 7. while döngüsü
+i <- 1
+
+while (i <= 10) {
+  print(i)
+  i <- i + 1
+}
+```
+
+```{r}
+# 8. repeat döngüsü
+i <- 1
+
+repeat {
+  print(i)
+  i <- i + 1
+
+  if (i > 5) {
+    break
+  }
+}
+```
+
+------------------------------------------------------------------------
+
+## Bölüm Özeti
+
+Bu bölümde R'de karar yapıları ve döngülerin temel mantığını ele aldık.
+
+Öne çıkan noktalar şunlardır:
+
+-   `if`, tek bir koşula bağlı işlem yapmak için kullanılır.
+-   `else`, koşul sağlanmadığında alternatif işlem tanımlar.
+-   `else if`, birden fazla koşulu sırayla kontrol eder.
+-   Koşulların sırası sonuçları doğrudan etkiler.
+-   `ifelse()`, vektörel karar üretmek için kullanılır.
+-   `for`, belirli bir nesnenin elemanları üzerinde tekrar yapmak için uygundur.
+-   `while`, koşul doğru olduğu sürece çalışır.
+-   `repeat`, açıkça durdurulana kadar çalışır.
+-   `break`, döngüyü tamamen bitirir.
+-   `next`, yalnızca mevcut döngü adımını atlar.
+-   Döngü sonuçlarını saklamak için önceden uygun nesne oluşturmak iyi bir alışkanlıktır.
+-   R vektörel bir dil olduğu için bazı işlemlerde döngü yerine vektörel çözümler tercih edilebilir.
+
+Karar yapıları ve döngüler, programlama dilinin yalnızca teknik ayrıntıları değildir. Bunlar bir problemi mantıksal adımlara ayırmanın araçlarıdır. Bir problemi doğru koşullara ve tekrar eden işlemlere bölebiliyorsanız, onu kodla ifade etmeniz çok daha kolay hale gelir.
