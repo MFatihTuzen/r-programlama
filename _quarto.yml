@@ -133,3 +133,13 @@ execute:
   freeze: auto
 
 editor: visual
+
+website:
+  title: "R Programlama"
+
+  google-analytics: G-X6J60MER5G
+
+  cookie-consent:
+    type: express
+    style: headline
+    palette: light
