@@ -9,6 +9,12 @@ book:
     name: "Muhammed Fatih Tüzen"
     url: "https://www.linkedin.com/in/dr-m-fatih-t-2b2a4328/"
 
+  # google-analytics
+  cookie-consent: true
+  google-analytics:
+    tracking-id: "G-X6J60MER5G"
+    anonymize-ip: true
+  
   # Kitap kimliği
   date: today
   reader-mode: true
@@ -134,12 +140,4 @@ execute:
 
 editor: visual
 
-website:
-  title: "R Programlama"
 
-  google-analytics: G-X6J60MER5G
-
-  cookie-consent:
-    type: express
-    style: headline
-    palette: light
