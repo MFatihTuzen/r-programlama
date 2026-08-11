@@ -1,0 +1,1753 @@
+# Veri Birleştirme {#sec-data-join}
+
+Bir veri analizi projesinde ihtiyaç duyduğumuz bütün bilgiler çoğu zaman **tek bir tabloda** bulunmaz. Bir tabloda ülkelerin yıllara göre ekonomik göstergeleri, başka bir tabloda ülkelerin bölge ve gelir grubu bilgileri, bir diğerinde ise veri kaynağına veya göstergelere ilişkin açıklamalar yer alabilir. Analize başlamadan önce bu tablolar arasında doğru ilişkileri kurmamız gerekir.
+
+Bu nedenle veri birleştirme, yalnızca iki tabloyu yan yana getiren teknik bir işlem değildir. Asıl mesele, **hangi satırın hangi satırla eşleşmesi gerektiğini** doğru tanımlamaktır.
+
+Bir önceki bölümde aynı verinin satır ve sütun düzenini `pivot_longer()` ve `pivot_wider()` ile değiştirdik. Bu bölümde ise farklı bir probleme odaklanacağız:
+
+> **İhtiyacımız olan bilgiler farklı tablolarda bulunuyorsa bu tabloları nasıl güvenilir biçimde ilişkilendiririz?**
+
+Bu amaçla ağırlıklı olarak **`dplyr`** paketindeki *join* fonksiyonlarını kullanacağız. İngilizcedeki *join* sözcüğü “birleştirmek, bağlamak” anlamına gelir. Veri analizinde join, iki tabloyu ortak bir veya birden fazla değişken yardımıyla ilişkilendirme işlemidir.
+
+`dplyr` dokümantasyonu join işlemlerini iki ana grupta ele alır: **sütun ekleyen birleştirmeler** (*mutating joins*) ve **satırları eşleşme durumuna göre süzen birleştirmeler** (*filtering joins*).[^data_join-1] [^data_join-2]
+
+[^data_join-1]: `dplyr` resmî dokümantasyonu, *Mutating joins*: <https://dplyr.tidyverse.org/reference/mutate-joins.html>
+
+[^data_join-2]: `dplyr` resmî dokümantasyonu, *Filtering joins*: <https://dplyr.tidyverse.org/reference/filter-joins.html>
+
+::: callout-note
+## Bu bölümde neyi amaçlıyoruz?
+
+Amaç yalnızca `left_join()` ile `inner_join()` arasındaki farkı ezberlemek değildir. Önce **anahtar**, **eşleşme** ve **ilişki türü** kavramlarını anlayacağız. Çünkü yanlış tanımlanmış bir anahtar, teknik olarak çalışan fakat analitik olarak yanlış bir veri seti üretebilir.
+:::
+
+## Neden birden fazla tablo kullanılır?
+
+İlk bakışta bütün bilgileri tek bir büyük tabloda tutmak daha kolay görünebilir. Ancak gerçek veri sistemlerinde bu yaklaşım kısa sürede tekrar, tutarsızlık ve bakım sorunları doğurur.
+
+Örneğin ülkelerin 1960--2025 arasındaki göstergelerini tuttuğumuzu düşünelim. Her ülke-yıl satırına ülkenin başkentini, bölgesini ve gelir grubunu tekrar tekrar yazmak mümkündür. Fakat bu durumda aynı bilgi yüzlerce kez tekrar edilmiş olur.
+
+Bunun yerine bilgiler farklı tablolarda tutulabilir:
+
+``` text
+country_indicators
+---------------------------------------------------------
+country_code | year | gdp_per_capita_usd | life_expectancy_total | ...
+
+country_metadata
+---------------------------------------------------------
+country_code | country | region | income_group | capital_city | ...
+```
+
+Bu yapıda ekonomik ve sosyal göstergeler bir tabloda, daha yavaş değişen ülke özellikleri başka bir tabloda bulunur.
+
+Veritabanlarında bu tür yapıların yaygın olmasının temel nedenlerinden biri, aynı gerçeği mümkün olduğunca tek yerde tutarak gereksiz tekrarı azaltmaktır. R for Data Science da ilişkisel veri bölümünde tablolar arasındaki bağlantıların **anahtarlar** üzerinden kurulduğunu vurgular.[^data_join-3]
+
+[^data_join-3]: Wickham, H., Çetinkaya-Rundel, M. ve Grolemund, G. *R for Data Science (2e)*, “Joins”: <https://r4ds.hadley.nz/joins.html>
+
+Bu bölümde kitabımız için oluşturduğumuz ülke veri altyapısı tam olarak bu mantığı kullanmaktadır.
+
+## Önce küçük bir örnek
+
+Join mantığını gerçek ve büyük veri setine geçmeden önce iki küçük tablo üzerinden inceleyelim.
+
+Birinci tabloda öğrencilerin temel bilgileri olsun:
+
+```{r}
+#| label: join-small-students
+
+library(tidyverse)
+
+students <- tibble(
+  student_id = c(101, 102, 103, 104),
+  student = c("Ayşe", "Berk", "Cem", "Deniz")
+)
+
+students
+```
+
+İkinci tabloda ise öğrencilerin sınav puanları bulunsun:
+
+```{r}
+#| label: join-small-scores
+
+scores <- tibble(
+  student_id = c(101, 102, 104, 105),
+  score = c(82, 74, 91, 68)
+)
+
+scores
+```
+
+Dikkat ederseniz iki tabloda da `student_id` adlı bir sütun vardır.
+
+Bu sütun şu sorunun cevabını verir:
+
+> `scores` tablosundaki bir puanın `students` tablosundaki hangi öğrenciye ait olduğunu nasıl anlayacağız?
+
+Cevap: `student_id` değerini kullanarak.
+
+Örneğin `student_id = 101` iki tabloda da aynı öğrenciyi temsil eder. Bu sütun iki tablo arasındaki bağlantıyı kuran **anahtardır**.
+
+## Anahtar kavramı
+
+Bir veya daha fazla satırı tanımlamak ya da tablolar arasında eşleşme kurmak için kullanılan değişkenlere **anahtar** (*key*) denir.
+
+Anahtar kavramını iyi anlamak join işlemlerinin temelidir.
+
+### Birincil anahtar
+
+Bir tabloda her satırı benzersiz biçimde tanımlayan değişken veya değişkenler **birincil anahtar** (*primary key*) olarak adlandırılır.
+
+`students` tablosunda:
+
+``` r
+student_id
+```
+
+her öğrenci için yalnızca bir kez bulunuyorsa bu değişken öğrenciyi benzersiz olarak tanımlar.
+
+Bunu kontrol edebiliriz:
+
+```{r}
+#| label: primary-key-check
+
+students |>
+  count(student_id) |>
+  filter(n > 1)
+```
+
+Sonuç boşsa `student_id` içinde tekrar yoktur.
+
+Aynı kontrolü daha kısa biçimde de yapabiliriz:
+
+```{r}
+#| label: primary-key-distinct-check
+
+nrow(students) == n_distinct(students$student_id)
+```
+
+::: callout-tip
+## Bir anahtarı join yapmadan önce kontrol edin
+
+Bir sütunun adı `id`, `code` veya `key` diye bitiyor diye otomatik olarak benzersiz olduğunu varsaymayın. Join öncesinde `count()` veya `n_distinct()` ile anahtar yapısını kontrol etmek iyi bir alışkanlıktır.
+:::
+
+### Yabancı anahtar
+
+Bir tabloda bulunan ve başka bir tablonun birincil anahtarına karşılık gelen değişkene **yabancı anahtar** (*foreign key*) denir.
+
+Örneğin `scores$student_id`, öğrencilerin adlarını doğrudan içermez. Bunun yerine `students` tablosundaki `student_id` değerlerine gönderme yapar.
+
+Bu yapı veri tekrarını azaltır. Öğrencinin adı puan tablosunda tekrar tekrar yazılmaz; gerektiğinde iki tablo join ile ilişkilendirilir.
+
+## Eşleşme fikri
+
+Join işlemini zihinde şu şekilde düşünebiliriz:
+
+``` text
+students                       scores
+--------------------           ----------------
+student_id  student            student_id  score
+101         Ayşe       <---->  101         82
+102         Berk       <---->  102         74
+103         Cem
+104         Deniz      <---->  104         91
+                               105         68
+```
+
+Burada üç farklı durum vardır:
+
+- `101`, `102` ve `104` her iki tabloda da vardır.
+- `103` yalnızca `students` tablosunda vardır.
+- `105` yalnızca `scores` tablosunda vardır.
+
+Join türleri arasındaki temel fark, **bu üç durumdan hangilerinin sonuçta tutulacağıdır**.
+
+## `left_join()`: soldaki tabloyu korumak
+
+En sık kullanılan join türlerinden biri `left_join()` fonksiyonudur.
+
+`left`, İngilizcede “sol” anlamına gelir. Fonksiyonun adı da hangi tablonun esas alınacağını söyler:
+
+> Soldaki, yani ilk tabloyu koru; sağdaki tablodan eşleşen bilgileri getir.
+
+```{r}
+#| label: small-left-join
+
+students |>
+  left_join(
+    scores,
+    by = "student_id"
+  )
+```
+
+Sonuçta `students` tablosundaki dört öğrenci de korunur.
+
+`student_id = 103` için `scores` tablosunda karşılık olmadığı için `score` değeri `NA` olur.
+
+Buna karşılık `student_id = 105` yalnızca sağdaki tabloda bulunduğu için sonuçta yer almaz.
+
+Bunu kümeler üzerinden düşünürsek:
+
+``` text
+SOL TABLO                     SAĞ TABLO
+
+101  ✓-----------------------✓ 101
+102  ✓-----------------------✓ 102
+103  ✓                         -
+104  ✓-----------------------✓ 104
+                              105
+
+left_join() sonucu:
+101, 102, 103, 104
+```
+
+::: callout-important
+## `left_join()` neden bu kadar sık kullanılır?
+
+Gerçek analizlerde çoğu zaman bir **ana analiz tablomuz** vardır ve başka bir tablodan buna ek bilgi getirmek isteriz. Ana tablodaki gözlemleri kaybetmek istemediğimiz için `left_join()` doğal bir tercih olur.
+:::
+
+## `inner_join()`: yalnızca ortak olanlar
+
+`inner`, “içte kalan” veya “ortak bölüm” fikrini taşır.
+
+`inner_join()` yalnızca **iki tabloda da eşleşen** anahtarları tutar.
+
+```{r}
+#| label: small-inner-join
+
+students |>
+  inner_join(
+    scores,
+    by = "student_id"
+  )
+```
+
+Bu örnekte yalnızca `101`, `102` ve `104` kalır.
+
+`103` yalnızca solda, `105` yalnızca sağda olduğu için sonuçtan çıkar.
+
+``` text
+inner_join() sonucu:
+101, 102, 104
+```
+
+Bu nedenle `inner_join()` kullanırken satır kaybı olabileceğini unutmamak gerekir.
+
+::: callout-warning
+## `inner_join()` sessizce gözlem kaybettirebilir
+
+Kod hatasız çalışabilir; fakat eşleşmeyen kayıtlar sonuçtan çıkar. Bu nedenle özellikle önemli üretim süreçlerinde join öncesi ve sonrası satır sayılarını ve eşleşmeyen anahtarları kontrol etmek gerekir.
+:::
+
+## `right_join()`: sağdaki tabloyu korumak
+
+`right_join()` mantık olarak `left_join()` fonksiyonunun tersidir.
+
+Sağdaki tabloyu tamamen korur ve soldaki tablodan eşleşen bilgileri getirir.
+
+```{r}
+#| label: small-right-join
+
+students |>
+  right_join(
+    scores,
+    by = "student_id"
+  )
+```
+
+Bu kez `scores` tablosundaki bütün satırlar korunur. `student_id = 105` için öğrenci adı bulunamadığından `student` değeri `NA` olur.
+
+Pratikte `right_join()` geçerli ve kullanışlıdır; ancak kodun soldan sağa okunmasını kolaylaştırmak için birçok kullanıcı aynı işlemi tabloların sırasını değiştirip `left_join()` ile yazmayı tercih eder.
+
+Örneğin:
+
+```{r}
+#| label: right-as-left
+#| eval: false
+
+scores |>
+  left_join(
+    students,
+    by = "student_id"
+  )
+```
+
+Bu iki yaklaşım aynı temel mantığı ifade eder.
+
+## `full_join()`: iki tablodaki her şeyi korumak
+
+`full`, “tam” anlamına gelir.
+
+`full_join()` her iki tablodaki bütün anahtarları korur.
+
+```{r}
+#| label: small-full-join
+
+students |>
+  full_join(
+    scores,
+    by = "student_id"
+  )
+```
+
+Sonuçta `101`, `102`, `103`, `104` ve `105` bulunur.
+
+Eşleşmeyen taraflarda `NA` oluşur.
+
+Bu fonksiyon, iki veri kaynağının kapsamını karşılaştırmak veya her iki kaynaktaki bütün kayıtları birlikte görmek istediğimizde özellikle yararlıdır.
+
+## Dört temel sütun ekleyen join'i karşılaştıralım
+
+| Fonksiyon | Hangi satırlar korunur? | Eşleşmeyen kayıt |
+|----|----|----|
+| `left_join()` | Soldaki tablonun tüm satırları | Sağdan gelen sütunlarda `NA` olabilir |
+| `inner_join()` | Yalnızca iki tabloda da eşleşenler | Sonuçtan çıkar |
+| `right_join()` | Sağdaki tablonun tüm satırları | Soldan gelen sütunlarda `NA` olabilir |
+| `full_join()` | Her iki tablodaki tüm satırlar | Eksik tarafta `NA` olabilir |
+
+`dplyr` bu dört fonksiyonu **mutating joins** başlığı altında toplar; çünkü eşleşme sonucunda bir tablonun sütunları diğer tabloya eklenir.[^data_join-4]
+
+[^data_join-4]: `dplyr` resmî dokümantasyonu, *Mutating joins*: <https://dplyr.tidyverse.org/reference/mutate-joins.html>
+
+## Join sözdizimi
+
+Temel kullanım şöyledir:
+
+``` r
+x |>
+  left_join(
+    y,
+    by = "key"
+  )
+```
+
+Burada:
+
+- `x`: soldaki tablo,
+- `y`: sağdaki tablo,
+- `by`: tabloların hangi değişken üzerinden eşleştirileceğini belirtir.
+
+Join kodunu okurken şu cümleyi kurmak yararlıdır:
+
+> “`x` tablosunu koru ve `y` tablosundan `key` üzerinden eşleşen bilgileri getir.”
+
+## Anahtar sütunlarının adı farklıysa
+
+Gerçek veri setlerinde anahtar değişkenlerin isimleri her zaman aynı olmayabilir.
+
+Örneğin bir tabloda ülke kodunun adı:
+
+``` text
+country_code
+```
+
+diğer tabloda:
+
+``` text
+iso3
+```
+
+olabilir.
+
+Küçük bir örnek oluşturalım:
+
+```{r}
+#| label: different-key-names
+
+country_a <- tibble(
+  country_code = c("TUR", "DEU", "FRA"),
+  value = c(1, 2, 3)
+)
+
+country_b <- tibble(
+  iso3 = c("TUR", "DEU", "ESP"),
+  capital = c("Ankara", "Berlin", "Madrid")
+)
+```
+
+Güncel `dplyr` kullanımında bunu `join_by()` ile açık biçimde yazabiliriz:
+
+```{r}
+#| label: join-by-different-names
+
+country_a |>
+  left_join(
+    country_b,
+    by = join_by(country_code == iso3)
+  )
+```
+
+`join_by()` iki tablo arasındaki eşleşme kuralını tanımlayan bir join belirtimi oluşturur.[^data_join-5]
+
+[^data_join-5]: `dplyr` resmî dokümantasyonu, `join_by()`: <https://dplyr.tidyverse.org/reference/join_by.html>
+
+Daha eski kodlarda şu kullanımla da karşılaşabilirsiniz:
+
+``` r
+by = c("country_code" = "iso3")
+```
+
+Bu sözdizimi hâlâ geçerlidir. Bu kitapta ise eşleşme mantığını daha açık gösterdiği için yeni örneklerde `join_by()` yaklaşımını tercih edeceğiz.
+
+## Birden fazla anahtar
+
+Bazen tek bir değişken satırı benzersiz biçimde tanımlamak için yeterli değildir.
+
+Kitabımızdaki `country_indicators.csv` veri setini düşünelim.
+
+Bir ülkenin yalnızca `country_code` değeri tabloda birçok kez bulunur; çünkü aynı ülkenin farklı yıllardaki gözlemleri vardır.
+
+Bu durumda:
+
+``` text
+country_code
+```
+
+tek başına satırı tanımlamaz.
+
+Ancak:
+
+``` text
+country_code + year
+```
+
+birlikte ele alındığında ülke-yıl gözlemini tanımlayabilir.
+
+İki tabloyu hem ülke hem yıl üzerinden birleştirmek istersek:
+
+``` r
+x |>
+  left_join(
+    y,
+    by = join_by(country_code, year)
+  )
+```
+
+kullanabiliriz.
+
+::: callout-note
+## Bileşik anahtar
+
+Bir satırı tanımlamak için birden fazla değişkenin birlikte kullanıldığı anahtarlara **bileşik anahtar** (*composite key*) denir.
+
+Ülke-yıl panel verilerinde `country_code + year` bunun doğal bir örneğidir.
+:::
+
+## İlişki türleri: kardinalite
+
+Join işleminin sonucunu yalnızca join türü belirlemez. **Anahtarların tablolarda kaç kez tekrarlandığı** da son derece önemlidir.
+
+İki tablo arasındaki eşleşme yapısına **kardinalite** (*cardinality*) denir.
+
+Temel olarak dört ilişki türü vardır:
+
+| İlişki | Açıklama |
+|----|----|
+| Bire bir (*one-to-one*) | Her anahtar her iki tabloda da en fazla bir kez bulunur |
+| Bire çok (*one-to-many*) | Bir tablodaki tek kayıt diğer tabloda birden fazla kayıtla eşleşebilir |
+| Çoka bir (*many-to-one*) | Soldaki birçok kayıt sağdaki tek kayıtla eşleşir |
+| Çoktan çoğa (*many-to-many*) | Anahtar her iki tabloda da birden fazla kez bulunabilir |
+
+Bu kavram join işlemlerinin belki de en kritik kısmıdır.
+
+### Bire bir ilişki
+
+Örneğin iki tablo da her ülke için yalnızca bir satır içeriyorsa `country_code` üzerinden bire bir ilişki kurulabilir.
+
+```{r}
+#| label: one-to-one-example
+
+country_names <- tibble(
+  country_code = c("TUR", "DEU", "FRA"),
+  country = c("Turkiye", "Germany", "France")
+)
+
+country_capitals <- tibble(
+  country_code = c("TUR", "DEU", "FRA"),
+  capital = c("Ankara", "Berlin", "Paris")
+)
+
+country_names |>
+  left_join(
+    country_capitals,
+    by = "country_code",
+    relationship = "one-to-one"
+  )
+```
+
+Buradaki `relationship` argümanı, beklediğimiz ilişkiyi `dplyr`'a açıkça bildirmemizi sağlar.
+
+### Çoka bir ilişki
+
+Kitabımızdaki gerçek veriler buna çok güzel bir örnek sağlar.
+
+`country_indicators.csv` içinde aynı ülke farklı yıllarda tekrar eder. Buna karşılık `country_metadata.csv` içinde her gerçek ülke için tek metadata satırı vardır.
+
+Dolayısıyla:
+
+``` text
+country_indicators  ->  country_metadata
+çok satır               tek satır
+```
+
+ilişkisi **many-to-one**, yani çoka birdir.
+
+Bunu birazdan gerçek veride kullanacağız.
+
+### Çoktan çoğa ilişki neden tehlikelidir?
+
+Aşağıdaki örneği inceleyelim:
+
+```{r}
+#| label: many-to-many-data
+
+x <- tibble(
+  id = c(1, 1),
+  x_value = c("A", "B")
+)
+
+y <- tibble(
+  id = c(1, 1, 1),
+  y_value = c("X", "Y", "Z")
+)
+```
+
+Join yaparsak:
+
+```{r}
+#| label: many-to-many-demo
+
+x |>
+  left_join(
+    y,
+    by = "id",
+    relationship = "many-to-many"
+  )
+```
+
+Soldaki iki satır sağdaki üç satırın her biriyle eşleşir.
+
+Sonuç:
+
+``` text
+2 × 3 = 6 satır
+```
+
+olur.
+
+Bu çoğu yeni kullanıcının ilk başta beklediği sonuç değildir.
+
+::: callout-warning
+## Satır sayısı neden birden arttı?
+
+Join sonrasında satır sayısının beklenmedik biçimde artması çoğu zaman join fonksiyonunun hatası değildir. Anahtar değişken her iki tabloda da tekrarlanıyor olabilir.
+
+Bu nedenle join öncesinde şunu sorun:
+
+> “Bu anahtar her tabloda kaç kez bulunuyor?”
+:::
+
+`dplyr` güncel sürümlerinde eşitlik join'lerinde beklenmeyen many-to-many ilişkilerini tespit ederek kullanıcıyı uyarmaya çalışır. Beklenen ilişkiyi `relationship` argümanı ile açıkça belirtmek, özellikle üretim kodlarında yararlı bir veri kalitesi kontrolüdür.[^data_join-6]
+
+[^data_join-6]: `dplyr` resmî dokümantasyonu, *Mutating joins*: <https://dplyr.tidyverse.org/reference/mutate-joins.html>
+
+## Gerçek ülke verilerimize geçelim
+
+Artık temel mantığı biliyoruz. Şimdi kitabımız için oluşturduğumuz veri altyapısını kullanalım.
+
+```{r}
+#| label: load-join-data
+#| message: false
+#| warning: false
+
+library(tidyverse)
+
+countries <- read_csv(
+  "data/countries.csv",
+  show_col_types = FALSE
+)
+
+country_indicators <- read_csv(
+  "data/country_indicators.csv",
+  show_col_types = FALSE
+)
+
+country_metadata <- read_csv(
+  "data/country_metadata.csv",
+  show_col_types = FALSE
+)
+```
+
+Bu tablolar farklı amaçlara hizmet eder:
+
+| Tablo                | Temel yapı                                      |
+|----------------------|-------------------------------------------------|
+| `countries`          | 2019 yılı için bir satır = bir ülke/ekonomi     |
+| `country_indicators` | bir satır = bir ülke-yıl                        |
+| `country_metadata`   | ülke ve toplulaştırılmış bölgeler için metadata |
+
+`country_metadata` tablosunda gerçek ülkeler dışında Dünya Bankası toplulaştırmaları da bulunduğu için `is_country` değişkeni özellikle önemlidir.
+
+## Gerçek örnek: ülke tablosuna başkent ve koordinat eklemek
+
+`countries` tablosunda ekonomik ve sosyal göstergeler bulunur. Buna karşılık başkent, boylam ve enlem bilgileri `country_metadata` tablosundadır.
+
+Önce yalnızca ihtiyacımız olan metadata sütunlarını seçelim:
+
+```{r}
+#| label: metadata-select
+
+metadata_selected <- country_metadata |>
+  filter(is_country) |>
+  select(
+    country_code,
+    capital_city,
+    longitude,
+    latitude
+  )
+
+metadata_selected
+```
+
+Şimdi bu bilgileri `countries` tablosuna ekleyelim:
+
+```{r}
+#| label: countries-left-join
+
+countries_enriched <- countries |>
+  left_join(
+    metadata_selected,
+    by = "country_code",
+    relationship = "one-to-one"
+  )
+
+countries_enriched |>
+  select(
+    country,
+    country_code,
+    capital_city,
+    longitude,
+    latitude
+  ) |>
+  slice_head(n = 10)
+```
+
+Burada `countries` tablosu ana analiz tablomuzdur. Bu nedenle bütün ülkeleri korumak istediğimiz için `left_join()` kullandık.
+
+### Join öncesi ve sonrası satır sayısını kontrol etmek
+
+Bire bir birleştirmede satır sayısının değişmesini beklemeyiz.
+
+```{r}
+#| label: left-join-row-check
+
+tibble(
+  before = nrow(countries),
+  after = nrow(countries_enriched)
+)
+```
+
+Bu tür kontroller basit görünse de gerçek veri çalışmalarında son derece değerlidir.
+
+## Ülke adı mı, ülke kodu mu?
+
+Teorik olarak iki tabloyu `country` değişkeni üzerinden de birleştirebiliriz.
+
+Ancak ülke isimleri farklı kaynaklarda şu nedenlerle değişebilir:
+
+- farklı dil kullanımı,
+- kısaltmalar,
+- yazım farklılıkları,
+- tarihsel isim değişiklikleri,
+- noktalama işaretleri,
+- resmî ad ile kısa ad arasındaki farklar.
+
+Örneğin aynı ülke farklı veri kaynaklarında farklı biçimlerde yazılabilir.
+
+Buna karşılık ISO benzeri standart ülke kodları join için daha istikrarlı anahtarlardır.
+
+Kitabımızdaki:
+
+``` text
+country_code
+```
+
+değişkeni Dünya Bankası ülke kodlarını içerir ve gerçek ülkelerde büyük ölçüde ISO 3166-1 alpha-3 kodlarıyla uyumludur.
+
+Bu nedenle iki kaynakta güvenilir ortak kod bulunduğunda:
+
+> **isim yerine kod üzerinden join yapmak genellikle daha güvenlidir.**
+
+Ancak kodların da kaynaktan kaynağa farklılaşabileceği unutulmamalıdır. Join öncesinde kod sisteminin aynı olduğu doğrulanmalıdır.
+
+## Panel veriye metadata eklemek: many-to-one
+
+`country_indicators` veri setinde her ülke birçok yılda bulunur.
+
+Örneğin Türkiye'nin kaç satırı olduğunu görelim:
+
+```{r}
+#| label: panel-country-count
+
+country_indicators |>
+  filter(country_code == "TUR") |>
+  summarise(
+    observations = n(),
+    first_year = min(year),
+    last_year = max(year)
+  )
+```
+
+Şimdi her ülke-yıl satırına bölge ve gelir grubu bilgisini ekleyelim.
+
+```{r}
+#| label: panel-metadata-join
+
+metadata_country <- country_metadata |>
+  filter(is_country) |>
+  select(
+    country_code,
+    region,
+    income_group
+  )
+
+panel_with_metadata <- country_indicators |>
+  left_join(
+    metadata_country,
+    by = "country_code",
+    relationship = "many-to-one"
+  )
+```
+
+Bu join'in mantığı şudur:
+
+``` text
+country_indicators                 country_metadata
+
+TUR 1960  ...  --------\
+TUR 1961  ...  --------+------->   TUR  Europe & Central Asia ...
+TUR 1962  ...  --------/
+...
+```
+
+Bir ülkedeki birçok yıllık gözlem tek bir metadata satırıyla eşleşir.
+
+Bu nedenle ilişki:
+
+``` text
+many-to-one
+```
+
+olarak tanımlanmıştır.
+
+## Aynı isimli sütunlar ve `suffix`
+
+İki tabloda anahtar dışındaki bazı sütunların adları da aynı olabilir.
+
+Örneğin hem `countries` hem `country_metadata` tablolarında:
+
+- `country`
+- `region`
+- `income_group`
+
+değişkenleri bulunur.
+
+Bu sütunları birlikte join edersek `dplyr` hangi sütunun hangi tablodan geldiğini ayırt etmek için varsayılan olarak `.x` ve `.y` soneklerini kullanır.
+
+Küçük bir örnek:
+
+```{r}
+#| label: join-suffix-default
+
+countries |>
+  select(
+    country_code,
+    country,
+    region
+  ) |>
+  left_join(
+    country_metadata |>
+      filter(is_country) |>
+      select(
+        country_code,
+        country,
+        region
+      ),
+    by = "country_code"
+  ) |>
+  slice_head(n = 5)
+```
+
+Sonuçta şu tür sütunlar oluşur:
+
+``` text
+country.x
+region.x
+country.y
+region.y
+```
+
+Bunlar teknik olarak doğrudur; ancak anlamlı isimler değildir.
+
+`suffix` argümanı ile daha açıklayıcı isimler kullanabiliriz:
+
+```{r}
+#| label: join-custom-suffix
+
+countries |>
+  select(
+    country_code,
+    country,
+    region
+  ) |>
+  left_join(
+    country_metadata |>
+      filter(is_country) |>
+      select(
+        country_code,
+        country,
+        region
+      ),
+    by = "country_code",
+    suffix = c("_data", "_meta")
+  ) |>
+  slice_head(n = 5)
+```
+
+Böylece sütunların kaynağı daha açık hale gelir.
+
+::: callout-tip
+İhtiyacınız olmayan aynı isimli sütunları join'den **önce `select()` ile çıkarmak**, çoğu zaman suffix yönetmekten daha temiz bir çözümdür.
+:::
+
+## Eşleşmeyen kayıtları nasıl buluruz?
+
+Bir join çalıştıktan sonra en önemli sorulardan biri şudur:
+
+> Hangi kayıtların karşılığı bulunamadı?
+
+Bunu görmek için `anti_join()` son derece kullanışlıdır.
+
+## `semi_join()` ve `anti_join()`: sütun eklemek yerine satır seçmek
+
+`semi_join()` ve `anti_join()` diğer join'lerden biraz farklıdır.
+
+Bunlar sağdaki tablodan **sütun getirmez**. Sağdaki tabloyu yalnızca soldaki satırları seçmek için kullanır.[^data_join-7]
+
+[^data_join-7]: `dplyr` resmî dokümantasyonu, *Filtering joins*: <https://dplyr.tidyverse.org/reference/filter-joins.html>
+
+### `semi_join()`
+
+`semi`, “yarı” anlamına gelir.
+
+`semi_join()` soldaki tablodan, sağdaki tabloda eşleşmesi bulunan satırları tutar.
+
+Küçük öğrenci örneğine dönelim:
+
+```{r}
+#| label: small-semi-join
+
+students |>
+  semi_join(
+    scores,
+    by = "student_id"
+  )
+```
+
+Sonuçta yalnızca puanı bulunan öğrenciler kalır; `score` sütunu eklenmez.
+
+Bu şu soruya cevap verir:
+
+> “Hangi öğrencilerin puan tablosunda kaydı var?”
+
+### `anti_join()`
+
+`anti` öneki “karşı, dışında” anlamı taşır.
+
+`anti_join()` soldaki tabloda olup sağdaki tabloda **eşleşmeyen** kayıtları getirir.
+
+```{r}
+#| label: small-anti-join
+
+students |>
+  anti_join(
+    scores,
+    by = "student_id"
+  )
+```
+
+Bu kez yalnızca `student_id = 103` kalır.
+
+Bu fonksiyon veri kalitesi kontrolünde özellikle değerlidir.
+
+### Gerçek veride eşleşmeyen ülke kodlarını kontrol etmek
+
+`countries` tablosundaki bütün gerçek ülkelerin metadata tablosunda karşılığı olup olmadığını kontrol edelim:
+
+```{r}
+#| label: country-anti-join
+
+countries |>
+  anti_join(
+    country_metadata |>
+      filter(is_country),
+    by = "country_code"
+  )
+```
+
+Eğer sonuç sıfır satırsa `countries` tablosundaki bütün ülke kodlarının metadata tablosunda karşılığı vardır.
+
+Bu kontrol join yapmadan **önce** de yapılabilir ve çoğu zaman yapılmalıdır.
+
+::: callout-important
+## `anti_join()` bir veri kalite aracıdır
+
+`anti_join()` yalnızca bir join türü olarak düşünülmemelidir. İki kaynak arasında eşleşmeyen kodları, eksik referans kayıtlarını veya beklenmedik farklılıkları bulmak için güçlü bir kontrol aracıdır.
+:::
+
+## Belirli bir gruba ait ülkeleri `semi_join()` ile seçmek
+
+Örneğin metadata tablosunda yüksek gelir grubundaki ülkeleri belirleyelim:
+
+```{r}
+#| label: high-income-keys
+
+high_income_codes <- country_metadata |>
+  filter(
+    is_country,
+    income_group == "High income"
+  ) |>
+  select(country_code)
+```
+
+Şimdi ana `countries` tablosundan yalnızca bu ülkeleri tutabiliriz:
+
+```{r}
+#| label: countries-semi-join
+
+countries |>
+  semi_join(
+    high_income_codes,
+    by = "country_code"
+  ) |>
+  select(
+    country,
+    income_group,
+    gdp_per_capita_usd,
+    life_expectancy_total
+  ) |>
+  slice_head(n = 10)
+```
+
+Burada `high_income_codes` tablosundan hiçbir yeni sütun gelmedi. Yalnızca hangi satırların tutulacağına karar vermek için kullanıldı.
+
+## Join ile `bind_rows()` ve `bind_cols()` aynı şey değildir
+
+Yeni başlayanların sık karıştırdığı konulardan biri join ile tabloları “bağlama” işlemleridir.
+
+### `bind_rows()`
+
+Aynı veya benzer sütun yapısına sahip tabloları **alt alta** ekler.
+
+```{r}
+#| label: bind-rows-example
+
+europe <- tibble(
+  country = c("Germany", "France"),
+  value = c(1, 2)
+)
+
+asia <- tibble(
+  country = c("Japan", "Korea, Rep."),
+  value = c(3, 4)
+)
+
+bind_rows(europe, asia)
+```
+
+Burada anahtar eşleştirmesi yapılmaz.
+
+### `bind_cols()`
+
+Tabloları **yan yana**, mevcut satır sırasına göre ekler.
+
+```{r}
+#| label: bind-cols-example
+
+a <- tibble(
+  country = c("Turkiye", "Germany")
+)
+
+b <- tibble(
+  value = c(10, 20)
+)
+
+bind_cols(a, b)
+```
+
+Burada da anahtar eşleştirmesi yapılmaz.
+
+Bu nedenle satırların yanlış sırada olması yanlış veri üretebilir.
+
+### Join
+
+Join ise:
+
+> satır konumuna değil, **anahtar değerine** göre eşleştirme yapar.
+
+Bu fark son derece önemlidir.
+
+| İşlem         | Mantık                                              |
+|---------------|-----------------------------------------------------|
+| `bind_rows()` | Tabloları alt alta ekler                            |
+| `bind_cols()` | Tabloları mevcut satır sırasına göre yan yana ekler |
+| `*_join()`    | Anahtar değerlerine göre eşleştirir                 |
+
+::: callout-warning
+İki tabloda aynı sayıda satır olması, `bind_cols()` kullanmanın güvenli olduğu anlamına gelmez. Aynı gözlemlerin aynı sırada olduğundan emin değilseniz anahtar üzerinden join yapmak daha güvenlidir.
+:::
+
+## `NA` değerleri join anahtarı olabilir mi?
+
+Eksik değerler join işlemlerinde dikkat gerektirir.
+
+`dplyr` eşitlik join'lerinde varsayılan olarak iki `NA` anahtarını birbiriyle eşleştirebilir. Bu davranış `na_matches` argümanıyla kontrol edilebilir.
+
+Örneğin:
+
+``` r
+left_join(
+  x,
+  y,
+  by = "id",
+  na_matches = "never"
+)
+```
+
+kullanıldığında eksik anahtarlar birbirleriyle eşleşmez.
+
+Bu konu veri kalitesi açısından önemlidir; ancak join anahtarlarında mümkün olduğunca eksik değer bulunmaması tercih edilir.
+
+## Join öncesi anahtar kontrolü
+
+Gerçek bir join işleminden önce birkaç basit kontrol büyük hataları önleyebilir.
+
+### Anahtar boş mu?
+
+``` r
+sum(is.na(country_metadata$country_code))
+```
+
+### Anahtar tekrar ediyor mu?
+
+``` r
+country_metadata |>
+  filter(is_country) |>
+  count(country_code) |>
+  filter(n > 1)
+```
+
+### Soldaki anahtarların sağda karşılığı var mı?
+
+``` r
+countries |>
+  anti_join(
+    country_metadata |>
+      filter(is_country),
+    by = "country_code"
+  )
+```
+
+### İlişki türü beklediğimiz gibi mi?
+
+Örneğin metadata tablosunun ülke kodunda tekil olması gerekir:
+
+``` r
+country_metadata |>
+  filter(is_country) |>
+  summarise(
+    rows = n(),
+    unique_codes = n_distinct(country_code)
+  )
+```
+
+`rows` ile `unique_codes` eşitse ülke kodları bu alt tabloda benzersizdir.
+
+## Join sonrası kontroller
+
+Join tamamlandıktan sonra da birkaç soru sormalıyız:
+
+1.  Satır sayısı beklediğimiz gibi mi?
+2.  Yeni sütunlarda beklenmedik `NA` oluştu mu?
+3.  Anahtar sütunlar benzersizliğini korudu mu?
+4.  Aynı isimli sütunlar için beklenmedik `.x` ve `.y` alanları oluştu mu?
+5.  Join sonucunda çoktan çoğa ilişki nedeniyle kayıtlar çoğaldı mı?
+
+Örneğin:
+
+```{r}
+#| label: join-validation-example
+
+before_rows <- nrow(countries)
+
+checked_join <- countries |>
+  left_join(
+    metadata_selected,
+    by = "country_code",
+    relationship = "one-to-one"
+  )
+
+after_rows <- nrow(checked_join)
+
+tibble(
+  before_rows,
+  after_rows,
+  difference = after_rows - before_rows
+)
+```
+
+Bire bir birleştirmede farkın sıfır olmasını bekleriz.
+
+## Bütünleşik örnek: ülke göstergelerine metadata eklemek
+
+Şimdi öğrendiklerimizi gerçek bir veri akışı içinde birleştirelim.
+
+Amacımız:
+
+> 2019 yılında kişi başına GSYH ve yaşam beklentisi bulunan ülkeleri seçmek, metadata tablosundan başkent ve koordinat bilgisini eklemek ve bölgeler itibarıyla özetlemek.
+
+Önce ana tabloyu hazırlayalım:
+
+```{r}
+#| label: integrated-main-table
+
+analysis_base <- countries |>
+  select(
+    country,
+    country_code,
+    region,
+    income_group,
+    gdp_per_capita_usd,
+    life_expectancy_total
+  ) |>
+  filter(
+    !is.na(gdp_per_capita_usd),
+    !is.na(life_expectancy_total)
+  )
+```
+
+Metadata tablosundan yalnızca gerekli sütunları alalım:
+
+```{r}
+#| label: integrated-metadata
+
+geo_metadata <- country_metadata |>
+  filter(is_country) |>
+  select(
+    country_code,
+    capital_city,
+    longitude,
+    latitude
+  )
+```
+
+Önce eşleşmeyen kayıt var mı kontrol edelim:
+
+```{r}
+#| label: integrated-anti-check
+
+analysis_base |>
+  anti_join(
+    geo_metadata,
+    by = "country_code"
+  )
+```
+
+Ardından join yapalım:
+
+```{r}
+#| label: integrated-left-join
+
+analysis_enriched <- analysis_base |>
+  left_join(
+    geo_metadata,
+    by = "country_code",
+    relationship = "many-to-one"
+  )
+```
+
+Burada neden `many-to-one` yazdık?
+
+`analysis_base` mevcut yapıda 2019 kesiti olduğu için ülke kodları fiilen tekildir. Ancak analitik niyetimiz sağdaki metadata tablosunun her ülke için **en fazla bir satır** içermesi gerektiğini açıkça belirtmektir. Bu kontrol, ileride ana tablo panel veriye dönüştürüldüğünde de aynı mantıkla çalışır.
+
+Son olarak bölgesel özetimizi üretelim:
+
+```{r}
+#| label: integrated-summary
+
+analysis_enriched |>
+  group_by(region) |>
+  summarise(
+    n_countries = n(),
+    median_gdp_per_capita =
+      median(gdp_per_capita_usd),
+    mean_life_expectancy =
+      mean(life_expectancy_total),
+    .groups = "drop"
+  ) |>
+  arrange(desc(median_gdp_per_capita))
+```
+
+Bu örnekte üç bölümde öğrendiğimiz kavramlar birlikte çalışmaktadır:
+
+- Veri Manipülasyonu: `select()`, `filter()`, `group_by()`, `summarise()`
+- Veri Birleştirme: `anti_join()`, `left_join()`
+- Veri kalitesi: anahtar ve ilişki kontrolü
+
+Bu, gerçek veri analizinde join'in tek başına kullanılan izole bir araç olmadığını gösterir.
+
+## Hangi join'i seçmeliyim?
+
+Pratik bir karar şeması şöyle düşünülebilir:
+
+``` text
+Sağdaki tablodan sütun getirmek istiyor musunuz?
+|
++-- Evet
+|   |
+|   +-- Soldaki tüm satırlar kalsın mı?
+|   |      +-- Evet  -> left_join()
+|   |
+|   +-- Yalnızca eşleşenler kalsın mı?
+|   |      +-- Evet  -> inner_join()
+|   |
+|   +-- Sağdaki tüm satırlar kalsın mı?
+|   |      +-- Evet  -> right_join()
+|   |
+|   +-- İki tablodaki tüm anahtarlar kalsın mı?
+|          +-- Evet  -> full_join()
+|
++-- Hayır
+    |
+    +-- Sağda karşılığı olan sol satırları mı istiyorsunuz?
+    |      +-- Evet  -> semi_join()
+    |
+    +-- Sağda karşılığı olmayan sol satırları mı istiyorsunuz?
+           +-- Evet  -> anti_join()
+```
+
+Bu şema join fonksiyonlarını ezberlemek yerine **hangi analitik soruya cevap verdiğimizi** düşünmemize yardımcı olur.
+
+## Sık yapılan hatalar
+
+### 1. Anahtarı belirtmeden join yapmak
+
+Yanlış veya riskli:
+
+``` r
+x |>
+  left_join(y)
+```
+
+`dplyr` ortak sütun adlarından bir join anahtarı tahmin edebilir; ancak kitap boyunca join anahtarını açık biçimde yazmayı tercih edeceğiz.
+
+Daha güvenli:
+
+``` r
+x |>
+  left_join(
+    y,
+    by = "country_code"
+  )
+```
+
+### 2. Ülke isimlerini güvenilir kodlar varken anahtar olarak kullanmak
+
+Riskli:
+
+``` r
+left_join(
+  x,
+  y,
+  by = "country"
+)
+```
+
+Daha sağlam:
+
+``` r
+left_join(
+  x,
+  y,
+  by = "country_code"
+)
+```
+
+Elbette bunun için iki tablodaki kod sistemlerinin gerçekten aynı olması gerekir.
+
+### 3. Join sonrası satır sayısını kontrol etmemek
+
+Join kodunun hata vermemesi, sonucun doğru olduğu anlamına gelmez.
+
+Özellikle many-to-many ilişki satır sayısını büyütebilir.
+
+### 4. Tekil sandığımız anahtarın aslında tekrar etmesi
+
+Kontrol:
+
+``` r
+x |>
+  count(id) |>
+  filter(n > 1)
+```
+
+### 5. `inner_join()` ile istemeden gözlem kaybetmek
+
+`inner_join()` eşleşmeyen satırları atar.
+
+Öncesinde:
+
+``` r
+anti_join(x, y, by = "id")
+```
+
+ile kaybedilecek gözlemleri görmek yararlıdır.
+
+### 6. `bind_cols()` ile join'i karıştırmak
+
+İki tabloyu aynı satır sırasında olduklarını varsayarak yan yana eklemek tehlikelidir.
+
+Anahtarınız varsa join kullanın.
+
+### 7. Aynı isimli sütunları gözden kaçırmak
+
+Join sonrası `.x` ve `.y` sütunları oluşuyorsa bunun nedenini araştırın.
+
+Gerekirse join öncesi `select()` yapın veya `suffix` kullanın.
+
+### 8. `NA` anahtarlarını normal anahtar gibi değerlendirmek
+
+Join anahtarlarında eksik değer varsa sonuçların nasıl davranacağını bilin.
+
+Gerekirse `na_matches = "never"` kullanın.
+
+### 9. Anahtarın veri tiplerinin farklı olması
+
+Bir tabloda kod karakter, diğerinde sayısal olabilir.
+
+Join öncesinde veri tiplerini kontrol edin:
+
+``` r
+glimpse(x)
+glimpse(y)
+```
+
+### 10. Kardinaliteyi düşünmemek
+
+Şu soruyu her zaman sorun:
+
+> “Bir anahtar solda ve sağda kaç kez tekrar edebilir?”
+
+Bu soru join sonucunun satır sayısını anlamanın anahtarıdır.
+
+## Egzersizler
+
+Aşağıdaki sorularda önce hangi join türünün uygun olduğunu düşünün, sonra kodu yazın.
+
+### Egzersiz 1
+
+`students` ve `scores` tablolarını kullanarak bütün öğrencileri koruyun ve varsa sınav puanlarını ekleyin.
+
+### Egzersiz 2
+
+Yalnızca hem `students` hem `scores` tablolarında bulunan öğrencileri elde edin.
+
+### Egzersiz 3
+
+Puanı olmayan öğrencileri yalnızca `students` tablosundaki sütunlarla listeleyin.
+
+### Egzersiz 4
+
+`scores` tablosunda bulunup `students` tablosunda karşılığı olmayan öğrenci kodlarını bulun.
+
+### Egzersiz 5
+
+`countries` tablosuna `country_metadata` tablosundan `capital_city` değişkenini ekleyin.
+
+Join anahtarı olarak `country_code` kullanın.
+
+### Egzersiz 6
+
+Bir önceki join'de satır sayısının değişip değişmediğini kontrol edin.
+
+### Egzersiz 7
+
+`countries` tablosundaki ülke kodlarından metadata tablosunda karşılığı bulunmayanları `anti_join()` ile araştırın.
+
+### Egzersiz 8
+
+`country_metadata` tablosundan yalnızca `High income` gelir grubundaki gerçek ülkelerin kodlarını oluşturun. Ardından `countries` tablosunu `semi_join()` ile bu ülkelere filtreleyin.
+
+### Egzersiz 9
+
+`country_indicators` tablosuna `country_metadata` tablosundan `region` ve `income_group` değişkenlerini ekleyin.
+
+Beklenen ilişkiyi `relationship = "many-to-one"` ile belirtin.
+
+### Egzersiz 10
+
+`country_indicators` tablosunda `country_code + year` birleşiminin benzersiz olup olmadığını kontrol edin.
+
+### Egzersiz 11
+
+Aşağıdaki iki tabloyu inceleyin:
+
+``` r
+a <- tibble(
+  id = c(1, 1, 2),
+  value_a = c("A", "B", "C")
+)
+
+b <- tibble(
+  id = c(1, 1, 3),
+  value_b = c("X", "Y", "Z")
+)
+```
+
+`id` üzerinden join yapılırsa neden satır sayısının artabileceğini açıklayın ve sonucu kontrol edin.
+
+### Egzersiz 12
+
+Bir tabloda `country_code`, diğerinde `iso3` adlı anahtar bulunduğunu varsayın. `join_by()` kullanarak bu iki sütunu eşleştiren bir `left_join()` yazın.
+
+### Egzersiz 13
+
+`countries` ve `country_metadata` tablolarındaki ortak `country` ve `region` sütunlarını birlikte join edin. Varsayılan `.x` ve `.y` soneklerini gözlemleyin. Ardından `suffix = c("_data", "_meta")` kullanarak isimleri daha anlamlı hale getirin.
+
+### Egzersiz 14
+
+Aşağıdaki iki amaç için hangi fonksiyonu kullanacağınızı yazın:
+
+a.  İkinci tabloda karşılığı bulunan ilk tablo satırlarını tutmak fakat yeni sütun eklememek.
+
+b.  İkinci tabloda karşılığı bulunmayan ilk tablo satırlarını bulmak.
+
+### Egzersiz 15
+
+2019 `countries` tablosunda kişi başına GSYH'si eksik olmayan ülkeleri seçin. Metadata tablosundan başkent bilgisini ekleyin ve kişi başına GSYH'si en yüksek 10 ülkeyi başkentleriyle birlikte listeleyin.
+
+## Egzersiz Çözümleri
+
+### Çözüm 1
+
+``` r
+students |>
+  left_join(
+    scores,
+    by = "student_id"
+  )
+```
+
+Bütün öğrencileri korumak istediğimiz için `left_join()` kullanılır.
+
+### Çözüm 2
+
+``` r
+students |>
+  inner_join(
+    scores,
+    by = "student_id"
+  )
+```
+
+`inner_join()` yalnızca iki tabloda da eşleşen öğrencileri tutar.
+
+### Çözüm 3
+
+``` r
+students |>
+  anti_join(
+    scores,
+    by = "student_id"
+  )
+```
+
+`anti_join()` solda olup sağda eşleşmeyen kayıtları getirir.
+
+### Çözüm 4
+
+Bu kez `scores` solda olmalıdır:
+
+``` r
+scores |>
+  anti_join(
+    students,
+    by = "student_id"
+  )
+```
+
+Böylece puan tablosunda bulunup öğrenci tablosunda karşılığı olmayan kodlar bulunur.
+
+### Çözüm 5
+
+``` r
+countries |>
+  left_join(
+    country_metadata |>
+      filter(is_country) |>
+      select(
+        country_code,
+        capital_city
+      ),
+    by = "country_code",
+    relationship = "one-to-one"
+  )
+```
+
+### Çözüm 6
+
+``` r
+countries_with_capital <- countries |>
+  left_join(
+    country_metadata |>
+      filter(is_country) |>
+      select(
+        country_code,
+        capital_city
+      ),
+    by = "country_code",
+    relationship = "one-to-one"
+  )
+
+tibble(
+  before = nrow(countries),
+  after = nrow(countries_with_capital)
+)
+```
+
+Bire bir birleştirmede satır sayısının değişmesini beklemeyiz.
+
+### Çözüm 7
+
+``` r
+countries |>
+  anti_join(
+    country_metadata |>
+      filter(is_country),
+    by = "country_code"
+  )
+```
+
+Boş sonuç, bütün ülke kodlarının metadata tablosunda bulunduğunu gösterir.
+
+### Çözüm 8
+
+``` r
+high_income_codes <- country_metadata |>
+  filter(
+    is_country,
+    income_group == "High income"
+  ) |>
+  select(country_code)
+
+countries |>
+  semi_join(
+    high_income_codes,
+    by = "country_code"
+  )
+```
+
+### Çözüm 9
+
+``` r
+country_indicators |>
+  left_join(
+    country_metadata |>
+      filter(is_country) |>
+      select(
+        country_code,
+        region,
+        income_group
+      ),
+    by = "country_code",
+    relationship = "many-to-one"
+  )
+```
+
+Panel tabloda aynı ülke birçok yılda tekrar ettiği, metadata tablosunda ise ülke kodu tekil olduğu için ilişki many-to-one'dır.
+
+### Çözüm 10
+
+``` r
+country_indicators |>
+  count(
+    country_code,
+    year
+  ) |>
+  filter(n > 1)
+```
+
+Sonuç boşsa `country_code + year` bileşik anahtarı benzersizdir.
+
+Alternatif olarak:
+
+``` r
+nrow(country_indicators) ==
+  nrow(
+    distinct(
+      country_indicators,
+      country_code,
+      year
+    )
+  )
+```
+
+kullanılabilir.
+
+### Çözüm 11
+
+``` r
+a |>
+  left_join(
+    b,
+    by = "id",
+    relationship = "many-to-many"
+  )
+```
+
+`id = 1` solda iki, sağda iki kez bulunduğu için dört eşleşme üretir. Join işlemi anahtarın bütün uygun kombinasyonlarını oluşturur.
+
+### Çözüm 12
+
+``` r
+x |>
+  left_join(
+    y,
+    by = join_by(country_code == iso3)
+  )
+```
+
+### Çözüm 13
+
+``` r
+countries |>
+  select(
+    country_code,
+    country,
+    region
+  ) |>
+  left_join(
+    country_metadata |>
+      filter(is_country) |>
+      select(
+        country_code,
+        country,
+        region
+      ),
+    by = "country_code",
+    suffix = c("_data", "_meta")
+  )
+```
+
+### Çözüm 14
+
+a.  `semi_join()`
+
+b.  `anti_join()`
+
+Her iki fonksiyon da sağdaki tablodan yeni sütun getirmez; yalnızca soldaki satırların tutulup tutulmayacağını belirler.
+
+### Çözüm 15
+
+``` r
+countries |>
+  filter(
+    !is.na(gdp_per_capita_usd)
+  ) |>
+  left_join(
+    country_metadata |>
+      filter(is_country) |>
+      select(
+        country_code,
+        capital_city
+      ),
+    by = "country_code",
+    relationship = "one-to-one"
+  ) |>
+  slice_max(
+    gdp_per_capita_usd,
+    n = 10
+  ) |>
+  select(
+    country,
+    capital_city,
+    gdp_per_capita_usd
+  )
+```
+
+Burada önce analiz kapsamını belirledik, ardından metadata ekledik ve son olarak en yüksek değerlere sahip ülkeleri seçtik.
+
+## Bölüm Özeti
+
+Bu bölümde verilerin neden farklı tablolarda tutulduğunu ve bu tabloların **anahtar değişkenler** yardımıyla nasıl ilişkilendirildiğini öğrendik.
+
+Öncelikle:
+
+- **birincil anahtar**,
+- **yabancı anahtar**,
+- **bileşik anahtar**,
+- **eşleşme**,
+- **kardinalite**
+
+kavramlarını ele aldık.
+
+Ardından temel join fonksiyonlarını gördük:
+
+| Fonksiyon      | Temel amaç                                       |
+|----------------|--------------------------------------------------|
+| `left_join()`  | Soldaki tabloyu koruyarak sağdan sütun eklemek   |
+| `inner_join()` | Yalnızca iki tabloda da eşleşen kayıtları tutmak |
+| `right_join()` | Sağdaki tabloyu korumak                          |
+| `full_join()`  | Her iki tablodaki tüm kayıtları korumak          |
+| `semi_join()`  | Sağda karşılığı bulunan sol satırları seçmek     |
+| `anti_join()`  | Sağda karşılığı bulunmayan sol satırları bulmak  |
+
+Ayrıca:
+
+- farklı isimli anahtarların `join_by()` ile eşleştirilmesini,
+- birden fazla değişken üzerinden join yapılmasını,
+- `relationship` ile beklenen ilişki türünün kontrol edilmesini,
+- many-to-many ilişkilerin neden satır sayısını artırabildiğini,
+- aynı isimli sütunlarda `suffix` kullanımını,
+- join ile `bind_rows()` / `bind_cols()` arasındaki farkı,
+- `anti_join()` fonksiyonunun veri kalite kontrolündeki rolünü
+
+inceledik.
+
+Veri birleştirme konusunda en önemli fikir şudur:
+
+> **Doğru join fonksiyonunu seçmek kadar, doğru anahtarı ve doğru ilişki türünü tanımlamak da önemlidir.**
+
+Bu bölümle birlikte Part II boyunca veri üzerinde üç farklı düzeyde çalışmış olduk:
+
+1.  **Veri Manipülasyonu:** tablonun içindeki satır ve sütunlar üzerinde işlem yaptık.
+2.  **Veri Dönüştürme:** verinin uzun ve geniş biçimleri arasında geçiş yaptık.
+3.  **Veri Birleştirme:** farklı tablolarda bulunan bilgileri anahtarlar üzerinden ilişkilendirdik.
+
+Gerçek veri analizi projelerinde bu üç işlem çoğu zaman birlikte kullanılır. Bir sonraki aşamada bu veri yapıları üzerinde **eksik değerler, aykırı gözlemler ve diğer veri ön işleme problemleriyle** daha sistematik biçimde ilgileneceğiz.
+
+## Kaynaklar
+
+Bu bölümün hazırlanmasında aşağıdaki temel kaynaklardan yararlanılmıştır:
+
+- `dplyr` resmî dokümantasyonu, **Mutating joins**: <https://dplyr.tidyverse.org/reference/mutate-joins.html>
+- `dplyr` resmî dokümantasyonu, **Filtering joins**: <https://dplyr.tidyverse.org/reference/filter-joins.html>
+- `dplyr` resmî dokümantasyonu, **Join specifications (`join_by`)**: <https://dplyr.tidyverse.org/reference/join_by.html>
+- Wickham, H., Çetinkaya-Rundel, M. ve Grolemund, G., **R for Data Science (2e), Joins**: <https://r4ds.hadley.nz/joins.html>
+- `dplyr` resmî vignette, **Two-table verbs**: <https://dplyr.tidyverse.org/articles/two-table.html>
+
+Kitapta kullanılan `countries`, `country_indicators` ve `country_metadata` veri setleri, World Bank World Development Indicators (WDI) ve Dünya Bankası ülke metadata kaynaklarından kitap için hazırlanmış veri altyapısının parçalarıdır.

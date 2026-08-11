@@ -1,0 +1,17 @@
+﻿check,status,detail
+country_metadata_country_code_unique,PASS,rows=295
+panel_key_unique,PASS,duplicates=0
+long_key_unique,PASS,duplicates=0
+aggregates_excluded_from_panel,PASS,real_codes=217
+selected_indicators_nonempty,PASS,selected=29
+reference_year_selected,PASS,year=2019; empirical mean core coverage maximum
+range_urban_population_pct,PASS,outside expected 0..200=0
+range_age_dependency_ratio_pct,PASS,outside expected 0..200=0
+range_unemployment_total_pct,PASS,outside expected 0..200=0
+range_unemployment_female_pct,PASS,outside expected 0..200=0
+range_unemployment_male_pct,PASS,outside expected 0..200=0
+range_employment_total_pct,PASS,outside expected 0..200=0
+range_labor_force_participation_pct,PASS,outside expected 0..200=0
+range_school_enrollment_tertiary_pct,PASS,outside expected 0..200=0
+range_internet_users_pct,PASS,outside expected 0..200=0
+range_renewable_energy_pct,PASS,outside expected 0..200=0

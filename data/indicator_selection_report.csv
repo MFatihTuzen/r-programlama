@@ -1,0 +1,36 @@
+﻿indicator_name,wdi_code,category,first_year,last_year,countries_covered,observations,possible_country_years,missing_pct,selected,reason
+population_total,SP.POP.TOTL,demography,1960,2025,217,14292,14322,0.21,True,Seçildi: kapsam ve pedagojik değer yeterli
+population_female,SP.POP.TOTL.FE.IN,demography,1960,2025,217,14292,14322,0.21,True,Seçildi: kapsam ve pedagojik değer yeterli
+population_male,SP.POP.TOTL.MA.IN,demography,1960,2025,217,14292,14322,0.21,True,Seçildi: kapsam ve pedagojik değer yeterli
+population_growth_pct,SP.POP.GROW,demography,1961,2025,217,14073,14322,1.74,True,Seçildi: kapsam ve pedagojik değer yeterli
+urban_population_pct,SP.URB.TOTL.IN.ZS,demography,1960,2025,217,14322,14322,0.0,True,Seçildi: kapsam ve pedagojik değer yeterli
+fertility_rate,SP.DYN.TFRT.IN,demography,1960,2024,217,14073,14322,1.74,True,Seçildi: kapsam ve pedagojik değer yeterli
+age_dependency_ratio_pct,SP.POP.DPND,demography,1960,2025,217,14292,14322,0.21,True,Seçildi: kapsam ve pedagojik değer yeterli
+gdp_current_usd,NY.GDP.MKTP.CD,economy,1960,2025,214,11764,14322,17.86,True,Seçildi: kapsam ve pedagojik değer yeterli
+gdp_per_capita_usd,NY.GDP.PCAP.CD,economy,1960,2025,214,11764,14322,17.86,True,Seçildi: kapsam ve pedagojik değer yeterli
+gdp_growth_pct,NY.GDP.MKTP.KD.ZG,economy,1961,2025,214,11408,14322,20.35,True,Seçildi: kapsam ve pedagojik değer yeterli
+gdp_per_capita_ppp,NY.GDP.PCAP.PP.CD,economy,1990,2025,203,7020,14322,50.98,True,Seçildi: kapsam ve pedagojik değer yeterli
+inflation_consumer_pct,FP.CPI.TOTL.ZG,economy,1960,2025,193,9136,14322,36.21,True,Seçildi: kapsam ve pedagojik değer yeterli
+investment_gdp_pct,NE.GDI.FTOT.ZS,economy,1960,2025,181,8132,14322,43.22,True,Seçildi: kapsam ve pedagojik değer yeterli
+unemployment_total_pct,SL.UEM.TOTL.ZS,labour,1991,2025,187,6531,14322,54.4,True,Seçildi: kapsam ve pedagojik değer yeterli
+unemployment_female_pct,SL.UEM.TOTL.FE.ZS,labour,1991,2025,187,6531,14322,54.4,True,Seçildi: kapsam ve pedagojik değer yeterli
+unemployment_male_pct,SL.UEM.TOTL.MA.ZS,labour,1991,2025,187,6531,14322,54.4,True,Seçildi: kapsam ve pedagojik değer yeterli
+employment_total_pct,SL.EMP.TOTL.SP.ZS,labour,1991,2025,187,6531,14322,54.4,True,Seçildi: kapsam ve pedagojik değer yeterli
+labor_force_participation_pct,SL.TLF.CACT.ZS,labour,1990,2025,187,6718,14322,53.09,True,Seçildi: kapsam ve pedagojik değer yeterli
+life_expectancy_total,SP.DYN.LE00.IN,health,1960,2024,217,14071,14322,1.75,True,Seçildi: kapsam ve pedagojik değer yeterli
+life_expectancy_female,SP.DYN.LE00.FE.IN,health,1960,2024,217,14071,14322,1.75,True,Seçildi: kapsam ve pedagojik değer yeterli
+life_expectancy_male,SP.DYN.LE00.MA.IN,health,1960,2024,217,14071,14322,1.75,True,Seçildi: kapsam ve pedagojik değer yeterli
+infant_mortality_rate,SP.DYN.IMRT.IN,health,1960,2024,196,11830,14322,17.4,True,Seçildi: kapsam ve pedagojik değer yeterli
+school_enrollment_primary_pct,SE.PRM.NENR,education,1970,2019,197,4342,14322,69.68,False,Reddedildi: aday eğitim/enerji serisinin kapsamı daha güçlü alternatiflerden düşük
+school_enrollment_secondary_pct,SE.SEC.NENR,education,1970,2019,188,2778,14322,80.6,False,Reddedildi: aday eğitim/enerji serisinin kapsamı daha güçlü alternatiflerden düşük
+school_enrollment_tertiary_pct,SE.TER.ENRR,education,1970,2025,203,5353,14322,62.62,True,Seçildi: kapsam ve pedagojik değer yeterli
+literacy_adult_pct,SE.ADT.LITR.ZS,education,1970,2024,170,1121,14322,92.17,False,Reddedildi: aday eğitim/enerji serisinin kapsamı daha güçlü alternatiflerden düşük
+school_life_expectancy_years,SE.SCH.LIFE,education,,,0,0,14322,100.0,False,Reddedildi: aday eğitim/enerji serisinin kapsamı daha güçlü alternatiflerden düşük
+internet_users_pct,IT.NET.USER.ZS,technology,1990,2025,213,6224,14322,56.54,True,Seçildi: kapsam ve pedagojik değer yeterli
+mobile_subscriptions_per_100,IT.CEL.SETS.P2,technology,1960,2024,214,10594,14322,26.03,True,Seçildi: kapsam ve pedagojik değer yeterli
+co2_per_capita,EN.GHG.CO2.PC.CE.AR5,environment,1970,2024,203,11165,14322,22.04,True,Seçildi: kapsam ve pedagojik değer yeterli
+renewable_energy_pct,EG.FEC.RNEW.ZS,environment,1990,2022,212,6746,14322,52.9,True,Seçildi: kapsam ve pedagojik değer yeterli
+energy_use_per_capita,EG.USE.PCAP.KG.OE,environment,1990,2024,179,5196,14322,63.72,False,Reddedildi: aday eğitim/enerji serisinin kapsamı daha güçlü alternatiflerden düşük
+electric_power_per_capita,EG.USE.ELEC.KH.PC,environment,1990,2024,150,5057,14322,64.69,False,Reddedildi: aday eğitim/enerji serisinin kapsamı daha güçlü alternatiflerden düşük
+exports_gdp_pct,NE.EXP.GNFS.ZS,trade,1960,2025,194,9029,14322,36.96,True,Seçildi: kapsam ve pedagojik değer yeterli
+imports_gdp_pct,NE.IMP.GNFS.ZS,trade,1960,2025,194,9038,14322,36.89,True,Seçildi: kapsam ve pedagojik değer yeterli

@@ -40,6 +40,13 @@ Kitapta aşağıdaki konular yer almaktadır:
 
 Kitap düzenli olarak güncellenmektedir ve yeni bölümler eklenmeye devam edecektir.
 
+### Güncel durum
+
+- **Part I — R Programlamaya Giriş:** tamamlandı (`v0.1.0`)
+- **Part II — Veri Manipülasyonu ve Dönüştürme:** tamamlandı (`v0.2.0`)
+
+Part II; Veri Manipülasyonu, Veri Dönüştürme ve Veri Birleştirme bölümlerinin yanında World Bank WDI tabanlı, yeniden kullanılabilir bir ülke veri altyapısı içerir.
+
 ---
 
 ## Kimler İçin?

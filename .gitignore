@@ -30,3 +30,6 @@ Thumbs.db
 # Cache
 *_cache/
 /.quarto/
+
+# Yerel ham veri ve WDI önbelleği
+data-raw/wdi_cache/

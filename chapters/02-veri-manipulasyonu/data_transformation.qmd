@@ -1,0 +1,1407 @@
+# Veri Dönüştürme {#part-datatransformation}
+
+Veri analizi çoğu zaman veriyi yalnızca **seçmek**, **filtrelemek** ya da **özetlemekle** bitmez. Bazen elimizdeki bilgiler doğrudur, ancak **tablonun düzeni yapmak istediğimiz işlem için uygun değildir**. Aynı bilgi, farklı satır ve sütun düzenlerinde saklanabilir. İşte veri dönüştürme bu noktada devreye girer.
+
+Bir önceki bölümde `dplyr` ile veri setinin içeriği üzerinde çalıştık: sütun seçtik, satır filtreledik, yeni değişkenler oluşturduk ve gruplar için özet istatistikler hesapladık. Bu bölümde ise farklı bir soruya odaklanacağız:
+
+> **Aynı bilgiyi, analiz için daha uygun bir tablo yapısına nasıl dönüştürebiliriz?**
+
+Bu amaçla ağırlıklı olarak **`tidyr`** paketini kullanacağız. `tidyr`, tidyverse ekosisteminin veri düzenleme araçlarını içeren temel paketlerinden biridir. Paket adındaki *tidy* sözcüğü İngilizcede “düzenli, derli toplu” anlamına gelir. `tidyr` paketinin temel amacı da veriyi, analiz araçlarının daha kolay kullanabileceği **düzenli (tidy)** bir yapıya getirmektir. Resmî `tidyr` dokümantasyonunda düzenli veri; her değişkenin bir sütunda, her gözlemin bir satırda ve her değerin tek bir hücrede yer aldığı yapı olarak tanımlanır.[^data_transformation-1]
+
+[^data_transformation-1]: `tidyr` resmî dokümantasyonu: <https://tidyr.tidyverse.org/>
+
+Bu bölümde özellikle iki temel dönüşüm üzerinde duracağız:
+
+- **geniş formattan uzun formata dönüşüm:** `pivot_longer()`
+- **uzun formattan geniş formata dönüşüm:** `pivot_wider()`
+
+Bunlara ek olarak, bir sütunda birden fazla bilginin birlikte tutulduğu durumlarda sütunları ayırmayı ve gerektiğinde tekrar birleştirmeyi de göreceğiz.
+
+::: callout-note
+## Bu bölümde neyi amaçlıyoruz?
+
+Amaç, `pivot_longer()` ve `pivot_wider()` fonksiyonlarının sözdizimini ezberlemek değildir. Önce **neden uzun veya geniş formata ihtiyaç duyduğumuzu** anlamaya çalışacağız. Fonksiyonların kullanımı bu mantık oturduktan sonra çok daha kolay hale gelir.
+:::
+
+## Aynı veri, farklı tablo yapıları
+
+Önce çok küçük bir örnek düşünelim. Üç ülkenin 2022, 2023 ve 2024 yıllarındaki kişi başına gelir değerlerini tuttuğumuzu varsayalım.
+
+```{r}
+#| label: small-wide-data
+#| echo: true
+#| output: true
+
+library(tidyverse)
+
+income_wide <- tibble(
+  country = c("Turkiye", "Germany", "France"),
+  `2022` = c(10655, 48718, 40964),
+  `2023` = c(13110, 54343, 44460),
+  `2024` = c(15460, 55800, 46200)
+)
+
+income_wide
+```
+
+Bu yapı insanların gözünde oldukça doğaldır. Her ülke bir satırdadır; yıllar ise yan yana sütunlarda gösterilir.
+
+| country |  2022 |  2023 |  2024 |
+|---------|------:|------:|------:|
+| Turkiye | 10655 | 13110 | 15460 |
+| Germany | 48718 | 54343 | 55800 |
+| France  | 40964 | 44460 | 46200 |
+
+Bu biçime **geniş format (wide format)** denir. Çünkü aynı türdeki ölçümlerin farklı dönemleri yatay olarak ayrı sütunlara yayılmıştır.
+
+Peki aynı bilgiyi şöyle saklasaydık?
+
+| country | year | gdp_per_capita |
+|---------|-----:|---------------:|
+| Turkiye | 2022 |          10655 |
+| Turkiye | 2023 |          13110 |
+| Turkiye | 2024 |          15460 |
+| Germany | 2022 |          48718 |
+| Germany | 2023 |          54343 |
+| Germany | 2024 |          55800 |
+| France  | 2022 |          40964 |
+| France  | 2023 |          44460 |
+| France  | 2024 |          46200 |
+
+Bu ise **uzun format (long format)** yapısıdır. Yıllar artık ayrı sütunlar değildir; `year` adında tek bir değişkenin değerleri haline gelmiştir. Kişi başına gelir değerleri de `gdp_per_capita` adlı tek bir sütunda tutulmaktadır.
+
+İki tabloya dikkatle bakıldığında önemli bir nokta görülür:
+
+> **Bilgi değişmedi; yalnızca bilginin tablo üzerindeki konumu değişti.**
+
+`pivot_longer()` ve `pivot_wider()` fonksiyonlarının temel mantığı tam olarak budur. Resmî `tidyr` dokümantasyonu pivot işlemlerini, verinin içerdiği değerleri değiştirmeden gösterim biçimini değiştiren dönüşümler olarak açıklar.[^data_transformation-2]
+
+[^data_transformation-2]: `tidyr` pivoting rehberi: <https://tidyr.tidyverse.org/articles/pivot.html>
+
+## Neden uzun ve geniş formatlara ihtiyaç duyarız?
+
+Tek bir “doğru” tablo biçimi yoktur. Bir tablonun uygun olup olmadığı, **ne yapmak istediğimize** bağlıdır.
+
+Geniş format çoğu zaman:
+
+- insanların tabloyu doğrudan okuması,
+- yılları veya kategorileri yan yana karşılaştırması,
+- raporlama ve sunum tabloları hazırlaması
+
+için kullanışlıdır.
+
+Uzun format ise çoğu zaman:
+
+- `ggplot2` ile grafik oluşturma,
+- gruplama ve özetleme,
+- farklı yılları veya göstergeleri tek değişken üzerinden filtreleme,
+- tekrarlı ölçüm veya panel verilerle çalışma,
+- bazı modelleme ve analiz araçlarına veri hazırlama
+
+için daha kullanışlıdır.
+
+Örneğin geniş formatta yıllar sütun adlarının içinde saklanmaktadır. Bu durumda “2020'den sonraki yılları filtrele” gibi bir işlem doğrudan mümkün değildir; çünkü `2022`, `2023` ve `2024` bir değişkenin değerleri değil, sütun adlarıdır. Uzun formata geçtiğimizde ise `year` gerçek bir değişken olur ve şöyle bir işlem yapabiliriz:
+
+```{r}
+#| label: filter-after-long
+#| echo: true
+#| output: true
+
+income_wide |>
+  pivot_longer(
+    cols = `2022`:`2024`,
+    names_to = "year",
+    values_to = "gdp_per_capita"
+  ) |>
+  filter(year >= "2023")
+```
+
+Buradaki asıl kazanım satır veya sütun sayısının değişmesi değildir. Kazanım, **yıl bilgisinin artık analiz edilebilir bir değişken haline gelmesidir**.
+
+::: callout-important
+## Uzun format her zaman daha iyi değildir
+
+Tidyverse dünyasında uzun format çok sık kullanılır; ancak bu, geniş formatın yanlış olduğu anlamına gelmez. Bir rapor tablosunda yılları yan yana görmek daha okunabilir olabilir. Veri dönüştürmenin amacı bütün tabloları tek bir biçime zorlamak değil, **veriyi yapılacak işe uygun biçime getirmektir**.
+:::
+
+## Düzenli veri (tidy data) mantığı
+
+Hadley Wickham tarafından sistematik hale getirilen **tidy data** yaklaşımı, veri setinin anlamı ile fiziksel yapısı arasında tutarlı bir ilişki kurmayı amaçlar. Wickham'ın 2014 tarihli *Tidy Data* makalesinde düzenli veri yapısı; değişkenlerin sütunlara, gözlemlerin satırlara ve gözlemsel birim türlerinin tablolara karşılık gelmesi üzerine kuruludur.[^data_transformation-3]
+
+[^data_transformation-3]: Wickham, H. (2014). *Tidy Data*. Journal of Statistical Software, 59(10), 1–23. <https://www.jstatsoft.org/article/view/v059i10>
+
+Basit haliyle üç kuralı hatırlamak yeterlidir:
+
+1.  **Her değişken bir sütunda yer alır.**
+2.  **Her gözlem bir satırda yer alır.**
+3.  **Her değer tek bir hücrede yer alır.**
+
+Bu kurallar ilk bakışta çok basit görünebilir. Ancak gerçek veri setlerinde bilgi sıklıkla sütun adlarına, hücre içindeki metinlere veya farklı tablolara dağılmış durumdadır.
+
+Örneğin aşağıdaki sütun adlarını düşünelim:
+
+``` text
+population_2019
+population_2020
+population_2021
+```
+
+Burada iki bilgi aynı sütun adının içine gömülmüştür:
+
+- göstergenin adı: `population`
+- yıl: `2019`, `2020`, `2021`
+
+Böyle bir yapı insanlar için okunabilir olabilir; ancak analiz açısından yıl bilgisinin sütun adında saklanması bazı işlemleri zorlaştırır. Veri dönüştürme araçları bu tür bilgileri uygun değişkenlere ayırmamıza yardımcı olur.
+
+R for Data Science kitabının ikinci baskısı da pivot işlemlerini, değerleri değiştirmeden verinin biçimini yeniden düzenlemenin temel aracı olarak ele alır.[^data_transformation-4]
+
+[^data_transformation-4]: Wickham, H., Çetinkaya-Rundel, M. & Grolemund, G. *R for Data Science (2e)*, Data tidying bölümü: <https://r4ds.hadley.nz/data-tidy.html>
+
+## `tidyr` paketine giriş
+
+Bu bölümde kullandığımız fonksiyonlar `tidyr` paketindedir. `tidyr`, `tidyverse` paket koleksiyonunun bir parçasıdır. Önceki bölümde `library(tidyverse)` komutunu kullandığımız için `tidyr` da otomatik olarak yüklenmiştir.
+
+```{r}
+#| label: load-data-transformation
+#| message: false
+#| warning: false
+
+library(tidyverse)
+
+country_indicators <- readr::read_csv(
+  "data/country_indicators.csv",
+  show_col_types = FALSE
+)
+
+country_indicators_long <- readr::read_csv(
+  "data/country_indicators_long.csv",
+  show_col_types = FALSE
+)
+```
+
+Bu bölümde iki gerçek veri yapısından yararlanacağız:
+
+- `country_indicators.csv`: bir satırın bir **ülke-yıl** gözlemini temsil ettiği geniş veri seti,
+- `country_indicators_long.csv`: bir satırın bir **ülke-yıl-gösterge** gözlemini temsil ettiği uzun veri seti.
+
+Her iki tablo da aynı World Bank — World Development Indicators (WDI) veri altyapısından üretilmiştir. Dolayısıyla bölüm boyunca veri dönüşümünü yalnızca küçük yapay örneklerle değil, gerçek uluslararası göstergeler üzerinden de görebileceğiz.
+
+## Geniş formattan uzun formata: `pivot_longer()`
+
+`pivot_longer()` sözcük olarak “daha uzun hale döndürmek” fikrini taşır. Fonksiyon, seçilen sütunları satırlara taşıyarak veri setinin **satır sayısını artırır**, buna karşılık genellikle sütun sayısını azaltır. Resmî `tidyr` dokümantasyonunda da `pivot_longer()` bu şekilde tanımlanır.[^data_transformation-5]
+
+[^data_transformation-5]: `pivot_longer()` resmî dokümantasyonu: <https://tidyr.tidyverse.org/reference/pivot_longer.html>
+
+### İlk dönüşüm
+
+Küçük örneğimize geri dönelim:
+
+```{r}
+#| label: first-pivot-longer
+#| output: true
+
+income_long <- income_wide |>
+  pivot_longer(
+    cols = `2022`:`2024`,
+    names_to = "year",
+    values_to = "gdp_per_capita"
+  )
+
+income_long
+```
+
+Kodun temel parçaları şunlardır:
+
+- `cols`: hangi sütunların uzun formata dönüştürüleceğini belirtir.
+- `names_to`: dönüştürülen eski sütun adlarının hangi yeni sütunda tutulacağını belirtir.
+- `values_to`: eski sütunlardaki değerlerin hangi yeni sütunda tutulacağını belirtir.
+
+Bu örneği zihinsel olarak şöyle okuyabiliriz:
+
+> `2022`, `2023` ve `2024` sütunlarını al; bu sütunların **adlarını** `year` sütununda, içlerindeki **değerleri** ise `gdp_per_capita` sütununda topla.
+
+Bu cümle `pivot_longer()` fonksiyonunun temel mantığını özetler.
+
+### Sütunları isim örüntüsüyle seçmek
+
+Dönüştürülecek sütunların yan yana olması şart değildir. Önceki bölümde öğrendiğimiz `select()` yardımcıları `pivot_longer()` içinde de kullanılabilir.
+
+Örneğin şöyle bir veri düşünelim:
+
+```{r}
+#| label: population-wide-example
+#| output: true
+
+population_wide <- tibble(
+  country = c("Turkiye", "Germany", "France"),
+  population_2022 = c(85.3, 84.1, 68.0),
+  population_2023 = c(85.4, 84.5, 68.2),
+  population_2024 = c(85.7, 83.5, 68.4)
+)
+
+population_wide
+```
+
+`population_` ile başlayan bütün sütunları seçebiliriz:
+
+```{r}
+#| label: pivot-starts-with
+#| output: true
+
+population_wide |>
+  pivot_longer(
+    cols = starts_with("population_"),
+    names_to = "year",
+    values_to = "population_million"
+  )
+```
+
+Fakat sonuçtaki `year` sütununda `population_2022`, `population_2023` gibi değerler oluşur. Oysa bizim istediğimiz yalnızca yıl bilgisidir.
+
+### Sütun adındaki gereksiz kısmı kaldırmak: `names_prefix`
+
+`names_prefix` argümanı, sütun adlarının başındaki ortak metni kaldırmak için kullanılır.
+
+```{r}
+#| label: pivot-names-prefix
+#| output: true
+
+population_long <- population_wide |>
+  pivot_longer(
+    cols = starts_with("population_"),
+    names_to = "year",
+    names_prefix = "population_",
+    values_to = "population_million"
+  )
+
+population_long
+```
+
+Artık `year` sütununda yalnızca `2022`, `2023` ve `2024` değerleri bulunur.
+
+### Yeni değişkenin türünü değiştirmek: `names_transform`
+
+Sütun adları metin olduğu için `year` da varsayılan olarak karakter türünde oluşur. Yıl üzerinde sayısal işlemler yapmak istiyorsak bunu tam sayıya dönüştürebiliriz:
+
+```{r}
+#| label: pivot-names-transform
+#| output: true
+
+population_wide |>
+  pivot_longer(
+    cols = starts_with("population_"),
+    names_to = "year",
+    names_prefix = "population_",
+    names_transform = as.integer,
+    values_to = "population_million"
+  )
+```
+
+Bu küçük ayrıntı önemlidir. Veri dönüşümünde yalnızca tablo şekline değil, oluşturulan değişkenlerin **veri türlerine** de dikkat etmeliyiz.
+
+## Gerçek veri üzerinde `pivot_longer()`
+
+Şimdi kitap için hazırladığımız gerçek ülke-yıl veri setine geçelim. Önce yalnızca birkaç ülke ve gösterge seçerek örneği okunabilir tutalım.
+
+```{r}
+#| label: real-wide-subset
+#| output: true
+
+selected_countries <- country_indicators |>
+  filter(
+    country %in% c("Turkiye", "Germany", "France"),
+    year %in% c(2010, 2015, 2019)
+  ) |>
+  select(
+    country,
+    year,
+    gdp_per_capita_usd,
+    unemployment_total_pct,
+    life_expectancy_total
+  )
+
+selected_countries
+```
+
+Bu tablo ülke ve yıl bakımından uzun bir yapıya sahip olsa da **göstergeler bakımından geniştir**: kişi başına GSYH, işsizlik oranı ve yaşam beklentisi ayrı sütunlardadır.
+
+Şimdi bu üç göstergeyi tek bir `indicator` sütununda toplayalım:
+
+```{r}
+#| label: real-pivot-longer
+#| output: true
+
+selected_countries_long <- selected_countries |>
+  pivot_longer(
+    cols = c(
+      gdp_per_capita_usd,
+      unemployment_total_pct,
+      life_expectancy_total
+    ),
+    names_to = "indicator",
+    values_to = "value"
+  )
+
+selected_countries_long
+```
+
+Artık her satır:
+
+> **bir ülke + bir yıl + bir gösterge**
+
+kombinasyonunu temsil etmektedir.
+
+Bu yapı özellikle göstergeleri aynı değişken üzerinden filtrelemek veya gruplamak istediğimizde kullanışlıdır:
+
+```{r}
+#| label: filter-indicator-after-long
+#| output: true
+
+selected_countries_long |>
+  filter(indicator == "life_expectancy_total")
+```
+
+Geniş tabloda `life_expectancy_total` bir sütun adıydı. Uzun tabloda ise `indicator` değişkeninin bir değeridir. İşte pivot işleminin analiz mantığını değiştirdiği noktalardan biri budur.
+
+::: callout-tip
+## Uzun formata ne zaman geçmeliyim?
+
+Şu soruyu sormak genellikle işe yarar:
+
+**“Sütun adlarının içinde aslında değişken olması gereken bir bilgi var mı?”**
+
+Yıllar, aylar, cinsiyetler, senaryolar, ölçüm türleri veya göstergeler ayrı ayrı sütun adlarına dağılmışsa, uzun formata geçmek çoğu zaman analizi kolaylaştırır.
+:::
+
+## Bir sütun adından birden fazla değişken üretmek
+
+Gerçek veriler her zaman `population_2022` kadar basit değildir. Bazen sütun adı birden fazla bilgiyi birlikte taşır.
+
+Örneğin:
+
+```{r}
+#| label: complex-column-names
+#| output: true
+
+employment_wide <- tibble(
+  country = c("A", "B"),
+  unemployment_female_2019 = c(12.1, 7.4),
+  unemployment_male_2019 = c(9.8, 6.6),
+  unemployment_female_2020 = c(13.5, 8.1),
+  unemployment_male_2020 = c(10.9, 7.0)
+)
+
+employment_wide
+```
+
+Burada sütun adlarının içinde üç ayrı bilgi vardır:
+
+- gösterge: `unemployment`
+- cinsiyet: `female` / `male`
+- yıl: `2019` / `2020`
+
+`names_to` içine birden fazla yeni sütun adı verebilir, `names_sep` ile sütun adlarını ayırabiliriz:
+
+```{r}
+#| label: names-sep-example
+#| output: true
+
+employment_wide |>
+  pivot_longer(
+    cols = -country,
+    names_to = c("indicator", "sex", "year"),
+    names_sep = "_",
+    values_to = "rate"
+  )
+```
+
+Bu yaklaşım, sütun adının düzenli biçimde bir ayırıcı karakter içerdiği durumlarda oldukça kullanışlıdır.
+
+### `names_pattern` ile daha esnek ayrıştırma
+
+Sütun adlarının yapısı daha karmaşıksa `names_pattern` kullanılabilir. Bu argüman düzenli ifadelerden (*regular expressions*) yararlanır. Ancak düzenli ifadeler bu kitabın temel veri dönüşümü kapsamının ötesine geçebileceği için burada yalnızca varlığını bilmek yeterlidir.
+
+```{r}
+#| label: names-pattern-example
+#| eval: false
+
+employment_wide |>
+  pivot_longer(
+    cols = -country,
+    names_to = c("indicator", "sex", "year"),
+    names_pattern = "(.*)_(female|male)_(\\d{4})",
+    values_to = "rate"
+  )
+```
+
+`names_sep` yeterliyse onu tercih etmek genellikle daha okunabilirdir. `names_pattern`, sütun isimlerinin sabit bir ayırıcıyla düzgün biçimde parçalanamadığı durumlarda daha değerlidir.
+
+## Uzun formattan geniş formata: `pivot_wider()`
+
+`pivot_wider()` uzun veriyi daha geniş hale getirir: satır sayısı genellikle azalırken sütun sayısı artar. `pivot_longer()` işleminin ters yönlü karşılığıdır.[^data_transformation-6]
+
+[^data_transformation-6]: `pivot_wider()` resmî dokümantasyonu: <https://tidyr.tidyverse.org/reference/pivot_wider.html>
+
+Küçük uzun veri setimizi tekrar kullanalım:
+
+```{r}
+#| label: first-pivot-wider
+#| output: true
+
+income_long |>
+  pivot_wider(
+    names_from = year,
+    values_from = gdp_per_capita
+  )
+```
+
+Buradaki mantık şöyledir:
+
+- `names_from`: yeni sütun adlarının hangi değişkenin değerlerinden üretileceğini belirtir.
+- `values_from`: yeni sütunlara hangi değişkenin değerlerinin yerleştirileceğini belirtir.
+
+Yani şöyle okuyabiliriz:
+
+> `year` değişkeninin değerlerini sütun adlarına taşı; hücreleri `gdp_per_capita` değerleriyle doldur.
+
+### Gerçek uzun veri üzerinde genişletme
+
+Kitabın `country_indicators_long.csv` veri seti doğrudan uzun formattadır:
+
+```{r}
+#| label: inspect-real-long
+#| output: true
+
+country_indicators_long |>
+  filter(
+    country %in% c("Turkiye", "Germany", "France"),
+    year == 2019,
+    indicator %in% c(
+      "gdp_per_capita_usd",
+      "unemployment_total_pct",
+      "life_expectancy_total"
+    )
+  ) |>
+  select(country, year, indicator, value)
+```
+
+Bu yapıyı göstergeler sütun olacak şekilde genişletebiliriz:
+
+```{r}
+#| label: real-pivot-wider
+#| output: true
+
+country_indicators_long |>
+  filter(
+    country %in% c("Turkiye", "Germany", "France"),
+    year == 2019,
+    indicator %in% c(
+      "gdp_per_capita_usd",
+      "unemployment_total_pct",
+      "life_expectancy_total"
+    )
+  ) |>
+  select(country, year, indicator, value) |>
+  pivot_wider(
+    names_from = indicator,
+    values_from = value
+  )
+```
+
+Bu dönüşüm özellikle bir ülke-yıl için göstergeleri yan yana karşılaştırmak istediğimizde kullanışlıdır.
+
+## `id_cols`: Hangi sütunlar gözlemi tanımlar?
+
+`pivot_wider()` kullanırken önemli sorulardan biri şudur:
+
+> **Yeni geniş tablodaki bir satırı hangi değişkenler tanımlıyor?**
+
+Bu değişkenler `id_cols` argümanıyla açıkça belirtilebilir.
+
+```{r}
+#| label: id-cols-example
+#| output: true
+
+country_indicators_long |>
+  filter(
+    country %in% c("Turkiye", "Germany", "France"),
+    year %in% c(2018, 2019),
+    indicator %in% c(
+      "gdp_per_capita_usd",
+      "life_expectancy_total"
+    )
+  ) |>
+  select(country, country_code, year, indicator, value) |>
+  pivot_wider(
+    id_cols = c(country, country_code, year),
+    names_from = indicator,
+    values_from = value
+  )
+```
+
+Burada bir satırı `country + country_code + year` birlikte tanımlar. Bu fikir ileride veri birleştirme bölümünde göreceğimiz **anahtar değişken** kavramıyla da yakından ilişkilidir.
+
+## Sütun adlarını düzenlemek: `names_prefix`, `names_sep` ve `names_glue`
+
+Geniş formatta oluşturulan sütun adlarını daha anlaşılır hale getirmek isteyebiliriz.
+
+Örneğin yılları sütunlara dönüştürelim:
+
+```{r}
+#| label: names-prefix-wider
+#| output: true
+
+country_indicators_long |>
+  filter(
+    country == "Turkiye",
+    year %in% 2018:2020,
+    indicator == "life_expectancy_total"
+  ) |>
+  select(country, year, value) |>
+  pivot_wider(
+    names_from = year,
+    values_from = value,
+    names_prefix = "year_"
+  )
+```
+
+Sonuçta `year_2018`, `year_2019`, `year_2020` gibi sütunlar oluşur. Sütun adının yalnızca `2018` olmasına kıyasla bu yapı bazı durumlarda daha açıklayıcıdır.
+
+Birden fazla değişken sütun adını oluşturuyorsa `names_sep` veya daha esnek biçimde `names_glue` kullanılabilir. Ancak temel dönüşüm mantığını öğrendikten sonra bu seçeneklere ihtiyaç duyulur; günlük kullanımda her zaman gerekli değildir.
+
+```{r}
+#| label: names-glue-example
+#| eval: false
+
+some_long_data |>
+  pivot_wider(
+    names_from = c(indicator, year),
+    values_from = value,
+    names_glue = "{indicator}_{year}"
+  )
+```
+
+## Eksik kombinasyonlar ve `values_fill`
+
+Uzun veri geniş formata dönüştürülürken her gözlem için her kategori bulunmayabilir. Bu durumda yeni tabloda `NA` oluşur.
+
+Küçük bir örnek oluşturalım:
+
+```{r}
+#| label: values-fill-data
+#| output: true
+
+sales_long <- tibble(
+  region = c("North", "North", "South"),
+  year = c(2023, 2024, 2023),
+  sales = c(120, 135, 95)
+)
+
+sales_long
+```
+
+Geniş formata geçelim:
+
+```{r}
+#| label: values-fill-default
+#| output: true
+
+sales_long |>
+  pivot_wider(
+    names_from = year,
+    values_from = sales
+  )
+```
+
+`South` için 2024 gözlemi bulunmadığından sonuç `NA` olur.
+
+Eğer veri bağlamı açısından eksik kombinasyonun gerçekten **sıfır** anlamına geldiğinden eminseniz `values_fill` kullanılabilir:
+
+```{r}
+#| label: values-fill-zero
+#| output: true
+
+sales_long |>
+  pivot_wider(
+    names_from = year,
+    values_from = sales,
+    values_fill = 0
+  )
+```
+
+::: callout-warning
+## `NA` ile sıfır aynı şey değildir
+
+`values_fill = 0` yalnızca eksik kombinasyonun gerçekten “olay gerçekleşmedi” veya “değer sıfır” anlamına geldiği durumlarda kullanılmalıdır. Ölçüm yapılmamış veya veri bilinmiyorsa `NA` değerini sıfıra çevirmek veri anlamını bozabilir.
+:::
+
+## Aynı hücreye birden fazla değer düşerse ne olur?
+
+`pivot_wider()` işleminin sorunsuz çalışması için `id_cols + names_from` kombinasyonu genellikle tek bir değeri tanımlamalıdır.
+
+Örneğin aynı ülke, yıl ve gösterge için iki ayrı değer varsa `pivot_wider()` hangi değerin hücreye yazılacağını bilemez. Böyle bir durumda uyarı verir ve list-column oluşabilir.
+
+Bu sorun çoğunlukla şunu gösterir:
+
+> Gözlemi benzersiz biçimde tanımlayan değişkenleri eksik belirledik veya veride yinelenen kayıtlar var.
+
+Gerektiğinde `values_fn` kullanarak birden fazla değer özetlenebilir:
+
+```{r}
+#| label: values-fn-example
+#| eval: false
+
+my_data |>
+  pivot_wider(
+    names_from = category,
+    values_from = value,
+    values_fn = mean
+  )
+```
+
+Ancak `values_fn` kullanmadan önce tekrarların **neden oluştuğunu** anlamak gerekir. Veri kalitesi sorununu yalnızca ortalama alarak gizlemek doğru değildir.
+
+## Dönüşüm tersinir midir?
+
+Basit ve benzersiz verilerde `pivot_longer()` ile yaptığımız dönüşümü `pivot_wider()` ile geri çevirebiliriz.
+
+```{r}
+#| label: round-trip-pivot
+#| output: true
+
+income_wide |>
+  pivot_longer(
+    cols = `2022`:`2024`,
+    names_to = "year",
+    values_to = "gdp_per_capita"
+  ) |>
+  pivot_wider(
+    names_from = year,
+    values_from = gdp_per_capita
+  )
+```
+
+Başlangıçtaki yapıya geri döneriz.
+
+Fakat her dönüşüm eksiksiz biçimde tersinir değildir. Örneğin:
+
+- `values_drop_na = TRUE` ile eksik değerleri kaldırırsak,
+- birden fazla değeri `values_fn = mean` ile özetlersek,
+- sütun adındaki bazı bilgileri dönüşüm sırasında kaybedersek,
+
+başlangıçtaki tabloyu aynen geri üretmek mümkün olmayabilir.
+
+Bu nedenle veri dönüşümü yalnızca teknik bir şekil değiştirme işlemi değil, aynı zamanda **verinin anlamının korunmasını gerektiren bir tasarım kararıdır**.
+
+## `pivot_longer()` ve `pivot_wider()` ne zaman kullanılmalı?
+
+Aşağıdaki basit karar tablosu yardımcı olabilir:
+
+| Durum | Muhtemel ihtiyaç |
+|----|----|
+| Yıllar ayrı sütunlarda | `pivot_longer()` |
+| Kadın ve erkek ölçümleri ayrı sütunlarda ve cinsiyet değişkeni olarak kullanılacak | `pivot_longer()` |
+| Göstergeler ayrı sütunlarda ve tek `indicator` değişkeni altında analiz edilecek | `pivot_longer()` |
+| Uzun tabloda kategori değerlerini yan yana karşılaştırmak istiyoruz | `pivot_wider()` |
+| Rapor için yılları sütunlara taşımak istiyoruz | `pivot_wider()` |
+| Model veya fonksiyon belirli değişkenleri ayrı sütunlarda bekliyor | çoğu zaman `pivot_wider()` |
+
+Burada amaç fonksiyonu ezberlemek değil, **hangi bilginin değişken, hangi bilginin gözlem olduğunu düşünmektir**.
+
+## Bir sütunda birden fazla bilgi varsa
+
+Pivot işlemleri satır-sütun yapısını değiştirir. Ancak bazen sorun tablonun şeklinden değil, **tek bir sütunun birden fazla değişkeni birlikte taşımasından** kaynaklanır.
+
+Örneğin:
+
+```{r}
+#| label: combined-column-data
+#| output: true
+
+country_period <- tibble(
+  country_year = c(
+    "Turkiye_2019",
+    "Germany_2019",
+    "France_2019"
+  ),
+  value = c(7619, 46795, 40494)
+)
+
+country_period
+```
+
+`country_year` aslında iki değişken içermektedir:
+
+- ülke,
+- yıl.
+
+### Bir sütunu ayırmak: `separate_wider_delim()`
+
+Güncel `tidyr` yaklaşımında ayırıcı karaktere göre bir sütunu parçalamak için `separate_wider_delim()` kullanılabilir.[^data_transformation-7]
+
+[^data_transformation-7]: `tidyr` sütun ayırma fonksiyonları: <https://tidyr.tidyverse.org/reference/separate_wider_delim.html>
+
+```{r}
+#| label: separate-wider-delim
+#| output: true
+
+country_period |>
+  separate_wider_delim(
+    cols = country_year,
+    delim = "_",
+    names = c("country", "year")
+  )
+```
+
+Fonksiyon adındaki parçalar işlevi oldukça iyi açıklar:
+
+- `separate`: ayır,
+- `wider`: yeni sütunlar oluşturarak genişlet,
+- `delim`: ayırıcı (*delimiter*) kullan.
+
+Eski R kaynaklarında `separate()` fonksiyonuyla karşılaşabilirsiniz. Güncel `tidyr` dokümantasyonu daha açık ve tutarlı arayüze sahip `separate_wider_*()` ailesini önermektedir.
+
+### Sabit konuma göre ayırmak: `separate_wider_position()`
+
+Bazen ayırıcı karakter yoktur; bilgi sabit karakter konumlarında tutulur.
+
+Örneğin:
+
+```{r}
+#| label: fixed-position-data
+#| output: true
+
+period_code <- tibble(
+  period = c("2019Q1", "2019Q2", "2020Q1")
+)
+
+period_code
+```
+
+İlk dört karakter yılı, kalan iki karakter çeyreği göstermektedir:
+
+```{r}
+#| label: separate-wider-position
+#| output: true
+
+period_code |>
+  separate_wider_position(
+    cols = period,
+    widths = c(year = 4, quarter = 2)
+  )
+```
+
+Bu tür işlemler özellikle sabit biçimli kodlarda, tarih-dönem gösterimlerinde veya sınıflama kodlarında kullanışlıdır.
+
+## Birden fazla sütunu birleştirmek: `unite()`
+
+Bazen bunun tersine, iki veya daha fazla değişkeni tek bir sütunda birleştirmek isteyebiliriz.
+
+```{r}
+#| label: unite-example
+#| output: true
+
+country_period |>
+  separate_wider_delim(
+    cols = country_year,
+    delim = "_",
+    names = c("country", "year")
+  ) |>
+  unite(
+    col = country_year,
+    country,
+    year,
+    sep = "_"
+  )
+```
+
+`unite` İngilizcede “birleştirmek” anlamına gelir. Fonksiyon farklı sütunlardaki değerleri belirli bir ayırıcı kullanarak tek bir sütunda toplar.
+
+Ancak burada önemli bir ayrım vardır:
+
+- `pivot_*()` fonksiyonları **tablonun satır-sütun düzenini** değiştirir.
+- `separate_wider_*()` ve `unite()` fonksiyonları ise **değişkenlerin sütunlar içindeki temsil biçimini** değiştirir.
+
+Bu iki dönüşüm türünü birbirinden ayırmak veri yapısını anlamayı kolaylaştırır.
+
+## Eski fonksiyonlar: `gather()`, `spread()` ve `separate()`
+
+Eski tidyverse kitaplarında veya internet örneklerinde şu fonksiyonlarla karşılaşabilirsiniz:
+
+- `gather()`
+- `spread()`
+- `separate()`
+
+`gather()` ve `spread()` uzun ve geniş format dönüşümlerinde uzun yıllar kullanılmıştır. Güncel `tidyr` yaklaşımında bunların yerine daha açık argüman adlarına ve daha güçlü özelliklere sahip:
+
+- `pivot_longer()`
+- `pivot_wider()`
+
+kullanılır. `tidyr` pivot rehberi de bu fonksiyonların `gather()` ve `spread()` arayüzünü geliştirmek amacıyla tasarlandığını belirtir.[^data_transformation-8]
+
+[^data_transformation-8]: `tidyr` pivoting rehberi: <https://tidyr.tidyverse.org/articles/pivot.html>
+
+Benzer biçimde sütun ayırma işlemlerinde yeni kodlarda `separate_wider_delim()`, `separate_wider_position()` ve gerektiğinde `separate_wider_regex()` ailesini tercih etmek daha uygundur.
+
+::: callout-note
+## Eski kodları okuyabilmek yine de önemlidir
+
+Bu kitapta güncel fonksiyonları kullanacağız. Ancak R uzun yıllardır kullanılan bir dil olduğu için eski projelerde `gather()`, `spread()` veya `separate()` görmek normaldir. Bunların ne işe yaradığını bilmek, eski kodları anlamayı kolaylaştırır; yeni kod yazarken ise güncel arayüzleri tercih etmek daha sağlıklıdır.
+:::
+
+## Baştan sona bir dönüşüm örneği
+
+Şimdi gerçek ülke verisi üzerinde birkaç adımı bir araya getirelim.
+
+Amacımız şu olsun:
+
+> **Turkiye, Germany ve France için 2000, 2010 ve 2019 yıllarında kişi başına GSYH ile yaşam beklentisini önce uzun formatta hazırlayalım; ardından yılları sütunlara taşıyarak raporlanabilir bir tablo oluşturalım.**
+
+Önce gerekli gözlemleri seçelim:
+
+```{r}
+#| label: integrated-transform-step1
+#| output: true
+
+analysis_long <- country_indicators_long |>
+  filter(
+    country %in% c("Turkiye", "Germany", "France"),
+    year %in% c(2000, 2010, 2019),
+    indicator %in% c(
+      "gdp_per_capita_usd",
+      "life_expectancy_total"
+    )
+  ) |>
+  select(country, year, indicator, value)
+
+analysis_long
+```
+
+Bu yapı analiz açısından oldukça esnektir. Örneğin tek bir göstergeyi kolayca filtreleyebiliriz:
+
+```{r}
+#| label: integrated-transform-step2
+#| output: true
+
+analysis_long |>
+  filter(indicator == "life_expectancy_total")
+```
+
+Şimdi yılları sütunlara taşıyalım:
+
+```{r}
+#| label: integrated-transform-step3
+#| output: true
+
+analysis_wide_years <- analysis_long |>
+  pivot_wider(
+    names_from = year,
+    values_from = value,
+    names_prefix = "year_"
+  )
+
+analysis_wide_years
+```
+
+Bu sefer her satır bir **ülke-gösterge** kombinasyonudur; yıllar ise sütunlara taşınmıştır. Böyle bir yapı özellikle dönemleri yan yana gösteren rapor tablolarında kullanışlı olabilir.
+
+Aynı uzun veri setinden farklı bir geniş tablo da oluşturabiliriz. Bu kez göstergeleri sütunlara taşıyalım:
+
+```{r}
+#| label: integrated-transform-step4
+#| output: true
+
+analysis_wide_indicators <- analysis_long |>
+  pivot_wider(
+    names_from = indicator,
+    values_from = value
+  )
+
+analysis_wide_indicators
+```
+
+Şimdi her satır bir **ülke-yıl** gözlemidir ve iki gösterge ayrı sütunlarda yer almaktadır.
+
+Bu örnek önemli bir noktayı gösterir:
+
+> Aynı uzun veri setinden, sorumuza bağlı olarak birden fazla anlamlı geniş tablo oluşturabiliriz.
+
+Dönüşümün yönünü belirleyen şey “uzun iyidir” veya “geniş iyidir” gibi genel bir kural değil, **yapmak istediğimiz analizdir**.
+
+## Sık yapılan hatalar
+
+### 1. Kimlik sütunlarını da yanlışlıkla pivot etmek
+
+Aşağıdaki gibi bütün sütunları dönüştürmek çoğu zaman hatalıdır:
+
+```{r}
+#| eval: false
+
+my_data |>
+  pivot_longer(
+    cols = everything(),
+    names_to = "variable",
+    values_to = "value"
+  )
+```
+
+Ülke adı veya ülke kodu gibi gözlemi tanımlayan sütunların uzun forma taşınması veri anlamını bozabilir. Pivot edilecek sütunları bilinçli seçmek gerekir.
+
+### 2. `names_to` ile `values_to` kavramlarını karıştırmak
+
+Şunu hatırlamak yardımcı olur:
+
+- **eski sütun adları** → `names_to`
+- **eski hücre değerleri** → `values_to`
+
+### 3. Geniş formata geçerken benzersiz anahtarı kontrol etmemek
+
+Aynı `country + year + indicator` kombinasyonu birden fazla kez bulunuyorsa `pivot_wider()` tek bir hücreye hangi değeri yerleştireceğini bilemez. Önce tekrarların nedenini araştırmak gerekir.
+
+### 4. Eksik değeri sıfır sanmak
+
+```{r}
+#| eval: false
+
+pivot_wider(..., values_fill = 0)
+```
+
+kullanımı her `NA` değerinin gerçekten sıfır olduğu anlamına gelmez. Eksik ölçüm ile gerçek sıfır birbirinden farklıdır.
+
+### 5. Yılların karakter olarak kalmasını fark etmemek
+
+`pivot_longer()` ile sütun adlarından üretilen yıllar varsayılan olarak metin olabilir. Sayısal karşılaştırma yapacaksanız `names_transform = as.integer` gibi bir dönüşüm gerekebilir.
+
+### 6. Dönüşüm sırasında bilgi kaybetmek
+
+`values_drop_na = TRUE` veya `values_fn` gibi seçenekler kullanıldığında başlangıçtaki yapının aynen geri üretilemeyebileceğini unutmayın.
+
+### 7. Uzun ve geniş formatı iyi-kötü ayrımı gibi görmek
+
+Uzun format analiz için, geniş format sunum için sık kullanılsa da bu mutlak bir kural değildir. Uygun biçim, yapılacak işleme göre seçilmelidir.
+
+### 8. Sütun adındaki bilgiyi fark etmemek
+
+`gdp_2019`, `gdp_2020`, `gdp_2021` gibi sütunlarda yıl bilgisinin sütun adına gömülü olduğunu fark etmeden analiz yapmak, gereksiz karmaşıklığa yol açabilir.
+
+## Egzersizler
+
+Aşağıdaki egzersizlerde önce küçük örnek veri setlerini, ardından kitap için hazırlanan gerçek ülke verilerini kullanacağız.
+
+### Egzersiz 1
+
+Aşağıdaki veri setini uzun formata dönüştürün. Yeni sütun adları `year` ve `population` olsun.
+
+```{r}
+#| eval: false
+
+ex1 <- tibble(
+  country = c("A", "B"),
+  `2022` = c(10, 15),
+  `2023` = c(11, 16),
+  `2024` = c(12, 18)
+)
+```
+
+### Egzersiz 2
+
+`ex1` veri setini uzun formata dönüştürürken `year` değişkeninin tam sayı (`integer`) olmasını sağlayın.
+
+### Egzersiz 3
+
+Aşağıdaki veri setinde `gdp_` ile başlayan sütunları uzun formata dönüştürün. Yeni değişkenler `year` ve `gdp` olsun; `year` içinde yalnızca yıl değerleri bulunsun.
+
+```{r}
+#| eval: false
+
+ex3 <- tibble(
+  country = c("A", "B"),
+  gdp_2022 = c(500, 800),
+  gdp_2023 = c(540, 850)
+)
+```
+
+### Egzersiz 4
+
+`country_indicators.csv` veri setinden `Turkiye`, `Germany` ve `France` için 2019 yılı gözlemlerini seçin. `gdp_per_capita_usd`, `unemployment_total_pct` ve `life_expectancy_total` sütunlarını `indicator` ve `value` değişkenleri altında uzun formata dönüştürün.
+
+### Egzersiz 5
+
+Bir önceki egzersizin sonucunda yalnızca `life_expectancy_total` göstergesini filtreleyin.
+
+### Egzersiz 6
+
+`country_indicators_long.csv` veri setinden 2019 yılı için `Turkiye`, `Germany` ve `France` ülkelerini ve şu göstergeleri seçin:
+
+- `gdp_per_capita_usd`
+- `unemployment_total_pct`
+- `life_expectancy_total`
+
+Ardından göstergeleri ayrı sütunlara taşıyın.
+
+### Egzersiz 7
+
+`country_indicators_long.csv` veri setinde `Turkiye` için 2015–2019 dönemindeki `life_expectancy_total` göstergesini seçin ve yılları `year_2015`, ..., `year_2019` biçiminde sütunlara dönüştürün.
+
+### Egzersiz 8
+
+Aşağıdaki veri setindeki `sex_year` sütununu iki yeni değişkene ayırın: `sex` ve `year`.
+
+```{r}
+#| eval: false
+
+ex8 <- tibble(
+  country = c("A", "A", "B", "B"),
+  sex_year = c("female_2019", "male_2019", "female_2019", "male_2019"),
+  rate = c(12.4, 9.5, 8.0, 7.2)
+)
+```
+
+### Egzersiz 9
+
+Egzersiz 8'de elde ettiğiniz `sex` ve `year` sütunlarını `sex_year` adı altında tekrar birleştirin.
+
+### Egzersiz 10
+
+Aşağıdaki uzun veri setini geniş formata dönüştürün. Eksik kombinasyonların neden `NA` olduğunu açıklayın. Daha sonra yalnızca veri anlamı açısından uygun olduğunu varsayarak ikinci bir çözümde eksik değerleri `0` ile doldurun.
+
+```{r}
+#| eval: false
+
+ex10 <- tibble(
+  country = c("A", "A", "B"),
+  year = c(2023, 2024, 2023),
+  value = c(5, 7, 4)
+)
+```
+
+### Egzersiz 11
+
+`country_indicators_long.csv` veri setinden `Turkiye` için 2000, 2010 ve 2019 yıllarını; `gdp_per_capita_usd` ve `life_expectancy_total` göstergelerini seçin. Önce göstergeleri sütunlara, ardından aynı başlangıç verisini kullanarak yılları sütunlara taşıyan iki ayrı tablo üretin.
+
+### Egzersiz 12
+
+Aşağıdaki sütun adlarının içerdiği bilgileri açıklayın ve veriyi düzenli hale getirmek için nasıl bir uzun format yapısı önerdiğinizi yazın. Kod yazmanız şart değildir.
+
+``` text
+income_female_2019
+income_male_2019
+income_female_2020
+income_male_2020
+```
+
+### Egzersiz 13
+
+Bir veri setinde aynı ülke, yıl ve gösterge için iki farklı değer bulunduğunu varsayın. `pivot_wider()` kullanmadan önce hangi soruları soracağınızı açıklayın. `values_fn = mean` seçeneğini neden otomatik çözüm olarak kullanmamak gerektiğini tartışın.
+
+## Egzersiz çözümleri
+
+### Egzersiz 1 çözümü
+
+```{r}
+#| eval: false
+
+ex1 |>
+  pivot_longer(
+    cols = `2022`:`2024`,
+    names_to = "year",
+    values_to = "population"
+  )
+```
+
+### Egzersiz 2 çözümü
+
+```{r}
+#| eval: false
+
+ex1 |>
+  pivot_longer(
+    cols = `2022`:`2024`,
+    names_to = "year",
+    names_transform = as.integer,
+    values_to = "population"
+  )
+```
+
+`names_transform` ile sütun adlarından gelen yıl değerleri karakter yerine tam sayı olarak oluşturulur.
+
+### Egzersiz 3 çözümü
+
+```{r}
+#| eval: false
+
+ex3 |>
+  pivot_longer(
+    cols = starts_with("gdp_"),
+    names_to = "year",
+    names_prefix = "gdp_",
+    names_transform = as.integer,
+    values_to = "gdp"
+  )
+```
+
+### Egzersiz 4 çözümü
+
+```{r}
+#| eval: false
+
+country_indicators |>
+  filter(
+    country %in% c("Turkiye", "Germany", "France"),
+    year == 2019
+  ) |>
+  select(
+    country,
+    year,
+    gdp_per_capita_usd,
+    unemployment_total_pct,
+    life_expectancy_total
+  ) |>
+  pivot_longer(
+    cols = c(
+      gdp_per_capita_usd,
+      unemployment_total_pct,
+      life_expectancy_total
+    ),
+    names_to = "indicator",
+    values_to = "value"
+  )
+```
+
+### Egzersiz 5 çözümü
+
+```{r}
+#| eval: false
+
+country_indicators |>
+  filter(
+    country %in% c("Turkiye", "Germany", "France"),
+    year == 2019
+  ) |>
+  select(
+    country,
+    year,
+    gdp_per_capita_usd,
+    unemployment_total_pct,
+    life_expectancy_total
+  ) |>
+  pivot_longer(
+    cols = c(
+      gdp_per_capita_usd,
+      unemployment_total_pct,
+      life_expectancy_total
+    ),
+    names_to = "indicator",
+    values_to = "value"
+  ) |>
+  filter(indicator == "life_expectancy_total")
+```
+
+### Egzersiz 6 çözümü
+
+```{r}
+#| eval: false
+
+country_indicators_long |>
+  filter(
+    country %in% c("Turkiye", "Germany", "France"),
+    year == 2019,
+    indicator %in% c(
+      "gdp_per_capita_usd",
+      "unemployment_total_pct",
+      "life_expectancy_total"
+    )
+  ) |>
+  select(country, year, indicator, value) |>
+  pivot_wider(
+    names_from = indicator,
+    values_from = value
+  )
+```
+
+### Egzersiz 7 çözümü
+
+```{r}
+#| eval: false
+
+country_indicators_long |>
+  filter(
+    country == "Turkiye",
+    year %in% 2015:2019,
+    indicator == "life_expectancy_total"
+  ) |>
+  select(country, year, value) |>
+  pivot_wider(
+    names_from = year,
+    values_from = value,
+    names_prefix = "year_"
+  )
+```
+
+### Egzersiz 8 çözümü
+
+```{r}
+#| eval: false
+
+ex8 |>
+  separate_wider_delim(
+    cols = sex_year,
+    delim = "_",
+    names = c("sex", "year")
+  )
+```
+
+### Egzersiz 9 çözümü
+
+```{r}
+#| eval: false
+
+ex8 |>
+  separate_wider_delim(
+    cols = sex_year,
+    delim = "_",
+    names = c("sex", "year")
+  ) |>
+  unite(
+    col = sex_year,
+    sex,
+    year,
+    sep = "_"
+  )
+```
+
+### Egzersiz 10 çözümü
+
+Önce varsayılan davranış:
+
+```{r}
+#| eval: false
+
+ex10 |>
+  pivot_wider(
+    names_from = year,
+    values_from = value
+  )
+```
+
+`B` ülkesi için 2024 gözlemi olmadığı için ilgili hücre `NA` olur.
+
+Eğer bu eksiklik bağlam gereği gerçekten sıfır anlamına geliyorsa:
+
+```{r}
+#| eval: false
+
+ex10 |>
+  pivot_wider(
+    names_from = year,
+    values_from = value,
+    values_fill = 0
+  )
+```
+
+### Egzersiz 11 çözümü
+
+Önce ortak uzun veri:
+
+```{r}
+#| eval: false
+
+ex11_long <- country_indicators_long |>
+  filter(
+    country == "Turkiye",
+    year %in% c(2000, 2010, 2019),
+    indicator %in% c(
+      "gdp_per_capita_usd",
+      "life_expectancy_total"
+    )
+  ) |>
+  select(country, year, indicator, value)
+```
+
+Göstergeleri sütunlara taşıma:
+
+```{r}
+#| eval: false
+
+ex11_long |>
+  pivot_wider(
+    names_from = indicator,
+    values_from = value
+  )
+```
+
+Yılları sütunlara taşıma:
+
+```{r}
+#| eval: false
+
+ex11_long |>
+  pivot_wider(
+    names_from = year,
+    values_from = value,
+    names_prefix = "year_"
+  )
+```
+
+Aynı uzun veri, farklı analiz amaçları için farklı geniş yapılara dönüştürülebilir.
+
+### Egzersiz 12 çözümü
+
+Sütun adlarında üç bilgi birlikte taşınmaktadır:
+
+- gösterge: `income`,
+- cinsiyet: `female` / `male`,
+- yıl: `2019` / `2020`.
+
+Düzenli yapıda bunları örneğin şu değişkenlere ayırmak uygun olur:
+
+``` text
+country | indicator | sex | year | value
+```
+
+Böylece cinsiyet ve yıl artık sütun adlarına gömülü olmaktan çıkar ve doğrudan filtrelenebilir, gruplanabilir değişkenler haline gelir.
+
+### Egzersiz 13 çözümü
+
+Önce tekrarın anlamını araştırmak gerekir:
+
+- aynı kayıt yanlışlıkla iki kez mi gelmiş,
+- farklı veri kaynakları mı var,
+- farklı ölçüm yöntemleri mi var,
+- gözlemi tanımlayan başka bir değişken eksik mi bırakılmış?
+
+`values_fn = mean` teknik olarak iki değeri tek hücreye indirebilir; ancak tekrarların nedeni anlaşılmadan ortalama almak gerçek veri yapısını gizleyebilir. Önce gözlemin benzersiz anahtarı belirlenmeli, ardından gerekiyorsa analitik gerekçeyle özetleme yapılmalıdır.
+
+## Bölüm özeti
+
+Bu bölümde veri dönüşümünün, verinin içeriğini değiştirmekten çok **bilginin tablo üzerindeki temsil biçimini değiştirmek** olduğunu gördük.
+
+Özellikle şu kavramları öğrendik:
+
+- **geniş format:** aynı tür ölçümlerin farklı sütunlara yayıldığı yapı,
+- **uzun format:** bu ölçümlerin değişken ve değer sütunlarında toplandığı yapı,
+- **tidy data:** değişkenlerin sütunlarda, gözlemlerin satırlarda ve değerlerin hücrelerde tutulduğu düzenli veri yaklaşımı,
+- `pivot_longer()`: geniş veriyi uzun formata dönüştürme,
+- `pivot_wider()`: uzun veriyi geniş formata dönüştürme,
+- `names_to`, `values_to`, `names_from`, `values_from`: dönüşümün temel yapı taşları,
+- `names_prefix`, `names_sep`, `names_transform`: sütun adlarının içerdiği bilgiyi düzenleme,
+- `id_cols`: geniş tabloda gözlemi tanımlayan değişkenleri belirleme,
+- `values_fill`: eksik kombinasyonların nasıl temsil edileceğini kontrol etme,
+- `separate_wider_delim()` ve `separate_wider_position()`: tek sütunda birden fazla bilgiyi ayırma,
+- `unite()`: birden fazla sütundaki bilgiyi tek sütunda birleştirme.
+
+En önemli nokta şudur:
+
+> **Uzun veya geniş format kendi başına doğru ya da yanlış değildir. Doğru veri yapısı, yapmak istediğimiz işleme bağlıdır.**
+
+Şimdiye kadar veriyi seçmeyi, filtrelemeyi, özetlemeyi ve farklı yapılara dönüştürmeyi öğrendik. Ancak gerçek veri analizinde ihtiyaç duyduğumuz bilgiler çoğu zaman tek bir tabloda bulunmaz. Bir sonraki bölümde farklı tabloları ortak anahtarlar üzerinden nasıl ilişkilendireceğimizi ve birleştireceğimizi göreceğiz.
+
+## Kaynaklar ve ileri okuma
+
+- Wickham, H. (2014). *Tidy Data*. Journal of Statistical Software, 59(10), 1–23. <https://www.jstatsoft.org/article/view/v059i10>
+- Wickham, H., Çetinkaya-Rundel, M. & Grolemund, G. *R for Data Science (2e): Data tidying*. <https://r4ds.hadley.nz/data-tidy.html>
+- `tidyr` resmî web sitesi ve tidy data yaklaşımı: <https://tidyr.tidyverse.org/>
+- `tidyr` pivoting rehberi: <https://tidyr.tidyverse.org/articles/pivot.html>
+- `pivot_longer()` dokümantasyonu: <https://tidyr.tidyverse.org/reference/pivot_longer.html>
+- `pivot_wider()` dokümantasyonu: <https://tidyr.tidyverse.org/reference/pivot_wider.html>
+- `separate_wider_delim()` ve ilgili fonksiyonlar: <https://tidyr.tidyverse.org/reference/separate_wider_delim.html>

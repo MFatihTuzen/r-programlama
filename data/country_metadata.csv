@@ -1,0 +1,296 @@
+﻿country_code,iso2_code,country,region,region_code,income_group,income_group_code,lending_type,lending_type_code,capital_city,longitude,latitude,is_country,data_start_year,data_end_year
+ABW,AW,Aruba,Latin America & Caribbean ,LCN,High income,HIC,Not classified,LNX,Oranjestad,-70.0167,12.5167,True,1960,2025
+AFE,ZH,Africa Eastern and Southern,Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+AFG,AF,Afghanistan,"Middle East, North Africa, Afghanistan & Pakistan",MEA,Low income,LIC,IDA,IDX,Kabul,69.1761,34.5228,True,1960,2025
+AFR,A9,Africa,Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+AFW,ZI,Africa Western and Central,Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+AGO,AO,Angola,Sub-Saharan Africa ,SSF,Lower middle income,LMC,IBRD,IBD,Luanda,13.242,-8.81155,True,1960,2025
+ALB,AL,Albania,Europe & Central Asia,ECS,Upper middle income,UMC,IBRD,IBD,Tirane,19.8172,41.3317,True,1960,2025
+AND,AD,Andorra,Europe & Central Asia,ECS,High income,HIC,Not classified,LNX,Andorra la Vella,1.5218,42.5075,True,1960,2025
+ARB,1A,Arab World,Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+ARE,AE,United Arab Emirates,"Middle East, North Africa, Afghanistan & Pakistan",MEA,High income,HIC,Not classified,LNX,Abu Dhabi,54.3705,24.4764,True,1960,2025
+ARG,AR,Argentina,Latin America & Caribbean ,LCN,Upper middle income,UMC,IBRD,IBD,Buenos Aires,-58.4173,-34.6118,True,1960,2025
+ARM,AM,Armenia,Europe & Central Asia,ECS,Upper middle income,UMC,IBRD,IBD,Yerevan,44.509,40.1596,True,1960,2025
+ASM,AS,American Samoa,East Asia & Pacific,EAS,High income,HIC,Not classified,LNX,Pago Pago,-170.691,-14.2846,True,1960,2025
+ATG,AG,Antigua and Barbuda,Latin America & Caribbean ,LCN,High income,HIC,IBRD,IBD,Saint John's,-61.8456,17.1175,True,1960,2025
+AUS,AU,Australia,East Asia & Pacific,EAS,High income,HIC,Not classified,LNX,Canberra,149.129,-35.282,True,1960,2025
+AUT,AT,Austria,Europe & Central Asia,ECS,High income,HIC,Not classified,LNX,Vienna,16.3798,48.2201,True,1960,2025
+AZE,AZ,Azerbaijan,Europe & Central Asia,ECS,Upper middle income,UMC,IBRD,IBD,Baku,49.8932,40.3834,True,1960,2025
+BDI,BI,Burundi,Sub-Saharan Africa ,SSF,Low income,LIC,IDA,IDX,Bujumbura,29.3639,-3.3784,True,1960,2025
+BEA,B4,East Asia & Pacific (IBRD-only countries),Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+BEC,B7,Europe & Central Asia (IBRD-only countries),Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+BEL,BE,Belgium,Europe & Central Asia,ECS,High income,HIC,Not classified,LNX,Brussels,4.36761,50.8371,True,1960,2025
+BEN,BJ,Benin,Sub-Saharan Africa ,SSF,Lower middle income,LMC,IDA,IDX,Porto-Novo,2.6323,6.4779,True,1960,2025
+BFA,BF,Burkina Faso,Sub-Saharan Africa ,SSF,Low income,LIC,IDA,IDX,Ouagadougou,-1.53395,12.3605,True,1960,2025
+BGD,BD,Bangladesh,South Asia,SAS,Lower middle income,LMC,IDA,IDX,Dhaka,90.4113,23.7055,True,1960,2025
+BGR,BG,Bulgaria,Europe & Central Asia,ECS,High income,HIC,IBRD,IBD,Sofia,23.3238,42.7105,True,1960,2025
+BHI,B1,IBRD countries classified as high income,Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+BHR,BH,Bahrain,"Middle East, North Africa, Afghanistan & Pakistan",MEA,High income,HIC,Not classified,LNX,Manama,50.5354,26.1921,True,1960,2025
+BHS,BS,"Bahamas, The",Latin America & Caribbean ,LCN,High income,HIC,Not classified,LNX,Nassau,-77.339,25.0661,True,1960,2025
+BIH,BA,Bosnia and Herzegovina,Europe & Central Asia,ECS,Upper middle income,UMC,IBRD,IBD,Sarajevo,18.4214,43.8607,True,1960,2025
+BLA,B2,Latin America & the Caribbean (IBRD-only countries),Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+BLR,BY,Belarus,Europe & Central Asia,ECS,Upper middle income,UMC,IBRD,IBD,Minsk,27.5766,53.9678,True,1960,2025
+BLZ,BZ,Belize,Latin America & Caribbean ,LCN,Upper middle income,UMC,Blend,IDB,Belmopan,-88.7713,17.2534,True,1960,2025
+BMN,B3,"Middle East, North Africa, Afghanistan & Pakistan (IBRD only)",Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+BMU,BM,Bermuda,North America,NAC,High income,HIC,Not classified,LNX,Hamilton,-64.706,32.3293,True,1960,2025
+BOL,BO,Bolivia,Latin America & Caribbean ,LCN,Lower middle income,LMC,IBRD,IBD,La Paz,-66.1936,-13.9908,True,1960,2025
+BRA,BR,Brazil,Latin America & Caribbean ,LCN,Upper middle income,UMC,IBRD,IBD,Brasilia,-47.9292,-15.7801,True,1960,2025
+BRB,BB,Barbados,Latin America & Caribbean ,LCN,High income,HIC,IBRD,IBD,Bridgetown,-59.6105,13.0935,True,1960,2025
+BRN,BN,Brunei Darussalam,East Asia & Pacific,EAS,High income,HIC,Not classified,LNX,Bandar Seri Begawan,114.946,4.94199,True,1960,2025
+BSS,B6,Sub-Saharan Africa (IBRD-only countries),Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+BTN,BT,Bhutan,South Asia,SAS,Lower middle income,LMC,IDA,IDX,Thimphu,89.6177,27.5768,True,1960,2025
+BWA,BW,Botswana,Sub-Saharan Africa ,SSF,Upper middle income,UMC,IBRD,IBD,Gaborone,25.9201,-24.6544,True,1960,2025
+CAA,C9,Sub-Saharan Africa (IFC classification),Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+CAF,CF,Central African Republic,Sub-Saharan Africa ,SSF,Low income,LIC,IDA,IDX,Bangui,21.6407,5.63056,True,1960,2025
+CAN,CA,Canada,North America,NAC,High income,HIC,Not classified,LNX,Ottawa,-75.6919,45.4215,True,1960,2025
+CEA,C4,East Asia and the Pacific (IFC classification),Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+CEB,B8,Central Europe and the Baltics,Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+CEU,C5,Europe and Central Asia (IFC classification),Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+CHE,CH,Switzerland,Europe & Central Asia,ECS,High income,HIC,Not classified,LNX,Bern,7.44821,46.948,True,1960,2025
+CHI,JG,Channel Islands,Europe & Central Asia,ECS,High income,HIC,Not classified,LNX,,,,True,1960,2025
+CHL,CL,Chile,Latin America & Caribbean ,LCN,High income,HIC,IBRD,IBD,Santiago,-70.6475,-33.475,True,1960,2025
+CHN,CN,China,East Asia & Pacific,EAS,Upper middle income,UMC,IBRD,IBD,Beijing,116.286,40.0495,True,1960,2025
+CIV,CI,Cote d'Ivoire,Sub-Saharan Africa ,SSF,Lower middle income,LMC,Blend,IDB,Yamoussoukro,-4.0305,5.332,True,1960,2025
+CLA,C6,Latin America and the Caribbean (IFC classification),Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+CME,C7,Middle East and North Africa (IFC classification),Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+CMR,CM,Cameroon,Sub-Saharan Africa ,SSF,Lower middle income,LMC,Blend,IDB,Yaounde,11.5174,3.8721,True,1960,2025
+COD,CD,"Congo, Dem. Rep.",Sub-Saharan Africa ,SSF,Low income,LIC,IDA,IDX,Kinshasa,15.3222,-4.325,True,1960,2025
+COG,CG,"Congo, Rep.",Sub-Saharan Africa ,SSF,Lower middle income,LMC,Blend,IDB,Brazzaville,15.2662,-4.2767,True,1960,2025
+COL,CO,Colombia,Latin America & Caribbean ,LCN,Upper middle income,UMC,IBRD,IBD,Bogota,-74.082,4.60987,True,1960,2025
+COM,KM,Comoros,Sub-Saharan Africa ,SSF,Lower middle income,LMC,IDA,IDX,Moroni,43.2418,-11.6986,True,1960,2025
+CPV,CV,Cabo Verde,Sub-Saharan Africa ,SSF,Upper middle income,UMC,Blend,IDB,Praia,-23.5087,14.9218,True,1960,2025
+CRI,CR,Costa Rica,Latin America & Caribbean ,LCN,High income,HIC,IBRD,IBD,San Jose,-84.0089,9.63701,True,1960,2025
+CSA,C8,South Asia (IFC classification),Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+CSS,S3,Caribbean small states,Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+CUB,CU,Cuba,Latin America & Caribbean ,LCN,Upper middle income,UMC,Not classified,LNX,Havana,-82.3667,23.1333,True,1960,2025
+CUW,CW,Curacao,Latin America & Caribbean ,LCN,High income,HIC,Not classified,LNX,Willemstad,,,True,1960,2025
+CYM,KY,Cayman Islands,Latin America & Caribbean ,LCN,High income,HIC,Not classified,LNX,George Town,-81.3857,19.3022,True,1960,2025
+CYP,CY,Cyprus,Europe & Central Asia,ECS,High income,HIC,Not classified,LNX,Nicosia,33.3736,35.1676,True,1960,2025
+CZE,CZ,Czechia,Europe & Central Asia,ECS,High income,HIC,Not classified,LNX,Prague,14.4205,50.0878,True,1960,2025
+DEA,D4,East Asia & Pacific (IDA-eligible countries),Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+DEC,D7,Europe & Central Asia (IDA-eligible countries),Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+DEU,DE,Germany,Europe & Central Asia,ECS,High income,HIC,Not classified,LNX,Berlin,13.4115,52.5235,True,1960,2025
+DJI,DJ,Djibouti,"Middle East, North Africa, Afghanistan & Pakistan",MEA,Lower middle income,LMC,IDA,IDX,Djibouti,43.1425,11.5806,True,1960,2025
+DLA,D2,Latin America & the Caribbean (IDA-eligible countries),Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+DMA,DM,Dominica,Latin America & Caribbean ,LCN,Upper middle income,UMC,Blend,IDB,Roseau,-61.39,15.2976,True,1960,2025
+DMN,D3,"Middle East, North Africa, Afghanistan & Pakistan (IDA total)",Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+DNK,DK,Denmark,Europe & Central Asia,ECS,High income,HIC,Not classified,LNX,Copenhagen,12.5681,55.6763,True,1960,2025
+DNS,N6,IDA countries in Sub-Saharan Africa not classified as fragile situations ,Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+DOM,DO,Dominican Republic,Latin America & Caribbean ,LCN,Upper middle income,UMC,IBRD,IBD,Santo Domingo,-69.8908,18.479,True,1960,2025
+DSA,D5,South Asia (IDA-eligible countries),Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+DSF,F6,IDA countries in Sub-Saharan Africa classified as fragile situations ,Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+DSS,D6,Sub-Saharan Africa (IDA-eligible countries),Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+DZA,DZ,Algeria,"Middle East, North Africa, Afghanistan & Pakistan",MEA,Upper middle income,UMC,IBRD,IBD,Algiers,3.05097,36.7397,True,1960,2025
+EAP,4E,East Asia & Pacific (excluding high income),Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+EAR,V2,Early-demographic dividend,Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+EAS,Z4,East Asia & Pacific,Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+ECA,7E,Europe & Central Asia (excluding high income),Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+ECS,Z7,Europe & Central Asia,Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+ECU,EC,Ecuador,Latin America & Caribbean ,LCN,Upper middle income,UMC,IBRD,IBD,Quito,-78.5243,-0.229498,True,1960,2025
+EGY,EG,"Egypt, Arab Rep.","Middle East, North Africa, Afghanistan & Pakistan",MEA,Lower middle income,LMC,IBRD,IBD,Cairo,31.2461,30.0982,True,1960,2025
+EMU,XC,Euro area,Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+ERI,ER,Eritrea,Sub-Saharan Africa ,SSF,Low income,LIC,IDA,IDX,Asmara,38.9183,15.3315,True,1960,2025
+ESP,ES,Spain,Europe & Central Asia,ECS,High income,HIC,Not classified,LNX,Madrid,-3.70327,40.4167,True,1960,2025
+EST,EE,Estonia,Europe & Central Asia,ECS,High income,HIC,Not classified,LNX,Tallinn,24.7586,59.4392,True,1960,2025
+ETH,ET,Ethiopia,Sub-Saharan Africa ,SSF,Low income,LIC,IDA,IDX,Addis Ababa,38.7468,9.02274,True,1960,2025
+EUU,EU,European Union,Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+FIN,FI,Finland,Europe & Central Asia,ECS,High income,HIC,Not classified,LNX,Helsinki,24.9525,60.1608,True,1960,2025
+FJI,FJ,Fiji,East Asia & Pacific,EAS,Upper middle income,UMC,Blend,IDB,Suva,178.399,-18.1149,True,1960,2025
+FRA,FR,France,Europe & Central Asia,ECS,High income,HIC,Not classified,LNX,Paris,2.35097,48.8566,True,1960,2025
+FRO,FO,Faroe Islands,Europe & Central Asia,ECS,High income,HIC,Not classified,LNX,Torshavn,-6.91181,61.8926,True,1960,2025
+FSM,FM,"Micronesia, Fed. Sts.",East Asia & Pacific,EAS,Upper middle income,UMC,IDA,IDX,Palikir,158.185,6.91771,True,1960,2025
+FXS,6F,"IDA countries classified as fragile situations, excluding Sub-Saharan Africa",Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+GAB,GA,Gabon,Sub-Saharan Africa ,SSF,Upper middle income,UMC,IBRD,IBD,Libreville,9.45162,0.38832,True,1960,2025
+GBR,GB,United Kingdom,Europe & Central Asia,ECS,High income,HIC,Not classified,LNX,London,-0.126236,51.5002,True,1960,2025
+GEO,GE,Georgia,Europe & Central Asia,ECS,Upper middle income,UMC,IBRD,IBD,Tbilisi,44.793,41.71,True,1960,2025
+GHA,GH,Ghana,Sub-Saharan Africa ,SSF,Lower middle income,LMC,IDA,IDX,Accra,-0.20795,5.57045,True,1960,2025
+GIB,GI,Gibraltar,Europe & Central Asia,ECS,High income,HIC,Not classified,LNX,,,,True,1960,2025
+GIN,GN,Guinea,Sub-Saharan Africa ,SSF,Lower middle income,LMC,IDA,IDX,Conakry,-13.7,9.51667,True,1960,2025
+GMB,GM,"Gambia, The",Sub-Saharan Africa ,SSF,Low income,LIC,IDA,IDX,Banjul,-16.5885,13.4495,True,1960,2025
+GNB,GW,Guinea-Bissau,Sub-Saharan Africa ,SSF,Low income,LIC,IDA,IDX,Bissau,-15.1804,11.8037,True,1960,2025
+GNQ,GQ,Equatorial Guinea,Sub-Saharan Africa ,SSF,Upper middle income,UMC,IBRD,IBD,Malabo,8.7741,3.7523,True,1960,2025
+GRC,GR,Greece,Europe & Central Asia,ECS,High income,HIC,Not classified,LNX,Athens,23.7166,37.9792,True,1960,2025
+GRD,GD,Grenada,Latin America & Caribbean ,LCN,Upper middle income,UMC,Blend,IDB,Saint George's,-61.7449,12.0653,True,1960,2025
+GRL,GL,Greenland,Europe & Central Asia,ECS,High income,HIC,Not classified,LNX,Nuuk,-51.7214,64.1836,True,1960,2025
+GTM,GT,Guatemala,Latin America & Caribbean ,LCN,Upper middle income,UMC,IBRD,IBD,Guatemala City,-90.5328,14.6248,True,1960,2025
+GUM,GU,Guam,East Asia & Pacific,EAS,High income,HIC,Not classified,LNX,Agana,144.794,13.4443,True,1960,2025
+GUY,GY,Guyana,Latin America & Caribbean ,LCN,High income,HIC,IDA,IDX,Georgetown,-58.1548,6.80461,True,1960,2025
+HIC,XD,High income,Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+HKG,HK,"Hong Kong SAR, China",East Asia & Pacific,EAS,High income,HIC,Not classified,LNX,,114.109,22.3964,True,1960,2025
+HND,HN,Honduras,Latin America & Caribbean ,LCN,Lower middle income,LMC,IDA,IDX,Tegucigalpa,-87.4667,15.1333,True,1960,2025
+HPC,XE,Heavily indebted poor countries (HIPC),Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+HRV,HR,Croatia,Europe & Central Asia,ECS,High income,HIC,IBRD,IBD,Zagreb,15.9614,45.8069,True,1960,2025
+HTI,HT,Haiti,Latin America & Caribbean ,LCN,Lower middle income,LMC,IDA,IDX,Port-au-Prince,-72.3288,18.5392,True,1960,2025
+HUN,HU,Hungary,Europe & Central Asia,ECS,High income,HIC,Not classified,LNX,Budapest,19.0408,47.4984,True,1960,2025
+IBB,ZB,"IBRD, including blend",Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+IBD,XF,IBRD only,Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+IBT,ZT,IDA & IBRD total,Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+IDA,XG,IDA total,Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+IDB,XH,IDA blend,Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+IDN,ID,Indonesia,East Asia & Pacific,EAS,Upper middle income,UMC,IBRD,IBD,Jakarta,106.83,-6.19752,True,1960,2025
+IDX,XI,IDA only,Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+IMN,IM,Isle of Man,Europe & Central Asia,ECS,High income,HIC,Not classified,LNX,Douglas,-4.47928,54.1509,True,1960,2025
+IND,IN,India,South Asia,SAS,Lower middle income,LMC,IBRD,IBD,New Delhi,77.225,28.6353,True,1960,2025
+INX,XY,Not classified,Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+IRL,IE,Ireland,Europe & Central Asia,ECS,High income,HIC,Not classified,LNX,Dublin,-6.26749,53.3441,True,1960,2025
+IRN,IR,"Iran, Islamic Rep.","Middle East, North Africa, Afghanistan & Pakistan",MEA,Upper middle income,UMC,IBRD,IBD,Tehran,51.4447,35.6878,True,1960,2025
+IRQ,IQ,Iraq,"Middle East, North Africa, Afghanistan & Pakistan",MEA,Upper middle income,UMC,IBRD,IBD,Baghdad,44.394,33.3302,True,1960,2025
+ISL,IS,Iceland,Europe & Central Asia,ECS,High income,HIC,Not classified,LNX,Reykjavik,-21.8952,64.1353,True,1960,2025
+ISR,IL,Israel,"Middle East, North Africa, Afghanistan & Pakistan",MEA,High income,HIC,Not classified,LNX,,35.2035,31.7717,True,1960,2025
+ITA,IT,Italy,Europe & Central Asia,ECS,High income,HIC,Not classified,LNX,Rome,12.4823,41.8955,True,1960,2025
+JAM,JM,Jamaica,Latin America & Caribbean ,LCN,Upper middle income,UMC,IBRD,IBD,Kingston,-76.792,17.9927,True,1960,2025
+JOR,JO,Jordan,"Middle East, North Africa, Afghanistan & Pakistan",MEA,Upper middle income,UMC,IBRD,IBD,Amman,35.9263,31.9497,True,1960,2025
+JPN,JP,Japan,East Asia & Pacific,EAS,High income,HIC,Not classified,LNX,Tokyo,139.77,35.67,True,1960,2025
+KAZ,KZ,Kazakhstan,Europe & Central Asia,ECS,Upper middle income,UMC,IBRD,IBD,Astana,71.4382,51.1879,True,1960,2025
+KEN,KE,Kenya,Sub-Saharan Africa ,SSF,Lower middle income,LMC,Blend,IDB,Nairobi,36.8126,-1.27975,True,1960,2025
+KGZ,KG,Kyrgyz Republic,Europe & Central Asia,ECS,Lower middle income,LMC,IDA,IDX,Bishkek,74.6057,42.8851,True,1960,2025
+KHM,KH,Cambodia,East Asia & Pacific,EAS,Lower middle income,LMC,IDA,IDX,Phnom Penh,104.874,11.5556,True,1960,2025
+KIR,KI,Kiribati,East Asia & Pacific,EAS,Lower middle income,LMC,IDA,IDX,Tarawa,172.979,1.32905,True,1960,2025
+KNA,KN,St. Kitts and Nevis,Latin America & Caribbean ,LCN,High income,HIC,IBRD,IBD,Basseterre,-62.7309,17.3,True,1960,2025
+KOR,KR,"Korea, Rep.",East Asia & Pacific,EAS,High income,HIC,Not classified,LNX,Seoul,126.957,37.5323,True,1960,2025
+KWT,KW,Kuwait,"Middle East, North Africa, Afghanistan & Pakistan",MEA,High income,HIC,Not classified,LNX,Kuwait City,47.9824,29.3721,True,1960,2025
+LAC,XJ,Latin America & Caribbean (excluding high income),Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+LAO,LA,Lao PDR,East Asia & Pacific,EAS,Lower middle income,LMC,IDA,IDX,Vientiane,102.177,18.5826,True,1960,2025
+LBN,LB,Lebanon,"Middle East, North Africa, Afghanistan & Pakistan",MEA,Lower middle income,LMC,IBRD,IBD,Beirut,35.5134,33.8872,True,1960,2025
+LBR,LR,Liberia,Sub-Saharan Africa ,SSF,Low income,LIC,IDA,IDX,Monrovia,-10.7957,6.30039,True,1960,2025
+LBY,LY,Libya,"Middle East, North Africa, Afghanistan & Pakistan",MEA,Upper middle income,UMC,IBRD,IBD,Tripoli,13.1072,32.8578,True,1960,2025
+LCA,LC,St. Lucia,Latin America & Caribbean ,LCN,Upper middle income,UMC,Blend,IDB,Castries,-60.9832,14,True,1960,2025
+LCN,ZJ,Latin America & Caribbean ,Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+LDC,XL,Least developed countries: UN classification,Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+LIC,XM,Low income,Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+LIE,LI,Liechtenstein,Europe & Central Asia,ECS,High income,HIC,Not classified,LNX,Vaduz,9.52148,47.1411,True,1960,2025
+LKA,LK,Sri Lanka,South Asia,SAS,Upper middle income,UMC,IDA,IDX,Colombo,79.8528,6.92148,True,1960,2025
+LMC,XN,Lower middle income,Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+LMY,XO,Low & middle income,Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+LSO,LS,Lesotho,Sub-Saharan Africa ,SSF,Lower middle income,LMC,IDA,IDX,Maseru,27.7167,-29.5208,True,1960,2025
+LTE,V3,Late-demographic dividend,Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+LTU,LT,Lithuania,Europe & Central Asia,ECS,High income,HIC,Not classified,LNX,Vilnius,25.2799,54.6896,True,1960,2025
+LUX,LU,Luxembourg,Europe & Central Asia,ECS,High income,HIC,Not classified,LNX,Luxembourg,6.1296,49.61,True,1960,2025
+LVA,LV,Latvia,Europe & Central Asia,ECS,High income,HIC,Not classified,LNX,Riga,24.1048,56.9465,True,1960,2025
+MAC,MO,"Macao SAR, China",East Asia & Pacific,EAS,High income,HIC,Not classified,LNX,,113.55,22.1667,True,1960,2025
+MAF,MF,St. Martin (French part),Latin America & Caribbean ,LCN,High income,HIC,Not classified,LNX,Marigot,,,True,1960,2025
+MAR,MA,Morocco,"Middle East, North Africa, Afghanistan & Pakistan",MEA,Lower middle income,LMC,IBRD,IBD,Rabat,-6.8704,33.9905,True,1960,2025
+MCO,MC,Monaco,Europe & Central Asia,ECS,High income,HIC,Not classified,LNX,Monaco,7.41891,43.7325,True,1960,2025
+MDA,MD,Moldova,Europe & Central Asia,ECS,Upper middle income,UMC,IBRD,IBD,Chisinau,28.8497,47.0167,True,1960,2025
+MDE,M1,Middle East (developing only),Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+MDG,MG,Madagascar,Sub-Saharan Africa ,SSF,Low income,LIC,IDA,IDX,Antananarivo,45.7167,-20.4667,True,1960,2025
+MDV,MV,Maldives,South Asia,SAS,Upper middle income,UMC,IDA,IDX,Male,73.5109,4.1742,True,1960,2025
+MEA,ZQ,"Middle East, North Africa, Afghanistan & Pakistan",Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+MEX,MX,Mexico,Latin America & Caribbean ,LCN,Upper middle income,UMC,IBRD,IBD,Mexico City,-99.1276,19.427,True,1960,2025
+MHL,MH,Marshall Islands,East Asia & Pacific,EAS,Upper middle income,UMC,IDA,IDX,Majuro,171.135,7.11046,True,1960,2025
+MIC,XP,Middle income,Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+MKD,MK,North Macedonia,Europe & Central Asia,ECS,Upper middle income,UMC,IBRD,IBD,Skopje,21.4361,42.0024,True,1960,2025
+MLI,ML,Mali,Sub-Saharan Africa ,SSF,Low income,LIC,IDA,IDX,Bamako,-7.50034,13.5667,True,1960,2025
+MLT,MT,Malta,"Middle East, North Africa, Afghanistan & Pakistan",MEA,High income,HIC,Not classified,LNX,Valletta,14.5189,35.9042,True,1960,2025
+MMR,MM,Myanmar,East Asia & Pacific,EAS,Lower middle income,LMC,IDA,IDX,Naypyidaw,95.9562,21.914,True,1960,2025
+MNA,XQ,"Middle East, North Africa, Afghanistan & Pakistan (excluding high income)",Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+MNE,ME,Montenegro,Europe & Central Asia,ECS,Upper middle income,UMC,IBRD,IBD,Podgorica,19.2595,42.4602,True,1960,2025
+MNG,MN,Mongolia,East Asia & Pacific,EAS,Upper middle income,UMC,IBRD,IBD,Ulaanbaatar,106.937,47.9129,True,1960,2025
+MNP,MP,Northern Mariana Islands,East Asia & Pacific,EAS,High income,HIC,Not classified,LNX,Saipan,145.765,15.1935,True,1960,2025
+MOZ,MZ,Mozambique,Sub-Saharan Africa ,SSF,Low income,LIC,IDA,IDX,Maputo,32.5713,-25.9664,True,1960,2025
+MRT,MR,Mauritania,Sub-Saharan Africa ,SSF,Lower middle income,LMC,IDA,IDX,Nouakchott,-15.9824,18.2367,True,1960,2025
+MUS,MU,Mauritius,Sub-Saharan Africa ,SSF,Upper middle income,UMC,IBRD,IBD,Port Louis,57.4977,-20.1605,True,1960,2025
+MWI,MW,Malawi,Sub-Saharan Africa ,SSF,Low income,LIC,IDA,IDX,Lilongwe,33.7703,-13.9899,True,1960,2025
+MYS,MY,Malaysia,East Asia & Pacific,EAS,Upper middle income,UMC,IBRD,IBD,Kuala Lumpur,101.684,3.12433,True,1960,2025
+NAC,XU,North America,Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+NAF,M2,North Africa,Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+NAM,NA,Namibia,Sub-Saharan Africa ,SSF,Lower middle income,LMC,IBRD,IBD,Windhoek,17.0931,-22.5648,True,1960,2025
+NCL,NC,New Caledonia,East Asia & Pacific,EAS,High income,HIC,Not classified,LNX,Noum'ea,166.464,-22.2677,True,1960,2025
+NER,NE,Niger,Sub-Saharan Africa ,SSF,Low income,LIC,IDA,IDX,Niamey,2.1073,13.514,True,1960,2025
+NGA,NG,Nigeria,Sub-Saharan Africa ,SSF,Lower middle income,LMC,Blend,IDB,Abuja,7.48906,9.05804,True,1960,2025
+NIC,NI,Nicaragua,Latin America & Caribbean ,LCN,Lower middle income,LMC,IDA,IDX,Managua,-86.2734,12.1475,True,1960,2025
+NLD,NL,Netherlands,Europe & Central Asia,ECS,High income,HIC,Not classified,LNX,Amsterdam,4.89095,52.3738,True,1960,2025
+NOR,NO,Norway,Europe & Central Asia,ECS,High income,HIC,Not classified,LNX,Oslo,10.7387,59.9138,True,1960,2025
+NPL,NP,Nepal,South Asia,SAS,Lower middle income,LMC,IDA,IDX,Kathmandu,85.3157,27.6939,True,1960,2025
+NRS,6X,Non-resource rich Sub-Saharan Africa countries,Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+NRU,NR,Naoero,East Asia & Pacific,EAS,High income,HIC,IBRD,IBD,Yaren District,166.920867,-0.5477,True,1960,2025
+NXS,6N,"IDA countries not classified as fragile situations, excluding Sub-Saharan Africa",Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+NZL,NZ,New Zealand,East Asia & Pacific,EAS,High income,HIC,Not classified,LNX,Wellington,174.776,-41.2865,True,1960,2025
+OED,OE,OECD members,Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+OMN,OM,Oman,"Middle East, North Africa, Afghanistan & Pakistan",MEA,High income,HIC,Not classified,LNX,Muscat,58.5874,23.6105,True,1960,2025
+OSS,S4,Other small states,Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+PAK,PK,Pakistan,"Middle East, North Africa, Afghanistan & Pakistan",MEA,Lower middle income,LMC,Blend,IDB,Islamabad,72.8,30.5167,True,1960,2025
+PAN,PA,Panama,Latin America & Caribbean ,LCN,High income,HIC,IBRD,IBD,Panama City,-79.5188,8.99427,True,1960,2025
+PER,PE,Peru,Latin America & Caribbean ,LCN,Upper middle income,UMC,IBRD,IBD,Lima,-77.0465,-12.0931,True,1960,2025
+PHL,PH,Philippines,East Asia & Pacific,EAS,Upper middle income,UMC,IBRD,IBD,Manila,121.035,14.5515,True,1960,2025
+PLW,PW,Palau,East Asia & Pacific,EAS,High income,HIC,IBRD,IBD,Koror,134.479,7.34194,True,1960,2025
+PNG,PG,Papua New Guinea,East Asia & Pacific,EAS,Lower middle income,LMC,Blend,IDB,Port Moresby,147.194,-9.47357,True,1960,2025
+POL,PL,Poland,Europe & Central Asia,ECS,High income,HIC,IBRD,IBD,Warsaw,21.02,52.26,True,1960,2025
+PRE,V1,Pre-demographic dividend,Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+PRI,PR,Puerto Rico (US),Latin America & Caribbean ,LCN,High income,HIC,Not classified,LNX,San Juan,-66,18.23,True,1960,2025
+PRK,KP,"Korea, Dem. People's Rep.",East Asia & Pacific,EAS,Low income,LIC,Not classified,LNX,Pyongyang,125.754,39.0319,True,1960,2025
+PRT,PT,Portugal,Europe & Central Asia,ECS,High income,HIC,Not classified,LNX,Lisbon,-9.13552,38.7072,True,1960,2025
+PRY,PY,Paraguay,Latin America & Caribbean ,LCN,Upper middle income,UMC,IBRD,IBD,Asuncion,-57.6362,-25.3005,True,1960,2025
+PSE,PS,West Bank and Gaza,"Middle East, North Africa, Afghanistan & Pakistan",MEA,Lower middle income,LMC,Not classified,LNX,,,,True,1960,2025
+PSS,S2,Pacific island small states,Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+PST,V4,Post-demographic dividend,Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+PYF,PF,French Polynesia,East Asia & Pacific,EAS,High income,HIC,Not classified,LNX,Papeete,-149.57,-17.535,True,1960,2025
+QAT,QA,Qatar,"Middle East, North Africa, Afghanistan & Pakistan",MEA,High income,HIC,Not classified,LNX,Doha,51.5082,25.2948,True,1960,2025
+ROU,RO,Romania,Europe & Central Asia,ECS,High income,HIC,IBRD,IBD,Bucharest,26.0979,44.4479,True,1960,2025
+RRS,R6,Resource rich Sub-Saharan Africa countries,Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+RUS,RU,Russian Federation,Europe & Central Asia,ECS,High income,HIC,IBRD,IBD,Moscow,37.6176,55.7558,True,1960,2025
+RWA,RW,Rwanda,Sub-Saharan Africa ,SSF,Low income,LIC,IDA,IDX,Kigali,30.0587,-1.95325,True,1960,2025
+SAS,8S,South Asia,Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+SAU,SA,Saudi Arabia,"Middle East, North Africa, Afghanistan & Pakistan",MEA,High income,HIC,Not classified,LNX,Riyadh,46.6977,24.6748,True,1960,2025
+SDN,SD,Sudan,Sub-Saharan Africa ,SSF,Low income,LIC,IDA,IDX,Khartoum,32.5363,15.5932,True,1960,2025
+SEN,SN,Senegal,Sub-Saharan Africa ,SSF,Lower middle income,LMC,IDA,IDX,Dakar,-17.4734,14.7247,True,1960,2025
+SGP,SG,Singapore,East Asia & Pacific,EAS,High income,HIC,Not classified,LNX,Singapore,103.85,1.28941,True,1960,2025
+SLB,SB,Solomon Islands,East Asia & Pacific,EAS,Lower middle income,LMC,IDA,IDX,Honiara,159.949,-9.42676,True,1960,2025
+SLE,SL,Sierra Leone,Sub-Saharan Africa ,SSF,Low income,LIC,IDA,IDX,Freetown,-13.2134,8.4821,True,1960,2025
+SLV,SV,El Salvador,Latin America & Caribbean ,LCN,Upper middle income,UMC,IBRD,IBD,San Salvador,-89.2073,13.7034,True,1960,2025
+SMR,SM,San Marino,Europe & Central Asia,ECS,High income,HIC,Not classified,LNX,San Marino,12.4486,43.9322,True,1960,2025
+SOM,SO,"Somalia, Fed. Rep.",Sub-Saharan Africa ,SSF,Low income,LIC,IDA,IDX,Mogadishu,45.3254,2.07515,True,1960,2025
+SRB,RS,Serbia,Europe & Central Asia,ECS,Upper middle income,UMC,IBRD,IBD,Belgrade,20.4656,44.8024,True,1960,2025
+SSA,ZF,Sub-Saharan Africa (excluding high income),Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+SSD,SS,South Sudan,Sub-Saharan Africa ,SSF,Low income,LIC,IDA,IDX,Juba,31.6,4.85,True,1960,2025
+SSF,ZG,Sub-Saharan Africa ,Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+SST,S1,Small states,Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+STP,ST,Sao Tome and Principe,Sub-Saharan Africa ,SSF,Lower middle income,LMC,IDA,IDX,Sao Tome,6.6071,0.20618,True,1960,2025
+SUR,SR,Suriname,Latin America & Caribbean ,LCN,Upper middle income,UMC,Blend,IDB,Paramaribo,-55.1679,5.8232,True,1960,2025
+SVK,SK,Slovak Republic,Europe & Central Asia,ECS,High income,HIC,Not classified,LNX,Bratislava,17.1073,48.1484,True,1960,2025
+SVN,SI,Slovenia,Europe & Central Asia,ECS,High income,HIC,Not classified,LNX,Ljubljana,14.5044,46.0546,True,1960,2025
+SWE,SE,Sweden,Europe & Central Asia,ECS,High income,HIC,Not classified,LNX,Stockholm,18.0645,59.3327,True,1960,2025
+SWZ,SZ,Eswatini,Sub-Saharan Africa ,SSF,Lower middle income,LMC,Blend,IDB,Mbabane,31.4659,-26.5225,True,1960,2025
+SXM,SX,Sint Maarten (Dutch part),Latin America & Caribbean ,LCN,High income,HIC,Not classified,LNX,Philipsburg,,,True,1960,2025
+SXZ,A4,Sub-Saharan Africa excluding South Africa,Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+SYC,SC,Seychelles,Sub-Saharan Africa ,SSF,High income,HIC,IBRD,IBD,Victoria,55.4466,-4.6309,True,1960,2025
+SYR,SY,Syrian Arab Republic,"Middle East, North Africa, Afghanistan & Pakistan",MEA,Low income,LIC,IDA,IDX,Damascus,36.3119,33.5146,True,1960,2025
+TCA,TC,Turks and Caicos Islands,Latin America & Caribbean ,LCN,High income,HIC,Not classified,LNX,Grand Turk,-71.141389,21.4602778,True,1960,2025
+TCD,TD,Chad,Sub-Saharan Africa ,SSF,Low income,LIC,IDA,IDX,N'Djamena,15.0445,12.1048,True,1960,2025
+TEA,T4,East Asia & Pacific (IDA & IBRD countries),Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+TEC,T7,Europe & Central Asia (IDA & IBRD countries),Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+TGO,TG,Togo,Sub-Saharan Africa ,SSF,Lower middle income,LMC,IDA,IDX,Lome,1.2255,6.1228,True,1960,2025
+THA,TH,Thailand,East Asia & Pacific,EAS,Upper middle income,UMC,IBRD,IBD,Bangkok,100.521,13.7308,True,1960,2025
+TJK,TJ,Tajikistan,Europe & Central Asia,ECS,Lower middle income,LMC,IDA,IDX,Dushanbe,68.7864,38.5878,True,1960,2025
+TKM,TM,Turkmenistan,Europe & Central Asia,ECS,Upper middle income,UMC,IBRD,IBD,Ashgabat,58.3794,37.9509,True,1960,2025
+TLA,T2,Latin America & the Caribbean (IDA & IBRD countries),Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+TLS,TL,Timor-Leste,East Asia & Pacific,EAS,Lower middle income,LMC,Blend,IDB,Dili,125.567,-8.56667,True,1960,2025
+TMN,T3,"Middle East, North Africa, Afghanistan & Pakistan (IDA & IBRD)",Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+TON,TO,Tonga,East Asia & Pacific,EAS,Upper middle income,UMC,IDA,IDX,Nuku'alofa,-175.216,-21.136,True,1960,2025
+TSA,T5,South Asia (IDA & IBRD),Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+TSS,T6,Sub-Saharan Africa (IDA & IBRD countries),Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+TTO,TT,Trinidad and Tobago,Latin America & Caribbean ,LCN,High income,HIC,IBRD,IBD,Port-of-Spain,-61.4789,10.6596,True,1960,2025
+TUN,TN,Tunisia,"Middle East, North Africa, Afghanistan & Pakistan",MEA,Lower middle income,LMC,IBRD,IBD,Tunis,10.21,36.7899,True,1960,2025
+TUR,TR,Turkiye,Europe & Central Asia,ECS,Upper middle income,UMC,IBRD,IBD,Ankara,32.3606,39.7153,True,1960,2025
+TUV,TV,Tuvalu,East Asia & Pacific,EAS,Upper middle income,UMC,IDA,IDX,Funafuti,179.089567,-8.6314877,True,1960,2025
+TZA,TZ,Tanzania,Sub-Saharan Africa ,SSF,Lower middle income,LMC,IDA,IDX,Dodoma,35.7382,-6.17486,True,1960,2025
+UGA,UG,Uganda,Sub-Saharan Africa ,SSF,Low income,LIC,IDA,IDX,Kampala,32.5729,0.314269,True,1960,2025
+UKR,UA,Ukraine,Europe & Central Asia,ECS,Upper middle income,UMC,IBRD,IBD,Kiev,30.5038,50.4536,True,1960,2025
+UMC,XT,Upper middle income,Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+URY,UY,Uruguay,Latin America & Caribbean ,LCN,High income,HIC,IBRD,IBD,Montevideo,-56.0675,-34.8941,True,1960,2025
+USA,US,United States,North America,NAC,High income,HIC,Not classified,LNX,Washington D.C.,-77.032,38.8895,True,1960,2025
+UZB,UZ,Uzbekistan,Europe & Central Asia,ECS,Lower middle income,LMC,Blend,IDB,Tashkent,69.269,41.3052,True,1960,2025
+VCT,VC,St. Vincent and the Grenadines,Latin America & Caribbean ,LCN,Upper middle income,UMC,Blend,IDB,Kingstown,-61.2653,13.2035,True,1960,2025
+VEN,VE,"Venezuela, RB",Latin America & Caribbean ,LCN,Lower middle income,LMC,IBRD,IBD,Caracas,-69.8371,9.08165,True,1960,2025
+VGB,VG,British Virgin Islands,Latin America & Caribbean ,LCN,High income,HIC,Not classified,LNX,Road Town,-64.623056,18.431389,True,1960,2025
+VIR,VI,Virgin Islands (U.S.),Latin America & Caribbean ,LCN,High income,HIC,Not classified,LNX,Charlotte Amalie,-64.8963,18.3358,True,1960,2025
+VNM,VN,Viet Nam,East Asia & Pacific,EAS,Upper middle income,UMC,IBRD,IBD,Hanoi,105.825,21.0069,True,1960,2025
+VUT,VU,Vanuatu,East Asia & Pacific,EAS,Lower middle income,LMC,IDA,IDX,Port-Vila,168.321,-17.7404,True,1960,2025
+WLD,1W,World,Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+WSM,WS,Samoa,East Asia & Pacific,EAS,Upper middle income,UMC,IDA,IDX,Apia,-171.752,-13.8314,True,1960,2025
+XKX,XK,Kosovo,Europe & Central Asia,ECS,Upper middle income,UMC,IDA,IDX,Pristina,20.926,42.565,True,1960,2025
+XZN,A5,Sub-Saharan Africa excluding South Africa and Nigeria,Aggregates,NA,Aggregates,NA,Aggregates,,,,,False,,
+YEM,YE,"Yemen, Rep.","Middle East, North Africa, Afghanistan & Pakistan",MEA,Low income,LIC,IDA,IDX,Sana'a,44.2075,15.352,True,1960,2025
+ZAF,ZA,South Africa,Sub-Saharan Africa ,SSF,Upper middle income,UMC,IBRD,IBD,Pretoria,28.1871,-25.746,True,1960,2025
+ZMB,ZM,Zambia,Sub-Saharan Africa ,SSF,Lower middle income,LMC,IDA,IDX,Lusaka,28.2937,-15.3982,True,1960,2025
+ZWE,ZW,Zimbabwe,Sub-Saharan Africa ,SSF,Lower middle income,LMC,Blend,IDB,Harare,31.0672,-17.8312,True,1960,2025

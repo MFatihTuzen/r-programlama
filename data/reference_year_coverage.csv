@@ -1,0 +1,10 @@
+﻿year,country_year_rows,mean_core_country_coverage,coverage_population_total,coverage_gdp_per_capita_usd,coverage_gdp_growth_pct,coverage_unemployment_total_pct,coverage_inflation_consumer_pct,coverage_life_expectancy_total,coverage_urban_population_pct,coverage_internet_users_pct,coverage_co2_per_capita
+2018,217,203.11,217,211,211,187,183,217,217,182,203
+2019,217,203.78,217,211,210,187,183,217,217,189,203
+2020,217,202.56,217,210,210,187,178,217,217,184,203
+2021,217,202.11,217,210,210,187,178,217,217,180,203
+2022,217,202.0,217,209,209,186,178,217,217,182,203
+2023,217,200.33,217,204,204,184,176,217,217,181,203
+2024,217,199.11,217,200,200,182,174,217,217,182,203
+2025,217,129.22,217,186,186,182,165,0,217,10,0
+2026,0,0.0,0,0,0,0,0,0,0,0,0

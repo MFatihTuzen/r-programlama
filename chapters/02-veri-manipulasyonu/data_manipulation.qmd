@@ -1,0 +1,1658 @@
+# Veri Manipülasyonu {#sec-data-manipulation}
+
+Veri analizi çoğu zaman hazır ve kusursuz bir tabloyla başlamaz. Elimizdeki veri seti çok sayıda değişken içerebilir; yalnızca belirli ülkelerle ilgilenebiliriz; yeni değişkenler üretmemiz, gözlemleri sıralamamız ya da ülkeleri ortak özelliklerine göre gruplayıp özetlememiz gerekebilir. **Veri manipülasyonu**, ham veriyi analiz edilebilir ve anlaşılabilir bir yapıya getirmek için yapılan bu tür işlemlerin genel adıdır.
+
+Günlük dilde *manipülasyon* sözcüğü zaman zaman olumsuz bir anlam taşıyabilir. Veri biliminde ise burada kastedilen, veriyi çarpıtmak değil; veriyi **seçmek, filtrelemek, sıralamak, dönüştürmek, yeni değişkenler üretmek, gruplamak ve özetlemek** gibi sistematik işlemlerle analiz amacına uygun hale getirmektir.
+
+Bu bölümde veri manipülasyonunu R'deki **`dplyr`** paketi üzerinden ele alacağız. Amacımız yalnızca fonksiyon isimlerini öğrenmek değildir. Bir veri setiyle karşılaştığımızda şu tür sorulara R ile nasıl cevap vereceğimizi öğreneceğiz:
+
+- Hangi değişkenlere ihtiyacımız var?
+- Hangi gözlemler analiz kapsamına girmeli?
+- Veriyi hangi değişkene göre sıralamalıyız?
+- Mevcut değişkenlerden yeni bilgiler nasıl üretebiliriz?
+- Ülkeleri bölge veya gelir gruplarına göre nasıl karşılaştırabiliriz?
+- Birden fazla değişken üzerinde aynı işlemi nasıl uygulayabiliriz?
+- Bir veri setinden daha küçük ve anlamlı özet tablolar nasıl oluşturabiliriz?
+
+Bölüm ilerledikçe tek tek fonksiyonlardan başlayacak, sonunda bunları aynı işlem zinciri içinde bir araya getirerek küçük bir veri analizi gerçekleştireceğiz.
+
+## `dplyr` ve tidyverse yaklaşımı
+
+**`dplyr`**, veri çerçeveleri üzerinde en sık yapılan veri manipülasyonu işlemleri için tutarlı bir fonksiyon kümesi sunan R paketidir. Paket, **tidyverse** ekosisteminin temel bileşenlerinden biridir. Tidyverse; veri okuma, dönüştürme, görselleştirme ve modelleme öncesi hazırlık gibi veri bilimi işlerinde ortak bir tasarım anlayışını paylaşan R paketlerinden oluşur.
+
+`dplyr` dokümantasyonunda paket, bir **veri manipülasyonu dilbilgisi** (*grammar of data manipulation*) olarak tanımlanır. Buradaki *dilbilgisi* benzetmesi önemlidir. Nasıl bir dilde sınırlı sayıdaki kelime ve kuralla çok sayıda cümle kurulabiliyorsa, `dplyr` içinde de az sayıda temel "fiil" farklı biçimlerde birleştirilerek karmaşık veri işlemleri yapılabilir.
+
+Bu temel fiiller arasında şunlar yer alır:
+
+| Fonksiyon     | Temel işlev                                          |
+|---------------|------------------------------------------------------|
+| `select()`    | Sütun seçmek veya çıkarmak                           |
+| `filter()`    | Koşula uyan satırları seçmek                         |
+| `arrange()`   | Satırları sıralamak                                  |
+| `rename()`    | Sütun adlarını değiştirmek                           |
+| `relocate()`  | Sütunların yerini değiştirmek                        |
+| `mutate()`    | Yeni sütun oluşturmak veya mevcut sütunu değiştirmek |
+| `distinct()`  | Tekrarsız değerleri/satırları seçmek                 |
+| `count()`     | Gözlemleri saymak                                    |
+| `group_by()`  | Gözlemleri gruplamak                                 |
+| `summarise()` | Özet istatistikler üretmek                           |
+| `across()`    | Birden fazla sütuna aynı işlemi uygulamak            |
+
+Fonksiyon adlarının çoğu İngilizce fiillerden gelir. Örneğin *select* "seçmek", *filter* "süzmek", *arrange* "düzenlemek/sıralamak", *summarise* "özetlemek" anlamındadır. Bu adlandırma tesadüf değildir: `dplyr` kodlarının mümkün olduğunca yapılan işlemi okur gibi takip edilebilmesi hedeflenir.
+
+`dplyr` tek başına kurulabilir:
+
+``` r
+install.packages("dplyr")
+```
+
+Tidyverse paketlerinin tamamını birlikte kullanmak isteyenler ise:
+
+``` r
+install.packages("tidyverse")
+```
+
+komutunu kullanabilir. Paket kurulumu yalnızca bir kez yapılır; yeni bir R oturumunda paketi kullanmak için `library()` ile yüklemek gerekir.
+
+```{r}
+#| label: setup-manipulation
+#| message: false
+#| warning: false
+
+library(dplyr)
+
+countries <- readr::read_csv(
+  "data/countries.csv",
+  show_col_types = FALSE
+)
+```
+
+::: callout-note
+### Kaynak veriler hakkında
+
+Bu bölümde kullanılan ülke göstergelerinin ana kaynağı **Dünya Bankası (World Bank) Dünya Kalkınma Göstergeleri** veri tabanıdır. İngilizce adı *World Development Indicators* olan bu veri tabanı genellikle **WDI** kısaltmasıyla anılır. WDI, Dünya Bankasının farklı kalkınma alanlarına ilişkin uluslararası karşılaştırılabilir göstergeleri bir araya getiren temel veri koleksiyonudur.
+
+Kitap için oluşturulan veri altyapısında 1960-2025 dönemine yayılan 29 gösterge ve 217 ülke/ekonomi bulunmaktadır. Bu bölümde kullandığımız `countries` veri seti ise göstergelerin birlikte en yüksek kapsama ulaştığı yıllardan biri olan **2019** yılına ait kesit veridir. Böylece aynı tabloda nüfus, gelir, işgücü, sağlık, teknoloji, çevre ve dış ticaret göstergelerini birlikte kullanabiliyoruz. 2019'un pandemi öncesi bir yıl olması da başlangıç örneklerinde 2020'deki olağandışı ekonomik şoku veri setinin merkezine taşımamamızı sağlar.
+:::
+
+## Veri setini tanımak
+
+Veri manipülasyonuna başlamadan önce elimizdeki verinin yapısını anlamamız gerekir. `countries` veri setinde **her satır bir ülke veya ekonomiyi**, sütunlar ise o ülkeye ilişkin farklı özellik ve göstergeleri temsil eder.
+
+Bir veri setinin yapısına hızlıca bakmak için `glimpse()` fonksiyonu oldukça kullanışlıdır. İngilizce *glimpse* sözcüğü "kısa bir bakış" anlamına gelir. Fonksiyon da adının ima ettiği gibi, veri setinin tamamını ekrana dökmek yerine değişken adlarını, veri tiplerini ve örnek değerleri kısa biçimde gösterir.
+
+```{r}
+#| label: glimpse-countries
+
+glimpse(countries)
+```
+
+Veri setindeki bazı değişkenler şunlardır:
+
+- `country`: ülke/ekonomi adı,
+- `country_code`: üç harfli ülke kodu,
+- `region`: coğrafi bölge,
+- `income_group`: Dünya Bankası gelir grubu,
+- `population_total`: toplam nüfus,
+- `gdp_per_capita_usd`: kişi başına GSYH, cari ABD doları,
+- `unemployment_total_pct`: toplam işsizlik oranı,
+- `inflation_consumer_pct`: tüketici fiyatlarıyla yıllık enflasyon oranı,
+- `life_expectancy_total`: doğuşta beklenen yaşam süresi,
+- `internet_users_pct`: internet kullanan nüfusun oranı,
+- `exports_gdp_pct` ve `imports_gdp_pct`: ihracat ve ithalatın GSYH içindeki payları.
+
+Burada bütün değişkenlerin ayrıntısını ezberlememize gerek yoktur. Bölüm boyunca ihtiyaç duydukça ilgili değişkenleri kullanacağız.
+
+## Pipe operatörü ile işlem zincirleri
+
+Veri manipülasyonunda çoğu zaman tek bir işlem yeterli olmaz. Önce belirli sütunları seçer, sonra bazı satırları filtreler, ardından yeni bir değişken oluşturur ve son olarak sonucu sıralayabiliriz. Bu tür işlemleri daha okunabilir yazmak için **pipe** operatöründen yararlanılır.
+
+İngilizce *pipe* sözcüğü "boru" anlamına gelir. Benzetme oldukça yerindedir: bir işlemin çıktısı borunun içinden geçerek sonraki işlemin girdisi olur.
+
+R'nin yerleşik pipe operatörü `|>` biçimindedir. R 4.1.0 ile dile eklenmiştir. En basit durumda:
+
+``` r
+x |> f()
+```
+
+ifadesi kavramsal olarak:
+
+``` r
+f(x)
+```
+
+ile aynı fikri taşır.
+
+Örneğin yalnızca ülke adı ve nüfusu seçmek için iki farklı yazım kullanabiliriz:
+
+```{r}
+#| label: pipe-basic
+
+select(countries, country, population_total)
+
+countries |>
+  select(country, population_total)
+```
+
+İkinci yazımı soldan sağa şu şekilde okuyabiliriz:
+
+> `countries` veri setini al, ardından `country` ve `population_total` sütunlarını seç.
+
+İşlem sayısı arttıkça pipe kullanımının avantajı daha belirgin hale gelir:
+
+```{r}
+#| label: pipe-chain
+
+countries |>
+  select(country, region, gdp_per_capita_usd) |>
+  filter(region == "Europe & Central Asia") |>
+  arrange(desc(gdp_per_capita_usd)) |>
+  slice_head(n = 6)
+```
+
+Bu kodu yukarıdan aşağı doğru doğal bir işlem sırası olarak okuyabiliriz.
+
+::: callout-note
+### `%>%` operatörü ne oldu?
+
+Eski R kodlarında ve çok sayıda tidyverse kaynağında `%>%` operatörüyle karşılaşabilirsiniz. Bu operatör `magrittr` paketi üzerinden uzun yıllardır yaygın biçimde kullanılmaktadır. Bu kitapta yeni örneklerde mümkün olduğunca R'nin yerleşik pipe operatörü `|>` kullanılacaktır. Temel veri manipülasyonu açısından iki yaklaşımın ayrıntılı teknik farklarına burada girmeyeceğiz.
+:::
+
+## Sütunları seçmek: `select()`
+
+Gerçek veri setlerinde her analiz için bütün değişkenlere ihtiyaç duyulmaz. Örneğin yalnızca ülkelerin nüfus ve kişi başına gelir değerlerini karşılaştıracaksak 34 sütunlu bir tabloyu sürekli taşımak gereksizdir.
+
+`select()` fonksiyonu bir veri çerçevesinden istenen sütunları seçmek veya belirli sütunları dışarıda bırakmak için kullanılır.
+
+### Sütunları adlarıyla seçmek
+
+En temel kullanımda istediğimiz değişkenleri adlarıyla yazarız:
+
+```{r}
+#| label: select-basic
+
+countries |>
+  select(country, population_total, gdp_per_capita_usd)
+```
+
+Sütunlar sonuçta yazdığımız sırayla yer alır. Bu nedenle `select()` aynı zamanda analiz için daha küçük ve düzenli bir çalışma tablosu oluşturmak için kullanılabilir.
+
+### Bitişik bir sütun aralığını seçmek
+
+Sütunlar veri setinde yan yana bulunuyorsa `:` operatörü kullanılabilir:
+
+```{r}
+#| label: select-range
+
+countries |>
+  select(country:income_group)
+```
+
+Bu ifade `country` ile `income_group` arasındaki bütün sütunları seçer.
+
+### Sütunları seçim dışında bırakmak
+
+Bir veya birkaç sütun dışında bütün değişkenleri korumak istediğimizde `-` kullanılabilir:
+
+```{r}
+#| label: select-drop
+
+countries |>
+  select(-year)
+```
+
+Birden fazla sütunu çıkarmak için:
+
+```{r}
+#| label: select-drop-many
+
+countries |>
+  select(-c(country_code, year))
+```
+
+### Sütun adı örüntülerinden yararlanmak
+
+Çok sütunlu veri setlerinde değişkenleri tek tek yazmak pratik değildir. `dplyr`, sütun adlarındaki örüntülerden yararlanan **seçim yardımcıları** (*selection helpers*) sunar.
+
+#### `starts_with()`
+
+Adı belirli bir ifadeyle başlayan sütunları seçer:
+
+```{r}
+#| label: select-starts
+
+countries |>
+  select(country, starts_with("population"))
+```
+
+Bu örnekte `population_total`, `population_female`, `population_male` ve `population_growth_pct` gibi değişkenler birlikte seçilir.
+
+#### `ends_with()`
+
+Adı belirli bir ifadeyle biten sütunları seçer:
+
+```{r}
+#| label: select-ends
+
+countries |>
+  select(country, ends_with("_pct"))
+```
+
+Veri setimizde oran olarak ifade edilen çok sayıda değişken `_pct` son ekini taşıdığı için bu seçim oldukça kullanışlıdır.
+
+#### `contains()`
+
+Sütun adının herhangi bir yerinde belirli bir metni içeren değişkenleri seçer:
+
+```{r}
+#| label: select-contains
+
+countries |>
+  select(country, contains("per_capita"))
+```
+
+Bu örnek kişi başına değer ifade eden değişkenleri bir araya getirir.
+
+#### `matches()`
+
+`matches()` daha esnek metin örüntülerini **düzenli ifadeler** (*regular expressions*) ile eşleştirir. Örneğin kadın veya erkek ifadesini içeren sütunları birlikte seçebiliriz:
+
+```{r}
+#| label: select-matches
+
+countries |>
+  select(country, matches("female|male"))
+```
+
+Buradaki `|` karakteri düzenli ifade içinde "veya" anlamına gelir.
+
+#### `where()`
+
+Bazen seçimimizi sütun adına değil, sütunun veri tipine göre yapmak isteriz. `where()` bu tür seçimler için kullanılır:
+
+```{r}
+#| label: select-where
+
+countries |>
+  select(where(is.numeric))
+```
+
+Bu kod yalnızca sayısal değişkenleri seçer.
+
+Benzer biçimde karakter türündeki sütunları seçmek için:
+
+```{r}
+#| label: select-where-character
+
+countries |>
+  select(where(is.character))
+```
+
+kullanılabilir.
+
+### Değişken adlarını bir vektörden seçmek: `all_of()` ve `any_of()`
+
+Bazı durumlarda seçilecek sütunların adları bir karakter vektöründe tutulur:
+
+```{r}
+#| label: select-allof
+
+degiskenler <- c(
+  "country",
+  "gdp_per_capita_usd",
+  "life_expectancy_total"
+)
+
+countries |>
+  select(all_of(degiskenler))
+```
+
+`all_of()` listedeki bütün sütunların veri setinde bulunmasını bekler; bulunmayan bir ad varsa hata verir. `any_of()` ise bulunmayan adları sessizce atlayarak mevcut olanları seçer.
+
+```{r}
+#| label: select-anyof
+
+aday_degisenler <- c(
+  "country",
+  "gdp_per_capita_usd",
+  "olmayan_bir_sutun"
+)
+
+countries |>
+  select(any_of(aday_degisenler))
+```
+
+Bu iki yardımcı özellikle sütun adlarının dışarıdan bir vektörle belirlendiği durumlarda yararlıdır.
+
+::: callout-tip
+### İsimlendirme neden önemlidir?
+
+İyi tasarlanmış değişken adları yalnızca okunabilirliği artırmaz; veri manipülasyonunu da kolaylaştırır. Örneğin `population_` ile başlayan veya `_pct` ile biten tutarlı adlar sayesinde onlarca sütunu tek bir ifadeyle seçebiliriz. Bu nedenle iyi veri yönetiminde değişken adlandırma bir estetik tercih değil, iş akışının parçasıdır.
+:::
+
+## Sütun adlarını değiştirmek: `rename()` ve `rename_with()`
+
+Veri setindeki bir değişken adı analiz sırasında yeterince açıklayıcı olmayabilir. `rename()` fonksiyonu belirli sütunların adını değiştirir.
+
+Sözdizimi şu şekildedir:
+
+``` r
+yeni_ad = eski_ad
+```
+
+Örneğin:
+
+```{r}
+#| label: rename-basic
+
+countries |>
+  rename(
+    gdp_pc_usd = gdp_per_capita_usd
+  ) |>
+  select(country, gdp_pc_usd)
+```
+
+::: callout-warning
+### `rename()` içindeki yönü karıştırmayın
+
+`rename()` kullanımında eşitliğin **sol tarafında yeni ad**, sağ tarafında mevcut ad bulunur:
+
+``` r
+rename(yeni_ad = eski_ad)
+```
+:::
+
+Birden fazla sütunun adını aynı kurala göre değiştirmek istediğimizde `rename_with()` kullanılabilir. Örneğin yalnızca nüfus değişkenlerinin adlarını büyük harfe dönüştürelim:
+
+```{r}
+#| label: rename-with
+
+countries |>
+  rename_with(
+    toupper,
+    starts_with("population")
+  ) |>
+  select(country, starts_with("POPULATION"))
+```
+
+Bu tür toplu adlandırma işlemleri özellikle dış kaynaklardan gelen değişken adlarını ortak bir standarda dönüştürürken işe yarar.
+
+## Sütunların yerini değiştirmek: `relocate()`
+
+`relocate()` sözcüğü "yeniden konumlandırmak" anlamına gelir. Fonksiyon sütunların içindeki değerleri değiştirmez; yalnızca veri çerçevesindeki sıralarını değiştirir.
+
+Örneğin `gdp_per_capita_usd` değişkenini ülke adından hemen sonra getirebiliriz:
+
+```{r}
+#| label: relocate-basic
+
+countries |>
+  relocate(gdp_per_capita_usd, .after = country) |>
+  select(1:6)
+```
+
+Benzer biçimde `.before` ile bir sütunun başka bir sütundan önce gelmesi sağlanabilir:
+
+```{r}
+#| label: relocate-before
+
+countries |>
+  relocate(income_group, .before = region) |>
+  select(country:year)
+```
+
+Bu işlem özellikle raporlama öncesinde kimlik değişkenlerini veya önemli göstergeleri tablonun başına almak için kullanışlıdır.
+
+## Satırları filtrelemek: `filter()`
+
+`select()` sütunlarla ilgilenirken `filter()` satırlarla ilgilenir. Bir başka ifadeyle `filter()` belirli koşulları sağlayan **gözlemleri** seçer.
+
+Örneğin yalnızca Avrupa ve Orta Asya bölgesindeki ülkeleri seçelim:
+
+```{r}
+#| label: filter-basic
+
+countries |>
+  filter(region == "Europe & Central Asia") |>
+  select(country, region, gdp_per_capita_usd) |>
+  slice_head(n = 8)
+```
+
+Burada `==` "eşittir mi?" karşılaştırmasını yapar.
+
+### Karşılaştırma operatörleri
+
+`filter()` içinde sık kullanılan karşılaştırma operatörleri şunlardır:
+
+| Operatör | Anlamı             |
+|----------|--------------------|
+| `==`     | eşittir            |
+| `!=`     | eşit değildir      |
+| `>`      | büyüktür           |
+| `<`      | küçüktür           |
+| `>=`     | büyük veya eşittir |
+| `<=`     | küçük veya eşittir |
+
+Örneğin nüfusu 100 milyondan fazla olan ülkeleri seçebiliriz:
+
+```{r}
+#| label: filter-numeric
+
+countries |>
+  filter(population_total > 100e6) |>
+  select(country, population_total) |>
+  arrange(desc(population_total))
+```
+
+R'de `100e6` gösterimi, $100 \times 10^6$, yani 100 milyon anlamına gelir. Buradaki `e6`, 10 tabanında üssün 6 olduğunu ifade eden bilimsel gösterim biçimidir.
+
+### Birden fazla koşul
+
+`filter()` içinde virgülle ayrılan koşulların **tamamının** sağlanması gerekir. Başka bir ifadeyle virgül burada `AND` mantığıyla çalışır.
+
+```{r}
+#| label: filter-multiple
+
+countries |>
+  filter(
+    region == "Europe & Central Asia",
+    gdp_per_capita_usd > 20000
+  ) |>
+  select(country, gdp_per_capita_usd) |>
+  arrange(desc(gdp_per_capita_usd))
+```
+
+Aynı mantık `&` operatörüyle de yazılabilir:
+
+``` r
+filter(
+  region == "Europe & Central Asia" &
+    gdp_per_capita_usd > 20000
+)
+```
+
+En az bir koşulun doğru olması yeterliyse `|` kullanılır:
+
+```{r}
+#| label: filter-or
+
+countries |>
+  filter(
+    country == "Turkiye" |
+      country == "Germany"
+  ) |>
+  select(country, region, income_group)
+```
+
+### Birden fazla değerden birini seçmek: `%in%`
+
+Aynı değişken için çok sayıda `|` yazmak yerine `%in%` operatörü daha okunabilir bir çözümdür:
+
+```{r}
+#| label: filter-in
+
+countries |>
+  filter(
+    country %in% c("Turkiye", "Germany", "France")
+  ) |>
+  select(
+    country,
+    gdp_per_capita_usd,
+    unemployment_total_pct,
+    life_expectancy_total
+  )
+```
+
+`%in%` ifadesini "şu kümenin içinde mi?" şeklinde okuyabilirsiniz.
+
+### Eksik değerleri filtrelemek
+
+Gerçek veri setlerinde bazı göstergeler bütün ülkeler için mevcut olmayabilir. R eksik değerleri `NA` ile gösterir. Eksikliği kontrol etmek için `== NA` kullanılmaz; `is.na()` kullanılır.
+
+Örneğin 2019 yılı enflasyon değeri eksik olan ülkeleri görelim:
+
+```{r}
+#| label: filter-na
+
+countries |>
+  filter(is.na(inflation_consumer_pct)) |>
+  select(country, inflation_consumer_pct) |>
+  slice_head(n = 8)
+```
+
+Eksik olmayanları seçmek için:
+
+```{r}
+#| label: filter-not-na
+
+countries |>
+  filter(!is.na(inflation_consumer_pct)) |>
+  select(country, inflation_consumer_pct) |>
+  slice_head(n = 8)
+```
+
+::: callout-note
+### `=` ile `==` aynı şey değildir
+
+R'de `=` çoğunlukla bir değeri bir nesneye veya argümana atamak için kullanılır. `==` ise iki değerin eşit olup olmadığını karşılaştırır. Bu nedenle `filter(country == "Turkiye")` yazılır.
+:::
+
+## Satırları sıralamak: `arrange()`
+
+`arrange()` satırları bir veya daha fazla değişkenin değerine göre sıralar. Varsayılan sıralama küçükten büyüğe, yani artan sıradır.
+
+```{r}
+#| label: arrange-ascending
+
+countries |>
+  select(country, gdp_per_capita_usd) |>
+  arrange(gdp_per_capita_usd) |>
+  slice_head(n = 8)
+```
+
+Azalan sıralama için `desc()` kullanılır. *Desc* burada İngilizce *descending* sözcüğünün kısaltılmış biçimidir.
+
+```{r}
+#| label: arrange-descending
+
+countries |>
+  select(country, population_total) |>
+  arrange(desc(population_total)) |>
+  slice_head(n = 10)
+```
+
+Birden fazla değişkene göre sıralama da yapılabilir. Örneğin önce gelir grubuna, aynı gelir grubu içinde de kişi başına GSYH'ye göre sıralayalım:
+
+```{r}
+#| label: arrange-multiple
+
+countries |>
+  select(country, income_group, gdp_per_capita_usd) |>
+  arrange(income_group, desc(gdp_per_capita_usd)) |>
+  slice_head(n = 12)
+```
+
+`arrange()` verideki değerleri değiştirmez; yalnızca satırların görüntülenme sırasını değiştirir.
+
+## Belirli satırları seçmek: `slice_*()` ailesi
+
+Bazen belirli bir koşul yerine satırların konumuna veya bir değişkendeki en büyük/en küçük değerlere göre seçim yapmak isteriz. `dplyr` bunun için `slice_*()` ailesini sunar.
+
+### İlk ve son satırlar
+
+```{r}
+#| label: slice-head-tail
+
+countries |>
+  slice_head(n = 5)
+
+countries |>
+  slice_tail(n = 5)
+```
+
+### En büyük ve en küçük değerler
+
+Kişi başına GSYH'si en yüksek 10 ülke/ekonomiyi seçelim:
+
+```{r}
+#| label: slice-max
+
+countries |>
+  select(country, gdp_per_capita_usd) |>
+  slice_max(
+    order_by = gdp_per_capita_usd,
+    n = 10
+  )
+```
+
+Yaşam beklentisi en düşük 10 ülkeyi seçmek için `slice_min()` kullanılabilir:
+
+```{r}
+#| label: slice-min
+
+countries |>
+  select(country, life_expectancy_total) |>
+  slice_min(
+    order_by = life_expectancy_total,
+    n = 10
+  )
+```
+
+### Rastgele satır seçmek
+
+Örnekleme veya hızlı kontrol amacıyla rastgele birkaç gözlem seçmek için `slice_sample()` kullanılabilir:
+
+```{r}
+#| label: slice-sample
+
+set.seed(123)
+
+countries |>
+  slice_sample(n = 5) |>
+  select(country, region, income_group)
+```
+
+::: callout-note
+### Eski kaynaklarda `top_n()` görebilirsiniz
+
+Eski `dplyr` örneklerinde en büyük değerleri seçmek için `top_n()` fonksiyonuyla karşılaşabilirsiniz. Güncel `dplyr` yaklaşımında `top_n()` yerine daha açık anlamlı `slice_max()` ve `slice_min()` fonksiyonları önerilir.
+:::
+
+## Yeni değişken oluşturmak: `mutate()`
+
+`mutate` sözcüğü "değiştirmek" veya "dönüştürmek" anlamına gelir. `dplyr` içinde `mutate()` bir veri çerçevesine yeni sütunlar eklemek veya mevcut sütunların değerlerini değiştirmek için kullanılır.
+
+### Basit birim dönüşümü
+
+Nüfus değerleri kişi sayısı olarak tutulmaktadır. Daha okunabilir bir değişken oluşturmak için nüfusu milyon kişi cinsine çevirebiliriz:
+
+```{r}
+#| label: mutate-basic
+
+countries |>
+  mutate(
+    population_million = population_total / 1e6
+  ) |>
+  select(country, population_total, population_million) |>
+  arrange(desc(population_total)) |>
+  slice_head(n = 8)
+```
+
+### Mevcut değişkenlerden yeni bilgi üretmek
+
+İhracat ve ithalatın GSYH içindeki paylarını toplayarak basit bir **dış ticaret açıklığı** göstergesi oluşturabiliriz:
+
+```{r}
+#| label: mutate-trade
+
+countries |>
+  mutate(
+    trade_openness_pct =
+      exports_gdp_pct + imports_gdp_pct
+  ) |>
+  select(
+    country,
+    exports_gdp_pct,
+    imports_gdp_pct,
+    trade_openness_pct
+  ) |>
+  filter(!is.na(trade_openness_pct)) |>
+  arrange(desc(trade_openness_pct)) |>
+  slice_head(n = 8)
+```
+
+Bu örnekte oluşturduğumuz değişken, ihracat ve ithalatın GSYH içindeki paylarının toplamıdır. Ekonomik açıklığın tek ve kusursuz ölçüsü olarak değil, `mutate()` ile türetilmiş değişken üretme mantığını göstermek için kullanıyoruz.
+
+### Aynı anda birden fazla değişken oluşturmak
+
+Kadın ve erkek yaşam beklentisi arasındaki farkı hesaplayabilir, aynı işlem içinde nüfusu milyon kişi cinsine çevirebiliriz:
+
+```{r}
+#| label: mutate-multiple
+
+countries |>
+  mutate(
+    population_million = population_total / 1e6,
+    life_expectancy_gap =
+      life_expectancy_female - life_expectancy_male
+  ) |>
+  select(
+    country,
+    population_million,
+    life_expectancy_female,
+    life_expectancy_male,
+    life_expectancy_gap
+  ) |>
+  slice_head(n = 8)
+```
+
+### Mevcut bir sütunu değiştirmek
+
+`mutate()` yalnızca yeni sütun oluşturmaz. Mevcut bir değişkenin üzerine de yazabilir:
+
+```{r}
+#| label: mutate-overwrite
+
+countries |>
+  mutate(
+    gdp_per_capita_usd = round(gdp_per_capita_usd, 0)
+  ) |>
+  select(country, gdp_per_capita_usd) |>
+  slice_head(n = 6)
+```
+
+Bu işlem yalnızca pipe içinde oluşan yeni tabloyu etkiler. Sonucu tekrar `countries` nesnesine atamadığımız sürece başlangıçtaki veri nesnesi değişmez.
+
+::: callout-tip
+### Orijinal veriyi korumak iyi bir alışkanlıktır
+
+Öğrenme ve analiz aşamasında ham veri nesnesinin üzerine sürekli yazmak yerine, ihtiyaç duyduğunuz sonuçları yeni nesnelere kaydetmek çoğu zaman daha güvenlidir. Böylece hangi dönüşümün hangi aşamada yapıldığı daha kolay izlenir.
+:::
+
+### `transmute()` gerekli mi?
+
+Eski `dplyr` kaynaklarında `transmute()` fonksiyonuyla da karşılaşabilirsiniz. `transmute()` yeni değişken üretir ancak sonuçta yalnızca oluşturulan veya açıkça belirtilen sütunları tutar. Günlük kullanımda aynı sonuç çoğu zaman `mutate()` ve `select()` birlikte kullanılarak daha açık biçimde kurulabildiği için bu bölümde `transmute()` üzerinde ayrıca durmayacağız.
+
+## Koşullu değişken oluşturmak
+
+Bir veri setinde yeni bir değişken her zaman basit bir matematiksel işlemle oluşturulmaz. Bazen gözlemleri belirli koşullara göre sınıflandırmamız gerekir.
+
+### İki durum için `if_else()`
+
+`if_else()` iki olası sonuç bulunan durumlarda kullanışlıdır. Örneğin nüfusu 50 milyon ve üzerinde olan ülkelere "50 milyon ve üzeri", diğerlerine "50 milyonun altında" etiketi verelim:
+
+```{r}
+#| label: if-else-basic
+
+countries |>
+  mutate(
+    population_group = if_else(
+      population_total >= 50e6,
+      "50 milyon ve üzeri",
+      "50 milyonun altında"
+    )
+  ) |>
+  count(population_group)
+```
+
+Buradaki 50 milyon eşiği istatistiksel bir sınıflama standardı değildir; fonksiyonun çalışma mantığını göstermek için kullanılan öğretim amaçlı bir eştir.
+
+### Birden fazla durum için `case_when()`
+
+İki kategoriden daha fazlasına ihtiyaç duyduğumuzda `case_when()` daha okunabilir hale gelir. Örneğin internet kullanım oranını öğretim amacıyla üç gruba ayıralım:
+
+```{r}
+#| label: case-when-basic
+
+countries |>
+  mutate(
+    internet_group = case_when(
+      internet_users_pct >= 80 ~ "Yüksek",
+      internet_users_pct >= 50 ~ "Orta",
+      internet_users_pct < 50 ~ "Düşük",
+      .default = "Bilinmiyor"
+    )
+  ) |>
+  count(internet_group, sort = TRUE)
+```
+
+`case_when()` koşulları yukarıdan aşağı değerlendirir. Bir gözlem ilk doğru koşulla eşleştiğinde sonraki koşullara geçilmez. Bu nedenle koşulların sırası önemlidir.
+
+::: callout-warning
+### Koşulların sırasına dikkat
+
+Örneğin önce `internet_users_pct >= 50`, sonra `>= 80` yazsaydık 80'in üzerindeki değerler de ilk koşula takılacağı için "Orta" grubuna atanırdı. Daha özel veya daha yüksek eşikli koşulları önce yazmak çoğu durumda daha güvenlidir.
+:::
+
+## Birden fazla sütunda aynı işlemi uygulamak: `across()`
+
+Gerçek veri analizinde aynı dönüşümü çok sayıda değişkene uygulamak sık karşılaşılan bir ihtiyaçtır. Örneğin oranları bir ondalık basamağa yuvarlamak için her sütun için ayrı `mutate()` ifadesi yazmak gereksiz tekrar üretir.
+
+`across()` sözcüğü "boyunca" veya "bir uçtan diğerine" anlamı taşır. `dplyr` içinde `across()`, seçilen birden fazla sütun boyunca aynı fonksiyonu uygulamamızı sağlar.
+
+Örneğin `_pct` ile biten bütün oran değişkenlerini bir ondalık basamağa yuvarlayalım:
+
+```{r}
+#| label: across-round
+
+countries |>
+  mutate(
+    across(
+      ends_with("_pct"),
+      ~ round(.x, 1)
+    )
+  ) |>
+  select(
+    country,
+    unemployment_total_pct,
+    inflation_consumer_pct,
+    internet_users_pct
+  ) |>
+  slice_head(n = 8)
+```
+
+Burada `.x`, `across()` tarafından sırayla ele alınan her bir sütunu temsil eder.
+
+Aynı yaklaşımı sütun tipine göre de kullanabiliriz. Örneğin bütün sayısal değişkenleri yuvarlamak mümkündür:
+
+```{r}
+#| label: across-numeric
+
+countries |>
+  mutate(
+    across(
+      where(is.numeric),
+      ~ round(.x, 2)
+    )
+  ) |>
+  select(country, year, fertility_rate, gdp_growth_pct) |>
+  slice_head(n = 6)
+```
+
+::: callout-note
+### Eski `_at`, `_if` ve `_all` fonksiyonları
+
+Eski `dplyr` kodlarında `mutate_at()`, `mutate_if()`, `mutate_all()`, `summarise_at()` ve benzeri fonksiyonları görebilirsiniz. Bu *scoped verb* ailesi güncel `dplyr` dokümantasyonunda **superseded** olarak işaretlenmiştir. Yeni kodlarda aynı yaklaşım için `mutate()` veya `summarise()` içinde `across()` kullanılması önerilir.
+:::
+
+## Tekrarsız değerleri bulmak: `distinct()`
+
+`distinct` sözcüğü "farklı" veya "birbirinden ayrı" anlamına gelir. `distinct()` veri setindeki tekrarsız değerleri veya satırları elde etmek için kullanılır.
+
+Örneğin veri setinde hangi bölgelerin bulunduğunu görelim:
+
+```{r}
+#| label: distinct-region
+
+countries |>
+  distinct(region)
+```
+
+Gelir gruplarını görmek için:
+
+```{r}
+#| label: distinct-income
+
+countries |>
+  distinct(income_group)
+```
+
+Birden fazla sütun birlikte verildiğinde yalnızca bu sütunların benzersiz kombinasyonları döndürülür:
+
+```{r}
+#| label: distinct-combination
+
+countries |>
+  distinct(region, income_group) |>
+  arrange(region, income_group)
+```
+
+## Gözlemleri saymak: `count()`
+
+`count()` belirli kategorilerde kaç gözlem bulunduğunu hızlıca hesaplar. Örneğin her bölgede kaç ülke/ekonomi olduğunu bulalım:
+
+```{r}
+#| label: count-region
+
+countries |>
+  count(region, sort = TRUE)
+```
+
+Gelir gruplarına göre ülke sayılarını da benzer şekilde hesaplayabiliriz:
+
+```{r}
+#| label: count-income
+
+countries |>
+  count(income_group, sort = TRUE)
+```
+
+İki değişkeni birlikte kullanmak da mümkündür:
+
+```{r}
+#| label: count-two-vars
+
+countries |>
+  count(region, income_group) |>
+  arrange(region, desc(n))
+```
+
+`count()` aslında sık kullanılan bir **gruplama + sayma** işlemini kısa biçimde yapar. Bir sonraki bölümde bu mantığın daha genel biçimini göreceğiz.
+
+## Veriyi gruplamak: `group_by()`
+
+Şimdiye kadar yaptığımız işlemlerin çoğu veri setinin tamamına uygulanıyordu. Oysa birçok analiz sorusu gruplar arasında karşılaştırma gerektirir:
+
+- Bölgelere göre ortalama yaşam beklentisi nedir?
+- Gelir gruplarında ortalama işsizlik oranı nasıl değişmektedir?
+- Her bölgede kaç ülke bulunmaktadır?
+
+`group_by()` veri setini bir veya daha fazla değişkene göre **mantıksal gruplara** ayırır. Önemli nokta şudur: `group_by()` tek başına veriyi fiziksel olarak ayrı tablolara bölmez. Sonraki `summarise()`, `mutate()` gibi işlemlerin grup bazında uygulanmasını sağlar.
+
+Örneğin:
+
+```{r}
+#| label: group-by-basic
+
+countries |>
+  group_by(region)
+```
+
+Bu kod veriyi bölgelere göre gruplanmış bir tibble haline getirir; fakat henüz özet bir sonuç üretmez. Asıl güç, gruplamanın sonraki işlemle birleşmesinde ortaya çıkar.
+
+## Özet istatistik üretmek: `summarise()`
+
+`summarise()` veya Amerikan İngilizcesi yazımıyla `summarize()`, bir veri setinden özet değerler üretir. Örneğin bütün ülkeler için ortalama yaşam beklentisini hesaplayalım:
+
+```{r}
+#| label: summarise-basic
+
+countries |>
+  summarise(
+    mean_life_expectancy =
+      mean(life_expectancy_total, na.rm = TRUE)
+  )
+```
+
+`mean()` fonksiyonundaki `na.rm = TRUE`, eksik (`NA`) değerlerin ortalama hesabından çıkarılmasını sağlar. Bu argüman kullanılmaz ve seçilen değişkende en az bir `NA` bulunursa `mean()` sonucu da `NA` olur.
+
+### Temel özet fonksiyonları
+
+`summarise()` içinde birçok temel R fonksiyonu kullanılabilir:
+
+| Fonksiyon      | İşlev                  |
+|----------------|------------------------|
+| `mean()`       | aritmetik ortalama     |
+| `median()`     | medyan                 |
+| `min()`        | minimum                |
+| `max()`        | maksimum               |
+| `sum()`        | toplam                 |
+| `sd()`         | standart sapma         |
+| `n()`          | gruptaki gözlem sayısı |
+| `n_distinct()` | farklı değer sayısı    |
+
+Örneğin kişi başına GSYH için birkaç özeti aynı anda üretelim:
+
+```{r}
+#| label: summarise-multiple
+
+countries |>
+  summarise(
+    n_countries = n(),
+    mean_gdp = mean(gdp_per_capita_usd, na.rm = TRUE),
+    median_gdp = median(gdp_per_capita_usd, na.rm = TRUE),
+    min_gdp = min(gdp_per_capita_usd, na.rm = TRUE),
+    max_gdp = max(gdp_per_capita_usd, na.rm = TRUE)
+  )
+```
+
+### `group_by()` ve `summarise()` birlikte
+
+Şimdi ortalama yaşam beklentisini bölgelere göre hesaplayalım:
+
+```{r}
+#| label: group-summarise
+
+countries |>
+  group_by(region) |>
+  summarise(
+    n_countries = n(),
+    mean_life_expectancy =
+      mean(life_expectancy_total, na.rm = TRUE),
+    .groups = "drop"
+  ) |>
+  arrange(desc(mean_life_expectancy))
+```
+
+Burada aynı `mean()` fonksiyonu artık bütün veri setine bir kez değil, her bölge için ayrı ayrı uygulanır.
+
+Daha zengin bir özet tablo oluşturalım:
+
+```{r}
+#| label: group-summarise-rich
+
+countries |>
+  group_by(region) |>
+  summarise(
+    n_countries = n(),
+    median_gdp_per_capita =
+      median(gdp_per_capita_usd, na.rm = TRUE),
+    mean_unemployment =
+      mean(unemployment_total_pct, na.rm = TRUE),
+    mean_life_expectancy =
+      mean(life_expectancy_total, na.rm = TRUE),
+    .groups = "drop"
+  ) |>
+  arrange(desc(median_gdp_per_capita))
+```
+
+`.groups = "drop"` sonuçtaki gruplama yapısını kaldırır. Bu argüman özellikle birden fazla gruplama değişkeni bulunan daha karmaşık analizlerde davranışı açık hale getirir.
+
+::: callout-important
+### `group_by()` verinin anlamını değiştirir
+
+Gruplanmış bir veri üzerinde `summarise()` veya `mutate()` çalıştırdığınızda sonuçlar her grup içinde ayrı hesaplanır. Bu nedenle aynı kod, gruplanmamış ve gruplanmış veride farklı sonuçlar üretebilir.
+:::
+
+## `across()` ile birden fazla değişkeni özetlemek
+
+`across()` yalnızca `mutate()` içinde değil, `summarise()` içinde de kullanılabilir. Örneğin toplam, kadın ve erkek yaşam beklentisinin ortalamasını bölgelere göre tek seferde hesaplayalım:
+
+```{r}
+#| label: across-summarise
+
+countries |>
+  group_by(region) |>
+  summarise(
+    across(
+      starts_with("life_expectancy"),
+      ~ mean(.x, na.rm = TRUE)
+    ),
+    .groups = "drop"
+  )
+```
+
+Bu yaklaşım özellikle aynı türde çok sayıda değişkene aynı özet fonksiyonunu uygulamak gerektiğinde kod tekrarını azaltır.
+
+## Gruplanmış veride `mutate()`
+
+`group_by()` yalnızca özet tablo üretmek için kullanılmaz. Gruplar içinde yeni değişkenler de oluşturabiliriz.
+
+Örneğin her ülkenin kişi başına GSYH'sini kendi bölgesinin ortalamasıyla karşılaştıralım:
+
+```{r}
+#| label: grouped-mutate
+
+countries |>
+  group_by(region) |>
+  mutate(
+    region_mean_gdp =
+      mean(gdp_per_capita_usd, na.rm = TRUE),
+    gdp_relative_to_region =
+      gdp_per_capita_usd / region_mean_gdp
+  ) |>
+  ungroup() |>
+  select(
+    country,
+    region,
+    gdp_per_capita_usd,
+    region_mean_gdp,
+    gdp_relative_to_region
+  ) |>
+  filter(!is.na(gdp_per_capita_usd)) |>
+  arrange(desc(gdp_relative_to_region)) |>
+  slice_head(n = 10)
+```
+
+Burada `region_mean_gdp` her ülke için aynı küresel ortalamayı değil, ülkenin bulunduğu bölgenin ortalamasını taşır. `gdp_relative_to_region` değeri 1'den büyükse ülkenin kişi başına GSYH'si kendi bölgesinin ortalamasının üzerindedir.
+
+## Gruplamayı kaldırmak: `ungroup()`
+
+`group_by()` sonrasında veri gruplama bilgisini taşımaya devam edebilir. Bu durum sonraki işlemlerin beklenmedik biçimde grup bazında çalışmasına neden olabilir.
+
+Gruplama artık gerekli değilse `ungroup()` ile kaldırılabilir:
+
+```{r}
+#| label: ungroup-basic
+
+countries |>
+  group_by(region) |>
+  mutate(
+    region_mean_life =
+      mean(life_expectancy_total, na.rm = TRUE)
+  ) |>
+  ungroup()
+```
+
+Özellikle uzun işlem zincirlerinde işimiz bittiğinde gruplamayı kaldırmak, kodun sonraki adımlarını daha öngörülebilir hale getirir.
+
+## Tek bir yıldan ülke-yıl verisine geçmek
+
+Şimdiye kadar `countries` veri setini kullandık. Bu tabloda her ülke/ekonomi için 2019 yılına ait göstergeler bulunuyordu. Ancak gerçek analizlerde aynı ülkenin yıllar içindeki değişimini de incelemek isteyebiliriz.
+
+Kitap için hazırlanan `country_indicators.csv` veri setinde bir satır **ülke × yıl** kombinasyonunu temsil eder. Veri 1960'tan 2025'e kadar uzanır; fakat her göstergenin ve her ülkenin bütün yıllarda gözlemi olmak zorunda değildir. Bu, gerçek uluslararası veri tabanlarında normal bir durumdur.
+
+```{r}
+#| label: load-panel
+
+country_indicators <- readr::read_csv(
+  "data/country_indicators.csv",
+  show_col_types = FALSE
+)
+```
+
+Örneğin Türkiye, Almanya ve Fransa'nın 2000 yılından sonraki kişi başına GSYH ve yaşam beklentisi değerlerinden küçük bir çalışma tablosu oluşturalım:
+
+```{r}
+#| label: panel-filter
+
+country_indicators |>
+  filter(
+    country %in% c("Turkiye", "Germany", "France"),
+    year >= 2000
+  ) |>
+  select(
+    country,
+    year,
+    gdp_per_capita_usd,
+    life_expectancy_total
+  ) |>
+  arrange(country, year) |>
+  slice_head(n = 12)
+```
+
+Burada yeni bir `dplyr` fonksiyonu öğrenmedik. Aynı `filter()`, `select()` ve `arrange()` bilgisini farklı veri yapısına uyguladık. İlerleyen bölümlerde bu tür ülke-yıl tabloları görselleştirme ve zaman serisi uygulamalarında yeniden karşımıza çıkacaktır.
+
+## Baştan sona küçük bir analiz
+
+Şimdi öğrendiğimiz araçları tek bir soruda birleştirelim:
+
+> **2019 yılında bölgeler itibarıyla kişi başına gelir ve yaşam beklentisi nasıl farklılaşmaktadır?**
+
+Bunun için:
+
+1.  Yalnızca gerekli sütunları seçeceğiz.
+2.  Analizde kullandığımız iki göstergede eksik değeri olan gözlemleri çıkaracağız.
+3.  Ülkeleri bölgelere göre gruplayacağız.
+4.  Her bölgedeki ülke sayısını hesaplayacağız.
+5.  Medyan kişi başına GSYH'yi hesaplayacağız.
+6.  Ortalama yaşam beklentisini hesaplayacağız.
+7.  Sonucu medyan kişi başına GSYH'ye göre sıralayacağız.
+
+```{r}
+#| label: integrated-analysis
+
+region_summary <- countries |>
+  select(
+    country,
+    region,
+    gdp_per_capita_usd,
+    life_expectancy_total
+  ) |>
+  filter(
+    !is.na(gdp_per_capita_usd),
+    !is.na(life_expectancy_total)
+  ) |>
+  group_by(region) |>
+  summarise(
+    n_countries = n(),
+    median_gdp_per_capita =
+      median(gdp_per_capita_usd),
+    mean_life_expectancy =
+      mean(life_expectancy_total),
+    .groups = "drop"
+  ) |>
+  arrange(desc(median_gdp_per_capita))
+
+region_summary
+```
+
+Bu işlem zincirini soldan sağa ve yukarıdan aşağı okuduğumuzda, kod neredeyse analiz planının kendisine dönüşür. `dplyr` yaklaşımının temel gücü de buradadır: her adım küçük ve anlaşılırdır; fakat bu adımlar bir araya geldiğinde gerçek bir veri analizi akışı oluşturur.
+
+## Sık yapılan hatalar
+
+### 1. `=` ile `==` işaretlerini karıştırmak
+
+Yanlış:
+
+``` r
+countries |>
+  filter(country = "Turkiye")
+```
+
+Doğru:
+
+``` r
+countries |>
+  filter(country == "Turkiye")
+```
+
+`filter()` içinde eşitlik karşılaştırması için `==` kullanılır.
+
+### 2. `&` ve `|` operatörlerini karıştırmak
+
+``` r
+# İki koşul da sağlanmalı
+filter(
+  region == "Europe & Central Asia" &
+    gdp_per_capita_usd > 20000
+)
+
+# Koşullardan en az biri sağlanmalı
+filter(
+  country == "Turkiye" |
+    country == "Germany"
+)
+```
+
+### 3. Birden fazla değeri `== c(...)` ile seçmek
+
+Yanlış bir yaklaşım:
+
+``` r
+filter(
+  country == c("Turkiye", "Germany", "France")
+)
+```
+
+Doğru ve açık yaklaşım:
+
+``` r
+filter(
+  country %in% c("Turkiye", "Germany", "France")
+)
+```
+
+### 4. Eksik değeri `== NA` ile kontrol etmek
+
+Yanlış:
+
+``` r
+filter(inflation_consumer_pct == NA)
+```
+
+Doğru:
+
+``` r
+filter(is.na(inflation_consumer_pct))
+```
+
+### 5. `arrange()` veri değerlerini değiştiriyor sanmak
+
+`arrange()` yalnızca satırların sırasını değiştirir. Nüfus, gelir veya diğer değerler üzerinde dönüşüm yapmaz.
+
+### 6. `rename()` yönünü ters yazmak
+
+Doğru kalıp:
+
+``` r
+rename(yeni_ad = eski_ad)
+```
+
+### 7. `group_by()` sonrasında gruplamayı unutmak
+
+Gruplanmış veri üzerindeki sonraki işlemler grup bazında çalışmaya devam edebilir. Gruplama artık gerekli değilse `ungroup()` kullanmak iyi bir alışkanlıktır.
+
+### 8. `NA` içeren değişkenlerde `mean()` sonucunun `NA` olması
+
+``` r
+mean(countries$unemployment_total_pct)
+```
+
+ifadesi eksik değer varsa `NA` döndürebilir. Bu durumda:
+
+``` r
+mean(
+  countries$unemployment_total_pct,
+  na.rm = TRUE
+)
+```
+
+kullanılır.
+
+### 9. Pipe zincirini gereğinden fazla uzatmak
+
+Pipe okunabilirliği artırır; ancak tek zincire onlarca farklı amaç yüklemek kodu yeniden zorlaştırabilir. Ara sonuç analitik olarak anlamlıysa yeni bir nesneye kaydetmek çoğu zaman daha okunabilir bir çözümdür.
+
+### 10. Ham veri nesnesinin üzerine sürekli yazmak
+
+Özellikle öğrenme ve keşif aşamasında:
+
+``` r
+countries <- countries |>
+  ...
+```
+
+ifadesini her dönüşümde kullanmak, başlangıç verisini kaybetmenize yol açabilir. Önemli dönüşümleri yeni nesnelerde tutmak daha güvenlidir.
+
+## Egzersizler
+
+Aşağıdaki egzersizlerde `countries` veri setini kullanın. Sorular kolaydan daha bütünleşik işlemlere doğru ilerlemektedir.
+
+### Egzersiz 1
+
+`country`, `region`, `population_total` ve `gdp_per_capita_usd` değişkenlerini seçin.
+
+### Egzersiz 2
+
+`starts_with()` kullanarak `population` ile başlayan bütün değişkenleri ülke adıyla birlikte seçin.
+
+### Egzersiz 3
+
+`contains()` kullanarak adında `per_capita` bulunan değişkenleri seçin.
+
+### Egzersiz 4
+
+Yalnızca `Turkiye`, `Germany`, `France`, `Italy` ve `Spain` ülkelerini seçin. Sonuçta ülke adı, bölge, kişi başına GSYH ve yaşam beklentisi bulunsun.
+
+### Egzersiz 5
+
+Kişi başına GSYH'si en yüksek 10 ülke/ekonomiyi `slice_max()` ile bulun.
+
+### Egzersiz 6
+
+`population_million` adında, toplam nüfusu milyon kişi cinsinden gösteren yeni bir değişken oluşturun. Nüfusu en yüksek 10 ülkeyi bu değişkenle birlikte gösterin.
+
+### Egzersiz 7
+
+Kadın ve erkek yaşam beklentisi arasındaki farkı `life_expectancy_gap` adıyla hesaplayın. Farkın en yüksek olduğu 10 ülkeyi bulun.
+
+### Egzersiz 8
+
+`exports_gdp_pct` ile `imports_gdp_pct` değişkenlerini kullanarak `trade_openness_pct` değişkenini oluşturun. Eksik değerleri çıkardıktan sonra dış ticaret açıklığı en yüksek 10 ülkeyi bulun.
+
+### Egzersiz 9
+
+Her coğrafi bölgede kaç ülke/ekonomi bulunduğunu hesaplayın ve sonuçları büyükten küçüğe sıralayın.
+
+### Egzersiz 10
+
+Gelir gruplarına göre ortalama yaşam beklentisini hesaplayın. Eksik değer ihtimalini dikkate alın.
+
+### Egzersiz 11
+
+Bölgelere göre medyan kişi başına GSYH ve ortalama işsizlik oranını aynı özet tabloda hesaplayın.
+
+### Egzersiz 12
+
+`across()` kullanarak `_pct` ile biten bütün değişkenleri bir ondalık basamağa yuvarlayın. Sonuçtan yalnızca `country`, `inflation_consumer_pct`, `unemployment_total_pct` ve `internet_users_pct` değişkenlerini gösterin.
+
+### Egzersiz 13
+
+`case_when()` kullanarak ülkeleri 2019 yılı enflasyon oranlarına göre öğretim amaçlı şu gruplara ayırın:
+
+- Enflasyon değeri eksikse `"Bilinmiyor"`,
+- enflasyon %2'nin altındaysa `"Düşük"`,
+- %2 ile %10 arasındaysa `"Orta"`,
+- %10 ve üzerindeyse `"Yüksek"`.
+
+Her grupta kaç ülke bulunduğunu hesaplayın.
+
+### Egzersiz 14
+
+Her ülkenin yaşam beklentisini kendi bölgesinin ortalama yaşam beklentisiyle karşılaştırın. Bunun için:
+
+1.  `region` değişkenine göre gruplayın,
+2.  `region_mean_life` değişkenini oluşturun,
+3.  ülke değeri ile bölge ortalaması arasındaki farkı `life_vs_region` değişkeninde hesaplayın,
+4.  gruplamayı kaldırın,
+5.  farkın en yüksek olduğu 10 ülkeyi gösterin.
+
+### Egzersiz 15
+
+Aşağıdaki soruya tek bir pipe zinciriyle cevap verin:
+
+> **Yüksek gelir grubundaki ülkelerde, internet kullanım oranı en az %80 olan ülkeler arasında kişi başına GSYH'si en yüksek 10 ülke hangileridir?**
+
+Sonuçta yalnızca ülke adı, kişi başına GSYH ve internet kullanım oranı bulunsun.
+
+## Egzersiz çözümleri
+
+### Çözüm 1
+
+``` r
+countries |>
+  select(
+    country,
+    region,
+    population_total,
+    gdp_per_capita_usd
+  )
+```
+
+### Çözüm 2
+
+``` r
+countries |>
+  select(
+    country,
+    starts_with("population")
+  )
+```
+
+Burada tek tek sütun adı yazmak yerine ortak `population` önekinden yararlanıyoruz.
+
+### Çözüm 3
+
+``` r
+countries |>
+  select(
+    country,
+    contains("per_capita")
+  )
+```
+
+### Çözüm 4
+
+``` r
+countries |>
+  filter(
+    country %in% c(
+      "Turkiye",
+      "Germany",
+      "France",
+      "Italy",
+      "Spain"
+    )
+  ) |>
+  select(
+    country,
+    region,
+    gdp_per_capita_usd,
+    life_expectancy_total
+  )
+```
+
+Aynı değişkende birden fazla değerden birini seçtiğimiz için `%in%` kullanmak daha okunabilirdir.
+
+### Çözüm 5
+
+``` r
+countries |>
+  select(country, gdp_per_capita_usd) |>
+  slice_max(
+    order_by = gdp_per_capita_usd,
+    n = 10
+  )
+```
+
+### Çözüm 6
+
+``` r
+countries |>
+  mutate(
+    population_million =
+      population_total / 1e6
+  ) |>
+  select(country, population_million) |>
+  slice_max(
+    order_by = population_million,
+    n = 10
+  )
+```
+
+### Çözüm 7
+
+``` r
+countries |>
+  mutate(
+    life_expectancy_gap =
+      life_expectancy_female -
+      life_expectancy_male
+  ) |>
+  select(
+    country,
+    life_expectancy_female,
+    life_expectancy_male,
+    life_expectancy_gap
+  ) |>
+  slice_max(
+    order_by = life_expectancy_gap,
+    n = 10
+  )
+```
+
+### Çözüm 8
+
+``` r
+countries |>
+  mutate(
+    trade_openness_pct =
+      exports_gdp_pct + imports_gdp_pct
+  ) |>
+  filter(!is.na(trade_openness_pct)) |>
+  select(country, trade_openness_pct) |>
+  slice_max(
+    order_by = trade_openness_pct,
+    n = 10
+  )
+```
+
+### Çözüm 9
+
+``` r
+countries |>
+  count(region, sort = TRUE)
+```
+
+Bu soru `group_by()` ve `summarise(n = n())` ile de çözülebilirdi. `count()` aynı işlemin kısa ve okunabilir biçimidir.
+
+### Çözüm 10
+
+``` r
+countries |>
+  group_by(income_group) |>
+  summarise(
+    mean_life_expectancy =
+      mean(
+        life_expectancy_total,
+        na.rm = TRUE
+      ),
+    .groups = "drop"
+  ) |>
+  arrange(desc(mean_life_expectancy))
+```
+
+### Çözüm 11
+
+``` r
+countries |>
+  group_by(region) |>
+  summarise(
+    median_gdp_per_capita =
+      median(
+        gdp_per_capita_usd,
+        na.rm = TRUE
+      ),
+    mean_unemployment =
+      mean(
+        unemployment_total_pct,
+        na.rm = TRUE
+      ),
+    .groups = "drop"
+  )
+```
+
+### Çözüm 12
+
+``` r
+countries |>
+  mutate(
+    across(
+      ends_with("_pct"),
+      ~ round(.x, 1)
+    )
+  ) |>
+  select(
+    country,
+    inflation_consumer_pct,
+    unemployment_total_pct,
+    internet_users_pct
+  )
+```
+
+### Çözüm 13
+
+``` r
+countries |>
+  mutate(
+    inflation_group = case_when(
+      is.na(inflation_consumer_pct) ~
+        "Bilinmiyor",
+      inflation_consumer_pct < 2 ~
+        "Düşük",
+      inflation_consumer_pct < 10 ~
+        "Orta",
+      inflation_consumer_pct >= 10 ~
+        "Yüksek"
+    )
+  ) |>
+  count(inflation_group, sort = TRUE)
+```
+
+Koşullar yukarıdan aşağı değerlendirildiği için ikinci koşuldan sonra kalan değerler zaten 2 ve üzerindedir. Bu nedenle `inflation_consumer_pct < 10` ifadesi 2--10 aralığını temsil eder.
+
+### Çözüm 14
+
+``` r
+countries |>
+  group_by(region) |>
+  mutate(
+    region_mean_life =
+      mean(
+        life_expectancy_total,
+        na.rm = TRUE
+      ),
+    life_vs_region =
+      life_expectancy_total -
+      region_mean_life
+  ) |>
+  ungroup() |>
+  select(
+    country,
+    region,
+    life_expectancy_total,
+    region_mean_life,
+    life_vs_region
+  ) |>
+  slice_max(
+    order_by = life_vs_region,
+    n = 10
+  )
+```
+
+### Çözüm 15
+
+``` r
+countries |>
+  filter(
+    income_group == "High income",
+    internet_users_pct >= 80
+  ) |>
+  select(
+    country,
+    gdp_per_capita_usd,
+    internet_users_pct
+  ) |>
+  slice_max(
+    order_by = gdp_per_capita_usd,
+    n = 10
+  )
+```
+
+Bu çözümde `filter()`, `select()` ve `slice_max()` aynı analiz akışında birlikte kullanılmaktadır.
+
+## Bölüm özeti
+
+Bu bölümde veri manipülasyonunun temel mantığını `dplyr` paketi üzerinden ele aldık. Artık:
+
+- `select()` ve seçim yardımcılarıyla gerekli sütunları seçebilir,
+- `rename()` ve `relocate()` ile sütun adlarını ve konumlarını düzenleyebilir,
+- `filter()` ile belirli koşulları sağlayan gözlemleri süzebilir,
+- `arrange()` ve `slice_*()` fonksiyonlarıyla gözlemleri sıralayabilir veya belirli satırları seçebilir,
+- `mutate()` ile yeni değişkenler oluşturabilir,
+- `if_else()` ve `case_when()` ile koşullu sınıflamalar yapabilir,
+- `across()` ile birden fazla sütuna aynı işlemi uygulayabilir,
+- `distinct()` ile tekrarsız değerleri bulabilir,
+- `count()` ile kategorik dağılımları sayabilir,
+- `group_by()` ile veriyi gruplar halinde ele alabilir,
+- `summarise()` ile özet istatistikler üretebilir,
+- `group_by()` ve `mutate()` birlikte kullanıldığında grup içi karşılaştırmalar yapabilir,
+- `ungroup()` ile gruplama yapısını gerektiğinde kaldırabilir,
+- bu işlemleri `|>` pipe operatörüyle okunabilir analiz zincirlerine dönüştürebiliriz.
+
+Bu bölümde tablonun **içeriğini** seçtik, filtreledik, dönüştürdük ve özetledik. Ancak gerçek veri analizinde bazen sorun tablonun içeriği değil, **biçimidir**. Örneğin yılların ayrı sütunlarda bulunduğu bir tabloyu satırlara taşımamız veya uzun bir tabloyu daha geniş hale getirmemiz gerekebilir. Bir sonraki bölümde veri setlerinin satır ve sütun düzenini değiştirmeyi, yani **veri dönüştürme ve yeniden şekillendirme** işlemlerini ele alacağız.
+
+## Kaynaklar ve ek okuma
+
+Bu bölüm hazırlanırken aşağıdaki temel kaynakların güncel dokümantasyonları esas alınmıştır:
+
+- R Core Team. **Forward Pipe Operator (`|>`)**. R Base Documentation. <https://stat.ethz.ch/R-manual/R-devel/library/base/html/pipeOp.html>
+- tidyverse. **dplyr: A Grammar of Data Manipulation**. <https://dplyr.tidyverse.org/>
+- tidyverse. **Introduction to dplyr**. <https://dplyr.tidyverse.org/articles/dplyr.html>
+- tidyverse. **`select()` — Keep or drop columns using their names and types**. <https://dplyr.tidyverse.org/reference/select.html>
+- tidyselect. **Selection helpers**. <https://tidyselect.r-lib.org/reference/starts_with.html>
+- dplyr. **`across()` — Apply a function across multiple columns**. <https://dplyr.tidyverse.org/reference/across.html>
+- Wickham, H., Çetinkaya-Rundel, M. ve Grolemund, G. **R for Data Science (2e)**. <https://r4ds.hadley.nz/>
+- World Bank. **World Development Indicators**. <https://databank.worldbank.org/source/world-development-indicators>
+- World Bank. **About World Development Indicators**. <https://datatopics.worldbank.org/world-development-indicators/about-world-development-indicators.html>
