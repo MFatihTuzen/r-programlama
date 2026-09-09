@@ -1,0 +1,826 @@
+# Özellik Mühendisliğine Giriş {#sec-feature-engineering}
+
+Bir veri setindeki ham sütunlar, analiz sorusunun ihtiyaç duyduğu bilgiyi her zaman doğrudan temsil etmez. `exports_gdp_pct` ve `imports_gdp_pct` ayrı ayrı anlamlıdır; fakat bir ülkenin dış ticarete açıklığını incelemek için toplamları daha doğrudan bir gösterge olabilir. Tarih sütunu tek başına saklanabilir; buna karşılık yıl, çeyrek, hafta sonu veya olaydan sonra geçen süre model için daha işlevsel olabilir.
+
+**Özellik mühendisliği** (*feature engineering*), mevcut verilerden analiz veya modelleme amacıyla anlamlı yeni değişkenler üretme sürecidir. Üretilen değişkenlere **özellik** (*feature*) denir.
+
+İyi özellik mühendisliği daha çok sütun üretmek değildir. Şu sorulara gerekçeli cevap vermektir:
+
+- Yeni özellik hangi olguyu temsil ediyor?
+- Ham değişkende görünmeyen hangi ilişkiyi açığa çıkarıyor?
+- Özellik tahmin anında gerçekten bulunabilecek mi?
+- Birimi, paydası ve zaman yönü doğru mu?
+- Yeni özellik gereksiz tekrar veya veri sızıntısı üretiyor mu?
+
+Bu bölümde alan bilgisine dayalı, açıklanabilir ve tekrar üretilebilir temel özellikleri kitap verileri üzerinde kuracağız.
+
+Bir model ham dünyayı değil, kendisine verilen **temsili** öğrenir. Gözlem \(i\)'ye ait ham kayıt \(x_i\), özellik dönüşümü \(\phi(\cdot)\) ile
+
+$$
+\phi(x_i) = \bigl(\phi_1(x_i),\ldots,\phi_p(x_i)\bigr)
+$$
+
+biçiminde bir özellik vektörüne çevrilir. Model daha sonra \(Y\) ile ham kayıt arasındaki ilişkiyi değil, \(Y\) ile \(\phi(X)\) arasındaki ilişkiyi tahmin eder. Bu nedenle temsil seçimi modelin **tümevarımsal eğilimini** belirler: doğrusal modele \(x\) ve \(x^2\) vermek parabolik ilişkilere; gecikmeli değer vermek geçmişin gelecek için bilgi taşıdığı ilişkilere izin verir [@hastie2009; @kuhnJohnson2019].
+
+Özellik eklemek her zaman bilgi eklemek değildir. Aynı bilginin çok sayıda benzer dönüşümle çoğaltılması varyansı ve aşırı uyum riskini artırabilir; özellikle örneklem küçükken tasarım matrisi kararsızlaşabilir. Buna karşılık önemli bir alan ilişkisini doğru temsil eden tek bir oran veya zaman özelliği, daha karmaşık bir algoritmadan daha fazla yarar sağlayabilir. Bu yüzden özellik mühendisliği, model karmaşıklığı ile temsil yanlılığı arasındaki dengeyi kuran analitik bir tasarım işidir [@james2023].
+
+::: callout-important
+## Özellik tahmin anında var olmalıdır
+
+Bir değişken model eğitilirken mevcut olsa bile gerçek tahmin anında henüz oluşmamış olabilir. Gelecekteki bilgiyi kullanan güçlü bir özellik, yararlı değil sızıntılıdır.
+:::
+
+## Veri Kaynakları ve Analiz Birimi
+
+Bu bölümde iki proje dosyasını kullanacağız:
+
+- `countries.csv`: 2019 yılı için ülke düzeyindeki kesit,
+- `country_indicators.csv`: 1960–2025 arasındaki ülke-yıl paneli.
+
+```{r}
+#| label: feature-setup
+
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+
+countries <- readr::read_csv(
+  "data/countries.csv",
+  show_col_types = FALSE
+)
+
+country_indicators <- readr::read_csv(
+  "data/country_indicators.csv",
+  show_col_types = FALSE
+)
+
+indicator_dictionary <- readr::read_csv(
+  "data/indicator_dictionary.csv",
+  show_col_types = FALSE
+)
+```
+
+Özellik üretmeden önce her satırın anlamını belirlemeliyiz.
+
+```{r}
+#| label: feature-grain
+
+countries |>
+  summarise(
+    satir = n(),
+    ulke = n_distinct(country_code),
+    yil = n_distinct(year)
+  )
+
+country_indicators |>
+  summarise(
+    satir = n(),
+    ulke = n_distinct(country_code),
+    yil = n_distinct(year),
+    tekrar = sum(duplicated(paste(country_code, year)))
+  )
+```
+
+`countries` verisinde analiz birimi ülke, panel verisinde ülke-yıldır. Bir önceki yıl değerini üretmek için panel verisi gerekir; 2019 kesitinde `lag()` kullanmak ülkeleri alfabetik veya dosya sırasına göre kaydırır ve anlamsızdır.
+
+## Değişken ile Özellik Arasındaki Ayrım
+
+**Değişken**, veride ölçülen veya kaydedilen herhangi bir sütundur. **Özellik**, belirli bir analiz veya modelde girdi olarak kullanılan temsildir. Aynı sütun bir çalışmada ham değişken, başka bir çalışmada doğrudan özellik olabilir.
+
+Örneğin:
+
+- `year` veri sütunudur;
+- `year - 2000` zaman eğilimini temsil eden özellik olabilir;
+- `year >= 2020` belirli bir dönem göstergesi olabilir;
+- fakat bu göstergenin anlamı araştırma sorusuna bağlıdır.
+
+Sonuç değişkeni de bir değişkendir, ancak yordayıcı özellik değildir.
+
+## İyi Bir Özelliğin Nitelikleri
+
+İyi bir özellik çoğunlukla şu özellikleri taşır:
+
+1. **Anlamlıdır:** Alan açısından tanımlanabilir bir olguyu temsil eder.
+2. **Geçerlidir:** Birimi, paydası ve zaman penceresi doğrudur.
+3. **Erişilebilirdir:** Tahmin anında veya analiz kapsamında bulunur.
+4. **Kararlıdır:** Veri kaynağındaki küçük değişikliklerle tanımı bozulmaz.
+5. **Tekrar üretilebilirdir:** Açık kodla aynı biçimde hesaplanabilir.
+6. **Sızıntısızdır:** Sonuçtan veya gelecekten yasak bilgi taşımaz.
+7. **Gereksiz değildir:** Aynı bilgiyi amaçsızca çoğaltmaz.
+
+## Aritmetik Özellikler
+
+**Toplam ve fark**
+
+İhracat ve ithalatın GSYH içindeki paylarını toplayarak basit bir dışa açıklık göstergesi oluşturabiliriz:
+
+$$
+Ticaret\ açıklığı = İhracat/GSYH + İthalat/GSYH
+$$
+
+```{r}
+#| label: feature-trade-openness
+
+countries_features <- countries |>
+  mutate(
+    trade_openness_pct = exports_gdp_pct + imports_gdp_pct,
+    life_expectancy_gender_gap =
+      life_expectancy_female - life_expectancy_male,
+    unemployment_gender_gap =
+      unemployment_female_pct - unemployment_male_pct
+  )
+
+countries_features |>
+  select(
+    country,
+    trade_openness_pct,
+    life_expectancy_gender_gap,
+    unemployment_gender_gap
+  ) |>
+  slice_head(n = 10)
+```
+
+Bu özelliklerin yönü açıkça tanımlanmalıdır. `female - male` pozitifse kadın değeri daha yüksektir. Ters çıkarma aynı büyüklükte fakat zıt yorum üretir.
+
+::: callout-note
+## Toplam oran 100'ü aşabilir
+
+İhracat ve ithalat akımları yıllık GSYH'ye bölünür. Ticaret merkezleri ve küçük açık ekonomilerde toplam yüzde 100'ü aşabilir. Bu durum formül veya veri hatası olmak zorunda değildir.
+:::
+
+**Oran özellikleri**
+
+Toplam nüfusa göre kadın nüfus payını üretelim:
+
+```{r}
+#| label: feature-ratio
+
+countries_features <- countries_features |>
+  mutate(
+    female_population_share_pct =
+      100 * population_female / population_total
+  )
+
+countries_features |>
+  select(
+    country,
+    population_total,
+    population_female,
+    female_population_share_pct
+  ) |>
+  slice_head(n = 8)
+```
+
+Oranlar ölçek farkını azaltır; fakat paydaya çok duyarlıdır. Payda sıfıra yakınsa büyük ve kararsız değerler oluşabilir.
+
+```{r}
+#| label: feature-safe-ratio
+
+guvenli_oran <- function(pay, payda) {
+  if_else(
+    is.na(payda) | payda == 0,
+    NA_real_,
+    pay / payda
+  )
+}
+```
+
+Pay ve paydanın aynı kapsam, dönem ve birimde olup olmadığı da kontrol edilmelidir.
+
+**Etkileşim özellikleri**
+
+Bir değişkenin etkisi diğerinin düzeyine göre değişiyorsa etkileşim düşünülebilir:
+
+$$
+x_{etkilesim} = x_1 \times x_2
+$$
+
+```{r}
+#| label: feature-interaction
+
+countries_features <- countries_features |>
+  mutate(
+    income_internet_interaction =
+      log(gdp_per_capita_usd) * internet_users_pct
+  )
+```
+
+Etkileşim terimi tek başına “iki değişkenin birleşik puanı” değildir. Regresyon modelinde bir değişkenin eğiminin diğerine göre değişmesine izin verir. Ana etkiler modelde tutulmadan etkileşimi yorumlamak çoğu durumda sorunludur.
+
+Örneğin
+
+$$
+E(Y\mid X_1,X_2)=\beta_0+\beta_1X_1+\beta_2X_2+\beta_3X_1X_2
+$$
+
+modelinde \(X_1\)'in koşullu eğimi \(\beta_1+\beta_3X_2\)'dir. Dolayısıyla \(\beta_3\), iki değişkenin ayrı etkilerine eklenen ortak bir değişimi ölçer. **Hiyerarşi ilkesi**, etkileşim modele alındığında onu oluşturan ana terimlerin de çoğunlukla tutulmasını önerir. Böylece \(X_2=0\) iken \(X_1\)'in etkisi ve değişkenlerin referans düzeyleri anlamlı biçimde yorumlanabilir. Merkezleme, sıfır noktasını gözlenen aralığın içine taşıyarak bu yorumu kolaylaştırabilir [@gelmanHillVehtari2020].
+
+## Matematiksel Temsil Özellikleri
+
+Sağa çarpık kişi başına gelir için log özellik üretilebilir.
+
+```{r}
+#| label: feature-log
+
+countries_features <- countries_features |>
+  mutate(
+    log_gdp_per_capita = log(gdp_per_capita_usd),
+    log_population = log(population_total)
+  )
+```
+
+Bu işlem @sec-preprocessing-transformations bölümündeki gerekçelere tabidir. Özellik mühendisliği bağlamında amaç, modele mutlak dolar farkları yerine gelir oranlarını temsil eden bir girdi vermektir.
+
+**Polinom özellikleri**
+
+Doğrusal modelde eğriliği temsil etmek için karesel terim eklenebilir:
+
+```{r}
+#| label: feature-polynomial
+
+countries_features <- countries_features |>
+  mutate(
+    internet_centered =
+      internet_users_pct - mean(internet_users_pct, na.rm = TRUE),
+    internet_squared = internet_centered^2
+  )
+```
+
+Önce merkezlemek doğrusal ve karesel terim arasındaki gereksiz korelasyonu azaltabilir. Merkez ortalaması veriden öğrenildiği için modelleme sürecinde yalnızca eğitim verisinden hesaplanmalıdır.
+
+Polinom terimler gözlenen aralık içinde esneklik sağlar; aralık dışında hızla büyüyerek güvenilmez tahminler üretebilir.
+
+Ham \(x,x^2,x^3\) sütunları çoğu veri aralığında güçlü korelasyon taşır. Bu durum katsayıların ayrı ayrı tahminini kararsızlaştırabilir; uyarlanmış eğrinin mutlaka kötü olduğu anlamına gelmez. Merkezleme veya ortogonal polinomlar sayısal kararlılığı iyileştirir, fakat dışa taşan kestirimin temel sorununu çözmez. Derece, aynı veride en iyi uyumu verdiği için değil, yeniden örnekleme ve alan bilgisiyle desteklendiği için seçilmelidir [@james2023].
+
+## Zaman Özellikleri
+
+Panel verisinde `year` yalnızca etiket değildir; sıralama ve bilgi sınırı taşır.
+
+```{r}
+#| label: feature-time-basic
+
+country_year_features <- country_indicators |>
+  mutate(
+    years_since_1960 = year - 1960,
+    decade = paste0(floor(year / 10) * 10, "'lar"),
+    post_2000 = year >= 2000
+  )
+
+country_year_features |>
+  select(country, year, years_since_1960, decade, post_2000) |>
+  slice_head(n = 8)
+```
+
+`years_since_1960` ile `year` aynı sıralı bilgiyi farklı sıfır noktasıyla taşır. Regresyon sabiti daha yorumlanabilir hale gelebilir. `post_2000` ise 2000 yılında gerçek bir politika veya tasarım kırılması yoksa keyfî bilgi kaybı yaratabilir.
+
+**Gecikmeli özellikler**
+
+Bir önceki yılın değerini üretmek için önce ülke içinde yıla göre sıralamak gerekir.
+
+```{r}
+#| label: feature-lag
+
+gdp_panel <- country_indicators |>
+  select(country, country_code, year, gdp_per_capita_usd) |>
+  group_by(country_code) |>
+  arrange(year, .by_group = TRUE) |>
+  mutate(
+    gdp_lag1 = lag(gdp_per_capita_usd),
+    gdp_change = gdp_per_capita_usd - gdp_lag1,
+    gdp_growth_from_levels_pct =
+      100 * (gdp_per_capita_usd / gdp_lag1 - 1)
+  ) |>
+  ungroup()
+
+gdp_panel |>
+  filter(country_code == "TUR", year >= 2015, year <= 2019)
+```
+
+İlk yıl için gecikme doğal olarak eksiktir. Kaynak veride ara yıl eksikse `lag()` bir önceki **satırı** getirir; bunun gerçekten bir önceki takvim yılı olduğu ayrıca kontrol edilmelidir.
+
+```{r}
+#| label: feature-lag-gap-check
+
+gdp_panel <- country_indicators |>
+  select(country, country_code, year, gdp_per_capita_usd) |>
+  group_by(country_code) |>
+  arrange(year, .by_group = TRUE) |>
+  mutate(
+    onceki_yil = lag(year),
+    gdp_lag1 = if_else(
+      year - onceki_yil == 1,
+      lag(gdp_per_capita_usd),
+      NA_real_
+    )
+  ) |>
+  ungroup()
+```
+
+Bu kontrol “bir önceki satır” ile “bir önceki yıl” ayrımını korur.
+
+**Hareketli özetler**
+
+Geçmiş üç yılın ortalaması kısa dönem dalgalanmayı azaltabilir. Gelecek değeri kullanmamak için pencere yalnızca mevcut ve geçmiş yıllardan oluşmalıdır.
+
+```{r}
+#| label: feature-rolling-function
+
+gecmis_ortalama <- function(x, pencere = 3) {
+  vapply(
+    seq_along(x),
+    function(i) {
+      baslangic <- max(1, i - pencere + 1)
+      degerler <- x[baslangic:i]
+
+      if (all(is.na(degerler))) {
+        NA_real_
+      } else {
+        mean(degerler, na.rm = TRUE)
+      }
+    },
+    numeric(1)
+  )
+}
+
+gdp_hareketli <- country_indicators |>
+  select(country, country_code, year, gdp_per_capita_usd) |>
+  group_by(country_code) |>
+  arrange(year, .by_group = TRUE) |>
+  mutate(
+    gdp_trailing_3 = gecmis_ortalama(gdp_per_capita_usd, 3)
+  ) |>
+  ungroup()
+
+gdp_hareketli |>
+  filter(country_code == "TUR", year >= 2015, year <= 2019)
+```
+
+Buradaki işlev eksik yılları yok sayar; bu karar pencerenin fiilî bilgi miktarını değiştirir. Üretim uygulamasında en az kaç gözlem gerektiği açıkça tanımlanmalıdır.
+
+::: callout-warning
+## Merkezli hareketli ortalama geleceği görebilir
+
+Mevcut yılın iki yanındaki yılları kullanan merkezli pencere, tahmin anında gelecekteki değerleri içerebilir. Zaman serisi modelinde yalnızca geçmişe dönük pencere kullanılmalıdır.
+:::
+
+## Kategorik Özellikler
+
+**Kategorileri faktör olarak tanımlamak**
+
+```{r}
+#| label: feature-factor
+
+countries_features <- countries_features |>
+  mutate(
+    region = factor(region),
+    income_group = factor(
+      income_group,
+      levels = c(
+        "Low income",
+        "Lower middle income",
+        "Upper middle income",
+        "High income"
+      ),
+      ordered = TRUE
+    )
+  )
+```
+
+Sıralı faktör tanımı, gelir gruplarının doğal sırasını korur. Bununla birlikte seviyeler arasındaki mesafenin eşit olduğu anlamına gelmez.
+
+**Gösterge değişkenleri**
+
+Birçok model kategorileri sayısal tasarım matrisine dönüştürür. Sırasız dört bölge için genellikle bir referans düzeyi ve üç gösterge sütunu kullanılır.
+
+```{r}
+#| label: feature-dummy-base
+
+bolge_matrisi <- model.matrix(
+  ~ region,
+  data = countries_features
+)
+
+head(bolge_matrisi)
+```
+
+Tüm seviyeler ve sabit terim birlikte kullanılırsa tam doğrusal bağımlılık oluşabilir. R'nin formül sistemi varsayılan olarak bir referans düzeyi bırakır.
+
+**Nadir ve yeni kategoriler**
+
+Eğitim verisinde çok az görülen düzeyler kararsız katsayı üretebilir. Benzer ve alan açısından anlamlı düzeyler `Diğer` altında birleştirilebilir. Ancak yalnızca frekansa bakarak farklı kavramları birleştirmek yorum kaybına yol açar.
+
+Test veya üretim verisinde eğitimde hiç görülmeyen yeni kategori çıkabilir. İş akışı bunu hata, bilinmeyen düzey veya önceden belirlenmiş `Diğer` sınıfı olarak yönetmelidir.
+
+## Sürekli Değişkenleri Gruplamak
+
+Yaşı, geliri veya yaşam beklentisini aralıklara ayırmak raporlamayı kolaylaştırabilir; fakat bilgi kaybettirir.
+
+```{r}
+#| label: feature-binning
+
+countries_features <- countries_features |>
+  mutate(
+    life_expectancy_group = cut(
+      life_expectancy_total,
+      breaks = c(-Inf, 65, 75, 80, Inf),
+      labels = c("65 altı", "65–74.9", "75–79.9", "80 ve üzeri"),
+      right = FALSE
+    )
+  )
+
+countries_features |>
+  count(life_expectancy_group, .drop = FALSE)
+```
+
+`74.9` ve `75.0` birbirine çok yakınken farklı sınıfa düşer; aynı sınıftaki `65` ve `74.9` eşit kabul edilir. Sınırlar alan bilgisine veya önceden belirlenmiş raporlama standardına dayanmalıdır.
+
+**Veri temelli dilimler**
+
+```{r}
+#| label: feature-quantile-bin
+
+countries_features <- countries_features |>
+  mutate(
+    gdp_quartile = ntile(gdp_per_capita_usd, 4)
+  )
+```
+
+`ntile()` yaklaşık eşit sayıda gözlem üretir; fakat sınırlar örneklemden öğrenilir. Başka yıl veya test verisinde aynı ekonomik anlamı taşımayabilir. Modelleme için eğitim sınırları kaydedilip yeni veriye uygulanmalıdır.
+
+## Eksiklik Göstergeleri
+
+Bir değişkenin eksik olup olmaması ayrıca özellik yapılabilir.
+
+```{r}
+#| label: feature-missing-indicator
+
+countries_features <- countries_features |>
+  mutate(
+    internet_missing = is.na(internet_users_pct),
+    school_enrollment_missing =
+      is.na(school_enrollment_tertiary_pct)
+  )
+
+countries_features |>
+  count(income_group, school_enrollment_missing)
+```
+
+Eksiklik göstergesi veri toplama süreci hakkında bilgi taşıyabilir. Ancak tek başına eksik sayısal değeri doldurmaz. Ayrıca veri toplama sistemi değişirse bu özellik kararsızlaşabilir.
+
+## Toplulaştırma Özellikleri ve Analiz Birimi
+
+İşlem düzeyindeki veriden müşteri toplamı üretmek yaygındır. Ülke-yıl panelinde de geçmiş yılların ortalaması veya büyüme oynaklığı özellik olabilir. Fakat toplulaştırma penceresi sonuç tarihini aşmamalıdır.
+
+Örneğin 2019 yaşam beklentisini tahmin ederken 2020–2025 GSYH değerlerini kullanmak gelecek bilgisidir. Doğru özellik tanımı “2019'dan önceki beş yılın ortalaması” gibi kesim tarihi içermelidir.
+
+```{r}
+#| label: feature-history-summary
+
+gdp_gecmis_ozet <- country_indicators |>
+  filter(year >= 2015, year <= 2019) |>
+  group_by(country_code, country) |>
+  summarise(
+    gdp_2015_2019_mean = mean(gdp_per_capita_usd, na.rm = TRUE),
+    gdp_2015_2019_sd = sd(gdp_per_capita_usd, na.rm = TRUE),
+    gozlem_sayisi = sum(!is.na(gdp_per_capita_usd)),
+    .groups = "drop"
+  )
+
+gdp_gecmis_ozet |>
+  slice_head(n = 8)
+```
+
+`na.rm = TRUE` farklı ülkelerin ortalamasını farklı sayıda yıla dayandırabilir. `gozlem_sayisi` bu nedenle birlikte tutulmuştur.
+
+## Hedef Kodlama ve Sızıntı Riski
+
+Bir kategoriyi o kategorideki sonuç ortalamasıyla kodlamaya **hedef kodlama** denir. Örneğin bölgeyi ortalama yaşam beklentisiyle değiştirmek güçlü görünebilir. Aynı satırların sonuçları kullanılarak kodlama yapılırsa her gözlem kendi hedef bilgisinin bir kısmını özelliğe taşır.
+
+Güvenli hedef kodlama:
+
+- yalnızca eğitim verisinden öğrenilmeli,
+- eğitim satırları için kat dışı tahminlerle üretilmeli,
+- küçük gruplarda yumuşatma uygulanmalı,
+- test ve yeni veriye sabit eşleme olarak aktarılmalıdır.
+
+Başlangıç düzeyindeki projelerde açıklanabilir bir one-hot kodlama çoğu zaman daha güvenli tercihtir.
+
+## Özellik Seçimi ile Özellik Mühendisliği Farkı
+
+Özellik mühendisliği yeni temsiller üretir; özellik seçimi hangi girdilerin modelde tutulacağını belirler. Önce yüzlerce özellik üretip aynı veri üzerinde en iyi görünenleri seçmek aşırı uyuma neden olabilir. Seçim de çapraz doğrulama katlarının içinde yapılmalıdır.
+
+Bir özelliği yalnızca yüksek korelasyonu nedeniyle seçmek şu sorunları gözden kaçırabilir:
+
+- ilişki doğrusal olmayabilir,
+- korelasyon aykırı gözlemlerden gelebilir,
+- özellik sonuçtan sonra oluşmuş olabilir,
+- benzer özellikler aynı bilgiyi tekrarlayabilir,
+- ilişki zamanla bozulabilir.
+
+## `recipes` ile Tekrar Üretilebilir Özellikler
+
+Bir tarif, özellik adımlarını tanımlayıp eğitim verisinde öğrenebilir ve yeni veriye uygulayabilir [@recipes2024].
+
+```{r}
+#| label: feature-recipes
+
+library(recipes)
+
+model_verisi <- countries |>
+  select(
+    life_expectancy_total,
+    gdp_per_capita_usd,
+    internet_users_pct,
+    infant_mortality_rate,
+    income_group
+  ) |>
+  drop_na()
+
+ozellik_tarifi <- recipe(
+  life_expectancy_total ~ .,
+  data = model_verisi
+) |>
+  step_log(gdp_per_capita_usd) |>
+  step_dummy(all_nominal_predictors()) |>
+  step_interact(
+    terms = ~ gdp_per_capita_usd:internet_users_pct
+  ) |>
+  step_normalize(all_numeric_predictors())
+
+ozellik_hazir <- prep(
+  ozellik_tarifi,
+  training = model_verisi
+)
+
+model_matrisi <- bake(
+  ozellik_hazir,
+  new_data = NULL
+)
+
+glimpse(model_matrisi)
+```
+
+Adım sırası anlamlıdır: log dönüşümü sayısal temsili değiştirir, kategoriler gösterge sütunlarına çevrilir, etkileşim üretilir, en son sayısal yordayıcılar ortak ölçeğe getirilir. `recipes` iş akışında faktör düzeyleri gösterge dönüşümünden önce yönetilmelidir [@recipes2024].
+
+## Özellikleri Doğrulamak
+
+Yeni sütun oluşturulduktan sonra aşağıdaki kontroller yapılmalıdır:
+
+- beklenen değer aralığı,
+- eksiklik sayısı,
+- `Inf` ve `NaN` oluşumu,
+- benzersiz değer sayısı,
+- hesapta kullanılan paydanın geçerliliği,
+- zaman penceresinin başlangıç ve bitişi,
+- birim ve yön,
+- ham bileşenlerle birkaç elle hesap karşılaştırması.
+
+```{r}
+#| label: feature-validation
+
+stopifnot(
+  all(
+    is.na(countries_features$female_population_share_pct) |
+      dplyr::between(
+        countries_features$female_population_share_pct,
+        0,
+        100
+      )
+  )
+)
+
+stopifnot(
+  !any(
+    is.infinite(countries_features$log_population)
+  )
+)
+```
+
+## Sık Yapılan Hatalar
+
+**Analiz birimini karıştırmak**
+
+Kesit verisinde `lag()` kullanmak bir önceki ülkeyi getirir; zaman gecikmesi üretmez. Grup ve sıralama açık olmalıdır.
+
+**Paydanın sıfır veya anlamsız olmasını gözden kaçırmak**
+
+Oran özelliği oluştururken pay ve payda aynı kapsamda olmalı, sıfır payda yönetilmelidir.
+
+**Gelecek bilgisi kullanmak**
+
+Tahmin tarihinden sonraki değerler, sonradan kesinleşen kayıtlar ve sonuçtan türetilen sütunlar sızıntı oluşturur.
+
+**Kategorilere keyfî tamsayı vermek**
+
+`Low = 1`, `Middle = 2`, `High = 3` kodlaması eşit aralık ve doğrusal etki varsayabilir. Bu varsayım savunulmuyorsa faktör veya uygun karşıtlıklar kullanılmalıdır.
+
+**Sürekli değişkeni gereksiz yere gruplamak**
+
+Gruplama bilgi kaybeder ve sınır çevresindeki benzer gözlemleri yapay olarak ayırır.
+
+**Aynı bilgiyi çok sayıda sütunda tekrarlamak**
+
+Toplam nüfus, kadın nüfus, erkek nüfus ve bunlardan türeyen oranların birlikte kullanılması tam veya yüksek doğrusal bağımlılık yaratabilir.
+
+**Eğitim ve testte ayrı kurallar üretmek**
+
+Kategori düzeyleri, dilim sınırları, merkezleme ortalaması ve nadir kategori eşiği eğitim verisinde öğrenilmeli; yeni veriye aynı kural uygulanmalıdır.
+
+**Özellik adını belirsiz bırakmak**
+
+`ortalama_gdp` yerine `gdp_per_capita_mean_2015_2019` gibi dönem, ölçü ve birimi anlatan adlar daha güvenlidir.
+
+## Egzersizler
+
+**Egzersiz 1**
+
+`countries` verisinde ihracat eksi ithalat olarak ticaret dengesi özelliği üretin. İşaretin anlamını açıklayın.
+
+**Egzersiz 2**
+
+Kadın ve erkek işsizlik oranlarından mutlak cinsiyet farkı üretin. İşaretli farkla hangi bilginin kaybolduğunu tartışın.
+
+**Egzersiz 3**
+
+`population_total / 1e6` özelliği üretmek ile `log(population_total)` üretmek arasındaki amaç farkını açıklayın.
+
+**Egzersiz 4**
+
+Türkiye için kişi başına GSYH'nin bir ve iki yıllık gecikmelerini oluşturun. Yıl boşluğu kontrolü ekleyin.
+
+**Egzersiz 5**
+
+2019 yılı yaşam beklentisini açıklamak için 2015–2018 internet kullanım ortalaması üretin. 2019 değerini pencereye dahil etmemenin gerekçesini yazın.
+
+**Egzersiz 6**
+
+Gelir grubunu `model.matrix()` ile gösterge sütunlarına dönüştürün. Referans düzeyini belirleyin.
+
+**Egzersiz 7**
+
+Kişi başına GSYH'yi veri temelli dört dilime ayırın. Eğitim/test bağlamında bu sınırların nasıl saklanacağını açıklayın.
+
+**Egzersiz 8**
+
+Yükseköğretim göstergesinin eksiklik bayrağını üretin ve bölgeye göre oranını hesaplayın.
+
+**Egzersiz 9**
+
+Aşağıdaki özelliklerden hangileri 2019 yaşam beklentisini gerçek zamanlı tahmin ederken sızıntı yaratabilir: 2018 GSYH, 2019 sonunda yayımlanan bebek ölüm oranı, 2020 internet kullanımı, ülke bölgesi? Her birini gerekçelendirin.
+
+**Egzersiz 10**
+
+Bir özelliği yayınlamadan önce uygulanacak en az altı maddelik doğrulama listesi yazın.
+
+## Egzersiz Çözümleri
+
+**Çözüm 1**
+
+```{r}
+#| label: feature-solution-1
+
+countries |>
+  transmute(
+    country,
+    trade_balance_pct_gdp = exports_gdp_pct - imports_gdp_pct
+  ) |>
+  arrange(trade_balance_pct_gdp)
+```
+
+Pozitif değer ihracat payının, negatif değer ithalat payının daha yüksek olduğunu gösterir. Bu gösterge parasal dış ticaret dengesinin kendisi değildir; iki akımın GSYH içindeki paylarının farkıdır.
+
+**Çözüm 2**
+
+```{r}
+#| label: feature-solution-2
+
+countries |>
+  transmute(
+    country,
+    signed_gap =
+      unemployment_female_pct - unemployment_male_pct,
+    absolute_gap = abs(signed_gap)
+  ) |>
+  arrange(desc(absolute_gap))
+```
+
+Mutlak fark eşitsizliğin büyüklüğünü korur, hangi cinsiyetin oranının daha yüksek olduğu bilgisini kaybeder.
+
+**Çözüm 3**
+
+Milyona bölmek yalnızca birimi kişiden milyon kişiye çevirir; dağılım biçimi ve göreli uzaklıklar doğrusal olarak korunur. Log dönüşümü çarpımsal farkları temsil eder ve büyük değerleri daha güçlü sıkıştırır.
+
+**Çözüm 4**
+
+```{r}
+#| label: feature-solution-4
+
+country_indicators |>
+  filter(country_code == "TUR") |>
+  arrange(year) |>
+  mutate(
+    lag1 = if_else(year - lag(year, 1) == 1, lag(gdp_per_capita_usd, 1), NA_real_),
+    lag2 = if_else(year - lag(year, 2) == 2, lag(gdp_per_capita_usd, 2), NA_real_)
+  ) |>
+  select(year, gdp_per_capita_usd, lag1, lag2) |>
+  filter(year >= 2015, year <= 2019)
+```
+
+**Çözüm 5**
+
+```{r}
+#| label: feature-solution-5
+
+country_indicators |>
+  filter(year >= 2015, year <= 2018) |>
+  group_by(country_code, country) |>
+  summarise(
+    internet_mean_2015_2018 = mean(internet_users_pct, na.rm = TRUE),
+    n_years = sum(!is.na(internet_users_pct)),
+    .groups = "drop"
+  )
+```
+
+2019 başında tahmin yapıldığı varsayılırsa 2019 yıl sonu göstergesi henüz bilinmez. Kesim tarihi özellik tanımının parçasıdır.
+
+**Çözüm 6**
+
+```{r}
+#| label: feature-solution-6
+
+gelir_faktor <- countries |>
+  mutate(
+    income_group = relevel(factor(income_group), ref = "High income")
+  )
+
+head(model.matrix(~ income_group, data = gelir_faktor))
+```
+
+Sabit sütunuyla birlikte “High income” referanstır; diğer sütunlar bu düzeye göre farkları temsil eder.
+
+**Çözüm 7**
+
+```{r}
+#| label: feature-solution-7
+
+sinirlar <- quantile(
+  countries$gdp_per_capita_usd,
+  probs = seq(0, 1, 0.25),
+  na.rm = TRUE
+)
+
+countries |>
+  mutate(
+    gdp_group = cut(
+      gdp_per_capita_usd,
+      breaks = unique(sinirlar),
+      include.lowest = TRUE
+    )
+  ) |>
+  count(gdp_group)
+```
+
+Modelleme sürecinde `sinirlar` yalnızca eğitim verisinden hesaplanır ve test/yeni veride aynı nesne kullanılır.
+
+**Çözüm 8**
+
+```{r}
+#| label: feature-solution-8
+
+countries |>
+  mutate(
+    school_missing = is.na(school_enrollment_tertiary_pct)
+  ) |>
+  group_by(region) |>
+  summarise(
+    n = n(),
+    missing_rate = mean(school_missing),
+    .groups = "drop"
+  ) |>
+  arrange(desc(missing_rate))
+```
+
+**Çözüm 9**
+
+- 2018 GSYH tahmin anında yayımlanmışsa kullanılabilir.
+- 2019 sonunda yayımlanan bebek ölüm oranı 2019 başındaki tahminde sızıntıdır.
+- 2020 internet kullanımı geleceğe ait olduğu için sızıntıdır.
+- Bölge önceden bilinen ve kararlı bir bilgidir; tanım değişikliği yoksa kullanılabilir.
+
+Kesin karar, tahminin yapıldığı tarih ve verinin gerçekte yayımlanma gecikmesine bağlıdır.
+
+**Çözüm 10**
+
+Örnek liste: anlam ve formül, analiz birimi, payda kontrolü, zaman kesimi, birim, eksiklik, sonsuz değer, beklenen aralık, eğitimden öğrenilen parametreler ve yeni veride bulunabilirlik.
+
+## Bölüm Özeti
+
+Özellik mühendisliği ham değişkenleri amaçla ilişkili temsillere dönüştürür. Toplam, fark, oran, etkileşim, logaritma, polinom, zaman gecikmesi, hareketli özet, kategori kodu ve eksiklik göstergesi farklı bilgi yapılarını görünür kılar.
+
+Her özellik analiz birimine, zaman yönüne, birime ve alan bilgisine dayanmalıdır. Oranlarda payda, gecikmelerde grup ve sıralama, hareketli özetlerde pencere, kategorilerde referans ve yeni düzeyler açıkça yönetilmelidir.
+
+En önemli sınır tahmin anıdır. Gelecekten, sonuçtan veya test verisinden öğrenilen bilgi güçlü görünen fakat sızıntılı özellikler üretir. Özellik üretimi ve seçimi eğitim/yeniden örnekleme sürecinin içinde yapılmalı; kurallar kod, isim ve doğrulama kontrolleriyle tekrar üretilebilir hale getirilmelidir.
+
+## Kaynaklar ve Ek Okuma
+
+Özellik tasarımının temel ilkeleri ve çok sayıdaki uygulamalı örnek için [@kuhnJohnson2019], temsil ile model karmaşıklığı arasındaki ilişki için [@hastie2009; @james2023], R'de tekrar üretilebilir özellik tarifleri için [@recipes2024] önerilir. Bölümde kullanılan ülke ve ülke-yıl göstergeleri World Development Indicators kaynağına dayanır [@worldBankWDI].

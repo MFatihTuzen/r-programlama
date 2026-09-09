@@ -2,9 +2,35 @@
 
 Bu dosya, R Programlama kitabının önemli sürümlerini ve bu sürümlerde tamamlanan çalışmaları özetler.
 
+## v0.3.0 — 2026-09-09
+
+### Bölüm III — Veri Ön İşleme
+
+Kitabın üçüncü ana bölümü tamamlandı ve kitap navigasyonuna eklendi.
+
+#### Yeni bölümler
+
+- **Veri Ön İşlemeye Giriş:** Ham veriden analize ve modellemeye hazır veriye geçiş; temizleme, dönüştürme ve modellemeye hazırlama ayrımı.
+- **Eksik Veriler ve İmputasyon:** MCAR, MAR ve MNAR mekanizmaları; silme, basit imputasyon, kNN, regresyon, MICE ve Rubin birleştirme kuralları.
+- **Aykırı Gözlemler:** IQR, z-puanı, sağlam ölçüler, Mahalanobis ve Cook uzaklıkları ile duyarlılık analizi.
+- **Veri Dönüşümleri:** Logaritma, karekök, ters, Box--Cox ve Yeo--Johnson dönüşümleri; katsayı ve geri dönüşüm yorumları.
+- **Ölçeklendirme:** Min--max normalizasyonu, z-puanı standardizasyonu ve sağlam ölçeklendirme.
+- **Özellik Mühendisliğine Giriş:** Aritmetik, etkileşim, polinom, zaman, kategorik ve toplulaştırılmış özellikler.
+- **Veri Sızıntısı ve Doğru Ön İşleme İş Akışı:** Hedef, zaman, grup ve değerlendirme sızıntıları; eğitim/test ayrımı ve kat içi ön işleme.
+
+#### Akademik ve teknik altyapı
+
+- Yöntemlerin kuramsal gerekçeleri, varsayımları ve istatistiksel etkileri genişletildi.
+- Matematiksel ifadeler Quarto uyumlu blok denklemler olarak düzenlendi.
+- Otomatik bölüm numaralandırmasıyla çakışan elle numaralandırılmış alt başlıklar kaldırıldı.
+- Kitap genelinde kullanılmak üzere BibTeX kaynakçası ve metin içi atıf altyapısı eklendi.
+- Kitabın sonunda ortak Kaynakça bölümü oluşturuldu.
+- Bölüm III örnekleri mevcut World Bank WDI tabanlı proje verileriyle bütünleştirildi.
+- Quarto freeze çıktıları Bölüm III için oluşturuldu ve kitabın tamamı R 4.4.2 ile doğrulandı.
+
 ## v0.2.0 — 2026-08-11
 
-### Part II — Veri Manipülasyonu ve Dönüştürme
+### Bölüm II — Veri Manipülasyonu ve Dönüştürme
 
 Kitabın ikinci ana kısmı tamamlandı ve kitap navigasyonuna eklendi.
 
@@ -32,7 +58,7 @@ Kitabın ikinci ana kısmı tamamlandı ve kitap navigasyonuna eklendi.
 
 ## v0.1.0 — 2026-07-09
 
-### Part I — R Programlamaya Giriş
+### Bölüm I — R Programlamaya Giriş
 
 Kitabın ilk ana kısmı tamamlandı.
 

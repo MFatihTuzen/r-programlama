@@ -1,0 +1,6 @@
+# Kaynakça {.unnumbered}
+
+Bu kaynakça kitap boyunca metin içinde atıf verilen eserleri içerir.
+
+::: {#refs}
+:::

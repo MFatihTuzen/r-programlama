@@ -4,7 +4,7 @@ Bu belge, kitabın tamamlanan ana kısımlarını ve sonraki geliştirme hedefle
 
 ## Tamamlanan ana kısımlar
 
-### Part I — R Programlamaya Giriş
+### Bölüm I — R Programlamaya Giriş
 
 **Durum:** Tamamlandı
 
@@ -12,7 +12,7 @@ Bu belge, kitabın tamamlanan ana kısımlarını ve sonraki geliştirme hedefle
 
 R programlama temelleri, veri tipleri ve yapıları, fonksiyonlar, kontrol yapıları, tarih-saat ve metin işlemleri, apply ailesi ile veri içe/dışa aktarma konuları tamamlandı.
 
-### Part II — Veri Manipülasyonu ve Dönüştürme
+### Bölüm II — Veri Manipülasyonu ve Dönüştürme
 
 **Durum:** Tamamlandı
 
@@ -25,21 +25,24 @@ R programlama temelleri, veri tipleri ve yapıları, fonksiyonlar, kontrol yapı
 - Geniş, uzun ve metadata tabloları
 - Yeniden üretim, veri sözlüğü ve kalite kontrol çıktıları
 
+### Bölüm III — Veri Ön İşleme
+
+**Durum:** Tamamlandı
+
+**Sürüm:** `v0.3.0`
+
+- Veri Ön İşlemeye Giriş
+- Eksik Veriler ve İmputasyon
+- Aykırı Gözlemler
+- Veri Dönüşümleri
+- Ölçeklendirme
+- Özellik Mühendisliğine Giriş
+- Veri Sızıntısı ve Doğru Ön İşleme İş Akışı
+- Kitap genelinde BibTeX tabanlı metin içi atıf ve Kaynakça altyapısı
+
 ## Planlanan ana kısımlar
 
-### Part III — Veri Ön İşleme
-
-**Durum:** Planlanıyor
-
-Olası içerik:
-
-- Eksik veriler
-- Aykırı gözlemler
-- Veri dönüşümleri
-- Normalizasyon ve standardizasyon
-- Özellik mühendisliğine giriş
-
-### Part IV — Veri Görselleştirme
+### Bölüm IV — Veri Görselleştirme
 
 **Durum:** Planlanıyor
 

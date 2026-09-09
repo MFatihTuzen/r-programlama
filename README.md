@@ -32,9 +32,13 @@ Kitapta aşağıdaki konular yer almaktadır:
 - Veri Manipülasyonu
 - Veri Dönüştürme
 - Veri Birleştirme
+- Eksik Veriler ve İmputasyon
+- Aykırı Gözlemler
+- Ölçeklendirme
+- Özellik Mühendisliği
+- Veri Sızıntısı ve Doğru Ön İşleme İş Akışı
 - Veri Görselleştirme (ggplot2)
 - Keşifçi Veri Analizi
-- Veri Ön İşleme
 - Temel İstatistik
 - Doğrusal Regresyon
 
@@ -42,10 +46,11 @@ Kitap düzenli olarak güncellenmektedir ve yeni bölümler eklenmeye devam edec
 
 ### Güncel durum
 
-- **Part I — R Programlamaya Giriş:** tamamlandı (`v0.1.0`)
-- **Part II — Veri Manipülasyonu ve Dönüştürme:** tamamlandı (`v0.2.0`)
+- **Bölüm I — R Programlamaya Giriş:** tamamlandı (`v0.1.0`)
+- **Bölüm II — Veri Manipülasyonu ve Dönüştürme:** tamamlandı (`v0.2.0`)
+- **Bölüm III — Veri Ön İşleme:** tamamlandı (`v0.3.0`)
 
-Part II; Veri Manipülasyonu, Veri Dönüştürme ve Veri Birleştirme bölümlerinin yanında World Bank WDI tabanlı, yeniden kullanılabilir bir ülke veri altyapısı içerir.
+Bölüm II; Veri Manipülasyonu, Veri Dönüştürme ve Veri Birleştirme bölümlerinin yanında World Bank WDI tabanlı, yeniden kullanılabilir bir ülke veri altyapısı içerir. Bölüm III bu altyapıyı eksik veri, aykırı gözlem, dönüşüm, ölçeklendirme, özellik mühendisliği ve sızıntısız modelleme iş akışlarında kullanır; ayrıca kitap geneli için akademik kaynakça altyapısını başlatır.
 
 ---
 

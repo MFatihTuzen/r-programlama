@@ -3,6 +3,8 @@ project:
   output-dir: _book
   execute-dir: project
 
+bibliography: references.bib
+
 book:
   title: "R Programlama"
   subtitle: "Veri Analizi ve İstatistiksel Düşünmeye Uygulamalı Giriş"
@@ -58,20 +60,26 @@ book:
         - chapters/02-veri-manipulasyonu/data_manipulation.qmd
         - chapters/02-veri-manipulasyonu/data_transformation.qmd
         - chapters/02-veri-manipulasyonu/data_join.qmd
+    - part: "III · Veri Ön İşleme"
+      chapters:
+        - chapters/03-veri-on-isleme/data_preprocessing.qmd
+        - chapters/03-veri-on-isleme/missing_data_imputation.qmd
+        - chapters/03-veri-on-isleme/outliers.qmd
+        - chapters/03-veri-on-isleme/data_transformations.qmd
+        - chapters/03-veri-on-isleme/scaling.qmd
+        - chapters/03-veri-on-isleme/feature_engineering.qmd
+        - chapters/03-veri-on-isleme/data_leakage.qmd
     # 
-    # - part: "III · Keşifçi Veri Analizi"
+    # - part: "IV · Veri Görselleştirme"
     #   chapters:
     #     - chapters/03-kesifci-analiz/data_analysis.qmd
     #     - chapters/03-kesifci-analiz/ggplot2.qmd
-    # 
-    # - part: "IV · Veri Ön İşleme"
-    #   chapters:
-    #     - chapters/04-veri-on-isleme/data_preprocess.qmd
     # 
     # - part: "V · İstatistiksel Analiz"
     #   chapters:
     #     - chapters/05-istatistiksel-analiz/statistics.qmd
     #     - chapters/05-istatistiksel-analiz/regresyon.qmd
+    - references.qmd
 
 language:
   title-block-author-single: "Yazar"

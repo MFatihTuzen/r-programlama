@@ -1,0 +1,873 @@
+# Veri Sızıntısı ve Doğru Ön İşleme İş Akışı {#sec-data-leakage}
+
+Bir model eğitim verisinde ve test verisinde olağanüstü iyi görünebilir; fakat gerçek kullanıma geçtiğinde başarısız olabilir. Bunun nedeni her zaman algoritmanın zayıf olması değildir. Bazen model, tahmin anında erişemeyeceği bir bilgiyi geliştirme sırasında görmüştür.
+
+**Veri sızıntısı** (*data leakage*), modelin eğitim veya değerlendirme sürecine izin verilmemesi gereken bilginin girmesidir. Sızıntı genellikle performansı olduğundan iyi gösterir; bazen katsayıları, özellik seçimini ve bilimsel yorumu da bozar.
+
+Bu bölümde Bölüm III boyunca öğrendiğimiz eksik veri, aykırı gözlem, dönüşüm, ölçeklendirme ve özellik mühendisliği kararlarını tek bir güvenli iş akışında birleştireceğiz.
+
+Temel soru şudur:
+
+> Modelin bu bilgiyi gerçek tahmin anında ve aynı üretim koşullarında bilmesi mümkün mü?
+
+Yanıt “hayır” ise özellik ne kadar güçlü görünürse görünsün kullanılmamalıdır.
+
+Bu sezgiyi daha kesin hale getirmek için tahmin anını \(t\), o anda meşru olarak erişilebilen bütün bilgileri \(\mathcal I_t\) ile gösterelim. Kullanılacak her özellik \(X_j\), \(\mathcal I_t\) içindeki bilgilerden üretilebilmelidir:
+
+$$
+X_j = g_j(\mathcal I_t).
+$$
+
+Sonuçtan sonra oluşan bir değişken, gelecekte yayımlanan bir kayıt veya test kümesinin özetinden öğrenilen parametre \(\mathcal I_t\)'nin dışındadır. Bu özellik modelde kullanıldığında tahmin problemi sessizce değişir: model gerçek kullanım koşullarındaki \(P(Y\mid\mathcal I_t)\) ilişkisini değil, daha zengin ve erişilemez bir bilgi kümesindeki ilişkiyi öğrenir. Veri sızıntısının yalnızca teknik değil, **hedeflenen tahmin probleminin ihlali** olmasının nedeni budur [@kaufman2012; @kapoorNarayanan2023].
+
+Değerlendirme sızıntısı ikinci bir bilgi sınırını ihlal eder. Test kümesi gelecekteki performansı tarafsızca taklit etmek için ayrılır. Test sonuçları model, özellik, hiperparametre veya ön işleme seçimini etkilediğinde test artık bağımsız bir değerlendirme örneklemi değildir. Görünürde satırlar eğitime eklenmemiş olsa bile seçim kararı test hatasına uyum sağlar ve raporlanan performans iyimserleşir.
+
+::: callout-important
+## Sızıntı yalnızca test verisini açmak değildir
+
+Sonuçtan türetilmiş bir sütun, gelecek tarihli bir ölçüm, aynı kişiye ait kayıtların iki kümeye dağılması veya bütün veriden öğrenilen imputasyon medyanı da sızıntı oluşturabilir.
+:::
+
+## Tahmin Problemini Önce Tanımlamak
+
+Sızıntı, teknik bir kod hatasından önce problem tanımı hatasıdır. Aşağıdaki dört unsur açık olmalıdır:
+
+1. **Tahmin birimi:** Her tahmin kimi veya neyi temsil ediyor?
+2. **Kesim zamanı:** Tahmin hangi anda üretiliyor?
+3. **Sonuç penceresi:** Hangi gelecekteki sonuç tahmin ediliyor?
+4. **Mevcut bilgi:** Kesim zamanında hangi değişkenler gerçekten biliniyor?
+
+Örneğin “bir ülkenin 2020 yaşam beklentisini tahmin etmek” yetersiz bir tanımdır. Tahmin 2020 başında mı, sonunda mı yapılıyor? Aynı yılın bebek ölüm oranı yayımlanmış mı? Revize edilen 2019 GSYH'nin hangi sürümü kullanılabilir? Bilgi zamanı açıklanmadığında sızıntı sınırı da belirsiz olur.
+
+## Proje Verisini Hazırlamak
+
+```{r}
+#| label: leakage-setup
+
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+
+countries <- readr::read_csv(
+  "data/countries.csv",
+  show_col_types = FALSE
+)
+
+country_indicators <- readr::read_csv(
+  "data/country_indicators.csv",
+  show_col_types = FALSE
+)
+```
+
+Kesit verisinde 2019 ülkeleri, panelde ise ülke-yıl gözlemleri vardır.
+
+```{r}
+#| label: leakage-grain
+
+countries |>
+  summarise(
+    satir = n(),
+    ulke = n_distinct(country_code),
+    yil = n_distinct(year)
+  )
+
+country_indicators |>
+  summarise(
+    satir = n(),
+    ulke = n_distinct(country_code),
+    yil = n_distinct(year)
+  )
+```
+
+Bu fark bölme stratejisini belirler. Ülke-yıl satırlarını rastgele ayırmak aynı ülkenin farklı yıllarını hem eğitim hem test kümesine koyabilir.
+
+## Üç Temel Sızıntı Türü
+
+**1. Hedef sızıntısı**
+
+Bir özellik sonuç değişkenini doğrudan veya dolaylı olarak içeriyorsa hedef sızıntısı oluşur.
+
+Örnekler:
+
+- kredi temerrüdünü tahmin ederken tahsilat durumunu kullanmak,
+- hastane yatışını tahmin ederken taburcu kodunu kullanmak,
+- gelecek yıl büyümeyi tahmin ederken gelecek yıl yayımlanan revizyonu kullanmak,
+- toplam puanı tahmin ederken toplamın hesaplandığı alt puanları kullanmak.
+
+Ülke verisinde toplam nüfus, kadın ve erkek nüfusla yaklaşık kimlik ilişkisi taşır:
+
+$$
+Nüfus_{toplam} \approx Nüfus_{kadın} + Nüfus_{erkek}
+$$
+
+Toplam nüfusu tahmin etmeye çalışırken kadın ve erkek nüfusu özellik olarak kullanmak teknik olarak çok başarılı olur; fakat hedefi bileşenlerinden yeniden kurar.
+
+```{r}
+#| label: leakage-target-identity
+
+countries |>
+  transmute(
+    country,
+    population_total,
+    reconstructed_population = population_female + population_male,
+    difference = population_total - reconstructed_population
+  ) |>
+  summarise(
+    correlation = cor(population_total, reconstructed_population),
+    mean_absolute_difference = mean(abs(difference))
+  )
+```
+
+Bu özelliklerin kullanımı amaca bağlıdır. Nüfus bileşenlerini kullanarak veri kalite kontrolü yapmak uygundur; henüz bilinmeyen toplam nüfusu bağımsız olarak tahmin ettiğimizi iddia etmek yanıltıcıdır.
+
+**2. Eğitim–test bulaşması**
+
+Test kümesinden alınan herhangi bir özet, model veya seçim kararı eğitim sürecine girerse değerlendirme bağımsızlığını kaybeder.
+
+Örnekler:
+
+- bütün verinin ortalamasıyla standardizasyon,
+- bütün verinin medyanıyla imputasyon,
+- bütün verideki korelasyona göre özellik seçimi,
+- bütün veride aykırı değer sınırı belirleme,
+- test performansına bakarak dönüşüm seçme.
+
+**3. Satırlar arası bilgi sızıntısı**
+
+Bağlantılı gözlemler farklı kümelere dağıldığında model test örnekleri hakkında dolaylı bilgi edinir.
+
+- aynı kişinin tekrarlı ölçümleri,
+- aynı hanedeki bireyler,
+- aynı ülkenin farklı yılları,
+- aynı belgenin parçaları,
+- aynı ürünün çoğaltılmış kayıtları.
+
+Bu durumda rastgele satır bölmesi bağımsız yeni birimleri değil, daha önce görülen birimin başka kaydını sınar.
+
+## Önce Böl, Sonra Öğren
+
+Ön işleme adımlarını iki gruba ayırmak yararlıdır.
+
+**Sabit kurallar**
+
+Veriden parametre öğrenmeyen, önceden tanımlı kurallardır:
+
+- sütun adlarını standartlaştırmak,
+- bilinen `".."` kodunu `NA` yapmak,
+- metreyi kilometreye çevirmek,
+- sabit tanımla `log1p()` uygulamak,
+- tarih içinden ay numarası çıkarmak.
+
+Bu kurallar yine doğru tanımlanmalıdır; fakat test dağılımından özet öğrenmez.
+
+**Öğrenilen kurallar**
+
+Veriye bakarak sayı, kategori, model veya eşik belirler:
+
+- medyan imputasyonu,
+- ortalama ve standart sapma,
+- min--max sınırları,
+- IQR aykırı değer eşikleri,
+- Box--Cox/Yeo--Johnson parametresi,
+- nadir kategori listesi,
+- özellik seçimi,
+- PCA yükleri.
+
+Bu adımlar yalnızca eğitim verisinden öğrenilmelidir.
+
+``` text
+Ham veri
+  |
+  |-- Önceden tanımlı veri doğrulama ve sabit temizlik
+  |
+  |-- Eğitim / doğrulama / test ayrımı
+        |
+        |-- Eğitim: ön işleme parametrelerini öğren
+        |-- Eğitim: dönüştür ve modeli kur
+        |-- Doğrulama: öğrenilmiş kuralları uygula ve karar ver
+        |-- Test: yalnızca nihai, kilitlenmiş süreci değerlendir
+```
+
+## Basit Bir Sızıntı Gösterimi
+
+Kişi başına GSYH'yi min--max ölçeklendirelim. Yanlış yaklaşım bütün veriden sınırları öğrenir.
+
+```{r}
+#| label: leakage-split-cross-section
+
+model_data <- countries |>
+  select(
+    country,
+    life_expectancy_total,
+    gdp_per_capita_usd,
+    internet_users_pct,
+    infant_mortality_rate
+  ) |>
+  drop_na()
+
+set.seed(2026)
+train_id <- sample(
+  seq_len(nrow(model_data)),
+  size = floor(0.80 * nrow(model_data))
+)
+
+train_data <- model_data[train_id, ]
+test_data <- model_data[-train_id, ]
+```
+
+```{r}
+#| label: leakage-wrong-scaling
+
+all_min <- min(model_data$gdp_per_capita_usd)
+all_max <- max(model_data$gdp_per_capita_usd)
+
+train_wrong <- train_data |>
+  mutate(
+    gdp_scaled =
+      (gdp_per_capita_usd - all_min) / (all_max - all_min)
+  )
+```
+
+Doğru yaklaşım sınırları eğitim verisinden öğrenir ve testte aynen kullanır.
+
+```{r}
+#| label: leakage-correct-scaling
+
+train_min <- min(train_data$gdp_per_capita_usd)
+train_max <- max(train_data$gdp_per_capita_usd)
+
+scale_from_train <- function(x) {
+  (x - train_min) / (train_max - train_min)
+}
+
+train_correct <- train_data |>
+  mutate(gdp_scaled = scale_from_train(gdp_per_capita_usd))
+
+test_correct <- test_data |>
+  mutate(gdp_scaled = scale_from_train(gdp_per_capita_usd))
+```
+
+Tek bir dönüşümde fark küçük olabilir. Sızıntının ilkesi büyüklüğünden bağımsızdır: test verisinin model geliştirme sürecine bilgi vermemesi gerekir.
+
+## Bölme Stratejisi Problem Yapısını İzlemelidir
+
+**Rastgele satır bölmesi**
+
+Bağımsız ve benzer dağılımdan gelen kesit gözlemlerinde uygun olabilir. 2019 ülke kesitinde amacımız aynı evrenden yeni bir ülke gözlemini tahmin etmekse başlangıç seçeneğidir.
+
+**Tabakalı bölme**
+
+Sonuç sınıfı veya önemli bir grup dengesizse her kümede benzer dağılım korunabilir. Örneğin gelir gruplarının küçük test kümesinde tamamen kaybolmasını önlemek için grup içinde örnekleme yapılabilir.
+
+```{r}
+#| label: leakage-stratified-split
+
+set.seed(2026)
+
+stratified <- countries |>
+  group_by(income_group) |>
+  mutate(
+    random_order = runif(n()),
+    set = if_else(
+      rank(random_order, ties.method = "first") <= floor(0.80 * n()),
+      "train",
+      "test"
+    )
+  ) |>
+  ungroup()
+
+stratified |>
+  count(income_group, set)
+```
+
+**Grup bazlı bölme**
+
+Yeni bir ülkeye genelleme hedefleniyorsa aynı ülkenin bütün yılları tek kümede tutulmalıdır.
+
+```{r}
+#| label: leakage-group-split
+
+set.seed(2026)
+
+country_codes <- unique(country_indicators$country_code)
+train_countries <- sample(
+  country_codes,
+  size = floor(0.80 * length(country_codes))
+)
+
+panel_group_split <- country_indicators |>
+  mutate(
+    set = if_else(
+      country_code %in% train_countries,
+      "train",
+      "test"
+    )
+  )
+
+panel_group_split |>
+  group_by(country_code) |>
+  summarise(set_count = n_distinct(set), .groups = "drop") |>
+  count(set_count)
+```
+
+Her ülke yalnızca bir kümede bulunduğu için `set_count` bütün ülkelerde 1 olmalıdır.
+
+**Zamana göre bölme**
+
+Geleceği tahmin etme hedefinde eğitim geçmişte, test gelecekte olmalıdır.
+
+```{r}
+#| label: leakage-time-split
+
+panel_time_split <- country_indicators |>
+  filter(year >= 2000, year <= 2019) |>
+  mutate(
+    set = case_when(
+      year <= 2015 ~ "train",
+      year <= 2018 ~ "validation",
+      year == 2019 ~ "test"
+    )
+  )
+
+panel_time_split |>
+  count(set, year)
+```
+
+Bu düzen, geçmiş veriden geleceğe genelleme koşulunu taklit eder. Rastgele yıl bölmesi, modelin gelecekteki dağılımı eğitimde görmesine yol açabilir.
+
+::: callout-warning
+## Yayımlanma zamanı gözlem zamanından farklıdır
+
+Bir gösterge 2019'a ait olsa bile 2021'de yayımlanmış olabilir. Gerçek zamanlı tahminde sütunun yıl etiketi değil, erişilebilir olduğu tarih önemlidir.
+:::
+
+## Zaman Sızıntısı
+
+**Gelecek değerini gecikme sanmak**
+
+```{r}
+#| label: leakage-lead-example
+
+turkey_panel <- country_indicators |>
+  filter(country_code == "TUR") |>
+  arrange(year) |>
+  transmute(
+    year,
+    current_gdp = gdp_per_capita_usd,
+    previous_gdp = lag(gdp_per_capita_usd),
+    future_gdp = lead(gdp_per_capita_usd)
+  ) |>
+  filter(year >= 2015, year <= 2019)
+
+turkey_panel
+```
+
+2019 başında tahmin yaparken `previous_gdp` uygun olabilir; `future_gdp` bilinmez. Kodun teknik olarak doğru çalışması bilgi yönünün doğru olduğunu göstermez.
+
+**Merkezli hareketli ortalama**
+
+Bir zaman noktasının hem önceki hem sonraki değerlerini kullanan pencere açıklayıcı grafik için uygun olabilir; geleceği tahmin eden modelde sızıntıdır. Pencere yalnızca tahmin anına kadar kapanmalıdır.
+
+**Rastgele çapraz doğrulama**
+
+Zaman bağımlı veride rastgele katlar geleceğin geçmişi tahmin etmesine veya yakın yılların iki kümede yer almasına izin verir. İleri zincirleme değerlendirme kullanılmalıdır:
+
+``` text
+Kat 1: [2000 ... 2008] -> 2009
+Kat 2: [2000 ... 2009] -> 2010
+Kat 3: [2000 ... 2010] -> 2011
+...
+```
+
+## Yinelenen ve Bağlantılı Kayıtlar
+
+Aynı gözlemin kopyaları iki kümeye dağılırsa model test satırını eğitimde neredeyse aynen görür.
+
+```{r}
+#| label: leakage-duplicate-check
+
+countries |>
+  summarise(
+    duplicate_country_code = sum(duplicated(country_code)),
+    duplicate_full_row = sum(duplicated(pick(everything())))
+  )
+```
+
+Tam kopya olmasa bile aynı ülkenin ardışık yılları güçlü biçimde benzerdir. Hedef yeni ülkeyse grup bazlı; hedef aynı ülkelerin geleceğiyse zamansal bölme gerekir.
+
+## Hedefe Göre Ön İşleme Yapmak
+
+Aykırı gözlemleri “sonuçla ilişkisi zayıf” diye silmek, test sonucuna bakarak dönüşüm seçmek veya bütün veri üzerinde en yüksek korelasyonlu değişkenleri almak hedef bilgisini işleme taşır.
+
+Özellik seçimi örneği:
+
+```{r}
+#| label: leakage-feature-selection
+
+candidate_data <- countries |>
+  select(where(is.numeric)) |>
+  select(-year)
+
+target_correlations <- vapply(
+  candidate_data,
+  function(x) cor(
+    x,
+    countries$life_expectancy_total,
+    use = "complete.obs"
+  ),
+  numeric(1)
+)
+
+sort(abs(target_correlations), decreasing = TRUE)[1:8]
+```
+
+Bu hesap keşif için bilgilendiricidir. Ancak model performansını test edeceksek özellik seçimi yalnızca eğitim verisinde, çapraz doğrulamanın içinde tekrarlanmalıdır. Bütün veriyle seçilen özellikler test hedeflerini dolaylı olarak görmüştür.
+
+## Doğru Ön İşleme Sırası
+
+Her projede sıra değişebilir; fakat genel bir modelleme akışı şöyledir:
+
+1. Problem, birim, hedef ve zaman sınırını tanımla.
+2. Ham veriyi değişmeden sakla.
+3. Bilinen kodlama hatalarını sabit kurallarla düzelt.
+4. Nihai test kümesini problem yapısına uygun ayır ve kilitle.
+5. Eğitim içinde yeniden örnekleme katları oluştur.
+6. Her eğitim katında:
+   - eksik veri modelini öğren,
+   - aykırı değer eşiklerini öğren,
+   - dönüşüm parametrelerini öğren,
+   - kategori düzeylerini ve özellik kurallarını öğren,
+   - ölçek parametrelerini öğren,
+   - modeli kur.
+7. Aynı kuralları ilgili doğrulama katına uygula.
+8. Model ve ayarları doğrulama sonuçlarıyla seç.
+9. Seçilen süreci bütün eğitim verisinde yeniden kur.
+10. Kilitli test kümesini bir kez değerlendir.
+11. Ön işleme ve model nesnelerini üretime birlikte taşı.
+
+Bu sıra “önce bütün veriyi temizle, sonra modelle” alışkanlığının neden yetersiz olduğunu gösterir. Veriden öğrenilen temizlik kararları modelin parçasıdır.
+
+## Manuel Bir Eğitim/Test Ön İşleme Nesnesi
+
+Ön işleme parametrelerini bir listede saklayalım.
+
+```{r}
+#| label: leakage-manual-prep
+
+prep_ogren <- function(data) {
+  list(
+    internet_median = median(data$internet_users_pct, na.rm = TRUE),
+    gdp_mean = mean(log(data$gdp_per_capita_usd), na.rm = TRUE),
+    gdp_sd = sd(log(data$gdp_per_capita_usd), na.rm = TRUE),
+    mortality_mean = mean(data$infant_mortality_rate, na.rm = TRUE),
+    mortality_sd = sd(data$infant_mortality_rate, na.rm = TRUE)
+  )
+}
+
+prep_uygula <- function(data, prep) {
+  data |>
+    mutate(
+      internet_users_pct = coalesce(
+        internet_users_pct,
+        prep$internet_median
+      ),
+      log_gdp_z =
+        (log(gdp_per_capita_usd) - prep$gdp_mean) /
+        prep$gdp_sd,
+      infant_mortality_z =
+        (infant_mortality_rate - prep$mortality_mean) /
+        prep$mortality_sd
+    )
+}
+
+prep_values <- prep_ogren(train_data)
+train_ready <- prep_uygula(train_data, prep_values)
+test_ready <- prep_uygula(test_data, prep_values)
+```
+
+Öğrenme ve uygulama işlevlerini ayırmak, test verisinin parametre hesabına yanlışlıkla girmesini zorlaştırır.
+
+## `recipes` ile Güvenli Tarif
+
+```{r}
+#| label: leakage-recipes
+
+library(recipes)
+
+model_data_with_missing <- countries |>
+  select(
+    life_expectancy_total,
+    gdp_per_capita_usd,
+    internet_users_pct,
+    infant_mortality_rate,
+    income_group
+  ) |>
+  filter(!is.na(gdp_per_capita_usd))
+
+set.seed(2026)
+train_id_2 <- sample(
+  seq_len(nrow(model_data_with_missing)),
+  size = floor(0.80 * nrow(model_data_with_missing))
+)
+
+train_2 <- model_data_with_missing[train_id_2, ]
+test_2 <- model_data_with_missing[-train_id_2, ]
+
+preprocess_recipe <- recipe(
+  life_expectancy_total ~ .,
+  data = train_2
+) |>
+  step_impute_median(all_numeric_predictors()) |>
+  step_unknown(all_nominal_predictors(), new_level = "Bilinmiyor") |>
+  step_novel(all_nominal_predictors(), new_level = "Yeni") |>
+  step_log(gdp_per_capita_usd) |>
+  step_dummy(all_nominal_predictors()) |>
+  step_zv(all_predictors()) |>
+  step_normalize(all_numeric_predictors())
+
+trained_recipe <- prep(
+  preprocess_recipe,
+  training = train_2
+)
+
+train_processed <- bake(trained_recipe, new_data = NULL)
+test_processed <- bake(trained_recipe, new_data = test_2)
+```
+
+`prep()` yalnızca `train_2` üzerinden medyanları, kategori düzeylerini, sıfır varyans bilgisini, log adımını ve ölçek parametrelerini öğrenir. `bake()` bunları test verisine uygular [@recipes2024].
+
+::: callout-note
+## Adım sırası neden önemlidir?
+
+Eksikler sayısal dönüşümden önce doldurulur; bilinmeyen ve yeni kategoriler gösterge sütunlarından önce yönetilir; sıfır varyanslı sütunlar çıkarılır; ölçeklendirme sayısal özellikler son halini aldıktan sonra uygulanır. Her proje için sıra veri ve modele göre yeniden değerlendirilir.
+:::
+
+## Modeli Kurmak ve Testi Bir Kez Kullanmak
+
+```{r}
+#| label: leakage-final-model
+
+final_model <- lm(
+  life_expectancy_total ~ .,
+  data = train_processed
+)
+
+test_prediction <- predict(
+  final_model,
+  newdata = test_processed
+)
+
+test_rmse <- sqrt(mean(
+  (test_processed$life_expectancy_total - test_prediction)^2
+))
+
+test_mae <- mean(abs(
+  test_processed$life_expectancy_total - test_prediction
+))
+
+c(RMSE = test_rmse, MAE = test_mae)
+```
+
+Test sonucuna bakıp tarifi, değişkenleri veya model ayarlarını değiştirirsek test kümesi fiilen doğrulama kümesine dönüşür. Yeni kararlar için yeni ve dokunulmamış bir test seti gerekir.
+
+Bu ilke, test kümesine yalnızca bir kez bakma sloganından daha kapsamlıdır. Tekrar tekrar denenmiş yüzlerce modelden en iyi test sonucunu seçmek, test kümesi üzerinde dolaylı optimizasyon yapmaktır. İç içe çapraz doğrulamada iç döngü özellik ve hiperparametre seçimini, dış döngü ise seçilmiş sürecin değerlendirmesini yürütür. Son test kümesi varsa, bütün seçimler tamamlandıktan sonra yalnızca bir kez kullanılmalıdır [@hastie2009; @kuhnSilge2022].
+
+## Çapraz Doğrulamada Ön İşleme
+
+K-katlı çapraz doğrulamada veri (K) parçaya ayrılır. Her turda bir parça doğrulama, kalan parçalar eğitim olur. Ön işleme her turun eğitim parçasında yeniden öğrenilmelidir.
+
+Çapraz doğrulamanın tahmin ettiği büyüklük, “bu algoritma ve bu ön işleme süreci yeni bir örneklemde nasıl davranır?” sorusunun hatasıdır. Dolayısıyla değerlendirme birimi yalnızca son model değil, parametre öğrenen bütün boru hattıdır. Medyan, dönüşüm \(\lambda\)'sı veya seçilen sütun listesi katlar dışında sabitlenirse ölçülen süreç ile üretimde kullanılacak süreç birbirinden ayrılır.
+
+``` text
+Kat 1 eğitim -> prep 1 -> model 1 -> Kat 1 doğrulama
+Kat 2 eğitim -> prep 2 -> model 2 -> Kat 2 doğrulama
+Kat 3 eğitim -> prep 3 -> model 3 -> Kat 3 doğrulama
+```
+
+Bütün eğitim verisinde bir kez imputasyon yapıp sonra katlara ayırmak bile doğrulama katlarının medyan ve ilişki yapısını diğer katlara sızdırır.
+
+**Basit bir kat döngüsü**
+
+```{r}
+#| label: leakage-cross-validation
+
+set.seed(2026)
+k <- 5
+fold_id <- sample(rep(seq_len(k), length.out = nrow(model_data)))
+
+fold_rmse <- vapply(
+  seq_len(k),
+  function(fold) {
+    analysis_data <- model_data[fold_id != fold, ]
+    assessment_data <- model_data[fold_id == fold, ]
+
+    recipe_fold <- recipe(
+      life_expectancy_total ~
+        gdp_per_capita_usd +
+        internet_users_pct +
+        infant_mortality_rate,
+      data = analysis_data
+    ) |>
+      step_log(gdp_per_capita_usd) |>
+      step_normalize(all_numeric_predictors()) |>
+      prep(training = analysis_data)
+
+    analysis_ready <- bake(recipe_fold, new_data = NULL)
+    assessment_ready <- bake(recipe_fold, new_data = assessment_data)
+
+    fit <- lm(life_expectancy_total ~ ., data = analysis_ready)
+    prediction <- predict(fit, newdata = assessment_ready)
+
+    sqrt(mean(
+      (assessment_ready$life_expectancy_total - prediction)^2
+    ))
+  },
+  numeric(1)
+)
+
+fold_rmse
+mean(fold_rmse)
+```
+
+Bu öğretici döngüde her katın ayrı tarifi vardır. Gerçek projelerde yeniden örnekleme paketleri aynı ilkeyi daha güvenli ve kapsamlı biçimde uygular.
+
+## Çoklu İmputasyon ile Değerlendirme
+
+Çoklu imputasyonun model değerlendirmesine katılması daha dikkatli bir tasarım gerektirir. İmputasyon modeli doğrulama veya test sonuçlarını öğrenmemeli; her eğitim katında kurulmalıdır. İstatistiksel çıkarım amacıyla yapılan çoklu imputasyon ile üretim tahmin boru hattı aynı hedefe sahip olmayabilir.
+
+Temel ayrım:
+
+- **Çıkarım:** Birden çok tamamlanmış veri setinde katsayıları tahmin edip belirsizlikleri birleştirmek.
+- **Tahmin:** Eğitimde kurulmuş süreçle yeni gözlem için tutarlı tahmin üretmek ve dış örneklem performansını ölçmek.
+
+Bu iki amaç için veri bölme ve birleştirme stratejisi açıkça belgelenmelidir.
+
+## Performans Dışındaki Zararlar
+
+Sızıntı yalnızca yüksek doğruluk üretmez.
+
+**Yanlış özellik önemi**
+
+Sonuca çok yakın bir sızıntılı özellik diğer gerçek yordayıcıları önemsiz gösterebilir.
+
+**Yanlış politika veya bilimsel sonuç**
+
+Sonuçtan sonra oluşan bir değişken nedenmiş gibi yorumlanabilir. Zamansal sıra bozulur.
+
+**Üretimde eksik sütun**
+
+Model, eğitim tablosunda bulunan fakat canlı sistemde henüz oluşmayan bir sütuna bağımlı olur.
+
+**Alt gruplarda adaletsizlik**
+
+Yinelenen veya iyi belgelenmiş gruplar testte daha kolay tahmin edilir; az temsil edilen yeni gruplardaki gerçek hata gizlenir.
+
+## Üretime Geçerken
+
+Modelle birlikte şu nesneler ve bilgiler saklanmalıdır:
+
+- sütun adları ve veri türleri,
+- kategori düzeyleri ve yeni düzey politikası,
+- imputasyon değerleri veya modelleri,
+- dönüşüm parametreleri,
+- merkez ve ölçek değerleri,
+- özellik formülleri ve zaman pencereleri,
+- model sürümü,
+- eğitim veri dönemi,
+- beklenen aralık ve kalite kontrolleri.
+
+Yeni veride dağılım değiştiğinde parametreleri sessizce yeniden hesaplamak yerine sapma izlenmeli ve kontrollü yeniden eğitim yapılmalıdır.
+
+```{r}
+#| label: leakage-schema-check
+
+required_columns <- c(
+  "gdp_per_capita_usd",
+  "internet_users_pct",
+  "infant_mortality_rate",
+  "income_group"
+)
+
+stopifnot(all(required_columns %in% names(test_2)))
+```
+
+## Sık Yapılan Hatalar
+
+**Bütün veriyi temizleyip sonra bölmek**
+
+Sabit yazım düzeltmeleri sorun olmayabilir; fakat medyan, eşik, dönüşüm ve özellik seçimi bütün veriden öğrenilirse sızıntı oluşur.
+
+**Test kümesine tekrar tekrar bakmak**
+
+Her bakış yeni model kararını etkileyebilir. Test kümesi yalnızca nihai süreci değerlendirmek için kullanılmalıdır.
+
+**Zamanı rastgele bölmek**
+
+Gelecekteki dağılım eğitim verisine girer ve gerçek ileri tahmin koşulu bozulur.
+
+**Aynı birimin kayıtlarını ayırmak**
+
+Aynı ülke, hasta veya müşteriye ait güçlü biçimde bağlantılı kayıtlar iki kümede bulunursa performans yeni birime genellemeyi göstermez.
+
+**Sonuçtan sonra oluşan özellikleri kullanmak**
+
+Sütunun dosyada bulunması, tahmin anında bulunacağı anlamına gelmez.
+
+**Özellik seçimini çapraz doğrulamanın dışında yapmak**
+
+Bütün sonuçları görerek seçilen özellikler her doğrulama katı hakkında bilgi taşır.
+
+**Test verisini kendi parametreleriyle dönüştürmek**
+
+Bu işlem eğitimle aynı ölçüyü uygulamaz ve üretimde tekrarlanamaz.
+
+**Sızıntıyı yalnızca performans çok yüksekse aramak**
+
+Küçük sızıntılar da model sıralamasını ve kararları değiştirebilir. İş akışı tasarımla güvenli hale getirilmelidir.
+
+## Egzersizler
+
+**Egzersiz 1**
+
+2019 yaşam beklentisini 2019 başında tahmin ettiğinizi varsayın. Aynı yılın internet kullanımı, 2018 kişi başına GSYH, 2020 bebek ölüm oranı ve bölge değişkenlerini kullanılabilirlik açısından sınıflandırın.
+
+**Egzersiz 2**
+
+`country_indicators` verisini rastgele satır bazında %80/%20 ayırın. Kaç ülkenin hem eğitim hem testte bulunduğunu hesaplayın.
+
+**Egzersiz 3**
+
+Aynı veriyi ülke koduna göre grup bazlı ayırın ve hiçbir ülkenin iki kümede bulunmadığını doğrulayın.
+
+**Egzersiz 4**
+
+2000–2019 panelinde 2000–2015 eğitim, 2016–2018 doğrulama, 2019 test düzeni kurun. Her kümenin yıl aralığını raporlayın.
+
+**Egzersiz 5**
+
+Yükseköğretim eksiklerini bütün verinin medyanıyla doldurmak ile eğitim medyanını kullanmak arasındaki sızıntı farkını açıklayın.
+
+**Egzersiz 6**
+
+Bir merkezli üç yıllık ortalamanın 2018 özelliğini hangi yıllardan ürettiğini yazın. 2018 başındaki tahmin için güvenli alternatif oluşturun.
+
+**Egzersiz 7**
+
+`recipes` tarifindeki her adımı “sabit” veya “veriden öğrenilen” olarak sınıflandırın.
+
+**Egzersiz 8**
+
+Çapraz doğrulama döngüsünde `prep()` çağrısını döngünün dışına taşımanın neden yanlış olduğunu açıklayın.
+
+**Egzersiz 9**
+
+Bir test sonucuna baktıktan sonra model değiştirildiyse test kümesinin rolü neye dönüşür? Nihai değerlendirme için ne gerekir?
+
+**Egzersiz 10**
+
+Kendi alanınızdan bir hedef sızıntısı, bir zaman sızıntısı ve bir grup sızıntısı örneği verin.
+
+## Egzersiz Çözümleri
+
+**Çözüm 1**
+
+- 2018 GSYH, 2019 başında yayımlanmışsa kullanılabilir.
+- Bölge bilgisi önceden bilinir ve kullanılabilir.
+- 2020 bebek ölüm oranı geleceğe ait olduğu için sızıntıdır.
+- 2019 internet kullanımı ancak tahmin anında gerçekten yayımlanmışsa kullanılabilir; yıl etiketi tek başına yeterli değildir.
+
+**Çözüm 2**
+
+```{r}
+#| label: leakage-solution-2
+
+set.seed(2026)
+row_train <- sample(
+  seq_len(nrow(country_indicators)),
+  floor(0.80 * nrow(country_indicators))
+)
+
+row_train_countries <- unique(country_indicators$country_code[row_train])
+row_test_countries <- unique(country_indicators$country_code[-row_train])
+
+length(intersect(row_train_countries, row_test_countries))
+```
+
+Panel uzun olduğu için ülkelerin büyük bölümü iki kümede de yer alabilir.
+
+**Çözüm 3**
+
+```{r}
+#| label: leakage-solution-3
+
+train_codes <- unique(
+  panel_group_split$country_code[panel_group_split$set == "train"]
+)
+
+test_codes <- unique(
+  panel_group_split$country_code[panel_group_split$set == "test"]
+)
+
+length(intersect(train_codes, test_codes))
+```
+
+Sonuç sıfır olmalıdır.
+
+**Çözüm 4**
+
+```{r}
+#| label: leakage-solution-4
+
+panel_time_split |>
+  group_by(set) |>
+  summarise(
+    first_year = min(year),
+    last_year = max(year),
+    rows = n(),
+    .groups = "drop"
+  )
+```
+
+**Çözüm 5**
+
+Bütün veri medyanı test gözlemlerinin dağılımını kullanır. Eğitim medyanı yalnızca modelin öğrenebileceği bilgiye dayanır ve test/yeni veriye sabit kural olarak uygulanabilir.
+
+**Çözüm 6**
+
+Merkezli pencere 2017, 2018 ve 2019'u kullanır; 2019 bilgisi 2018 başında bilinmez. Güvenli pencere 2015–2017 veya tahmin anına göre 2016–2018'in yalnızca yayımlanmış kısmı gibi tamamen geçmiş değerlerden oluşmalıdır.
+
+**Çözüm 7**
+
+- `step_impute_median()`: medyanı öğrenir.
+- `step_unknown()`: atama etiketi sabittir; hangi hücrelerin eksik olduğu veride belirlenir.
+- `step_novel()`: eğitim düzeylerini öğrenir.
+- `step_log()`: bu kullanımda sabit matematiksel kuraldır.
+- `step_dummy()`: eğitim kategori düzeylerini öğrenir.
+- `step_zv()`: varyansı veriden öğrenir.
+- `step_normalize()`: ortalama ve standart sapmayı öğrenir.
+
+**Çözüm 8**
+
+Döngü dışındaki `prep()` bütün katların özetlerini öğrenir. Daha sonra doğrulama olacak satırlar kendi dönüşüm parametrelerini dolaylı olarak eğitim sürecine taşır. Her katın analiz bölümünde ayrı `prep()` gerekir.
+
+**Çözüm 9**
+
+Model kararı test sonucundan etkilendiği anda test kümesi doğrulama kümesi gibi kullanılmış olur. Tarafsız nihai değerlendirme için yeni, dokunulmamış bir test kümesi veya gelecekte toplanan dış veri gerekir.
+
+**Çözüm 10**
+
+Yanıt alana göre değişir. Her örnekte tahmin anı, bağımsız birim ve yasak bilginin hangi yoldan modele ulaştığı açıkça belirtilmelidir.
+
+## Bölüm Özeti
+
+Veri sızıntısı, tahmin anında erişilemeyecek veya değerlendirmede bağımsız kalması gereken bilginin model sürecine girmesidir. Hedef bileşenleri, gelecek değerler, test özetleri, yinelenen kayıtlar ve bağlantılı birimler farklı sızıntı yollarıdır.
+
+Güvenli bölme stratejisi problem yapısını izler: bağımsız kesitte rastgele veya tabakalı, yeni birim hedefinde grup bazlı, gelecek hedefinde zamansal bölme gerekir. Gözlem yılından çok bilginin gerçekten erişilebilir olduğu tarih önemlidir.
+
+İmputasyon, aykırı değer eşiği, güç dönüşümü, kategori birleştirme, özellik seçimi ve ölçeklendirme gibi öğrenilen adımlar her eğitim veya çapraz doğrulama katında yeniden kurulmalıdır. Test kümesi yalnızca kilitlenmiş nihai süreci değerlendirmeli; modele ve ön işleme nesnelerine üretimde birlikte sürüm verilmelidir.
+
+Bölüm III'ün ortak ilkesi böylece tamamlanır: ön işleme modelden önce yapılan tek seferlik bir temizlik değil, bilgi sınırlarına saygı gösteren ve yeni veride aynen uygulanabilen öğrenme sürecidir.
+
+## Kaynaklar ve Ek Okuma
+
+Veri sızıntısının sistematik sınıflandırılması için [@kaufman2012], bilimsel ve makine öğrenmesi çalışmalarındaki sızıntı örüntüleri için [@kapoorNarayanan2023], yeniden örnekleme ile güvenli model iş akışları için [@kuhnSilge2022; @hastie2009] önerilir. Bölümde kullanılan `recipes` yaklaşımı [@recipes2024], ülke göstergeleri ise World Development Indicators [@worldBankWDI] kaynağına dayanır.
