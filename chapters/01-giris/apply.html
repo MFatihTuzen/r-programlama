@@ -1,0 +1,2274 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="tr" xml:lang="tr"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="R programlama, veri analizi ve istatistiksel düşünme üzerine Türkçe açık kaynak kitap.">
+
+<title>9&nbsp; Apply Ailesi – R Programlama</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../chapters/01-giris/import_export.html" rel="next">
+<link href="../../chapters/01-giris/strings.html" rel="prev">
+<link href="../../images/favicon.png" rel="icon" type="image/png">
+<script src="../../site_libs/cookie-consent/cookie-consent.js"></script>
+<link href="../../site_libs/cookie-consent/cookie-consent.css" rel="stylesheet">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-bb62276ab45c84d9efd712f51ff97b5a.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-5a1953863e1f72ef3b996ef827f01ca7.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-bb62276ab45c84d9efd712f51ff97b5a.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-13239a396cb0d0c215efc9b545bec6ba.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-d3b478853a8d6d29a3ba9ced1f343c7a.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-13239a396cb0d0c215efc9b545bec6ba.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "Sonuç yok",
+    "search-matching-documents-text": "eşleşen belgeler",
+    "search-copy-link-title": "Aramak için bağlantıyı kopyalayın",
+    "search-hide-matches-text": "Ek eşleşmeleri gizle",
+    "search-more-match-text": "bu belgede bir tane daha eşleşme",
+    "search-more-matches-text": "bu belgede daha fazla eşleşme",
+    "search-clear-button-title": "Temizle",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "İptal et",
+    "search-submit-button-title": "Gönder",
+    "search-label": "Ara"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-X6J60MER5G"></script>
+
+<script type="text/plain" cookie-consent="tracking">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-X6J60MER5G', { 'anonymize_ip': true});
+</script>
+
+<script type="text/javascript" charset="UTF-8">
+document.addEventListener('DOMContentLoaded', function () {
+cookieconsent.run({
+  "notice_banner_type":"simple",
+  "consent_type":"express",
+  "palette":"light",
+  "language":"en",
+  "page_load_consent_levels":["strictly-necessary"],
+  "notice_banner_reject_button_hide":false,
+  "preferences_center_close_button_hide":false,
+  "website_name":""
+  ,
+"language":"tr"
+  });
+});
+</script> 
+  
+<style>html{ scroll-behavior: smooth; }</style>
+<link href="../../site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet">
+<script src="../../site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+
+
+<link rel="stylesheet" href="../../styles.css">
+<meta property="og:title" content="9&nbsp; Apply Ailesi – R Programlama">
+<meta property="og:description" content="R programlama, veri analizi ve istatistiksel düşünme üzerine Türkçe açık kaynak kitap.">
+<meta property="og:site_name" content="R Programlama">
+<meta name="twitter:title" content="9&nbsp; Apply Ailesi – R Programlama">
+<meta name="twitter:description" content="R programlama, veri analizi ve istatistiksel düşünme üzerine Türkçe açık kaynak kitap.">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-sidebar floating quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Kenar çubuğunu değiştir" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../chapters/01-giris/r_about.html">I · R Programlamaya Giriş</a></li><li class="breadcrumb-item"><a href="../../chapters/01-giris/apply.html"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Apply Ailesi</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Kenar çubuğunu değiştir" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Ara" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../../">R Programlama</a> 
+        <div class="sidebar-tools-main tools-wide">
+    <a href="https://github.com/MFatihTuzen/r-programlama" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+    <div class="dropdown">
+      <a href="" title="Share" id="quarto-navigation-tool-dropdown-0" class="quarto-navigation-tool dropdown-toggle px-1" data-bs-toggle="dropdown" aria-expanded="false" role="link" aria-label="Share"><i class="bi bi-share"></i></a>
+      <ul class="dropdown-menu" aria-labelledby="quarto-navigation-tool-dropdown-0">
+          <li>
+            <a class="dropdown-item sidebar-tools-main-item" href="https://twitter.com/intent/tweet?url=|url|">
+              <i class="bi bi-twitter pe-1"></i>
+            Twitter
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item sidebar-tools-main-item" href="https://www.linkedin.com/sharing/share-offsite/?url=|url|">
+              <i class="bi bi-linkedin pe-1"></i>
+            LinkedIn
+            </a>
+          </li>
+      </ul>
+    </div>
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Karanlık modu değiştir"><i class="bi"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Okuyucu modunu değiştir">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Ara"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Önsöz</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">I · R Programlamaya Giriş</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Bölümü değiştir">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/r_about.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">R Programlama Hakkında</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/R_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">R Çalışma Ortamı</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">R Temel Kullanımı ve İlk Komutlar</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/data_types.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Veri Tipleri ve Yapıları</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/functions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Fonksiyonlar</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/if_else_for.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Karar Yapıları ve Döngüler</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/date_time.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Tarih ve Zaman İşlemleri</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/strings.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Metin İşlemleri</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/apply.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Apply Ailesi</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/import_export.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Verilerin İçe ve Dışa Aktarılması</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">II · Veri Manipülasyonu</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Bölümü değiştir">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/02-veri-manipulasyonu/data_manipulation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Veri Manipülasyonu</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/02-veri-manipulasyonu/data_transformation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Veri Dönüştürme</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/02-veri-manipulasyonu/data_join.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Veri Birleştirme</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">III · Veri Ön İşleme</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Bölümü değiştir">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/03-veri-on-isleme/data_preprocessing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Veri Ön İşlemeye Giriş</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/03-veri-on-isleme/missing_data_imputation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Eksik Veriler ve İmputasyon</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/03-veri-on-isleme/outliers.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Aykırı Gözlemler</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/03-veri-on-isleme/data_transformations.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Veri Dönüşümleri</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/03-veri-on-isleme/scaling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Ölçeklendirme</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/03-veri-on-isleme/feature_engineering.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Özellik Mühendisliğine Giriş</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/03-veri-on-isleme/data_leakage.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Veri Sızıntısı ve Doğru Ön İşleme İş Akışı</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Kaynakça</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="2">
+    <h2 id="toc-title">İçindekiler</h2>
+   
+  <ul>
+  <li><a href="#neden-apply-ailesi" id="toc-neden-apply-ailesi" class="nav-link active" data-scroll-target="#neden-apply-ailesi"><span class="header-section-number">9.1</span> Neden Apply Ailesi?</a></li>
+  <li><a href="#apply-ailesinin-genel-mantığı" id="toc-apply-ailesinin-genel-mantığı" class="nav-link" data-scroll-target="#apply-ailesinin-genel-mantığı"><span class="header-section-number">9.2</span> Apply Ailesinin Genel Mantığı</a></li>
+  <li><a href="#apply-fonksiyonu" id="toc-apply-fonksiyonu" class="nav-link" data-scroll-target="#apply-fonksiyonu"><span class="header-section-number">9.3</span> <code>apply()</code> Fonksiyonu</a>
+  <ul>
+  <li><a href="#satır-bazında-işlem" id="toc-satır-bazında-işlem" class="nav-link" data-scroll-target="#satır-bazında-işlem"><span class="header-section-number">9.3.1</span> Satır Bazında İşlem</a></li>
+  <li><a href="#sütun-bazında-işlem" id="toc-sütun-bazında-işlem" class="nav-link" data-scroll-target="#sütun-bazında-işlem"><span class="header-section-number">9.3.2</span> Sütun Bazında İşlem</a></li>
+  <li><a href="#ek-argüman-kullanımı" id="toc-ek-argüman-kullanımı" class="nav-link" data-scroll-target="#ek-argüman-kullanımı"><span class="header-section-number">9.3.3</span> Ek Argüman Kullanımı</a></li>
+  <li><a href="#anonim-fonksiyon-kullanımı" id="toc-anonim-fonksiyon-kullanımı" class="nav-link" data-scroll-target="#anonim-fonksiyon-kullanımı"><span class="header-section-number">9.3.4</span> Anonim Fonksiyon Kullanımı</a></li>
+  <li><a href="#apply-ve-veri-çerçeveleri" id="toc-apply-ve-veri-çerçeveleri" class="nav-link" data-scroll-target="#apply-ve-veri-çerçeveleri"><span class="header-section-number">9.3.5</span> <code>apply()</code> ve Veri Çerçeveleri</a></li>
+  </ul></li>
+  <li><a href="#lapply-fonksiyonu" id="toc-lapply-fonksiyonu" class="nav-link" data-scroll-target="#lapply-fonksiyonu"><span class="header-section-number">9.4</span> <code>lapply()</code> Fonksiyonu</a>
+  <ul>
+  <li><a href="#veri-çerçeveleri-ile-lapply" id="toc-veri-çerçeveleri-ile-lapply" class="nav-link" data-scroll-target="#veri-çerçeveleri-ile-lapply"><span class="header-section-number">9.4.1</span> Veri Çerçeveleri ile <code>lapply()</code></a></li>
+  <li><a href="#lapply-ve-anonim-fonksiyonlar" id="toc-lapply-ve-anonim-fonksiyonlar" class="nav-link" data-scroll-target="#lapply-ve-anonim-fonksiyonlar"><span class="header-section-number">9.4.2</span> <code>lapply()</code> ve Anonim Fonksiyonlar</a></li>
+  <li><a href="#ek-argüman-kullanımı-1" id="toc-ek-argüman-kullanımı-1" class="nav-link" data-scroll-target="#ek-argüman-kullanımı-1"><span class="header-section-number">9.4.3</span> Ek Argüman Kullanımı</a></li>
+  </ul></li>
+  <li><a href="#sapply-fonksiyonu" id="toc-sapply-fonksiyonu" class="nav-link" data-scroll-target="#sapply-fonksiyonu"><span class="header-section-number">9.5</span> <code>sapply()</code> Fonksiyonu</a>
+  <ul>
+  <li><a href="#sapply-ne-zaman-kullanışlıdır" id="toc-sapply-ne-zaman-kullanışlıdır" class="nav-link" data-scroll-target="#sapply-ne-zaman-kullanışlıdır"><span class="header-section-number">9.5.1</span> <code>sapply()</code> Ne Zaman Kullanışlıdır?</a></li>
+  <li><a href="#simplify-false" id="toc-simplify-false" class="nav-link" data-scroll-target="#simplify-false"><span class="header-section-number">9.5.2</span> <code>simplify = FALSE</code></a></li>
+  </ul></li>
+  <li><a href="#vapply-fonksiyonu" id="toc-vapply-fonksiyonu" class="nav-link" data-scroll-target="#vapply-fonksiyonu"><span class="header-section-number">9.6</span> <code>vapply()</code> Fonksiyonu</a></li>
+  <li><a href="#tapply-fonksiyonu" id="toc-tapply-fonksiyonu" class="nav-link" data-scroll-target="#tapply-fonksiyonu"><span class="header-section-number">9.7</span> <code>tapply()</code> Fonksiyonu</a>
+  <ul>
+  <li><a href="#birden-fazla-grup-ile-tapply" id="toc-birden-fazla-grup-ile-tapply" class="nav-link" data-scroll-target="#birden-fazla-grup-ile-tapply"><span class="header-section-number">9.7.1</span> Birden Fazla Grup ile <code>tapply()</code></a></li>
+  <li><a href="#eksik-değerlerle-kullanım" id="toc-eksik-değerlerle-kullanım" class="nav-link" data-scroll-target="#eksik-değerlerle-kullanım"><span class="header-section-number">9.7.2</span> Eksik Değerlerle Kullanım</a></li>
+  </ul></li>
+  <li><a href="#mapply-fonksiyonu" id="toc-mapply-fonksiyonu" class="nav-link" data-scroll-target="#mapply-fonksiyonu"><span class="header-section-number">9.8</span> <code>mapply()</code> Fonksiyonu</a>
+  <ul>
+  <li><a href="#parametreli-fonksiyonlarda-mapply" id="toc-parametreli-fonksiyonlarda-mapply" class="nav-link" data-scroll-target="#parametreli-fonksiyonlarda-mapply"><span class="header-section-number">9.8.1</span> Parametreli Fonksiyonlarda <code>mapply()</code></a></li>
+  <li><a href="#karakter-üretiminde-mapply" id="toc-karakter-üretiminde-mapply" class="nav-link" data-scroll-target="#karakter-üretiminde-mapply"><span class="header-section-number">9.8.2</span> Karakter Üretiminde <code>mapply()</code></a></li>
+  </ul></li>
+  <li><a href="#apply-ailesi-ve-döngüler" id="toc-apply-ailesi-ve-döngüler" class="nav-link" data-scroll-target="#apply-ailesi-ve-döngüler"><span class="header-section-number">9.9</span> Apply Ailesi ve Döngüler</a></li>
+  <li><a href="#hangi-apply-fonksiyonu-ne-zaman-kullanılır" id="toc-hangi-apply-fonksiyonu-ne-zaman-kullanılır" class="nav-link" data-scroll-target="#hangi-apply-fonksiyonu-ne-zaman-kullanılır"><span class="header-section-number">9.10</span> Hangi Apply Fonksiyonu Ne Zaman Kullanılır?</a></li>
+  <li><a href="#mini-vaka-çalışması-sınav-sonuçlarını-özetleme" id="toc-mini-vaka-çalışması-sınav-sonuçlarını-özetleme" class="nav-link" data-scroll-target="#mini-vaka-çalışması-sınav-sonuçlarını-özetleme"><span class="header-section-number">9.11</span> Mini Vaka Çalışması: Sınav Sonuçlarını Özetleme</a></li>
+  <li><a href="#sık-yapılan-hatalar" id="toc-sık-yapılan-hatalar" class="nav-link" data-scroll-target="#sık-yapılan-hatalar"><span class="header-section-number">9.12</span> Sık Yapılan Hatalar</a>
+  <ul>
+  <li><a href="#apply-fonksiyonunu-her-veri-çerçevesinde-güvenle-kullanmak" id="toc-apply-fonksiyonunu-her-veri-çerçevesinde-güvenle-kullanmak" class="nav-link" data-scroll-target="#apply-fonksiyonunu-her-veri-çerçevesinde-güvenle-kullanmak"><span class="header-section-number">9.12.1</span> <code>apply()</code> Fonksiyonunu Her Veri Çerçevesinde Güvenle Kullanmak</a></li>
+  <li><a href="#sapply-çıktısını-her-zaman-aynı-sanmak" id="toc-sapply-çıktısını-her-zaman-aynı-sanmak" class="nav-link" data-scroll-target="#sapply-çıktısını-her-zaman-aynı-sanmak"><span class="header-section-number">9.12.2</span> <code>sapply()</code> Çıktısını Her Zaman Aynı Sanmak</a></li>
+  <li><a href="#margin-değerini-karıştırmak" id="toc-margin-değerini-karıştırmak" class="nav-link" data-scroll-target="#margin-değerini-karıştırmak"><span class="header-section-number">9.12.3</span> <code>MARGIN</code> Değerini Karıştırmak</a></li>
+  <li><a href="#ek-argümanların-nereye-gittiğini-karıştırmak" id="toc-ek-argümanların-nereye-gittiğini-karıştırmak" class="nav-link" data-scroll-target="#ek-argümanların-nereye-gittiğini-karıştırmak"><span class="header-section-number">9.12.4</span> Ek Argümanların Nereye Gittiğini Karıştırmak</a></li>
+  </ul></li>
+  <li><a href="#egzersizler" id="toc-egzersizler" class="nav-link" data-scroll-target="#egzersizler"><span class="header-section-number">9.13</span> Egzersizler</a></li>
+  <li><a href="#egzersiz-çözümleri" id="toc-egzersiz-çözümleri" class="nav-link" data-scroll-target="#egzersiz-çözümleri"><span class="header-section-number">9.14</span> Egzersiz Çözümleri</a></li>
+  <li><a href="#bölüm-özeti" id="toc-bölüm-özeti" class="nav-link" data-scroll-target="#bölüm-özeti"><span class="header-section-number">9.15</span> Bölüm Özeti</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/MFatihTuzen/r-programlama/edit/main/chapters/01-giris/apply.qmd" class="toc-action"><i class="bi bi-github"></i>Bu sayfayı düzenle</a></li><li><a href="https://github.com/MFatihTuzen/r-programlama/issues/new" class="toc-action"><i class="bi empty"></i>Sorun bildir</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../chapters/01-giris/r_about.html">I · R Programlamaya Giriş</a></li><li class="breadcrumb-item"><a href="../../chapters/01-giris/apply.html"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Apply Ailesi</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Apply Ailesi</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>R’de veri analizi yaparken aynı işlemi birden fazla eleman, satır, sütun, grup veya liste bileşeni üzerinde tekrarlamak çok sık karşılaşılan bir ihtiyaçtır. Örneğin bir veri setindeki bütün sayısal değişkenlerin ortalamasını almak, bir listenin her elemanına aynı fonksiyonu uygulamak, bir değişkeni gruplara göre özetlemek veya iki farklı vektörün karşılıklı elemanları üzerinde işlem yapmak isteyebiliriz.</p>
+<p>Bu tür işlemler döngülerle yapılabilir. Ancak R, bu tekrar eden işlemleri daha kısa, daha okunabilir ve çoğu zaman daha güvenli biçimde gerçekleştirmek için <strong>apply ailesi</strong> olarak bilinen bir fonksiyon grubu sunar.</p>
+<p>Apply ailesi tek bir fonksiyondan oluşmaz. R’de farklı veri yapıları ve farklı çıktı beklentileri için farklı apply fonksiyonları vardır. Bu bölümde özellikle şu fonksiyonlar ele alınacaktır:</p>
+<ul>
+<li><code>apply()</code></li>
+<li><code>lapply()</code></li>
+<li><code>sapply()</code></li>
+<li><code>vapply()</code></li>
+<li><code>tapply()</code></li>
+<li><code>mapply()</code></li>
+</ul>
+<p>Bu fonksiyonların hepsi aynı temel fikre dayanır:</p>
+<blockquote class="blockquote">
+<p>Bir veri yapısının parçaları üzerinde aynı fonksiyonu tekrar tekrar uygula.</p>
+</blockquote>
+<p>Ancak her biri farklı veri yapıları ve farklı kullanım amaçları için tasarlanmıştır. Bu nedenle apply ailesini anlamak yalnızca fonksiyon isimlerini ezberlemek değildir; hangi durumda hangi fonksiyonun daha uygun olduğunu kavramaktır.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Not
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Apply ailesi, döngülerin yerine geçmek zorunda değildir. Asıl amaç, tekrar eden işlemleri daha açık, daha düzenli ve veri yapısına uygun biçimde yazabilmektir.</p>
+</div>
+</div>
+<section id="neden-apply-ailesi" class="level2" data-number="9.1">
+<h2 data-number="9.1" class="anchored" data-anchor-id="neden-apply-ailesi"><span class="header-section-number">9.1</span> Neden Apply Ailesi?</h2>
+<p>Programlama öğrenirken tekrar eden işlemler için genellikle önce <code>for</code> döngüleri öğrenilir. Bu doğrudur; çünkü döngüler programlamanın temel yapı taşlarından biridir. Ancak R, veri analizi odaklı bir dil olduğu için birçok tekrar eden işlem vektörler, matrisler, listeler ve veri çerçeveleri üzerinde yapılır. Apply ailesi bu veri yapılarına uygun bir tekrar mantığı sağlar.</p>
+<p>Örneğin elimizde bir matris olsun ve her sütunun ortalamasını hesaplamak isteyelim.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Örnek bir matris oluşturalım.</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>notlar <span class="ot">&lt;-</span> <span class="fu">matrix</span>(</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(<span class="dv">70</span>, <span class="dv">80</span>, <span class="dv">90</span>,</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="dv">60</span>, <span class="dv">75</span>, <span class="dv">85</span>,</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="dv">50</span>, <span class="dv">65</span>, <span class="dv">95</span>),</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">nrow =</span> <span class="dv">3</span>,</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">byrow =</span> <span class="cn">TRUE</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>notlar</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     [,1] [,2] [,3]
+[1,]   70   80   90
+[2,]   60   75   85
+[3,]   50   65   95</code></pre>
+</div>
+</div>
+<p>Bu matrisin sütun ortalamalarını döngüyle hesaplayabiliriz.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Sonuçları saklamak için boş bir vektör oluşturuyoruz.</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>sutun_ortalamalari <span class="ot">&lt;-</span> <span class="fu">numeric</span>(<span class="fu">ncol</span>(notlar))</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Her sütun için ortalama hesaplıyoruz.</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">ncol</span>(notlar)) {</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  sutun_ortalamalari[i] <span class="ot">&lt;-</span> <span class="fu">mean</span>(notlar[, i])</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>sutun_ortalamalari</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 60.00000 73.33333 90.00000</code></pre>
+</div>
+</div>
+<p>Aynı işlemi <code>apply()</code> ile daha kısa ve doğrudan yazabiliriz.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 2 değeri sütunlar üzerinde işlem yapılacağını belirtir.</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">apply</span>(notlar, <span class="dv">2</span>, mean)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 60.00000 73.33333 90.00000</code></pre>
+</div>
+</div>
+<p>Buradaki fark yalnızca daha az kod yazmak değildir. <code>apply()</code> ifadesi doğrudan şunu söyler:</p>
+<blockquote class="blockquote">
+<p>Bu matrisin sütunlarına <code>mean()</code> fonksiyonunu uygula.</p>
+</blockquote>
+<p>Yani kodun niyeti daha açık hale gelir.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+İpucu
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Apply ailesi genellikle “daha hızlı” olduğu için değil, kodun niyetini daha açık ifade ettiği için tercih edilir.</p>
+</div>
+</div>
+</section>
+<section id="apply-ailesinin-genel-mantığı" class="level2" data-number="9.2">
+<h2 data-number="9.2" class="anchored" data-anchor-id="apply-ailesinin-genel-mantığı"><span class="header-section-number">9.2</span> Apply Ailesinin Genel Mantığı</h2>
+<p>Apply ailesindeki fonksiyonların çoğu üç temel soruya cevap verir:</p>
+<ol type="1">
+<li>Hangi veri yapısı üzerinde çalışacağız?</li>
+<li>Bu veri yapısının hangi parçaları üzerinde işlem yapacağız?</li>
+<li>Her parçaya hangi fonksiyonu uygulayacağız?</li>
+</ol>
+<p>Bu mantık özellikle başlangıçta karmaşık görünebilir. Ancak birkaç örnekten sonra oldukça doğal hale gelir.</p>
+<p>Aşağıdaki tablo temel apply fonksiyonlarının kullanım alanlarını özetlemektedir.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Fonksiyon</th>
+<th>Temel kullanım alanı</th>
+<th>Tipik çıktı</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>apply()</code></td>
+<td>Matris veya array üzerinde satır/sütun işlemleri</td>
+<td>vektör, matris veya liste</td>
+</tr>
+<tr class="even">
+<td><code>lapply()</code></td>
+<td>Liste veya veri çerçevesinin elemanları üzerinde işlem</td>
+<td>liste</td>
+</tr>
+<tr class="odd">
+<td><code>sapply()</code></td>
+<td><code>lapply()</code> gibi çalışır, sonucu basitleştirmeye çalışır</td>
+<td>vektör, matris veya liste</td>
+</tr>
+<tr class="even">
+<td><code>vapply()</code></td>
+<td><code>sapply()</code> benzeri; çıktı tipi önceden belirtilir</td>
+<td>güvenli ve belirli tipte çıktı</td>
+</tr>
+<tr class="odd">
+<td><code>tapply()</code></td>
+<td>Bir vektörü gruplara göre özetlemek</td>
+<td>vektör, array veya liste</td>
+</tr>
+<tr class="even">
+<td><code>mapply()</code></td>
+<td>Birden fazla nesne üzerinde eş zamanlı işlem</td>
+<td>vektör, matris veya liste</td>
+</tr>
+</tbody>
+</table>
+<p>Bu tabloyu ezberlemek yerine bölüm boyunca örnekler üzerinden anlamak daha faydalıdır.</p>
+</section>
+<section id="apply-fonksiyonu" class="level2" data-number="9.3">
+<h2 data-number="9.3" class="anchored" data-anchor-id="apply-fonksiyonu"><span class="header-section-number">9.3</span> <code>apply()</code> Fonksiyonu</h2>
+<p><code>apply()</code> fonksiyonu genellikle matrisler veya çok boyutlu diziler üzerinde satır ya da sütun bazında işlem yapmak için kullanılır.</p>
+<p>Temel söz dizimi şöyledir:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">apply</span>(X, MARGIN, FUN, ...)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Buradaki argümanlar şunlardır:</p>
+<ul>
+<li><code>X</code>: Üzerinde işlem yapılacak matris veya array.</li>
+<li><code>MARGIN</code>: İşlemin hangi boyutta yapılacağını belirtir.</li>
+<li><code>FUN</code>: Uygulanacak fonksiyon.</li>
+<li><code>...</code>: Fonksiyona aktarılacak ek argümanlar.</li>
+</ul>
+<p><code>MARGIN</code> argümanı <code>apply()</code> fonksiyonunun en kritik kısmıdır.</p>
+<p>Matrislerde:</p>
+<ul>
+<li><code>MARGIN = 1</code> satırlar üzerinde işlem yapar.</li>
+<li><code>MARGIN = 2</code> sütunlar üzerinde işlem yapar.</li>
+</ul>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Örnek bir matris oluşturalım.</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">12</span>, <span class="at">nrow =</span> <span class="dv">3</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>m</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     [,1] [,2] [,3] [,4]
+[1,]    1    2    3    4
+[2,]    5    6    7    8
+[3,]    9   10   11   12</code></pre>
+</div>
+</div>
+<section id="satır-bazında-işlem" class="level3" data-number="9.3.1">
+<h3 data-number="9.3.1" class="anchored" data-anchor-id="satır-bazında-işlem"><span class="header-section-number">9.3.1</span> Satır Bazında İşlem</h3>
+<p>Satır toplamlarını hesaplayalım.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># MARGIN = 1 satırları ifade eder.</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">apply</span>(m, <span class="dv">1</span>, sum)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 10 26 42</code></pre>
+</div>
+</div>
+<p>Her satır ayrı ayrı alınmış ve <code>sum()</code> fonksiyonu uygulanmıştır.</p>
+<p>Satır ortalamalarını da benzer şekilde hesaplayabiliriz.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Her satırın ortalaması</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">apply</span>(m, <span class="dv">1</span>, mean)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1]  2.5  6.5 10.5</code></pre>
+</div>
+</div>
+</section>
+<section id="sütun-bazında-işlem" class="level3" data-number="9.3.2">
+<h3 data-number="9.3.2" class="anchored" data-anchor-id="sütun-bazında-işlem"><span class="header-section-number">9.3.2</span> Sütun Bazında İşlem</h3>
+<p>Sütun toplamlarını hesaplamak için <code>MARGIN = 2</code> kullanılır.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># MARGIN = 2 sütunları ifade eder.</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">apply</span>(m, <span class="dv">2</span>, sum)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 15 18 21 24</code></pre>
+</div>
+</div>
+<p>Sütun ortalamaları:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Her sütunun ortalaması</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">apply</span>(m, <span class="dv">2</span>, mean)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 5 6 7 8</code></pre>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Not
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><code>apply()</code> fonksiyonunda <code>MARGIN = 1</code> satır, <code>MARGIN = 2</code> sütun anlamına gelir. Bu bilgi özellikle matris işlemlerinde temel önemdedir.</p>
+</div>
+</div>
+</section>
+<section id="ek-argüman-kullanımı" class="level3" data-number="9.3.3">
+<h3 data-number="9.3.3" class="anchored" data-anchor-id="ek-argüman-kullanımı"><span class="header-section-number">9.3.3</span> Ek Argüman Kullanımı</h3>
+<p>Bazı fonksiyonlar ek argümanlar alır. Örneğin <code>mean()</code> fonksiyonunda <code>na.rm = TRUE</code> argümanı eksik değerleri dikkate almadan ortalama hesaplamak için kullanılır.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Eksik değer içeren bir matris oluşturalım.</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>m_na <span class="ot">&lt;-</span> <span class="fu">matrix</span>(</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="cn">NA</span>,</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>    <span class="dv">4</span>, <span class="cn">NA</span>, <span class="dv">6</span>,</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>    <span class="dv">7</span>, <span class="dv">8</span>, <span class="dv">9</span>),</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">nrow =</span> <span class="dv">3</span>,</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">byrow =</span> <span class="cn">TRUE</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>m_na</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     [,1] [,2] [,3]
+[1,]    1    2   NA
+[2,]    4   NA    6
+[3,]    7    8    9</code></pre>
+</div>
+</div>
+<p>Eksik değerler dikkate alınmadan satır ortalamaları hesaplanabilir.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># mean() fonksiyonuna na.rm = TRUE argümanı aktarılır.</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="fu">apply</span>(m_na, <span class="dv">1</span>, mean, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1.5 5.0 8.0</code></pre>
+</div>
+</div>
+<p>Burada <code>na.rm = TRUE</code> doğrudan <code>apply()</code> fonksiyonuna değil, <code>apply()</code> tarafından çağrılan <code>mean()</code> fonksiyonuna aktarılır.</p>
+</section>
+<section id="anonim-fonksiyon-kullanımı" class="level3" data-number="9.3.4">
+<h3 data-number="9.3.4" class="anchored" data-anchor-id="anonim-fonksiyon-kullanımı"><span class="header-section-number">9.3.4</span> Anonim Fonksiyon Kullanımı</h3>
+<p><code>apply()</code> içinde hazır bir fonksiyon kullanılabileceği gibi, kullanıcı tarafından o anda tanımlanan kısa fonksiyonlar da kullanılabilir. Bunlara <strong>anonim fonksiyon</strong> denir. Anonim fonksiyonlar bir isme atanmaz; doğrudan ihtiyaç duyulan yerde kullanılır.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Her satır için maksimum ve minimum değer arasındaki farkı hesaplayalım.</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="fu">apply</span>(m, <span class="dv">1</span>, <span class="cf">function</span>(x) <span class="fu">max</span>(x) <span class="sc">-</span> <span class="fu">min</span>(x))</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 3 3 3</code></pre>
+</div>
+</div>
+<p>Burada <code>function(x)</code> ifadesi her satırı geçici olarak <code>x</code> adıyla alır ve satır içindeki en büyük değer ile en küçük değer arasındaki farkı hesaplar.</p>
+<p>Aynı işlemi sütunlar için yapalım.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Her sütundaki aralık değeri</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="fu">apply</span>(m, <span class="dv">2</span>, <span class="cf">function</span>(x) <span class="fu">max</span>(x) <span class="sc">-</span> <span class="fu">min</span>(x))</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 8 8 8 8</code></pre>
+</div>
+</div>
+<p>Anonim fonksiyonlar özellikle tek satırlık kısa işlemler için oldukça kullanışlıdır.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+İpucu
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Anonim fonksiyonlar, kısa ve yalnızca bir kez kullanılacak işlemler için idealdir. Aynı işlem birçok yerde kullanılacaksa ayrı bir fonksiyon tanımlamak daha uygun olur.</p>
+</div>
+</div>
+</section>
+<section id="apply-ve-veri-çerçeveleri" class="level3" data-number="9.3.5">
+<h3 data-number="9.3.5" class="anchored" data-anchor-id="apply-ve-veri-çerçeveleri"><span class="header-section-number">9.3.5</span> <code>apply()</code> ve Veri Çerçeveleri</h3>
+<p><code>apply()</code> fonksiyonu veri çerçeveleri üzerinde de çalışabilir; ancak dikkatli kullanılmalıdır. Çünkü veri çerçeveleri farklı veri tiplerine sahip sütunlardan oluşabilir. <code>apply()</code> veri çerçevesini çoğu zaman matrise dönüştürür. Bu dönüşüm beklenmeyen sonuçlara yol açabilir.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">isim =</span> <span class="fu">c</span>(<span class="st">"Ali"</span>, <span class="st">"Ayşe"</span>, <span class="st">"Mehmet"</span>),</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">not1 =</span> <span class="fu">c</span>(<span class="dv">70</span>, <span class="dv">80</span>, <span class="dv">90</span>),</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">not2 =</span> <span class="fu">c</span>(<span class="dv">60</span>, <span class="dv">85</span>, <span class="dv">95</span>)</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>df</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":["isim"],"name":[1],"type":["chr"],"align":["left"]},{"label":["not1"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["not2"],"name":[3],"type":["dbl"],"align":["right"]}],"data":[{"1":"Ali","2":"70","3":"60"},{"1":"Ayşe","2":"80","3":"85"},{"1":"Mehmet","2":"90","3":"95"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<p>Bu veri çerçevesi içinde metinsel bir sütun olduğu için <code>apply()</code> kullanımı dikkat gerektirir.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Sadece sayısal sütunları seçerek apply() kullanmak daha güvenlidir.</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="fu">apply</span>(df[, <span class="fu">c</span>(<span class="st">"not1"</span>, <span class="st">"not2"</span>)], <span class="dv">1</span>, mean)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 65.0 82.5 92.5</code></pre>
+</div>
+</div>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Dikkat
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Veri çerçeveleri üzerinde <code>apply()</code> kullanırken dikkatli olunmalıdır. Veri çerçevesi matrise dönüştürüldüğünde farklı veri tipleri aynı tipe zorlanabilir.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="lapply-fonksiyonu" class="level2" data-number="9.4">
+<h2 data-number="9.4" class="anchored" data-anchor-id="lapply-fonksiyonu"><span class="header-section-number">9.4</span> <code>lapply()</code> Fonksiyonu</h2>
+<p><code>lapply()</code> fonksiyonu listeler üzerinde işlem yapmak için kullanılır. Adındaki <code>l</code>, <strong>list</strong> kelimesinden gelir. Bu fonksiyon, bir listenin her elemanına aynı fonksiyonu uygular ve sonucu her zaman liste olarak döndürür.</p>
+<p>Temel söz dizimi şöyledir:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">lapply</span>(X, FUN, ...)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Burada:</p>
+<ul>
+<li><code>X</code>: Liste veya liste gibi elemanlardan oluşan nesne.</li>
+<li><code>FUN</code>: Her elemana uygulanacak fonksiyon.</li>
+<li><code>...</code>: Fonksiyona aktarılacak ek argümanlar.</li>
+</ul>
+<p>Önce basit bir liste oluşturalım.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>liste <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">a =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>,</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">b =</span> <span class="dv">10</span><span class="sc">:</span><span class="dv">15</span>,</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">c =</span> <span class="fu">c</span>(<span class="dv">100</span>, <span class="dv">200</span>, <span class="dv">300</span>)</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>liste</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$a
+[1] 1 2 3 4 5
+
+$b
+[1] 10 11 12 13 14 15
+
+$c
+[1] 100 200 300</code></pre>
+</div>
+</div>
+<p>Her elemanın ortalamasını hesaplayalım.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># lapply() her liste elemanına mean() uygular.</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="fu">lapply</span>(liste, mean)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$a
+[1] 3
+
+$b
+[1] 12.5
+
+$c
+[1] 200</code></pre>
+</div>
+</div>
+<p>Sonuç liste olarak döner.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Çıktının sınıfını inceleyelim.</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(<span class="fu">lapply</span>(liste, mean))</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "list"</code></pre>
+</div>
+</div>
+<p>Bu, <code>lapply()</code> fonksiyonunun en belirgin özelliğidir.</p>
+<blockquote class="blockquote">
+<p><code>lapply()</code> sonucu basitleştirmeye çalışmaz; daima liste döndürür.</p>
+</blockquote>
+<section id="veri-çerçeveleri-ile-lapply" class="level3" data-number="9.4.1">
+<h3 data-number="9.4.1" class="anchored" data-anchor-id="veri-çerçeveleri-ile-lapply"><span class="header-section-number">9.4.1</span> Veri Çerçeveleri ile <code>lapply()</code></h3>
+<p>R’de veri çerçeveleri aslında sütunlardan oluşan özel listeler olarak düşünülebilir. Bu nedenle <code>lapply()</code> veri çerçevesi sütunları üzerinde işlem yapmak için sık kullanılır.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># iris veri setinin ilk birkaç satırına bakalım.</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(iris)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["Sepal.Length"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["Sepal.Width"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["Petal.Length"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["Petal.Width"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["Species"],"name":[5],"type":["fct"],"align":["left"]}],"data":[{"1":"5.1","2":"3.5","3":"1.4","4":"0.2","5":"setosa","_rn_":"1"},{"1":"4.9","2":"3.0","3":"1.4","4":"0.2","5":"setosa","_rn_":"2"},{"1":"4.7","2":"3.2","3":"1.3","4":"0.2","5":"setosa","_rn_":"3"},{"1":"4.6","2":"3.1","3":"1.5","4":"0.2","5":"setosa","_rn_":"4"},{"1":"5.0","2":"3.6","3":"1.4","4":"0.2","5":"setosa","_rn_":"5"},{"1":"5.4","2":"3.9","3":"1.7","4":"0.4","5":"setosa","_rn_":"6"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<p><code>iris</code> veri setindeki her sütunun sınıfını öğrenelim.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Her sütuna class() fonksiyonunu uygular.</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="fu">lapply</span>(iris, class)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$Sepal.Length
+[1] "numeric"
+
+$Sepal.Width
+[1] "numeric"
+
+$Petal.Length
+[1] "numeric"
+
+$Petal.Width
+[1] "numeric"
+
+$Species
+[1] "factor"</code></pre>
+</div>
+</div>
+<p>Sayısal sütunların ortalamasını almak için önce sayısal sütunları seçelim.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Sayısal sütunları seçiyoruz.</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>iris_sayisal <span class="ot">&lt;-</span> iris[, <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>]</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Her sayısal sütunun ortalaması</span></span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a><span class="fu">lapply</span>(iris_sayisal, mean)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$Sepal.Length
+[1] 5.843333
+
+$Sepal.Width
+[1] 3.057333
+
+$Petal.Length
+[1] 3.758
+
+$Petal.Width
+[1] 1.199333</code></pre>
+</div>
+</div>
+</section>
+<section id="lapply-ve-anonim-fonksiyonlar" class="level3" data-number="9.4.2">
+<h3 data-number="9.4.2" class="anchored" data-anchor-id="lapply-ve-anonim-fonksiyonlar"><span class="header-section-number">9.4.2</span> <code>lapply()</code> ve Anonim Fonksiyonlar</h3>
+<p>Bir veri çerçevesindeki sayısal sütunların minimum ve maksimum değerlerini birlikte hesaplayalım.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Her sütun için minimum ve maksimum değerleri döndürür.</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a><span class="fu">lapply</span>(iris_sayisal, <span class="cf">function</span>(x) <span class="fu">c</span>(<span class="at">min =</span> <span class="fu">min</span>(x), <span class="at">max =</span> <span class="fu">max</span>(x)))</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$Sepal.Length
+min max 
+4.3 7.9 
+
+$Sepal.Width
+min max 
+2.0 4.4 
+
+$Petal.Length
+min max 
+1.0 6.9 
+
+$Petal.Width
+min max 
+0.1 2.5 </code></pre>
+</div>
+</div>
+<p>Sonuç yine listedir. Her liste elemanı, ilgili sütunun minimum ve maksimum değerlerini içerir.</p>
+</section>
+<section id="ek-argüman-kullanımı-1" class="level3" data-number="9.4.3">
+<h3 data-number="9.4.3" class="anchored" data-anchor-id="ek-argüman-kullanımı-1"><span class="header-section-number">9.4.3</span> Ek Argüman Kullanımı</h3>
+<p>Eksik değer içeren bir liste oluşturalım.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>liste_na <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">a =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="cn">NA</span>, <span class="dv">4</span>),</span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">b =</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="cn">NA</span>, <span class="dv">30</span>),</span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">c =</span> <span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">6</span>, <span class="dv">7</span>)</span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a>liste_na</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$a
+[1]  1  2 NA  4
+
+$b
+[1] 10 NA 30
+
+$c
+[1] 5 6 7</code></pre>
+</div>
+</div>
+<p>Eksik değerleri dışarıda bırakarak ortalama hesaplayalım.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="co"># na.rm = TRUE argümanı mean() fonksiyonuna aktarılır.</span></span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a><span class="fu">lapply</span>(liste_na, mean, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$a
+[1] 2.333333
+
+$b
+[1] 20
+
+$c
+[1] 6</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="sapply-fonksiyonu" class="level2" data-number="9.5">
+<h2 data-number="9.5" class="anchored" data-anchor-id="sapply-fonksiyonu"><span class="header-section-number">9.5</span> <code>sapply()</code> Fonksiyonu</h2>
+<p><code>sapply()</code> fonksiyonu <code>lapply()</code> fonksiyonuna benzer. Temel fark, <code>sapply()</code> fonksiyonunun çıktıyı mümkünse daha basit bir yapıya dönüştürmeye çalışmasıdır. Buradaki <code>s</code>, <strong>simplify</strong> kelimesinden gelir.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="co"># lapply() liste döndürür.</span></span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a><span class="fu">lapply</span>(liste, mean)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$a
+[1] 3
+
+$b
+[1] 12.5
+
+$c
+[1] 200</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="co"># sapply() sonucu basitleştirmeye çalışır.</span></span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sapply</span>(liste, mean)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>    a     b     c 
+  3.0  12.5 200.0 </code></pre>
+</div>
+</div>
+<p>İlk çıktı listedir. İkinci çıktı ise isimlendirilmiş bir vektördür.</p>
+<p>Bu davranış pratikte kullanışlıdır; ancak bazen beklenmeyen çıktı tiplerine neden olabilir.</p>
+<section id="sapply-ne-zaman-kullanışlıdır" class="level3" data-number="9.5.1">
+<h3 data-number="9.5.1" class="anchored" data-anchor-id="sapply-ne-zaman-kullanışlıdır"><span class="header-section-number">9.5.1</span> <code>sapply()</code> Ne Zaman Kullanışlıdır?</h3>
+<p>Eğer her elemandan tek bir değer dönmesini bekliyorsak <code>sapply()</code> oldukça pratiktir.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Her elemanın uzunluğunu hesaplayalım.</span></span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sapply</span>(liste, length)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>a b c 
+5 6 3 </code></pre>
+</div>
+</div>
+<p>Veri çerçevesindeki sütun sınıflarını daha okunabilir biçimde görmek için de kullanılabilir.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sapply</span>(iris, class)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Sepal.Length  Sepal.Width Petal.Length  Petal.Width      Species 
+   "numeric"    "numeric"    "numeric"    "numeric"     "factor" </code></pre>
+</div>
+</div>
+</section>
+<section id="simplify-false" class="level3" data-number="9.5.2">
+<h3 data-number="9.5.2" class="anchored" data-anchor-id="simplify-false"><span class="header-section-number">9.5.2</span> <code>simplify = FALSE</code></h3>
+<p><code>sapply()</code> fonksiyonu varsayılan olarak sonucu basitleştirir. Bu davranışı kapatmak için <code>simplify = FALSE</code> kullanılabilir.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="co"># simplify = FALSE kullanıldığında sonuç liste olarak kalır.</span></span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sapply</span>(liste, mean, <span class="at">simplify =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$a
+[1] 3
+
+$b
+[1] 12.5
+
+$c
+[1] 200</code></pre>
+</div>
+</div>
+<p>Bu kullanım pratikte <code>lapply()</code> ile benzer sonuç verir.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Dikkat
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><code>sapply()</code> çıktı yapısını otomatik olarak basitleştirdiği için bazı durumlarda beklenmeyen sonuçlar üretebilir. Çıktı tipinin kesin olması gerekiyorsa <code>vapply()</code> daha güvenlidir.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="vapply-fonksiyonu" class="level2" data-number="9.6">
+<h2 data-number="9.6" class="anchored" data-anchor-id="vapply-fonksiyonu"><span class="header-section-number">9.6</span> <code>vapply()</code> Fonksiyonu</h2>
+<p><code>vapply()</code> fonksiyonu, <code>sapply()</code> fonksiyonunun daha güvenli bir versiyonu olarak düşünülebilir. Temel fark, <code>vapply()</code> fonksiyonunda beklenen çıktı tipi ve uzunluğu önceden belirtilir.</p>
+<p>Temel söz dizimi şöyledir:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="fu">vapply</span>(X, FUN, FUN.VALUE, ...)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Burada:</p>
+<ul>
+<li><code>X</code>: Üzerinde işlem yapılacak nesne.</li>
+<li><code>FUN</code>: Uygulanacak fonksiyon.</li>
+<li><code>FUN.VALUE</code>: Her işlemden beklenen çıktı tipi ve uzunluğu.</li>
+<li><code>...</code>: Ek argümanlar.</li>
+</ul>
+<p>Örneğin her liste elemanından tek bir sayısal değer bekliyorsak:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Her elemanın ortalamasını bekliyoruz.</span></span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a><span class="fu">vapply</span>(liste, mean, <span class="fu">numeric</span>(<span class="dv">1</span>))</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>    a     b     c 
+  3.0  12.5 200.0 </code></pre>
+</div>
+</div>
+<p>Buradaki <code>numeric(1)</code> ifadesi şunu söyler:</p>
+<blockquote class="blockquote">
+<p>Her elemandan uzunluğu 1 olan sayısal bir çıktı bekliyorum.</p>
+</blockquote>
+<p>Eğer fonksiyon beklenen yapıda çıktı üretmezse <code>vapply()</code> hata verir. Bu davranış özellikle daha güvenli ve tahmin edilebilir kod yazmak için faydalıdır.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Bu örnekte her elemandan iki değer döndüğü için numeric(1) beklentisi bozulur.</span></span>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a><span class="fu">vapply</span>(liste, <span class="cf">function</span>(x) <span class="fu">c</span>(<span class="fu">min</span>(x), <span class="fu">max</span>(x)), <span class="fu">numeric</span>(<span class="dv">1</span>))</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-error">
+<pre><code>Error in vapply(liste, function(x) c(min(x), max(x)), numeric(1)): values must be length 1,
+ but FUN(X[[1]]) result is length 2</code></pre>
+</div>
+</div>
+<p>Doğru kullanım:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Her elemandan iki sayısal değer beklediğimizi belirtiyoruz.</span></span>
+<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a><span class="fu">vapply</span>(liste, <span class="cf">function</span>(x) <span class="fu">c</span>(<span class="at">min =</span> <span class="fu">min</span>(x), <span class="at">max =</span> <span class="fu">max</span>(x)), <span class="fu">numeric</span>(<span class="dv">2</span>))</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>    a  b   c
+min 1 10 100
+max 5 15 300</code></pre>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+İpucu
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Paket veya fonksiyon geliştirirken <code>vapply()</code> daha güvenli bir tercih olabilir. Çünkü çıktı yapısını açık biçimde belirtmenizi sağlar.</p>
+</div>
+</div>
+</section>
+<section id="tapply-fonksiyonu" class="level2" data-number="9.7">
+<h2 data-number="9.7" class="anchored" data-anchor-id="tapply-fonksiyonu"><span class="header-section-number">9.7</span> <code>tapply()</code> Fonksiyonu</h2>
+<p><code>tapply()</code> fonksiyonu bir vektörü bir veya daha fazla gruba göre özetlemek için kullanılır. Adındaki <code>t</code>, tarihsel olarak <strong>table</strong> veya <strong>tapply</strong> yapısına gönderme yapar. Pratikte <code>tapply()</code> fonksiyonunu gruplandırılmış özet işlemleri için düşünebiliriz.</p>
+<p>Temel söz dizimi şöyledir:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tapply</span>(X, INDEX, FUN, ...)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Burada:</p>
+<ul>
+<li><code>X</code>: Özetlenecek vektör.</li>
+<li><code>INDEX</code>: Grupları belirleyen factor veya factor listesi.</li>
+<li><code>FUN</code>: Her gruba uygulanacak fonksiyon.</li>
+<li><code>...</code>: Ek argümanlar.</li>
+</ul>
+<p>Basit bir örnek oluşturalım.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Öğrencilerin bölümleri ve notları</span></span>
+<span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a>bolum <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"İstatistik"</span>, <span class="st">"İstatistik"</span>, <span class="st">"Matematik"</span>, <span class="st">"Matematik"</span>, <span class="st">"İstatistik"</span>)</span>
+<span id="cb65-3"><a href="#cb65-3" aria-hidden="true" tabindex="-1"></a>not <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">80</span>, <span class="dv">70</span>, <span class="dv">60</span>, <span class="dv">90</span>, <span class="dv">85</span>)</span>
+<span id="cb65-4"><a href="#cb65-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb65-5"><a href="#cb65-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Bölüme göre ortalama not</span></span>
+<span id="cb65-6"><a href="#cb65-6" aria-hidden="true" tabindex="-1"></a><span class="fu">tapply</span>(not, bolum, mean)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>İstatistik  Matematik 
+  78.33333   75.00000 </code></pre>
+</div>
+</div>
+<p>Burada <code>not</code> vektörü <code>bolum</code> değişkenine göre gruplanmış ve her grup için ortalama hesaplanmıştır.</p>
+<section id="birden-fazla-grup-ile-tapply" class="level3" data-number="9.7.1">
+<h3 data-number="9.7.1" class="anchored" data-anchor-id="birden-fazla-grup-ile-tapply"><span class="header-section-number">9.7.1</span> Birden Fazla Grup ile <code>tapply()</code></h3>
+<p>Birden fazla gruplama değişkeni de kullanılabilir.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb67"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a>cinsiyet <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Kadın"</span>, <span class="st">"Erkek"</span>, <span class="st">"Kadın"</span>, <span class="st">"Erkek"</span>, <span class="st">"Kadın"</span>)</span>
+<span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-3"><a href="#cb67-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Bölüm ve cinsiyete göre ortalama not</span></span>
+<span id="cb67-4"><a href="#cb67-4" aria-hidden="true" tabindex="-1"></a><span class="fu">tapply</span>(not, <span class="fu">list</span>(bolum, cinsiyet), mean)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>           Erkek Kadın
+İstatistik    70  82.5
+Matematik     90  60.0</code></pre>
+</div>
+</div>
+<p>Sonuç iki boyutlu bir tablo gibi görünür.</p>
+</section>
+<section id="eksik-değerlerle-kullanım" class="level3" data-number="9.7.2">
+<h3 data-number="9.7.2" class="anchored" data-anchor-id="eksik-değerlerle-kullanım"><span class="header-section-number">9.7.2</span> Eksik Değerlerle Kullanım</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb69"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a>not_na <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">80</span>, <span class="dv">70</span>, <span class="cn">NA</span>, <span class="dv">90</span>, <span class="dv">85</span>)</span>
+<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb69-3"><a href="#cb69-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Eksik değerleri dışarıda bırakarak ortalama</span></span>
+<span id="cb69-4"><a href="#cb69-4" aria-hidden="true" tabindex="-1"></a><span class="fu">tapply</span>(not_na, bolum, mean, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>İstatistik  Matematik 
+  78.33333   90.00000 </code></pre>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Not
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><code>tapply()</code> özellikle base R ile gruplara göre özet istatistik üretmek için kullanışlıdır. <code>dplyr</code> paketindeki <code>group_by()</code> ve <code>summarise()</code> mantığına geçmeden önce bu yapı iyi anlaşılmalıdır.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="mapply-fonksiyonu" class="level2" data-number="9.8">
+<h2 data-number="9.8" class="anchored" data-anchor-id="mapply-fonksiyonu"><span class="header-section-number">9.8</span> <code>mapply()</code> Fonksiyonu</h2>
+<p><code>mapply()</code> fonksiyonu, bir fonksiyonu birden fazla nesnenin karşılıklı elemanları üzerinde uygulamak için kullanılır. Adındaki <code>m</code>, <strong>multivariate</strong> veya <strong>multiple</strong> fikrine işaret eder.</p>
+<p>Basit bir örnekle başlayalım.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb71"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a><span class="co"># İki vektör oluşturalım.</span></span>
+<span id="cb71-2"><a href="#cb71-2" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>)</span>
+<span id="cb71-3"><a href="#cb71-3" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">20</span>, <span class="dv">30</span>)</span>
+<span id="cb71-4"><a href="#cb71-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb71-5"><a href="#cb71-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Karşılıklı elemanları toplayalım.</span></span>
+<span id="cb71-6"><a href="#cb71-6" aria-hidden="true" tabindex="-1"></a><span class="fu">mapply</span>(sum, x, y)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 11 22 33</code></pre>
+</div>
+</div>
+<p>Bu işlem şu hesaplamaları yapar:</p>
+<ul>
+<li><code>sum(1, 10)</code></li>
+<li><code>sum(2, 20)</code></li>
+<li><code>sum(3, 30)</code></li>
+</ul>
+<section id="parametreli-fonksiyonlarda-mapply" class="level3" data-number="9.8.1">
+<h3 data-number="9.8.1" class="anchored" data-anchor-id="parametreli-fonksiyonlarda-mapply"><span class="header-section-number">9.8.1</span> Parametreli Fonksiyonlarda <code>mapply()</code></h3>
+<p>Bir vektördeki değerleri farklı üslerle yükseltelim.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb73"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a>taban <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>)</span>
+<span id="cb73-2"><a href="#cb73-2" aria-hidden="true" tabindex="-1"></a>us <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">2</span>)</span>
+<span id="cb73-3"><a href="#cb73-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb73-4"><a href="#cb73-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Her tabanı karşılık gelen üsse yükseltir.</span></span>
+<span id="cb73-5"><a href="#cb73-5" aria-hidden="true" tabindex="-1"></a><span class="fu">mapply</span>(<span class="cf">function</span>(a, b) a<span class="sc">^</span>b, taban, us)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1]  4 27 16</code></pre>
+</div>
+</div>
+</section>
+<section id="karakter-üretiminde-mapply" class="level3" data-number="9.8.2">
+<h3 data-number="9.8.2" class="anchored" data-anchor-id="karakter-üretiminde-mapply"><span class="header-section-number">9.8.2</span> Karakter Üretiminde <code>mapply()</code></h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb75"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a>ad <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Ali"</span>, <span class="st">"Ayşe"</span>, <span class="st">"Mehmet"</span>)</span>
+<span id="cb75-2"><a href="#cb75-2" aria-hidden="true" tabindex="-1"></a>not <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">80</span>, <span class="dv">90</span>, <span class="dv">75</span>)</span>
+<span id="cb75-3"><a href="#cb75-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb75-4"><a href="#cb75-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Her öğrenci için etiket oluşturalım.</span></span>
+<span id="cb75-5"><a href="#cb75-5" aria-hidden="true" tabindex="-1"></a><span class="fu">mapply</span>(<span class="cf">function</span>(a, n) <span class="fu">paste</span>(a, <span class="st">"notu:"</span>, n), ad, not)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>              Ali              Ayşe            Mehmet 
+   "Ali notu: 80"   "Ayşe notu: 90" "Mehmet notu: 75" </code></pre>
+</div>
+</div>
+<p>Bu tür kullanım, raporlama ve dinamik metin üretimi için faydalıdır.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+İpucu
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Bir fonksiyonun birden fazla girdisi varsa ve bu girdilerin karşılıklı elemanları üzerinde işlem yapmak istiyorsanız <code>mapply()</code> iyi bir seçenektir.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="apply-ailesi-ve-döngüler" class="level2" data-number="9.9">
+<h2 data-number="9.9" class="anchored" data-anchor-id="apply-ailesi-ve-döngüler"><span class="header-section-number">9.9</span> Apply Ailesi ve Döngüler</h2>
+<p>Apply ailesi bazen “döngü kullanmadan işlem yapmak” şeklinde anlatılır. Bu ifade kısmen doğrudur; ancak eksiktir. Çünkü apply fonksiyonları da arka planda tekrar eden işlemler gerçekleştirir. Fark, bu tekrar mantığının daha yüksek seviyeli ve veri yapısına uygun biçimde ifade edilmesidir.</p>
+<p>Aşağıdaki iki kod aynı amaca hizmet eder.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Döngü ile sütun ortalamaları</span></span>
+<span id="cb77-2"><a href="#cb77-2" aria-hidden="true" tabindex="-1"></a>sonuc_for <span class="ot">&lt;-</span> <span class="fu">numeric</span>(<span class="fu">ncol</span>(iris_sayisal))</span>
+<span id="cb77-3"><a href="#cb77-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb77-4"><a href="#cb77-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">ncol</span>(iris_sayisal)) {</span>
+<span id="cb77-5"><a href="#cb77-5" aria-hidden="true" tabindex="-1"></a>  sonuc_for[i] <span class="ot">&lt;-</span> <span class="fu">mean</span>(iris_sayisal[[i]])</span>
+<span id="cb77-6"><a href="#cb77-6" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb77-7"><a href="#cb77-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb77-8"><a href="#cb77-8" aria-hidden="true" tabindex="-1"></a>sonuc_for</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 5.843333 3.057333 3.758000 1.199333</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb79"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a><span class="co"># sapply ile sütun ortalamaları</span></span>
+<span id="cb79-2"><a href="#cb79-2" aria-hidden="true" tabindex="-1"></a>sonuc_apply <span class="ot">&lt;-</span> <span class="fu">sapply</span>(iris_sayisal, mean)</span>
+<span id="cb79-3"><a href="#cb79-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb79-4"><a href="#cb79-4" aria-hidden="true" tabindex="-1"></a>sonuc_apply</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Sepal.Length  Sepal.Width Petal.Length  Petal.Width 
+    5.843333     3.057333     3.758000     1.199333 </code></pre>
+</div>
+</div>
+<p>İkinci kullanımda kod daha kısa ve niyet daha açıktır. Ancak bazı durumlarda <code>for</code> döngüsü daha okunabilir olabilir. Özellikle karmaşık işlemler, ara kontroller veya birden fazla adım içeren süreçlerde döngü kullanmak daha anlaşılır olabilir.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Önemli
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Apply ailesi döngülerin düşmanı değildir. Döngüler ve apply fonksiyonları farklı durumlarda farklı avantajlar sağlar.</p>
+</div>
+</div>
+</section>
+<section id="hangi-apply-fonksiyonu-ne-zaman-kullanılır" class="level2" data-number="9.10">
+<h2 data-number="9.10" class="anchored" data-anchor-id="hangi-apply-fonksiyonu-ne-zaman-kullanılır"><span class="header-section-number">9.10</span> Hangi Apply Fonksiyonu Ne Zaman Kullanılır?</h2>
+<p>Aşağıdaki tablo karar vermeyi kolaylaştırabilir.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>İhtiyaç</th>
+<th>Uygun fonksiyon</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Matrisin satır veya sütunlarına işlem uygulamak</td>
+<td><code>apply()</code></td>
+</tr>
+<tr class="even">
+<td>Listenin her elemanına işlem uygulamak</td>
+<td><code>lapply()</code></td>
+</tr>
+<tr class="odd">
+<td>Liste sonucunu vektör/matris gibi daha basit yapıya çevirmek</td>
+<td><code>sapply()</code></td>
+</tr>
+<tr class="even">
+<td>Çıktı tipini güvence altına almak</td>
+<td><code>vapply()</code></td>
+</tr>
+<tr class="odd">
+<td>Bir vektörü gruplara göre özetlemek</td>
+<td><code>tapply()</code></td>
+</tr>
+<tr class="even">
+<td>Birden fazla vektörün karşılıklı elemanlarıyla işlem yapmak</td>
+<td><code>mapply()</code></td>
+</tr>
+</tbody>
+</table>
+<p>Bu tablo kesin kurallar değil, pratik yönlendirmeler sunar. Gerçek kullanımda veri yapısı, beklenen çıktı ve kodun okunabilirliği birlikte değerlendirilmelidir.</p>
+</section>
+<section id="mini-vaka-çalışması-sınav-sonuçlarını-özetleme" class="level2" data-number="9.11">
+<h2 data-number="9.11" class="anchored" data-anchor-id="mini-vaka-çalışması-sınav-sonuçlarını-özetleme"><span class="header-section-number">9.11</span> Mini Vaka Çalışması: Sınav Sonuçlarını Özetleme</h2>
+<p>Şimdi apply ailesindeki bazı fonksiyonları küçük bir örnek üzerinde birlikte kullanalım.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb81"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Öğrenci bazlı sınav sonuçları</span></span>
+<span id="cb81-2"><a href="#cb81-2" aria-hidden="true" tabindex="-1"></a>sinav <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb81-3"><a href="#cb81-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">ogrenci =</span> <span class="fu">c</span>(<span class="st">"Ali"</span>, <span class="st">"Ayşe"</span>, <span class="st">"Mehmet"</span>, <span class="st">"Zeynep"</span>, <span class="st">"Can"</span>, <span class="st">"Elif"</span>),</span>
+<span id="cb81-4"><a href="#cb81-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">bolum =</span> <span class="fu">c</span>(<span class="st">"İstatistik"</span>, <span class="st">"İstatistik"</span>, <span class="st">"Matematik"</span>, <span class="st">"Matematik"</span>, <span class="st">"İstatistik"</span>, <span class="st">"Matematik"</span>),</span>
+<span id="cb81-5"><a href="#cb81-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">vize =</span> <span class="fu">c</span>(<span class="dv">70</span>, <span class="dv">85</span>, <span class="dv">60</span>, <span class="dv">90</span>, <span class="dv">75</span>, <span class="dv">65</span>),</span>
+<span id="cb81-6"><a href="#cb81-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">final =</span> <span class="fu">c</span>(<span class="dv">80</span>, <span class="dv">90</span>, <span class="dv">55</span>, <span class="dv">95</span>, <span class="dv">70</span>, <span class="dv">75</span>)</span>
+<span id="cb81-7"><a href="#cb81-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb81-8"><a href="#cb81-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb81-9"><a href="#cb81-9" aria-hidden="true" tabindex="-1"></a>sinav</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":["ogrenci"],"name":[1],"type":["chr"],"align":["left"]},{"label":["bolum"],"name":[2],"type":["chr"],"align":["left"]},{"label":["vize"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["final"],"name":[4],"type":["dbl"],"align":["right"]}],"data":[{"1":"Ali","2":"İstatistik","3":"70","4":"80"},{"1":"Ayşe","2":"İstatistik","3":"85","4":"90"},{"1":"Mehmet","2":"Matematik","3":"60","4":"55"},{"1":"Zeynep","2":"Matematik","3":"90","4":"95"},{"1":"Can","2":"İstatistik","3":"75","4":"70"},{"1":"Elif","2":"Matematik","3":"65","4":"75"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<p>Öğrencilerin yıl sonu notunu hesaplayalım.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb82"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb82-1"><a href="#cb82-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Vize %40, final %60 ağırlıklı olsun.</span></span>
+<span id="cb82-2"><a href="#cb82-2" aria-hidden="true" tabindex="-1"></a>sinav<span class="sc">$</span>yil_sonu <span class="ot">&lt;-</span> <span class="fl">0.4</span> <span class="sc">*</span> sinav<span class="sc">$</span>vize <span class="sc">+</span> <span class="fl">0.6</span> <span class="sc">*</span> sinav<span class="sc">$</span>final</span>
+<span id="cb82-3"><a href="#cb82-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-4"><a href="#cb82-4" aria-hidden="true" tabindex="-1"></a>sinav</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":["ogrenci"],"name":[1],"type":["chr"],"align":["left"]},{"label":["bolum"],"name":[2],"type":["chr"],"align":["left"]},{"label":["vize"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["final"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["yil_sonu"],"name":[5],"type":["dbl"],"align":["right"]}],"data":[{"1":"Ali","2":"İstatistik","3":"70","4":"80","5":"76"},{"1":"Ayşe","2":"İstatistik","3":"85","4":"90","5":"88"},{"1":"Mehmet","2":"Matematik","3":"60","4":"55","5":"57"},{"1":"Zeynep","2":"Matematik","3":"90","4":"95","5":"93"},{"1":"Can","2":"İstatistik","3":"75","4":"70","5":"72"},{"1":"Elif","2":"Matematik","3":"65","4":"75","5":"71"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<p>Sayısal değişkenlerin özetini alalım.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb83"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Sayısal sütunları seçelim.</span></span>
+<span id="cb83-2"><a href="#cb83-2" aria-hidden="true" tabindex="-1"></a>sinav_sayisal <span class="ot">&lt;-</span> sinav[, <span class="fu">c</span>(<span class="st">"vize"</span>, <span class="st">"final"</span>, <span class="st">"yil_sonu"</span>)]</span>
+<span id="cb83-3"><a href="#cb83-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb83-4"><a href="#cb83-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Her sayısal sütun için ortalama</span></span>
+<span id="cb83-5"><a href="#cb83-5" aria-hidden="true" tabindex="-1"></a><span class="fu">sapply</span>(sinav_sayisal, mean)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>    vize    final yil_sonu 
+74.16667 77.50000 76.16667 </code></pre>
+</div>
+</div>
+<p>Her öğrenci için vize ve final arasındaki farkı hesaplayalım.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb85"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb85-1"><a href="#cb85-1" aria-hidden="true" tabindex="-1"></a><span class="co"># apply() satır bazında işlem yapar.</span></span>
+<span id="cb85-2"><a href="#cb85-2" aria-hidden="true" tabindex="-1"></a><span class="fu">apply</span>(sinav[, <span class="fu">c</span>(<span class="st">"vize"</span>, <span class="st">"final"</span>)], <span class="dv">1</span>, <span class="cf">function</span>(x) x[<span class="dv">2</span>] <span class="sc">-</span> x[<span class="dv">1</span>])</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 10  5 -5  5 -5 10</code></pre>
+</div>
+</div>
+<p>Bölümlere göre yıl sonu ortalaması:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb87"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb87-1"><a href="#cb87-1" aria-hidden="true" tabindex="-1"></a><span class="co"># tapply() ile gruplara göre ortalama</span></span>
+<span id="cb87-2"><a href="#cb87-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tapply</span>(sinav<span class="sc">$</span>yil_sonu, sinav<span class="sc">$</span>bolum, mean)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>İstatistik  Matematik 
+  78.66667   73.66667 </code></pre>
+</div>
+</div>
+<p>Öğrenciler için kısa açıklama metni oluşturalım.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb89"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb89-1"><a href="#cb89-1" aria-hidden="true" tabindex="-1"></a><span class="co"># mapply() ile karşılıklı elemanlardan metin üretimi</span></span>
+<span id="cb89-2"><a href="#cb89-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mapply</span>(</span>
+<span id="cb89-3"><a href="#cb89-3" aria-hidden="true" tabindex="-1"></a>  <span class="cf">function</span>(ad, not) <span class="fu">paste</span>(ad, <span class="st">"yıl sonu notu:"</span>, not),</span>
+<span id="cb89-4"><a href="#cb89-4" aria-hidden="true" tabindex="-1"></a>  sinav<span class="sc">$</span>ogrenci,</span>
+<span id="cb89-5"><a href="#cb89-5" aria-hidden="true" tabindex="-1"></a>  sinav<span class="sc">$</span>yil_sonu</span>
+<span id="cb89-6"><a href="#cb89-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                       Ali                       Ayşe 
+   "Ali yıl sonu notu: 76"   "Ayşe yıl sonu notu: 88" 
+                    Mehmet                     Zeynep 
+"Mehmet yıl sonu notu: 57" "Zeynep yıl sonu notu: 93" 
+                       Can                       Elif 
+   "Can yıl sonu notu: 72"   "Elif yıl sonu notu: 71" </code></pre>
+</div>
+</div>
+<p>Bu küçük vaka çalışması, apply ailesinin yalnızca soyut fonksiyonlardan oluşmadığını; veri özetleme, raporlama ve tekrar eden işlemleri düzenleme açısından pratik bir araç seti sunduğunu göstermektedir.</p>
+</section>
+<section id="sık-yapılan-hatalar" class="level2" data-number="9.12">
+<h2 data-number="9.12" class="anchored" data-anchor-id="sık-yapılan-hatalar"><span class="header-section-number">9.12</span> Sık Yapılan Hatalar</h2>
+<section id="apply-fonksiyonunu-her-veri-çerçevesinde-güvenle-kullanmak" class="level3" data-number="9.12.1">
+<h3 data-number="9.12.1" class="anchored" data-anchor-id="apply-fonksiyonunu-her-veri-çerçevesinde-güvenle-kullanmak"><span class="header-section-number">9.12.1</span> <code>apply()</code> Fonksiyonunu Her Veri Çerçevesinde Güvenle Kullanmak</h3>
+<p>Veri çerçeveleri farklı veri tiplerine sahip olabilir. <code>apply()</code> veri çerçevesini matrise dönüştürebileceği için sayısal olmayan sütunlar sonucu etkileyebilir.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb91"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb91-1"><a href="#cb91-1" aria-hidden="true" tabindex="-1"></a>df_hata <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb91-2"><a href="#cb91-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">grup =</span> <span class="fu">c</span>(<span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span>),</span>
+<span id="cb91-3"><a href="#cb91-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">20</span>, <span class="dv">30</span>),</span>
+<span id="cb91-4"><a href="#cb91-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">y =</span> <span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">15</span>, <span class="dv">25</span>)</span>
+<span id="cb91-5"><a href="#cb91-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb91-6"><a href="#cb91-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb91-7"><a href="#cb91-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Bu kullanım veri tipleri nedeniyle beklenmeyen sonuçlar verebilir.</span></span>
+<span id="cb91-8"><a href="#cb91-8" aria-hidden="true" tabindex="-1"></a><span class="fu">apply</span>(df_hata, <span class="dv">2</span>, class)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       grup           x           y 
+"character" "character" "character" </code></pre>
+</div>
+</div>
+<p>Daha güvenli kullanım:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb93"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb93-1"><a href="#cb93-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Sayısal sütunları seçerek işlem yapmak daha uygundur.</span></span>
+<span id="cb93-2"><a href="#cb93-2" aria-hidden="true" tabindex="-1"></a><span class="fu">apply</span>(df_hata[, <span class="fu">c</span>(<span class="st">"x"</span>, <span class="st">"y"</span>)], <span class="dv">2</span>, mean)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> x  y 
+20 15 </code></pre>
+</div>
+</div>
+</section>
+<section id="sapply-çıktısını-her-zaman-aynı-sanmak" class="level3" data-number="9.12.2">
+<h3 data-number="9.12.2" class="anchored" data-anchor-id="sapply-çıktısını-her-zaman-aynı-sanmak"><span class="header-section-number">9.12.2</span> <code>sapply()</code> Çıktısını Her Zaman Aynı Sanmak</h3>
+<p><code>sapply()</code> sonucu otomatik basitleştirmeye çalışır. Her elemandan farklı uzunlukta çıktı dönerse sonuç liste olabilir.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb95"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb95-1"><a href="#cb95-1" aria-hidden="true" tabindex="-1"></a>karisik <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb95-2"><a href="#cb95-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">a =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>,</span>
+<span id="cb95-3"><a href="#cb95-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">b =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span></span>
+<span id="cb95-4"><a href="#cb95-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb95-5"><a href="#cb95-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb95-6"><a href="#cb95-6" aria-hidden="true" tabindex="-1"></a><span class="fu">sapply</span>(karisik, <span class="cf">function</span>(x) x[<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>])</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     a b
+[1,] 1 1
+[2,] 2 2</code></pre>
+</div>
+</div>
+<p>Ancak farklı uzunlukta çıktı üretildiğinde yapı değişebilir.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb97"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb97-1"><a href="#cb97-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sapply</span>(karisik, <span class="cf">function</span>(x) x)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$a
+[1] 1 2 3
+
+$b
+[1] 1 2 3 4 5</code></pre>
+</div>
+</div>
+<p>Çıktı tipinin kesin olması gerekiyorsa <code>vapply()</code> düşünülmelidir.</p>
+</section>
+<section id="margin-değerini-karıştırmak" class="level3" data-number="9.12.3">
+<h3 data-number="9.12.3" class="anchored" data-anchor-id="margin-değerini-karıştırmak"><span class="header-section-number">9.12.3</span> <code>MARGIN</code> Değerini Karıştırmak</h3>
+<p><code>apply()</code> fonksiyonunda <code>MARGIN = 1</code> satır, <code>MARGIN = 2</code> sütun anlamına gelir. Bu karışıklık sık görülür.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb99"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb99-1"><a href="#cb99-1" aria-hidden="true" tabindex="-1"></a>m</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     [,1] [,2] [,3] [,4]
+[1,]    1    2    3    4
+[2,]    5    6    7    8
+[3,]    9   10   11   12</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb101"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb101-1"><a href="#cb101-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Satır toplamları</span></span>
+<span id="cb101-2"><a href="#cb101-2" aria-hidden="true" tabindex="-1"></a><span class="fu">apply</span>(m, <span class="dv">1</span>, sum)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 10 26 42</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb103"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb103-1"><a href="#cb103-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Sütun toplamları</span></span>
+<span id="cb103-2"><a href="#cb103-2" aria-hidden="true" tabindex="-1"></a><span class="fu">apply</span>(m, <span class="dv">2</span>, sum)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 15 18 21 24</code></pre>
+</div>
+</div>
+</section>
+<section id="ek-argümanların-nereye-gittiğini-karıştırmak" class="level3" data-number="9.12.4">
+<h3 data-number="9.12.4" class="anchored" data-anchor-id="ek-argümanların-nereye-gittiğini-karıştırmak"><span class="header-section-number">9.12.4</span> Ek Argümanların Nereye Gittiğini Karıştırmak</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb105"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb105-1"><a href="#cb105-1" aria-hidden="true" tabindex="-1"></a><span class="co"># na.rm = TRUE mean() fonksiyonuna aktarılır.</span></span>
+<span id="cb105-2"><a href="#cb105-2" aria-hidden="true" tabindex="-1"></a><span class="fu">apply</span>(m_na, <span class="dv">1</span>, mean, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1.5 5.0 8.0</code></pre>
+</div>
+</div>
+<p>Burada <code>na.rm = TRUE</code>, <code>apply()</code> fonksiyonunun değil, <code>mean()</code> fonksiyonunun argümanıdır.</p>
+</section>
+</section>
+<section id="egzersizler" class="level2" data-number="9.13">
+<h2 data-number="9.13" class="anchored" data-anchor-id="egzersizler"><span class="header-section-number">9.13</span> Egzersizler</h2>
+<p>Aşağıdaki egzersizler apply ailesinin temel kullanımını pekiştirmek için hazırlanmıştır.</p>
+<ol type="1">
+<li>4 satır ve 5 sütundan oluşan sayısal bir matris oluşturunuz.</li>
+<li>Bu matrisin satır toplamlarını <code>apply()</code> ile hesaplayınız.</li>
+<li>Bu matrisin sütun ortalamalarını <code>apply()</code> ile hesaplayınız.</li>
+<li>Bir liste oluşturunuz ve her elemanın uzunluğunu <code>lapply()</code> ile hesaplayınız.</li>
+<li>Aynı işlemi <code>sapply()</code> ile yapınız ve çıktı farkını inceleyiniz.</li>
+<li><code>iris</code> veri setindeki sayısal sütunların ortalamasını <code>sapply()</code> ile hesaplayınız.</li>
+<li>Aynı işlemi <code>vapply()</code> ile yapınız.</li>
+<li>Bir not vektörünü bölüm değişkenine göre <code>tapply()</code> ile özetleyiniz.</li>
+<li>İki vektörü kullanarak <code>mapply()</code> ile dinamik etiketler üretiniz.</li>
+<li><code>apply()</code> fonksiyonunda <code>MARGIN = 1</code> ve <code>MARGIN = 2</code> farkını kendi örneğinizle açıklayınız.</li>
+</ol>
+</section>
+<section id="egzersiz-çözümleri" class="level2" data-number="9.14">
+<h2 data-number="9.14" class="anchored" data-anchor-id="egzersiz-çözümleri"><span class="header-section-number">9.14</span> Egzersiz Çözümleri</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb107"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb107-1"><a href="#cb107-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Matris oluşturma</span></span>
+<span id="cb107-2"><a href="#cb107-2" aria-hidden="true" tabindex="-1"></a>mat <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>, <span class="at">nrow =</span> <span class="dv">4</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb107-3"><a href="#cb107-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb107-4"><a href="#cb107-4" aria-hidden="true" tabindex="-1"></a>mat</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     [,1] [,2] [,3] [,4] [,5]
+[1,]    1    2    3    4    5
+[2,]    6    7    8    9   10
+[3,]   11   12   13   14   15
+[4,]   16   17   18   19   20</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb109"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb109-1"><a href="#cb109-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Satır toplamları</span></span>
+<span id="cb109-2"><a href="#cb109-2" aria-hidden="true" tabindex="-1"></a><span class="fu">apply</span>(mat, <span class="dv">1</span>, sum)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 15 40 65 90</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb111"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb111-1"><a href="#cb111-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. Sütun ortalamaları</span></span>
+<span id="cb111-2"><a href="#cb111-2" aria-hidden="true" tabindex="-1"></a><span class="fu">apply</span>(mat, <span class="dv">2</span>, mean)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1]  8.5  9.5 10.5 11.5 12.5</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb113"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb113-1"><a href="#cb113-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. Liste oluşturma ve lapply kullanımı</span></span>
+<span id="cb113-2"><a href="#cb113-2" aria-hidden="true" tabindex="-1"></a>ornek_liste <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb113-3"><a href="#cb113-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">a =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>,</span>
+<span id="cb113-4"><a href="#cb113-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">b =</span> letters[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>],</span>
+<span id="cb113-5"><a href="#cb113-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">c =</span> <span class="fu">c</span>(<span class="cn">TRUE</span>, <span class="cn">FALSE</span>, <span class="cn">TRUE</span>, <span class="cn">TRUE</span>)</span>
+<span id="cb113-6"><a href="#cb113-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb113-7"><a href="#cb113-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb113-8"><a href="#cb113-8" aria-hidden="true" tabindex="-1"></a><span class="fu">lapply</span>(ornek_liste, length)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$a
+[1] 5
+
+$b
+[1] 3
+
+$c
+[1] 4</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb115"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb115-1"><a href="#cb115-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 5. Aynı işlemi sapply ile yapma</span></span>
+<span id="cb115-2"><a href="#cb115-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sapply</span>(ornek_liste, length)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>a b c 
+5 3 4 </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb117"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb117-1"><a href="#cb117-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 6. iris veri setindeki sayısal sütunların ortalaması</span></span>
+<span id="cb117-2"><a href="#cb117-2" aria-hidden="true" tabindex="-1"></a>iris_sayisal <span class="ot">&lt;-</span> iris[, <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>]</span>
+<span id="cb117-3"><a href="#cb117-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb117-4"><a href="#cb117-4" aria-hidden="true" tabindex="-1"></a><span class="fu">sapply</span>(iris_sayisal, mean)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Sepal.Length  Sepal.Width Petal.Length  Petal.Width 
+    5.843333     3.057333     3.758000     1.199333 </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb119"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb119-1"><a href="#cb119-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 7. Aynı işlem vapply ile</span></span>
+<span id="cb119-2"><a href="#cb119-2" aria-hidden="true" tabindex="-1"></a><span class="fu">vapply</span>(iris_sayisal, mean, <span class="fu">numeric</span>(<span class="dv">1</span>))</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Sepal.Length  Sepal.Width Petal.Length  Petal.Width 
+    5.843333     3.057333     3.758000     1.199333 </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb121"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb121-1"><a href="#cb121-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 8. Bölüme göre not ortalaması</span></span>
+<span id="cb121-2"><a href="#cb121-2" aria-hidden="true" tabindex="-1"></a>bolum <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"A"</span>, <span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"B"</span>, <span class="st">"A"</span>)</span>
+<span id="cb121-3"><a href="#cb121-3" aria-hidden="true" tabindex="-1"></a>not <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">70</span>, <span class="dv">80</span>, <span class="dv">60</span>, <span class="dv">90</span>, <span class="dv">85</span>)</span>
+<span id="cb121-4"><a href="#cb121-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb121-5"><a href="#cb121-5" aria-hidden="true" tabindex="-1"></a><span class="fu">tapply</span>(not, bolum, mean)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       A        B 
+78.33333 75.00000 </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb123"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb123-1"><a href="#cb123-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 9. mapply ile etiket üretimi</span></span>
+<span id="cb123-2"><a href="#cb123-2" aria-hidden="true" tabindex="-1"></a>ad <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Ali"</span>, <span class="st">"Ayşe"</span>, <span class="st">"Mehmet"</span>)</span>
+<span id="cb123-3"><a href="#cb123-3" aria-hidden="true" tabindex="-1"></a>puan <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">75</span>, <span class="dv">90</span>, <span class="dv">60</span>)</span>
+<span id="cb123-4"><a href="#cb123-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb123-5"><a href="#cb123-5" aria-hidden="true" tabindex="-1"></a><span class="fu">mapply</span>(<span class="cf">function</span>(a, p) <span class="fu">paste</span>(a, <span class="st">"-"</span>, p, <span class="st">"puan"</span>), ad, puan)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>               Ali               Ayşe             Mehmet 
+   "Ali - 75 puan"   "Ayşe - 90 puan" "Mehmet - 60 puan" </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb125"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb125-1"><a href="#cb125-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 10. MARGIN farkı</span></span>
+<span id="cb125-2"><a href="#cb125-2" aria-hidden="true" tabindex="-1"></a>mat</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     [,1] [,2] [,3] [,4] [,5]
+[1,]    1    2    3    4    5
+[2,]    6    7    8    9   10
+[3,]   11   12   13   14   15
+[4,]   16   17   18   19   20</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb127"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb127-1"><a href="#cb127-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Satır bazında maksimum değerler</span></span>
+<span id="cb127-2"><a href="#cb127-2" aria-hidden="true" tabindex="-1"></a><span class="fu">apply</span>(mat, <span class="dv">1</span>, max)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1]  5 10 15 20</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb129"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb129-1"><a href="#cb129-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Sütun bazında maksimum değerler</span></span>
+<span id="cb129-2"><a href="#cb129-2" aria-hidden="true" tabindex="-1"></a><span class="fu">apply</span>(mat, <span class="dv">2</span>, max)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 16 17 18 19 20</code></pre>
+</div>
+</div>
+</section>
+<section id="bölüm-özeti" class="level2" data-number="9.15">
+<h2 data-number="9.15" class="anchored" data-anchor-id="bölüm-özeti"><span class="header-section-number">9.15</span> Bölüm Özeti</h2>
+<p>Apply ailesi, R’de tekrar eden işlemleri veri yapısına uygun biçimde ifade etmeyi sağlayan önemli bir fonksiyon grubudur. Bu bölümde <code>apply()</code>, <code>lapply()</code>, <code>sapply()</code>, <code>vapply()</code>, <code>tapply()</code> ve <code>mapply()</code> fonksiyonları ele alındı.</p>
+<p><code>apply()</code> daha çok matris ve array yapılarında satır veya sütun bazlı işlemler için kullanılır. <code>lapply()</code> liste elemanları üzerinde işlem yapar ve her zaman liste döndürür. <code>sapply()</code> benzer şekilde çalışır; ancak çıktıyı basitleştirmeye çalışır. <code>vapply()</code> beklenen çıktı tipini önceden belirterek daha güvenli bir yapı sunar. <code>tapply()</code> gruplara göre özetleme yapmak için kullanılır. <code>mapply()</code> ise birden fazla nesnenin karşılıklı elemanları üzerinde işlem yapmayı sağlar.</p>
+<p>Apply ailesini öğrenirken önemli olan hangi fonksiyonun hangi veri yapısı ve hangi çıktı beklentisi için uygun olduğunu anlamaktır. Bu fonksiyonlar döngülerin yerine geçmek zorunda değildir; ancak birçok veri analizi probleminde kodu daha kısa, daha düzenli ve daha okunabilir hale getirir.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Kopyalandı");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Kopyalandı");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/mfatihtuzen\.github\.io\/r-programlama\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../../chapters/01-giris/strings.html" class="pagination-link" aria-label="Metin İşlemleri">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Metin İşlemleri</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../../chapters/01-giris/import_export.html" class="pagination-link" aria-label="Verilerin İçe ve Dışa Aktarılması">
+        <span class="nav-page-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Verilerin İçe ve Dışa Aktarılması</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>© 2026, <a href="https://www.linkedin.com/in/dr-m-fatih-t-2b2a4328/">Muhammed Fatih Tüzen</a></p>
+</div>   
+    <div class="nav-footer-center">
+
+<div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/MFatihTuzen/r-programlama/edit/main/chapters/01-giris/apply.qmd" class="toc-action"><i class="bi bi-github"></i>Bu sayfayı düzenle</a></li><li><a href="https://github.com/MFatihTuzen/r-programlama/issues/new" class="toc-action"><i class="bi empty"></i>Sorun bildir</a></li></ul></div><div class="cookie-consent-footer"><a href="#" id="open_preferences_center">Cookie Preferences</a></div></div>
+    <div class="nav-footer-right">
+<p>Bu kitap <a href="https://quarto.org/">Quarto</a> ile hazırlanmıştır.</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+<script src="../../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

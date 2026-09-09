@@ -1,0 +1,1950 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="tr" xml:lang="tr"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="R programlama, veri analizi ve istatistiksel düşünme üzerine Türkçe açık kaynak kitap.">
+
+<title>19&nbsp; Özellik Mühendisliğine Giriş – R Programlama</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../chapters/03-veri-on-isleme/data_leakage.html" rel="next">
+<link href="../../chapters/03-veri-on-isleme/scaling.html" rel="prev">
+<link href="../../images/favicon.png" rel="icon" type="image/png">
+<script src="../../site_libs/cookie-consent/cookie-consent.js"></script>
+<link href="../../site_libs/cookie-consent/cookie-consent.css" rel="stylesheet">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-bb62276ab45c84d9efd712f51ff97b5a.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-5a1953863e1f72ef3b996ef827f01ca7.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-bb62276ab45c84d9efd712f51ff97b5a.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-13239a396cb0d0c215efc9b545bec6ba.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-d3b478853a8d6d29a3ba9ced1f343c7a.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-13239a396cb0d0c215efc9b545bec6ba.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "Sonuç yok",
+    "search-matching-documents-text": "eşleşen belgeler",
+    "search-copy-link-title": "Aramak için bağlantıyı kopyalayın",
+    "search-hide-matches-text": "Ek eşleşmeleri gizle",
+    "search-more-match-text": "bu belgede bir tane daha eşleşme",
+    "search-more-matches-text": "bu belgede daha fazla eşleşme",
+    "search-clear-button-title": "Temizle",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "İptal et",
+    "search-submit-button-title": "Gönder",
+    "search-label": "Ara"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-X6J60MER5G"></script>
+
+<script type="text/plain" cookie-consent="tracking">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-X6J60MER5G', { 'anonymize_ip': true});
+</script>
+
+<script type="text/javascript" charset="UTF-8">
+document.addEventListener('DOMContentLoaded', function () {
+cookieconsent.run({
+  "notice_banner_type":"simple",
+  "consent_type":"express",
+  "palette":"light",
+  "language":"en",
+  "page_load_consent_levels":["strictly-necessary"],
+  "notice_banner_reject_button_hide":false,
+  "preferences_center_close_button_hide":false,
+  "website_name":""
+  ,
+"language":"tr"
+  });
+});
+</script> 
+  
+<style>html{ scroll-behavior: smooth; }</style>
+<link href="../../site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet">
+<script src="../../site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../../styles.css">
+<meta property="og:title" content="19&nbsp; Özellik Mühendisliğine Giriş – R Programlama">
+<meta property="og:description" content="R programlama, veri analizi ve istatistiksel düşünme üzerine Türkçe açık kaynak kitap.">
+<meta property="og:site_name" content="R Programlama">
+<meta name="twitter:title" content="19&nbsp; Özellik Mühendisliğine Giriş – R Programlama">
+<meta name="twitter:description" content="R programlama, veri analizi ve istatistiksel düşünme üzerine Türkçe açık kaynak kitap.">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-sidebar floating quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Kenar çubuğunu değiştir" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../chapters/03-veri-on-isleme/data_preprocessing.html">III · Veri Ön İşleme</a></li><li class="breadcrumb-item"><a href="../../chapters/03-veri-on-isleme/feature_engineering.html"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Özellik Mühendisliğine Giriş</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Kenar çubuğunu değiştir" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Ara" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../../">R Programlama</a> 
+        <div class="sidebar-tools-main tools-wide">
+    <a href="https://github.com/MFatihTuzen/r-programlama" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+    <div class="dropdown">
+      <a href="" title="Share" id="quarto-navigation-tool-dropdown-0" class="quarto-navigation-tool dropdown-toggle px-1" data-bs-toggle="dropdown" aria-expanded="false" role="link" aria-label="Share"><i class="bi bi-share"></i></a>
+      <ul class="dropdown-menu" aria-labelledby="quarto-navigation-tool-dropdown-0">
+          <li>
+            <a class="dropdown-item sidebar-tools-main-item" href="https://twitter.com/intent/tweet?url=|url|">
+              <i class="bi bi-twitter pe-1"></i>
+            Twitter
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item sidebar-tools-main-item" href="https://www.linkedin.com/sharing/share-offsite/?url=|url|">
+              <i class="bi bi-linkedin pe-1"></i>
+            LinkedIn
+            </a>
+          </li>
+      </ul>
+    </div>
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Karanlık modu değiştir"><i class="bi"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Okuyucu modunu değiştir">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Ara"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Önsöz</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">I · R Programlamaya Giriş</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Bölümü değiştir">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/r_about.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">R Programlama Hakkında</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/R_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">R Çalışma Ortamı</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">R Temel Kullanımı ve İlk Komutlar</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/data_types.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Veri Tipleri ve Yapıları</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/functions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Fonksiyonlar</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/if_else_for.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Karar Yapıları ve Döngüler</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/date_time.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Tarih ve Zaman İşlemleri</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/strings.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Metin İşlemleri</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/apply.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Apply Ailesi</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/import_export.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Verilerin İçe ve Dışa Aktarılması</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">II · Veri Manipülasyonu</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Bölümü değiştir">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/02-veri-manipulasyonu/data_manipulation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Veri Manipülasyonu</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/02-veri-manipulasyonu/data_transformation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Veri Dönüştürme</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/02-veri-manipulasyonu/data_join.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Veri Birleştirme</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">III · Veri Ön İşleme</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Bölümü değiştir">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/03-veri-on-isleme/data_preprocessing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Veri Ön İşlemeye Giriş</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/03-veri-on-isleme/missing_data_imputation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Eksik Veriler ve İmputasyon</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/03-veri-on-isleme/outliers.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Aykırı Gözlemler</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/03-veri-on-isleme/data_transformations.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Veri Dönüşümleri</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/03-veri-on-isleme/scaling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Ölçeklendirme</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/03-veri-on-isleme/feature_engineering.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Özellik Mühendisliğine Giriş</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/03-veri-on-isleme/data_leakage.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Veri Sızıntısı ve Doğru Ön İşleme İş Akışı</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Kaynakça</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="2">
+    <h2 id="toc-title">İçindekiler</h2>
+   
+  <ul>
+  <li><a href="#veri-kaynakları-ve-analiz-birimi" id="toc-veri-kaynakları-ve-analiz-birimi" class="nav-link active" data-scroll-target="#veri-kaynakları-ve-analiz-birimi"><span class="header-section-number">19.1</span> Veri Kaynakları ve Analiz Birimi</a></li>
+  <li><a href="#değişken-ile-özellik-arasındaki-ayrım" id="toc-değişken-ile-özellik-arasındaki-ayrım" class="nav-link" data-scroll-target="#değişken-ile-özellik-arasındaki-ayrım"><span class="header-section-number">19.2</span> Değişken ile Özellik Arasındaki Ayrım</a></li>
+  <li><a href="#iyi-bir-özelliğin-nitelikleri" id="toc-iyi-bir-özelliğin-nitelikleri" class="nav-link" data-scroll-target="#iyi-bir-özelliğin-nitelikleri"><span class="header-section-number">19.3</span> İyi Bir Özelliğin Nitelikleri</a></li>
+  <li><a href="#aritmetik-özellikler" id="toc-aritmetik-özellikler" class="nav-link" data-scroll-target="#aritmetik-özellikler"><span class="header-section-number">19.4</span> Aritmetik Özellikler</a></li>
+  <li><a href="#matematiksel-temsil-özellikleri" id="toc-matematiksel-temsil-özellikleri" class="nav-link" data-scroll-target="#matematiksel-temsil-özellikleri"><span class="header-section-number">19.5</span> Matematiksel Temsil Özellikleri</a></li>
+  <li><a href="#zaman-özellikleri" id="toc-zaman-özellikleri" class="nav-link" data-scroll-target="#zaman-özellikleri"><span class="header-section-number">19.6</span> Zaman Özellikleri</a></li>
+  <li><a href="#kategorik-özellikler" id="toc-kategorik-özellikler" class="nav-link" data-scroll-target="#kategorik-özellikler"><span class="header-section-number">19.7</span> Kategorik Özellikler</a></li>
+  <li><a href="#sürekli-değişkenleri-gruplamak" id="toc-sürekli-değişkenleri-gruplamak" class="nav-link" data-scroll-target="#sürekli-değişkenleri-gruplamak"><span class="header-section-number">19.8</span> Sürekli Değişkenleri Gruplamak</a></li>
+  <li><a href="#eksiklik-göstergeleri" id="toc-eksiklik-göstergeleri" class="nav-link" data-scroll-target="#eksiklik-göstergeleri"><span class="header-section-number">19.9</span> Eksiklik Göstergeleri</a></li>
+  <li><a href="#toplulaştırma-özellikleri-ve-analiz-birimi" id="toc-toplulaştırma-özellikleri-ve-analiz-birimi" class="nav-link" data-scroll-target="#toplulaştırma-özellikleri-ve-analiz-birimi"><span class="header-section-number">19.10</span> Toplulaştırma Özellikleri ve Analiz Birimi</a></li>
+  <li><a href="#hedef-kodlama-ve-sızıntı-riski" id="toc-hedef-kodlama-ve-sızıntı-riski" class="nav-link" data-scroll-target="#hedef-kodlama-ve-sızıntı-riski"><span class="header-section-number">19.11</span> Hedef Kodlama ve Sızıntı Riski</a></li>
+  <li><a href="#özellik-seçimi-ile-özellik-mühendisliği-farkı" id="toc-özellik-seçimi-ile-özellik-mühendisliği-farkı" class="nav-link" data-scroll-target="#özellik-seçimi-ile-özellik-mühendisliği-farkı"><span class="header-section-number">19.12</span> Özellik Seçimi ile Özellik Mühendisliği Farkı</a></li>
+  <li><a href="#recipes-ile-tekrar-üretilebilir-özellikler" id="toc-recipes-ile-tekrar-üretilebilir-özellikler" class="nav-link" data-scroll-target="#recipes-ile-tekrar-üretilebilir-özellikler"><span class="header-section-number">19.13</span> <code>recipes</code> ile Tekrar Üretilebilir Özellikler</a></li>
+  <li><a href="#özellikleri-doğrulamak" id="toc-özellikleri-doğrulamak" class="nav-link" data-scroll-target="#özellikleri-doğrulamak"><span class="header-section-number">19.14</span> Özellikleri Doğrulamak</a></li>
+  <li><a href="#sık-yapılan-hatalar" id="toc-sık-yapılan-hatalar" class="nav-link" data-scroll-target="#sık-yapılan-hatalar"><span class="header-section-number">19.15</span> Sık Yapılan Hatalar</a></li>
+  <li><a href="#egzersizler" id="toc-egzersizler" class="nav-link" data-scroll-target="#egzersizler"><span class="header-section-number">19.16</span> Egzersizler</a></li>
+  <li><a href="#egzersiz-çözümleri" id="toc-egzersiz-çözümleri" class="nav-link" data-scroll-target="#egzersiz-çözümleri"><span class="header-section-number">19.17</span> Egzersiz Çözümleri</a></li>
+  <li><a href="#bölüm-özeti" id="toc-bölüm-özeti" class="nav-link" data-scroll-target="#bölüm-özeti"><span class="header-section-number">19.18</span> Bölüm Özeti</a></li>
+  <li><a href="#kaynaklar-ve-ek-okuma" id="toc-kaynaklar-ve-ek-okuma" class="nav-link" data-scroll-target="#kaynaklar-ve-ek-okuma"><span class="header-section-number">19.19</span> Kaynaklar ve Ek Okuma</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/MFatihTuzen/r-programlama/edit/main/chapters/03-veri-on-isleme/feature_engineering.qmd" class="toc-action"><i class="bi bi-github"></i>Bu sayfayı düzenle</a></li><li><a href="https://github.com/MFatihTuzen/r-programlama/issues/new" class="toc-action"><i class="bi empty"></i>Sorun bildir</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../chapters/03-veri-on-isleme/data_preprocessing.html">III · Veri Ön İşleme</a></li><li class="breadcrumb-item"><a href="../../chapters/03-veri-on-isleme/feature_engineering.html"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Özellik Mühendisliğine Giriş</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span id="sec-feature-engineering" class="quarto-section-identifier"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Özellik Mühendisliğine Giriş</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Bir veri setindeki ham sütunlar, analiz sorusunun ihtiyaç duyduğu bilgiyi her zaman doğrudan temsil etmez. <code>exports_gdp_pct</code> ve <code>imports_gdp_pct</code> ayrı ayrı anlamlıdır; fakat bir ülkenin dış ticarete açıklığını incelemek için toplamları daha doğrudan bir gösterge olabilir. Tarih sütunu tek başına saklanabilir; buna karşılık yıl, çeyrek, hafta sonu veya olaydan sonra geçen süre model için daha işlevsel olabilir.</p>
+<p><strong>Özellik mühendisliği</strong> (<em>feature engineering</em>), mevcut verilerden analiz veya modelleme amacıyla anlamlı yeni değişkenler üretme sürecidir. Üretilen değişkenlere <strong>özellik</strong> (<em>feature</em>) denir.</p>
+<p>İyi özellik mühendisliği daha çok sütun üretmek değildir. Şu sorulara gerekçeli cevap vermektir:</p>
+<ul>
+<li>Yeni özellik hangi olguyu temsil ediyor?</li>
+<li>Ham değişkende görünmeyen hangi ilişkiyi açığa çıkarıyor?</li>
+<li>Özellik tahmin anında gerçekten bulunabilecek mi?</li>
+<li>Birimi, paydası ve zaman yönü doğru mu?</li>
+<li>Yeni özellik gereksiz tekrar veya veri sızıntısı üretiyor mu?</li>
+</ul>
+<p>Bu bölümde alan bilgisine dayalı, açıklanabilir ve tekrar üretilebilir temel özellikleri kitap verileri üzerinde kuracağız.</p>
+<p>Bir model ham dünyayı değil, kendisine verilen <strong>temsili</strong> öğrenir. Gözlem (i)’ye ait ham kayıt (x_i), özellik dönüşümü (()) ile</p>
+<p><span class="math display">\[
+\phi(x_i) = \bigl(\phi_1(x_i),\ldots,\phi_p(x_i)\bigr)
+\]</span></p>
+<p>biçiminde bir özellik vektörüne çevrilir. Model daha sonra (Y) ile ham kayıt arasındaki ilişkiyi değil, (Y) ile ((X)) arasındaki ilişkiyi tahmin eder. Bu nedenle temsil seçimi modelin <strong>tümevarımsal eğilimini</strong> belirler: doğrusal modele (x) ve (x^2) vermek parabolik ilişkilere; gecikmeli değer vermek geçmişin gelecek için bilgi taşıdığı ilişkilere izin verir <span class="citation" data-cites="hastie2009 kuhnJohnson2019">(<a href="../../references.html#ref-hastie2009" role="doc-biblioref">Hastie vd. 2009</a>; <a href="../../references.html#ref-kuhnJohnson2019" role="doc-biblioref">Kuhn ve Johnson 2019</a>)</span>.</p>
+<p>Özellik eklemek her zaman bilgi eklemek değildir. Aynı bilginin çok sayıda benzer dönüşümle çoğaltılması varyansı ve aşırı uyum riskini artırabilir; özellikle örneklem küçükken tasarım matrisi kararsızlaşabilir. Buna karşılık önemli bir alan ilişkisini doğru temsil eden tek bir oran veya zaman özelliği, daha karmaşık bir algoritmadan daha fazla yarar sağlayabilir. Bu yüzden özellik mühendisliği, model karmaşıklığı ile temsil yanlılığı arasındaki dengeyi kuran analitik bir tasarım işidir <span class="citation" data-cites="james2023">(<a href="../../references.html#ref-james2023" role="doc-biblioref">James vd. 2023</a>)</span>.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Önemli</span>Özellik tahmin anında var olmalıdır
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Bir değişken model eğitilirken mevcut olsa bile gerçek tahmin anında henüz oluşmamış olabilir. Gelecekteki bilgiyi kullanan güçlü bir özellik, yararlı değil sızıntılıdır.</p>
+</div>
+</div>
+<section id="veri-kaynakları-ve-analiz-birimi" class="level2" data-number="19.1">
+<h2 data-number="19.1" class="anchored" data-anchor-id="veri-kaynakları-ve-analiz-birimi"><span class="header-section-number">19.1</span> Veri Kaynakları ve Analiz Birimi</h2>
+<p>Bu bölümde iki proje dosyasını kullanacağız:</p>
+<ul>
+<li><code>countries.csv</code>: 2019 yılı için ülke düzeyindeki kesit,</li>
+<li><code>country_indicators.csv</code>: 1960–2025 arasındaki ülke-yıl paneli.</li>
+</ul>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyr)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>countries <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">"data/countries.csv"</span>,</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">show_col_types =</span> <span class="cn">FALSE</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>country_indicators <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="st">"data/country_indicators.csv"</span>,</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">show_col_types =</span> <span class="cn">FALSE</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>indicator_dictionary <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>  <span class="st">"data/indicator_dictionary.csv"</span>,</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">show_col_types =</span> <span class="cn">FALSE</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Özellik üretmeden önce her satırın anlamını belirlemeliyiz.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>countries <span class="sc">|&gt;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">satir =</span> <span class="fu">n</span>(),</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">ulke =</span> <span class="fu">n_distinct</span>(country_code),</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">yil =</span> <span class="fu">n_distinct</span>(year)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":["satir"],"name":[1],"type":["int"],"align":["right"]},{"label":["ulke"],"name":[2],"type":["int"],"align":["right"]},{"label":["yil"],"name":[3],"type":["int"],"align":["right"]}],"data":[{"1":"217","2":"217","3":"1"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>country_indicators <span class="sc">|&gt;</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">satir =</span> <span class="fu">n</span>(),</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">ulke =</span> <span class="fu">n_distinct</span>(country_code),</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">yil =</span> <span class="fu">n_distinct</span>(year),</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">tekrar =</span> <span class="fu">sum</span>(<span class="fu">duplicated</span>(<span class="fu">paste</span>(country_code, year)))</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":["satir"],"name":[1],"type":["int"],"align":["right"]},{"label":["ulke"],"name":[2],"type":["int"],"align":["right"]},{"label":["yil"],"name":[3],"type":["int"],"align":["right"]},{"label":["tekrar"],"name":[4],"type":["int"],"align":["right"]}],"data":[{"1":"14322","2":"217","3":"66","4":"0"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<p><code>countries</code> verisinde analiz birimi ülke, panel verisinde ülke-yıldır. Bir önceki yıl değerini üretmek için panel verisi gerekir; 2019 kesitinde <code>lag()</code> kullanmak ülkeleri alfabetik veya dosya sırasına göre kaydırır ve anlamsızdır.</p>
+</section>
+<section id="değişken-ile-özellik-arasındaki-ayrım" class="level2" data-number="19.2">
+<h2 data-number="19.2" class="anchored" data-anchor-id="değişken-ile-özellik-arasındaki-ayrım"><span class="header-section-number">19.2</span> Değişken ile Özellik Arasındaki Ayrım</h2>
+<p><strong>Değişken</strong>, veride ölçülen veya kaydedilen herhangi bir sütundur. <strong>Özellik</strong>, belirli bir analiz veya modelde girdi olarak kullanılan temsildir. Aynı sütun bir çalışmada ham değişken, başka bir çalışmada doğrudan özellik olabilir.</p>
+<p>Örneğin:</p>
+<ul>
+<li><code>year</code> veri sütunudur;</li>
+<li><code>year - 2000</code> zaman eğilimini temsil eden özellik olabilir;</li>
+<li><code>year &gt;= 2020</code> belirli bir dönem göstergesi olabilir;</li>
+<li>fakat bu göstergenin anlamı araştırma sorusuna bağlıdır.</li>
+</ul>
+<p>Sonuç değişkeni de bir değişkendir, ancak yordayıcı özellik değildir.</p>
+</section>
+<section id="iyi-bir-özelliğin-nitelikleri" class="level2" data-number="19.3">
+<h2 data-number="19.3" class="anchored" data-anchor-id="iyi-bir-özelliğin-nitelikleri"><span class="header-section-number">19.3</span> İyi Bir Özelliğin Nitelikleri</h2>
+<p>İyi bir özellik çoğunlukla şu özellikleri taşır:</p>
+<ol type="1">
+<li><strong>Anlamlıdır:</strong> Alan açısından tanımlanabilir bir olguyu temsil eder.</li>
+<li><strong>Geçerlidir:</strong> Birimi, paydası ve zaman penceresi doğrudur.</li>
+<li><strong>Erişilebilirdir:</strong> Tahmin anında veya analiz kapsamında bulunur.</li>
+<li><strong>Kararlıdır:</strong> Veri kaynağındaki küçük değişikliklerle tanımı bozulmaz.</li>
+<li><strong>Tekrar üretilebilirdir:</strong> Açık kodla aynı biçimde hesaplanabilir.</li>
+<li><strong>Sızıntısızdır:</strong> Sonuçtan veya gelecekten yasak bilgi taşımaz.</li>
+<li><strong>Gereksiz değildir:</strong> Aynı bilgiyi amaçsızca çoğaltmaz.</li>
+</ol>
+</section>
+<section id="aritmetik-özellikler" class="level2" data-number="19.4">
+<h2 data-number="19.4" class="anchored" data-anchor-id="aritmetik-özellikler"><span class="header-section-number">19.4</span> Aritmetik Özellikler</h2>
+<p><strong>Toplam ve fark</strong></p>
+<p>İhracat ve ithalatın GSYH içindeki paylarını toplayarak basit bir dışa açıklık göstergesi oluşturabiliriz:</p>
+<p><span class="math display">\[
+Ticaret\ açıklığı = İhracat/GSYH + İthalat/GSYH
+\]</span></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>countries_features <span class="ot">&lt;-</span> countries <span class="sc">|&gt;</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">trade_openness_pct =</span> exports_gdp_pct <span class="sc">+</span> imports_gdp_pct,</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">life_expectancy_gender_gap =</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>      life_expectancy_female <span class="sc">-</span> life_expectancy_male,</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">unemployment_gender_gap =</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>      unemployment_female_pct <span class="sc">-</span> unemployment_male_pct</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>countries_features <span class="sc">|&gt;</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    country,</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    trade_openness_pct,</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>    life_expectancy_gender_gap,</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>    unemployment_gender_gap</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_head</span>(<span class="at">n =</span> <span class="dv">10</span>)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":["country"],"name":[1],"type":["chr"],"align":["left"]},{"label":["trade_openness_pct"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["life_expectancy_gender_gap"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["unemployment_gender_gap"],"name":[4],"type":["dbl"],"align":["right"]}],"data":[{"1":"Afghanistan","2":"NA","3":"6.234","4":"5.540"},{"1":"Albania","2":"75.38213","3":"3.226","4":"-0.269"},{"1":"Algeria","2":"46.50684","3":"2.741","4":"11.361"},{"1":"American Samoa","2":"156.56878","3":"5.618","4":"NA"},{"1":"Andorra","2":"NA","3":"3.918","4":"NA"},{"1":"Angola","2":"60.37131","3":"4.897","4":"0.100"},{"1":"Antigua and Barbuda","2":"137.53778","3":"5.701","4":"NA"},{"1":"Argentina","2":"32.63062","3":"5.276","4":"1.516"},{"1":"Armenia","2":"97.84700","3":"6.400","4":"1.806"},{"1":"Aruba","2":"137.92325","3":"5.767","4":"NA"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<p>Bu özelliklerin yönü açıkça tanımlanmalıdır. <code>female - male</code> pozitifse kadın değeri daha yüksektir. Ters çıkarma aynı büyüklükte fakat zıt yorum üretir.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Not</span>Toplam oran 100’ü aşabilir
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>İhracat ve ithalat akımları yıllık GSYH’ye bölünür. Ticaret merkezleri ve küçük açık ekonomilerde toplam yüzde 100’ü aşabilir. Bu durum formül veya veri hatası olmak zorunda değildir.</p>
+</div>
+</div>
+<p><strong>Oran özellikleri</strong></p>
+<p>Toplam nüfusa göre kadın nüfus payını üretelim:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>countries_features <span class="ot">&lt;-</span> countries_features <span class="sc">|&gt;</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">female_population_share_pct =</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>      <span class="dv">100</span> <span class="sc">*</span> population_female <span class="sc">/</span> population_total</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>countries_features <span class="sc">|&gt;</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    country,</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    population_total,</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    population_female,</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    female_population_share_pct</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_head</span>(<span class="at">n =</span> <span class="dv">8</span>)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":["country"],"name":[1],"type":["chr"],"align":["left"]},{"label":["population_total"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["population_female"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["female_population_share_pct"],"name":[4],"type":["dbl"],"align":["right"]}],"data":[{"1":"Afghanistan","2":"37856121","3":"18736474","4":"49.49391"},{"1":"Albania","2":"2567801","3":"1296660","4":"50.49690"},{"1":"Algeria","2":"43294546","3":"21175753","4":"48.91090"},{"1":"American Samoa","2":"50209","3":"24788","4":"49.36963"},{"1":"Andorra","2":"76474","3":"37559","4":"49.11342"},{"1":"Angola","2":"32375632","3":"16370876","4":"50.56543"},{"1":"Antigua and Barbuda","2":"91364","3":"47940","4":"52.47143"},{"1":"Argentina","2":"44973465","3":"22665751","4":"50.39805"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<p>Oranlar ölçek farkını azaltır; fakat paydaya çok duyarlıdır. Payda sıfıra yakınsa büyük ve kararsız değerler oluşabilir.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>guvenli_oran <span class="ot">&lt;-</span> <span class="cf">function</span>(pay, payda) {</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">if_else</span>(</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">is.na</span>(payda) <span class="sc">|</span> payda <span class="sc">==</span> <span class="dv">0</span>,</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="cn">NA_real_</span>,</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    pay <span class="sc">/</span> payda</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Pay ve paydanın aynı kapsam, dönem ve birimde olup olmadığı da kontrol edilmelidir.</p>
+<p><strong>Etkileşim özellikleri</strong></p>
+<p>Bir değişkenin etkisi diğerinin düzeyine göre değişiyorsa etkileşim düşünülebilir:</p>
+<p><span class="math display">\[
+x_{etkilesim} = x_1 \times x_2
+\]</span></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>countries_features <span class="ot">&lt;-</span> countries_features <span class="sc">|&gt;</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">income_internet_interaction =</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>      <span class="fu">log</span>(gdp_per_capita_usd) <span class="sc">*</span> internet_users_pct</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Etkileşim terimi tek başına “iki değişkenin birleşik puanı” değildir. Regresyon modelinde bir değişkenin eğiminin diğerine göre değişmesine izin verir. Ana etkiler modelde tutulmadan etkileşimi yorumlamak çoğu durumda sorunludur.</p>
+<p>Örneğin</p>
+<p><span class="math display">\[
+E(Y\mid X_1,X_2)=\beta_0+\beta_1X_1+\beta_2X_2+\beta_3X_1X_2
+\]</span></p>
+<p>modelinde (X_1)’in koşullu eğimi (_1+_3X_2)’dir. Dolayısıyla (_3), iki değişkenin ayrı etkilerine eklenen ortak bir değişimi ölçer. <strong>Hiyerarşi ilkesi</strong>, etkileşim modele alındığında onu oluşturan ana terimlerin de çoğunlukla tutulmasını önerir. Böylece (X_2=0) iken (X_1)’in etkisi ve değişkenlerin referans düzeyleri anlamlı biçimde yorumlanabilir. Merkezleme, sıfır noktasını gözlenen aralığın içine taşıyarak bu yorumu kolaylaştırabilir <span class="citation" data-cites="gelmanHillVehtari2020">(<a href="../../references.html#ref-gelmanHillVehtari2020" role="doc-biblioref">Gelman vd. 2020</a>)</span>.</p>
+</section>
+<section id="matematiksel-temsil-özellikleri" class="level2" data-number="19.5">
+<h2 data-number="19.5" class="anchored" data-anchor-id="matematiksel-temsil-özellikleri"><span class="header-section-number">19.5</span> Matematiksel Temsil Özellikleri</h2>
+<p>Sağa çarpık kişi başına gelir için log özellik üretilebilir.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>countries_features <span class="ot">&lt;-</span> countries_features <span class="sc">|&gt;</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">log_gdp_per_capita =</span> <span class="fu">log</span>(gdp_per_capita_usd),</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">log_population =</span> <span class="fu">log</span>(population_total)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Bu işlem <a href="data_transformations.html" class="quarto-xref"><span>Bölüm 17</span></a> bölümündeki gerekçelere tabidir. Özellik mühendisliği bağlamında amaç, modele mutlak dolar farkları yerine gelir oranlarını temsil eden bir girdi vermektir.</p>
+<p><strong>Polinom özellikleri</strong></p>
+<p>Doğrusal modelde eğriliği temsil etmek için karesel terim eklenebilir:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>countries_features <span class="ot">&lt;-</span> countries_features <span class="sc">|&gt;</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">internet_centered =</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>      internet_users_pct <span class="sc">-</span> <span class="fu">mean</span>(internet_users_pct, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">internet_squared =</span> internet_centered<span class="sc">^</span><span class="dv">2</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Önce merkezlemek doğrusal ve karesel terim arasındaki gereksiz korelasyonu azaltabilir. Merkez ortalaması veriden öğrenildiği için modelleme sürecinde yalnızca eğitim verisinden hesaplanmalıdır.</p>
+<p>Polinom terimler gözlenen aralık içinde esneklik sağlar; aralık dışında hızla büyüyerek güvenilmez tahminler üretebilir.</p>
+<p>Ham (x,x<sup>2,x</sup>3) sütunları çoğu veri aralığında güçlü korelasyon taşır. Bu durum katsayıların ayrı ayrı tahminini kararsızlaştırabilir; uyarlanmış eğrinin mutlaka kötü olduğu anlamına gelmez. Merkezleme veya ortogonal polinomlar sayısal kararlılığı iyileştirir, fakat dışa taşan kestirimin temel sorununu çözmez. Derece, aynı veride en iyi uyumu verdiği için değil, yeniden örnekleme ve alan bilgisiyle desteklendiği için seçilmelidir <span class="citation" data-cites="james2023">(<a href="../../references.html#ref-james2023" role="doc-biblioref">James vd. 2023</a>)</span>.</p>
+</section>
+<section id="zaman-özellikleri" class="level2" data-number="19.6">
+<h2 data-number="19.6" class="anchored" data-anchor-id="zaman-özellikleri"><span class="header-section-number">19.6</span> Zaman Özellikleri</h2>
+<p>Panel verisinde <code>year</code> yalnızca etiket değildir; sıralama ve bilgi sınırı taşır.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>country_year_features <span class="ot">&lt;-</span> country_indicators <span class="sc">|&gt;</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">years_since_1960 =</span> year <span class="sc">-</span> <span class="dv">1960</span>,</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">decade =</span> <span class="fu">paste0</span>(<span class="fu">floor</span>(year <span class="sc">/</span> <span class="dv">10</span>) <span class="sc">*</span> <span class="dv">10</span>, <span class="st">"'lar"</span>),</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">post_2000 =</span> year <span class="sc">&gt;=</span> <span class="dv">2000</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>country_year_features <span class="sc">|&gt;</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(country, year, years_since_1960, decade, post_2000) <span class="sc">|&gt;</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_head</span>(<span class="at">n =</span> <span class="dv">8</span>)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":["country"],"name":[1],"type":["chr"],"align":["left"]},{"label":["year"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["years_since_1960"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["decade"],"name":[4],"type":["chr"],"align":["left"]},{"label":["post_2000"],"name":[5],"type":["lgl"],"align":["right"]}],"data":[{"1":"Aruba","2":"1960","3":"0","4":"1960'lar","5":"FALSE"},{"1":"Aruba","2":"1961","3":"1","4":"1960'lar","5":"FALSE"},{"1":"Aruba","2":"1962","3":"2","4":"1960'lar","5":"FALSE"},{"1":"Aruba","2":"1963","3":"3","4":"1960'lar","5":"FALSE"},{"1":"Aruba","2":"1964","3":"4","4":"1960'lar","5":"FALSE"},{"1":"Aruba","2":"1965","3":"5","4":"1960'lar","5":"FALSE"},{"1":"Aruba","2":"1966","3":"6","4":"1960'lar","5":"FALSE"},{"1":"Aruba","2":"1967","3":"7","4":"1960'lar","5":"FALSE"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<p><code>years_since_1960</code> ile <code>year</code> aynı sıralı bilgiyi farklı sıfır noktasıyla taşır. Regresyon sabiti daha yorumlanabilir hale gelebilir. <code>post_2000</code> ise 2000 yılında gerçek bir politika veya tasarım kırılması yoksa keyfî bilgi kaybı yaratabilir.</p>
+<p><strong>Gecikmeli özellikler</strong></p>
+<p>Bir önceki yılın değerini üretmek için önce ülke içinde yıla göre sıralamak gerekir.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>gdp_panel <span class="ot">&lt;-</span> country_indicators <span class="sc">|&gt;</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(country, country_code, year, gdp_per_capita_usd) <span class="sc">|&gt;</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(country_code) <span class="sc">|&gt;</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(year, <span class="at">.by_group =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">gdp_lag1 =</span> <span class="fu">lag</span>(gdp_per_capita_usd),</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">gdp_change =</span> gdp_per_capita_usd <span class="sc">-</span> gdp_lag1,</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">gdp_growth_from_levels_pct =</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>      <span class="dv">100</span> <span class="sc">*</span> (gdp_per_capita_usd <span class="sc">/</span> gdp_lag1 <span class="sc">-</span> <span class="dv">1</span>)</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>gdp_panel <span class="sc">|&gt;</span></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(country_code <span class="sc">==</span> <span class="st">"TUR"</span>, year <span class="sc">&gt;=</span> <span class="dv">2015</span>, year <span class="sc">&lt;=</span> <span class="dv">2019</span>)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":["country"],"name":[1],"type":["chr"],"align":["left"]},{"label":["country_code"],"name":[2],"type":["chr"],"align":["left"]},{"label":["year"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["gdp_per_capita_usd"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["gdp_lag1"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["gdp_change"],"name":[6],"type":["dbl"],"align":["right"]},{"label":["gdp_growth_from_levels_pct"],"name":[7],"type":["dbl"],"align":["right"]}],"data":[{"1":"Turkiye","2":"TUR","3":"2015","4":"11064.649","5":"12209.386","6":"-1144.73678","7":"-9.3758749"},{"1":"Turkiye","2":"TUR","3":"2016","4":"10984.364","5":"11064.649","6":"-80.28513","7":"-0.7256003"},{"1":"Turkiye","2":"TUR","3":"2017","4":"10756.388","5":"10984.364","6":"-227.97655","7":"-2.0754642"},{"1":"Turkiye","2":"TUR","3":"2018","4":"9684.118","5":"10756.388","6":"-1072.26957","7":"-9.9686771"},{"1":"Turkiye","2":"TUR","3":"2019","4":"9395.234","5":"9684.118","6":"-288.88442","7":"-2.9830741"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<p>İlk yıl için gecikme doğal olarak eksiktir. Kaynak veride ara yıl eksikse <code>lag()</code> bir önceki <strong>satırı</strong> getirir; bunun gerçekten bir önceki takvim yılı olduğu ayrıca kontrol edilmelidir.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>gdp_panel <span class="ot">&lt;-</span> country_indicators <span class="sc">|&gt;</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(country, country_code, year, gdp_per_capita_usd) <span class="sc">|&gt;</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(country_code) <span class="sc">|&gt;</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(year, <span class="at">.by_group =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">onceki_yil =</span> <span class="fu">lag</span>(year),</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">gdp_lag1 =</span> <span class="fu">if_else</span>(</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>      year <span class="sc">-</span> onceki_yil <span class="sc">==</span> <span class="dv">1</span>,</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>      <span class="fu">lag</span>(gdp_per_capita_usd),</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>      <span class="cn">NA_real_</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Bu kontrol “bir önceki satır” ile “bir önceki yıl” ayrımını korur.</p>
+<p><strong>Hareketli özetler</strong></p>
+<p>Geçmiş üç yılın ortalaması kısa dönem dalgalanmayı azaltabilir. Gelecek değeri kullanmamak için pencere yalnızca mevcut ve geçmiş yıllardan oluşmalıdır.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>gecmis_ortalama <span class="ot">&lt;-</span> <span class="cf">function</span>(x, <span class="at">pencere =</span> <span class="dv">3</span>) {</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">vapply</span>(</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">seq_along</span>(x),</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">function</span>(i) {</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>      baslangic <span class="ot">&lt;-</span> <span class="fu">max</span>(<span class="dv">1</span>, i <span class="sc">-</span> pencere <span class="sc">+</span> <span class="dv">1</span>)</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>      degerler <span class="ot">&lt;-</span> x[baslangic<span class="sc">:</span>i]</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (<span class="fu">all</span>(<span class="fu">is.na</span>(degerler))) {</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>        <span class="cn">NA_real_</span></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>      } <span class="cf">else</span> {</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>        <span class="fu">mean</span>(degerler, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>    },</span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">numeric</span>(<span class="dv">1</span>)</span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>gdp_hareketli <span class="ot">&lt;-</span> country_indicators <span class="sc">|&gt;</span></span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(country, country_code, year, gdp_per_capita_usd) <span class="sc">|&gt;</span></span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(country_code) <span class="sc">|&gt;</span></span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(year, <span class="at">.by_group =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">gdp_trailing_3 =</span> <span class="fu">gecmis_ortalama</span>(gdp_per_capita_usd, <span class="dv">3</span>)</span>
+<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span>
+<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a>gdp_hareketli <span class="sc">|&gt;</span></span>
+<span id="cb13-28"><a href="#cb13-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(country_code <span class="sc">==</span> <span class="st">"TUR"</span>, year <span class="sc">&gt;=</span> <span class="dv">2015</span>, year <span class="sc">&lt;=</span> <span class="dv">2019</span>)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":["country"],"name":[1],"type":["chr"],"align":["left"]},{"label":["country_code"],"name":[2],"type":["chr"],"align":["left"]},{"label":["year"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["gdp_per_capita_usd"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["gdp_trailing_3"],"name":[5],"type":["dbl"],"align":["right"]}],"data":[{"1":"Turkiye","2":"TUR","3":"2015","4":"11064.649","5":"11969.864"},{"1":"Turkiye","2":"TUR","3":"2016","4":"10984.364","5":"11419.467"},{"1":"Turkiye","2":"TUR","3":"2017","4":"10756.388","5":"10935.134"},{"1":"Turkiye","2":"TUR","3":"2018","4":"9684.118","5":"10474.957"},{"1":"Turkiye","2":"TUR","3":"2019","4":"9395.234","5":"9945.247"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<p>Buradaki işlev eksik yılları yok sayar; bu karar pencerenin fiilî bilgi miktarını değiştirir. Üretim uygulamasında en az kaç gözlem gerektiği açıkça tanımlanmalıdır.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Dikkat</span>Merkezli hareketli ortalama geleceği görebilir
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Mevcut yılın iki yanındaki yılları kullanan merkezli pencere, tahmin anında gelecekteki değerleri içerebilir. Zaman serisi modelinde yalnızca geçmişe dönük pencere kullanılmalıdır.</p>
+</div>
+</div>
+</section>
+<section id="kategorik-özellikler" class="level2" data-number="19.7">
+<h2 data-number="19.7" class="anchored" data-anchor-id="kategorik-özellikler"><span class="header-section-number">19.7</span> Kategorik Özellikler</h2>
+<p><strong>Kategorileri faktör olarak tanımlamak</strong></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>countries_features <span class="ot">&lt;-</span> countries_features <span class="sc">|&gt;</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">region =</span> <span class="fu">factor</span>(region),</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">income_group =</span> <span class="fu">factor</span>(</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>      income_group,</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>      <span class="at">levels =</span> <span class="fu">c</span>(</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Low income"</span>,</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Lower middle income"</span>,</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Upper middle income"</span>,</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>        <span class="st">"High income"</span></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>      ),</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>      <span class="at">ordered =</span> <span class="cn">TRUE</span></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Sıralı faktör tanımı, gelir gruplarının doğal sırasını korur. Bununla birlikte seviyeler arasındaki mesafenin eşit olduğu anlamına gelmez.</p>
+<p><strong>Gösterge değişkenleri</strong></p>
+<p>Birçok model kategorileri sayısal tasarım matrisine dönüştürür. Sırasız dört bölge için genellikle bir referans düzeyi ve üç gösterge sütunu kullanılır.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>bolge_matrisi <span class="ot">&lt;-</span> <span class="fu">model.matrix</span>(</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="sc">~</span> region,</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> countries_features</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(bolge_matrisi)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  (Intercept) regionEurope &amp; Central Asia regionLatin America &amp; Caribbean
+1           1                           0                               0
+2           1                           1                               0
+3           1                           0                               0
+4           1                           0                               0
+5           1                           1                               0
+6           1                           0                               0
+  regionMiddle East, North Africa, Afghanistan &amp; Pakistan regionNorth America
+1                                                       1                   0
+2                                                       0                   0
+3                                                       1                   0
+4                                                       0                   0
+5                                                       0                   0
+6                                                       0                   0
+  regionSouth Asia regionSub-Saharan Africa
+1                0                        0
+2                0                        0
+3                0                        0
+4                0                        0
+5                0                        0
+6                0                        1</code></pre>
+</div>
+</div>
+<p>Tüm seviyeler ve sabit terim birlikte kullanılırsa tam doğrusal bağımlılık oluşabilir. R’nin formül sistemi varsayılan olarak bir referans düzeyi bırakır.</p>
+<p><strong>Nadir ve yeni kategoriler</strong></p>
+<p>Eğitim verisinde çok az görülen düzeyler kararsız katsayı üretebilir. Benzer ve alan açısından anlamlı düzeyler <code>Diğer</code> altında birleştirilebilir. Ancak yalnızca frekansa bakarak farklı kavramları birleştirmek yorum kaybına yol açar.</p>
+<p>Test veya üretim verisinde eğitimde hiç görülmeyen yeni kategori çıkabilir. İş akışı bunu hata, bilinmeyen düzey veya önceden belirlenmiş <code>Diğer</code> sınıfı olarak yönetmelidir.</p>
+</section>
+<section id="sürekli-değişkenleri-gruplamak" class="level2" data-number="19.8">
+<h2 data-number="19.8" class="anchored" data-anchor-id="sürekli-değişkenleri-gruplamak"><span class="header-section-number">19.8</span> Sürekli Değişkenleri Gruplamak</h2>
+<p>Yaşı, geliri veya yaşam beklentisini aralıklara ayırmak raporlamayı kolaylaştırabilir; fakat bilgi kaybettirir.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>countries_features <span class="ot">&lt;-</span> countries_features <span class="sc">|&gt;</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">life_expectancy_group =</span> <span class="fu">cut</span>(</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>      life_expectancy_total,</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>      <span class="at">breaks =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="cn">Inf</span>, <span class="dv">65</span>, <span class="dv">75</span>, <span class="dv">80</span>, <span class="cn">Inf</span>),</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>      <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"65 altı"</span>, <span class="st">"65–74.9"</span>, <span class="st">"75–79.9"</span>, <span class="st">"80 ve üzeri"</span>),</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>      <span class="at">right =</span> <span class="cn">FALSE</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>countries_features <span class="sc">|&gt;</span></span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(life_expectancy_group, <span class="at">.drop =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":["life_expectancy_group"],"name":[1],"type":["fct"],"align":["left"]},{"label":["n"],"name":[2],"type":["int"],"align":["right"]}],"data":[{"1":"65 altı","2":"36"},{"1":"65–74.9","2":"79"},{"1":"75–79.9","2":"54"},{"1":"80 ve üzeri","2":"48"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<p><code>74.9</code> ve <code>75.0</code> birbirine çok yakınken farklı sınıfa düşer; aynı sınıftaki <code>65</code> ve <code>74.9</code> eşit kabul edilir. Sınırlar alan bilgisine veya önceden belirlenmiş raporlama standardına dayanmalıdır.</p>
+<p><strong>Veri temelli dilimler</strong></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>countries_features <span class="ot">&lt;-</span> countries_features <span class="sc">|&gt;</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">gdp_quartile =</span> <span class="fu">ntile</span>(gdp_per_capita_usd, <span class="dv">4</span>)</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p><code>ntile()</code> yaklaşık eşit sayıda gözlem üretir; fakat sınırlar örneklemden öğrenilir. Başka yıl veya test verisinde aynı ekonomik anlamı taşımayabilir. Modelleme için eğitim sınırları kaydedilip yeni veriye uygulanmalıdır.</p>
+</section>
+<section id="eksiklik-göstergeleri" class="level2" data-number="19.9">
+<h2 data-number="19.9" class="anchored" data-anchor-id="eksiklik-göstergeleri"><span class="header-section-number">19.9</span> Eksiklik Göstergeleri</h2>
+<p>Bir değişkenin eksik olup olmaması ayrıca özellik yapılabilir.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>countries_features <span class="ot">&lt;-</span> countries_features <span class="sc">|&gt;</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">internet_missing =</span> <span class="fu">is.na</span>(internet_users_pct),</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">school_enrollment_missing =</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>      <span class="fu">is.na</span>(school_enrollment_tertiary_pct)</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>countries_features <span class="sc">|&gt;</span></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(income_group, school_enrollment_missing)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":["income_group"],"name":[1],"type":["ord"],"align":["right"]},{"label":["school_enrollment_missing"],"name":[2],"type":["lgl"],"align":["right"]},{"label":["n"],"name":[3],"type":["int"],"align":["right"]}],"data":[{"1":"Low income","2":"FALSE","3":"4"},{"1":"Low income","2":"TRUE","3":"21"},{"1":"Lower middle income","2":"FALSE","3":"25"},{"1":"Lower middle income","2":"TRUE","3":"22"},{"1":"Upper middle income","2":"FALSE","3":"44"},{"1":"Upper middle income","2":"TRUE","3":"15"},{"1":"High income","2":"FALSE","3":"59"},{"1":"High income","2":"TRUE","3":"27"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<p>Eksiklik göstergesi veri toplama süreci hakkında bilgi taşıyabilir. Ancak tek başına eksik sayısal değeri doldurmaz. Ayrıca veri toplama sistemi değişirse bu özellik kararsızlaşabilir.</p>
+</section>
+<section id="toplulaştırma-özellikleri-ve-analiz-birimi" class="level2" data-number="19.10">
+<h2 data-number="19.10" class="anchored" data-anchor-id="toplulaştırma-özellikleri-ve-analiz-birimi"><span class="header-section-number">19.10</span> Toplulaştırma Özellikleri ve Analiz Birimi</h2>
+<p>İşlem düzeyindeki veriden müşteri toplamı üretmek yaygındır. Ülke-yıl panelinde de geçmiş yılların ortalaması veya büyüme oynaklığı özellik olabilir. Fakat toplulaştırma penceresi sonuç tarihini aşmamalıdır.</p>
+<p>Örneğin 2019 yaşam beklentisini tahmin ederken 2020–2025 GSYH değerlerini kullanmak gelecek bilgisidir. Doğru özellik tanımı “2019’dan önceki beş yılın ortalaması” gibi kesim tarihi içermelidir.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>gdp_gecmis_ozet <span class="ot">&lt;-</span> country_indicators <span class="sc">|&gt;</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">&gt;=</span> <span class="dv">2015</span>, year <span class="sc">&lt;=</span> <span class="dv">2019</span>) <span class="sc">|&gt;</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(country_code, country) <span class="sc">|&gt;</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">gdp_2015_2019_mean =</span> <span class="fu">mean</span>(gdp_per_capita_usd, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">gdp_2015_2019_sd =</span> <span class="fu">sd</span>(gdp_per_capita_usd, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">gozlem_sayisi =</span> <span class="fu">sum</span>(<span class="sc">!</span><span class="fu">is.na</span>(gdp_per_capita_usd)),</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>gdp_gecmis_ozet <span class="sc">|&gt;</span></span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_head</span>(<span class="at">n =</span> <span class="dv">8</span>)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":["country_code"],"name":[1],"type":["chr"],"align":["left"]},{"label":["country"],"name":[2],"type":["chr"],"align":["left"]},{"label":["gdp_2015_2019_mean"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["gdp_2015_2019_sd"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["gozlem_sayisi"],"name":[5],"type":["int"],"align":["right"]}],"data":[{"1":"ABW","2":"Aruba","3":"28815.2911","4":"1488.05285","5":"5"},{"1":"AFG","2":"Afghanistan","3":"520.2123","4":"29.49418","5":"5"},{"1":"AGO","2":"Angola","3":"2791.1902","4":"574.00238","5":"5"},{"1":"ALB","2":"Albania","3":"5126.1254","4":"837.38943","5":"5"},{"1":"AND","2":"Andorra","3":"40707.0655","4":"1525.81684","5":"5"},{"1":"ARE","2":"United Arab Emirates","3":"44887.8080","4":"1745.19554","5":"5"},{"1":"ARG","2":"Argentina","3":"12524.1729","4":"1774.12051","5":"5"},{"1":"ARM","2":"Armenia","3":"3939.8213","4":"463.16087","5":"5"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<p><code>na.rm = TRUE</code> farklı ülkelerin ortalamasını farklı sayıda yıla dayandırabilir. <code>gozlem_sayisi</code> bu nedenle birlikte tutulmuştur.</p>
+</section>
+<section id="hedef-kodlama-ve-sızıntı-riski" class="level2" data-number="19.11">
+<h2 data-number="19.11" class="anchored" data-anchor-id="hedef-kodlama-ve-sızıntı-riski"><span class="header-section-number">19.11</span> Hedef Kodlama ve Sızıntı Riski</h2>
+<p>Bir kategoriyi o kategorideki sonuç ortalamasıyla kodlamaya <strong>hedef kodlama</strong> denir. Örneğin bölgeyi ortalama yaşam beklentisiyle değiştirmek güçlü görünebilir. Aynı satırların sonuçları kullanılarak kodlama yapılırsa her gözlem kendi hedef bilgisinin bir kısmını özelliğe taşır.</p>
+<p>Güvenli hedef kodlama:</p>
+<ul>
+<li>yalnızca eğitim verisinden öğrenilmeli,</li>
+<li>eğitim satırları için kat dışı tahminlerle üretilmeli,</li>
+<li>küçük gruplarda yumuşatma uygulanmalı,</li>
+<li>test ve yeni veriye sabit eşleme olarak aktarılmalıdır.</li>
+</ul>
+<p>Başlangıç düzeyindeki projelerde açıklanabilir bir one-hot kodlama çoğu zaman daha güvenli tercihtir.</p>
+</section>
+<section id="özellik-seçimi-ile-özellik-mühendisliği-farkı" class="level2" data-number="19.12">
+<h2 data-number="19.12" class="anchored" data-anchor-id="özellik-seçimi-ile-özellik-mühendisliği-farkı"><span class="header-section-number">19.12</span> Özellik Seçimi ile Özellik Mühendisliği Farkı</h2>
+<p>Özellik mühendisliği yeni temsiller üretir; özellik seçimi hangi girdilerin modelde tutulacağını belirler. Önce yüzlerce özellik üretip aynı veri üzerinde en iyi görünenleri seçmek aşırı uyuma neden olabilir. Seçim de çapraz doğrulama katlarının içinde yapılmalıdır.</p>
+<p>Bir özelliği yalnızca yüksek korelasyonu nedeniyle seçmek şu sorunları gözden kaçırabilir:</p>
+<ul>
+<li>ilişki doğrusal olmayabilir,</li>
+<li>korelasyon aykırı gözlemlerden gelebilir,</li>
+<li>özellik sonuçtan sonra oluşmuş olabilir,</li>
+<li>benzer özellikler aynı bilgiyi tekrarlayabilir,</li>
+<li>ilişki zamanla bozulabilir.</li>
+</ul>
+</section>
+<section id="recipes-ile-tekrar-üretilebilir-özellikler" class="level2" data-number="19.13">
+<h2 data-number="19.13" class="anchored" data-anchor-id="recipes-ile-tekrar-üretilebilir-özellikler"><span class="header-section-number">19.13</span> <code>recipes</code> ile Tekrar Üretilebilir Özellikler</h2>
+<p>Bir tarif, özellik adımlarını tanımlayıp eğitim verisinde öğrenebilir ve yeni veriye uygulayabilir <span class="citation" data-cites="recipes2024">(<a href="../../references.html#ref-recipes2024" role="doc-biblioref">Kuhn vd. 2024</a>)</span>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(recipes)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>model_verisi <span class="ot">&lt;-</span> countries <span class="sc">|&gt;</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>    life_expectancy_total,</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>    gdp_per_capita_usd,</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>    internet_users_pct,</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>    infant_mortality_rate,</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>    income_group</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">drop_na</span>()</span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>ozellik_tarifi <span class="ot">&lt;-</span> <span class="fu">recipe</span>(</span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>  life_expectancy_total <span class="sc">~</span> .,</span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> model_verisi</span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_log</span>(gdp_per_capita_usd) <span class="sc">|&gt;</span></span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_dummy</span>(<span class="fu">all_nominal_predictors</span>()) <span class="sc">|&gt;</span></span>
+<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_interact</span>(</span>
+<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">terms =</span> <span class="sc">~</span> gdp_per_capita_usd<span class="sc">:</span>internet_users_pct</span>
+<span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb21-22"><a href="#cb21-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_normalize</span>(<span class="fu">all_numeric_predictors</span>())</span>
+<span id="cb21-23"><a href="#cb21-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-24"><a href="#cb21-24" aria-hidden="true" tabindex="-1"></a>ozellik_hazir <span class="ot">&lt;-</span> <span class="fu">prep</span>(</span>
+<span id="cb21-25"><a href="#cb21-25" aria-hidden="true" tabindex="-1"></a>  ozellik_tarifi,</span>
+<span id="cb21-26"><a href="#cb21-26" aria-hidden="true" tabindex="-1"></a>  <span class="at">training =</span> model_verisi</span>
+<span id="cb21-27"><a href="#cb21-27" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb21-28"><a href="#cb21-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-29"><a href="#cb21-29" aria-hidden="true" tabindex="-1"></a>model_matrisi <span class="ot">&lt;-</span> <span class="fu">bake</span>(</span>
+<span id="cb21-30"><a href="#cb21-30" aria-hidden="true" tabindex="-1"></a>  ozellik_hazir,</span>
+<span id="cb21-31"><a href="#cb21-31" aria-hidden="true" tabindex="-1"></a>  <span class="at">new_data =</span> <span class="cn">NULL</span></span>
+<span id="cb21-32"><a href="#cb21-32" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb21-33"><a href="#cb21-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-34"><a href="#cb21-34" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(model_matrisi)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 182
+Columns: 8
+$ gdp_per_capita_usd                      &lt;dbl&gt; -1.81477828, -0.04499387, -0.2…
+$ internet_users_pct                      &lt;dbl&gt; -1.56178111, 0.31801140, -0.15…
+$ infant_mortality_rate                   &lt;dbl&gt; 1.798602240, -0.633928843, 0.0…
+$ life_expectancy_total                   &lt;dbl&gt; 62.94100, 79.46700, 75.68200, …
+$ income_group_Low.income                 &lt;dbl&gt; 2.9209263, -0.3404761, -0.3404…
+$ income_group_Lower.middle.income        &lt;dbl&gt; -0.5799801, -0.5799801, -0.579…
+$ income_group_Upper.middle.income        &lt;dbl&gt; -0.6562708, 1.5153889, 1.51538…
+$ gdp_per_capita_usd_x_internet_users_pct &lt;dbl&gt; -1.462777982, 0.119111745, -0.…</code></pre>
+</div>
+</div>
+<p>Adım sırası anlamlıdır: log dönüşümü sayısal temsili değiştirir, kategoriler gösterge sütunlarına çevrilir, etkileşim üretilir, en son sayısal yordayıcılar ortak ölçeğe getirilir. <code>recipes</code> iş akışında faktör düzeyleri gösterge dönüşümünden önce yönetilmelidir <span class="citation" data-cites="recipes2024">(<a href="../../references.html#ref-recipes2024" role="doc-biblioref">Kuhn vd. 2024</a>)</span>.</p>
+</section>
+<section id="özellikleri-doğrulamak" class="level2" data-number="19.14">
+<h2 data-number="19.14" class="anchored" data-anchor-id="özellikleri-doğrulamak"><span class="header-section-number">19.14</span> Özellikleri Doğrulamak</h2>
+<p>Yeni sütun oluşturulduktan sonra aşağıdaki kontroller yapılmalıdır:</p>
+<ul>
+<li>beklenen değer aralığı,</li>
+<li>eksiklik sayısı,</li>
+<li><code>Inf</code> ve <code>NaN</code> oluşumu,</li>
+<li>benzersiz değer sayısı,</li>
+<li>hesapta kullanılan paydanın geçerliliği,</li>
+<li>zaman penceresinin başlangıç ve bitişi,</li>
+<li>birim ve yön,</li>
+<li>ham bileşenlerle birkaç elle hesap karşılaştırması.</li>
+</ul>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">stopifnot</span>(</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">all</span>(</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">is.na</span>(countries_features<span class="sc">$</span>female_population_share_pct) <span class="sc">|</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>      dplyr<span class="sc">::</span><span class="fu">between</span>(</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>        countries_features<span class="sc">$</span>female_population_share_pct,</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>        <span class="dv">0</span>,</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>        <span class="dv">100</span></span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a><span class="fu">stopifnot</span>(</span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>  <span class="sc">!</span><span class="fu">any</span>(</span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">is.infinite</span>(countries_features<span class="sc">$</span>log_population)</span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="sık-yapılan-hatalar" class="level2" data-number="19.15">
+<h2 data-number="19.15" class="anchored" data-anchor-id="sık-yapılan-hatalar"><span class="header-section-number">19.15</span> Sık Yapılan Hatalar</h2>
+<p><strong>Analiz birimini karıştırmak</strong></p>
+<p>Kesit verisinde <code>lag()</code> kullanmak bir önceki ülkeyi getirir; zaman gecikmesi üretmez. Grup ve sıralama açık olmalıdır.</p>
+<p><strong>Paydanın sıfır veya anlamsız olmasını gözden kaçırmak</strong></p>
+<p>Oran özelliği oluştururken pay ve payda aynı kapsamda olmalı, sıfır payda yönetilmelidir.</p>
+<p><strong>Gelecek bilgisi kullanmak</strong></p>
+<p>Tahmin tarihinden sonraki değerler, sonradan kesinleşen kayıtlar ve sonuçtan türetilen sütunlar sızıntı oluşturur.</p>
+<p><strong>Kategorilere keyfî tamsayı vermek</strong></p>
+<p><code>Low = 1</code>, <code>Middle = 2</code>, <code>High = 3</code> kodlaması eşit aralık ve doğrusal etki varsayabilir. Bu varsayım savunulmuyorsa faktör veya uygun karşıtlıklar kullanılmalıdır.</p>
+<p><strong>Sürekli değişkeni gereksiz yere gruplamak</strong></p>
+<p>Gruplama bilgi kaybeder ve sınır çevresindeki benzer gözlemleri yapay olarak ayırır.</p>
+<p><strong>Aynı bilgiyi çok sayıda sütunda tekrarlamak</strong></p>
+<p>Toplam nüfus, kadın nüfus, erkek nüfus ve bunlardan türeyen oranların birlikte kullanılması tam veya yüksek doğrusal bağımlılık yaratabilir.</p>
+<p><strong>Eğitim ve testte ayrı kurallar üretmek</strong></p>
+<p>Kategori düzeyleri, dilim sınırları, merkezleme ortalaması ve nadir kategori eşiği eğitim verisinde öğrenilmeli; yeni veriye aynı kural uygulanmalıdır.</p>
+<p><strong>Özellik adını belirsiz bırakmak</strong></p>
+<p><code>ortalama_gdp</code> yerine <code>gdp_per_capita_mean_2015_2019</code> gibi dönem, ölçü ve birimi anlatan adlar daha güvenlidir.</p>
+</section>
+<section id="egzersizler" class="level2" data-number="19.16">
+<h2 data-number="19.16" class="anchored" data-anchor-id="egzersizler"><span class="header-section-number">19.16</span> Egzersizler</h2>
+<p><strong>Egzersiz 1</strong></p>
+<p><code>countries</code> verisinde ihracat eksi ithalat olarak ticaret dengesi özelliği üretin. İşaretin anlamını açıklayın.</p>
+<p><strong>Egzersiz 2</strong></p>
+<p>Kadın ve erkek işsizlik oranlarından mutlak cinsiyet farkı üretin. İşaretli farkla hangi bilginin kaybolduğunu tartışın.</p>
+<p><strong>Egzersiz 3</strong></p>
+<p><code>population_total / 1e6</code> özelliği üretmek ile <code>log(population_total)</code> üretmek arasındaki amaç farkını açıklayın.</p>
+<p><strong>Egzersiz 4</strong></p>
+<p>Türkiye için kişi başına GSYH’nin bir ve iki yıllık gecikmelerini oluşturun. Yıl boşluğu kontrolü ekleyin.</p>
+<p><strong>Egzersiz 5</strong></p>
+<p>2019 yılı yaşam beklentisini açıklamak için 2015–2018 internet kullanım ortalaması üretin. 2019 değerini pencereye dahil etmemenin gerekçesini yazın.</p>
+<p><strong>Egzersiz 6</strong></p>
+<p>Gelir grubunu <code>model.matrix()</code> ile gösterge sütunlarına dönüştürün. Referans düzeyini belirleyin.</p>
+<p><strong>Egzersiz 7</strong></p>
+<p>Kişi başına GSYH’yi veri temelli dört dilime ayırın. Eğitim/test bağlamında bu sınırların nasıl saklanacağını açıklayın.</p>
+<p><strong>Egzersiz 8</strong></p>
+<p>Yükseköğretim göstergesinin eksiklik bayrağını üretin ve bölgeye göre oranını hesaplayın.</p>
+<p><strong>Egzersiz 9</strong></p>
+<p>Aşağıdaki özelliklerden hangileri 2019 yaşam beklentisini gerçek zamanlı tahmin ederken sızıntı yaratabilir: 2018 GSYH, 2019 sonunda yayımlanan bebek ölüm oranı, 2020 internet kullanımı, ülke bölgesi? Her birini gerekçelendirin.</p>
+<p><strong>Egzersiz 10</strong></p>
+<p>Bir özelliği yayınlamadan önce uygulanacak en az altı maddelik doğrulama listesi yazın.</p>
+</section>
+<section id="egzersiz-çözümleri" class="level2" data-number="19.17">
+<h2 data-number="19.17" class="anchored" data-anchor-id="egzersiz-çözümleri"><span class="header-section-number">19.17</span> Egzersiz Çözümleri</h2>
+<p><strong>Çözüm 1</strong></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>countries <span class="sc">|&gt;</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">transmute</span>(</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>    country,</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">trade_balance_pct_gdp =</span> exports_gdp_pct <span class="sc">-</span> imports_gdp_pct</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(trade_balance_pct_gdp)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":["country"],"name":[1],"type":["chr"],"align":["left"]},{"label":["trade_balance_pct_gdp"],"name":[2],"type":["dbl"],"align":["right"]}],"data":[{"1":"Marshall Islands","2":"-7.888398e+01"},{"1":"Kiribati","2":"-6.837881e+01"},{"1":"Lesotho","2":"-4.809798e+01"},{"1":"Virgin Islands (U.S.)","2":"-4.549867e+01"},{"1":"Somalia, Fed. Rep.","2":"-4.416590e+01"},{"1":"Tonga","2":"-4.357878e+01"},{"1":"Palau","2":"-3.885244e+01"},{"1":"West Bank and Gaza","2":"-3.795138e+01"},{"1":"Micronesia, Fed. Sts.","2":"-3.569620e+01"},{"1":"Naoero","2":"-3.511663e+01"},{"1":"Sao Tome and Principe","2":"-3.413567e+01"},{"1":"Nepal","2":"-3.368965e+01"},{"1":"Guam","2":"-3.356412e+01"},{"1":"American Samoa","2":"-3.323029e+01"},{"1":"Mozambique","2":"-3.130706e+01"},{"1":"Timor-Leste","2":"-2.818561e+01"},{"1":"Kyrgyz Republic","2":"-2.747734e+01"},{"1":"Kosovo","2":"-2.712819e+01"},{"1":"Tajikistan","2":"-2.608514e+01"},{"1":"Moldova","2":"-2.525007e+01"},{"1":"Haiti","2":"-2.345337e+01"},{"1":"Vanuatu","2":"-2.344204e+01"},{"1":"French Polynesia","2":"-2.212139e+01"},{"1":"Lebanon","2":"-2.158540e+01"},{"1":"New Caledonia","2":"-2.155164e+01"},{"1":"Montenegro","2":"-2.136845e+01"},{"1":"Northern Mariana Islands","2":"-1.976251e+01"},{"1":"Honduras","2":"-1.902249e+01"},{"1":"Central African Republic","2":"-1.855504e+01"},{"1":"Malawi","2":"-1.821654e+01"},{"1":"Sierra Leone","2":"-1.817367e+01"},{"1":"Comoros","2":"-1.672116e+01"},{"1":"El Salvador","2":"-1.613019e+01"},{"1":"Syrian Arab Republic","2":"-1.597934e+01"},{"1":"Gambia, The","2":"-1.566613e+01"},{"1":"Niger","2":"-1.537718e+01"},{"1":"Bosnia and Herzegovina","2":"-1.443599e+01"},{"1":"Senegal","2":"-1.426998e+01"},{"1":"North Macedonia","2":"-1.376012e+01"},{"1":"Uzbekistan","2":"-1.367884e+01"},{"1":"Albania","2":"-1.350988e+01"},{"1":"Guinea-Bissau","2":"-1.338184e+01"},{"1":"Armenia","2":"-1.332179e+01"},{"1":"Samoa","2":"-1.326442e+01"},{"1":"Bhutan","2":"-1.320851e+01"},{"1":"Ethiopia","2":"-1.293536e+01"},{"1":"Philippines","2":"-1.207600e+01"},{"1":"Mali","2":"-1.054426e+01"},{"1":"Tunisia","2":"-1.043195e+01"},{"1":"Guatemala","2":"-1.029279e+01"},{"1":"Cabo Verde","2":"-1.019259e+01"},{"1":"Pakistan","2":"-1.012385e+01"},{"1":"Greenland","2":"-1.010535e+01"},{"1":"Namibia","2":"-1.009939e+01"},{"1":"Solomon Islands","2":"-1.000456e+01"},{"1":"Serbia","2":"-9.655318e+00"},{"1":"Fiji","2":"-9.399763e+00"},{"1":"Sudan","2":"-9.213654e+00"},{"1":"Georgia","2":"-9.201463e+00"},{"1":"Botswana","2":"-8.917346e+00"},{"1":"Kenya","2":"-8.903470e+00"},{"1":"Seychelles","2":"-8.695310e+00"},{"1":"Mauritania","2":"-8.691646e+00"},{"1":"Togo","2":"-8.526419e+00"},{"1":"Guinea","2":"-8.331215e+00"},{"1":"Ukraine","2":"-8.047852e+00"},{"1":"Egypt, Arab Rep.","2":"-7.835954e+00"},{"1":"Morocco","2":"-7.812001e+00"},{"1":"Mauritius","2":"-7.249027e+00"},{"1":"Maldives","2":"-6.098395e+00"},{"1":"Mongolia","2":"-5.962048e+00"},{"1":"Colombia","2":"-5.822457e+00"},{"1":"Sri Lanka","2":"-5.778462e+00"},{"1":"Madagascar","2":"-5.752521e+00"},{"1":"Bolivia","2":"-5.726093e+00"},{"1":"Algeria","2":"-5.690959e+00"},{"1":"Bangladesh","2":"-5.388540e+00"},{"1":"Uganda","2":"-5.142938e+00"},{"1":"Cambodia","2":"-4.842943e+00"},{"1":"Rwanda","2":"-4.831824e+00"},{"1":"Aruba","2":"-4.517087e+00"},{"1":"Nicaragua","2":"-4.433356e+00"},{"1":"Benin","2":"-4.420278e+00"},{"1":"Dominican Republic","2":"-4.262317e+00"},{"1":"Romania","2":"-4.235956e+00"},{"1":"Congo, Dem. Rep.","2":"-3.982894e+00"},{"1":"Iran, Islamic Rep.","2":"-3.962355e+00"},{"1":"Cameroon","2":"-3.678332e+00"},{"1":"United States","2":"-2.680086e+00"},{"1":"India","2":"-2.576874e+00"},{"1":"Ghana","2":"-1.925603e+00"},{"1":"Burkina Faso","2":"-1.893302e+00"},{"1":"Chile","2":"-1.862263e+00"},{"1":"Greece","2":"-1.469518e+00"},{"1":"Canada","2":"-1.466090e+00"},{"1":"United Kingdom","2":"-1.197846e+00"},{"1":"Tanzania","2":"-9.450970e-01"},{"1":"Belarus","2":"-6.612381e-01"},{"1":"France","2":"-6.498748e-01"},{"1":"Brazil","2":"-6.444195e-01"},{"1":"Zimbabwe","2":"-4.500557e-01"},{"1":"Indonesia","2":"-4.447219e-01"},{"1":"Croatia","2":"-4.116126e-01"},{"1":"Mexico","2":"-4.026707e-01"},{"1":"Japan","2":"-2.827024e-01"},{"1":"Latvia","2":"-2.179457e-01"},{"1":"Slovak Republic","2":"-3.443561e-02"},{"1":"Panama","2":"-3.015234e-04"},{"1":"Ecuador","2":"1.441970e-02"},{"1":"New Zealand","2":"1.793217e-01"},{"1":"Belgium","2":"4.693761e-01"},{"1":"Zambia","2":"4.811803e-01"},{"1":"South Africa","2":"5.062624e-01"},{"1":"Portugal","2":"5.352630e-01"},{"1":"Cote d'Ivoire","2":"6.605669e-01"},{"1":"Finland","2":"6.724859e-01"},{"1":"Antigua and Barbuda","2":"7.916060e-01"},{"1":"China","2":"8.252095e-01"},{"1":"Paraguay","2":"9.524202e-01"},{"1":"Cyprus","2":"1.011566e+00"},{"1":"Peru","2":"1.134669e+00"},{"1":"Bahamas, The","2":"1.174964e+00"},{"1":"Hong Kong SAR, China","2":"1.559109e+00"},{"1":"Belize","2":"1.595983e+00"},{"1":"Cuba","2":"1.605858e+00"},{"1":"Israel","2":"1.642629e+00"},{"1":"Australia","2":"2.123277e+00"},{"1":"Hungary","2":"2.205845e+00"},{"1":"Norway","2":"2.509860e+00"},{"1":"Korea, Rep.","2":"2.635590e+00"},{"1":"Costa Rica","2":"2.875124e+00"},{"1":"Eswatini","2":"2.882174e+00"},{"1":"Faroe Islands","2":"2.916187e+00"},{"1":"Spain","2":"2.984901e+00"},{"1":"Italy","2":"3.205558e+00"},{"1":"Argentina","2":"3.219142e+00"},{"1":"Chad","2":"3.259189e+00"},{"1":"Bulgaria","2":"3.340760e+00"},{"1":"Turkiye","2":"3.481303e+00"},{"1":"Austria","2":"3.584330e+00"},{"1":"Poland","2":"3.644753e+00"},{"1":"Estonia","2":"3.686161e+00"},{"1":"Sweden","2":"3.826178e+00"},{"1":"Ireland","2":"4.796246e+00"},{"1":"Lithuania","2":"5.262450e+00"},{"1":"Germany","2":"5.607246e+00"},{"1":"Viet Nam","2":"5.610960e+00"},{"1":"Iceland","2":"5.635359e+00"},{"1":"Libya","2":"5.716676e+00"},{"1":"Denmark","2":"6.009741e+00"},{"1":"Uruguay","2":"6.065890e+00"},{"1":"Czechia","2":"6.095092e+00"},{"1":"Iraq","2":"7.113798e+00"},{"1":"Brunei Darussalam","2":"7.382423e+00"},{"1":"Equatorial Guinea","2":"7.382707e+00"},{"1":"Saudi Arabia","2":"7.524589e+00"},{"1":"Malaysia","2":"7.526972e+00"},{"1":"Russian Federation","2":"7.638108e+00"},{"1":"Kazakhstan","2":"8.019358e+00"},{"1":"Slovenia","2":"8.669841e+00"},{"1":"Switzerland","2":"9.274391e+00"},{"1":"Thailand","2":"9.348267e+00"},{"1":"Netherlands","2":"9.965207e+00"},{"1":"Bahrain","2":"1.077130e+01"},{"1":"Turkmenistan","2":"1.172238e+01"},{"1":"Azerbaijan","2":"1.228311e+01"},{"1":"Kuwait","2":"1.243080e+01"},{"1":"Djibouti","2":"1.249650e+01"},{"1":"Oman","2":"1.250760e+01"},{"1":"Angola","2":"1.352886e+01"},{"1":"Puerto Rico (US)","2":"1.358631e+01"},{"1":"Qatar","2":"1.433134e+01"},{"1":"Malta","2":"1.596964e+01"},{"1":"San Marino","2":"2.072970e+01"},{"1":"Congo, Rep.","2":"2.082187e+01"},{"1":"United Arab Emirates","2":"2.278246e+01"},{"1":"Cayman Islands","2":"2.410351e+01"},{"1":"Bermuda","2":"2.592675e+01"},{"1":"Singapore","2":"2.936800e+01"},{"1":"Gabon","2":"2.943406e+01"},{"1":"Luxembourg","2":"3.049951e+01"},{"1":"Venezuela, RB","2":"3.626261e+01"},{"1":"Macao SAR, China","2":"5.006226e+01"},{"1":"Afghanistan","2":"NA"},{"1":"Andorra","2":"NA"},{"1":"Barbados","2":"NA"},{"1":"British Virgin Islands","2":"NA"},{"1":"Burundi","2":"NA"},{"1":"Channel Islands","2":"NA"},{"1":"Curacao","2":"NA"},{"1":"Dominica","2":"NA"},{"1":"Eritrea","2":"NA"},{"1":"Gibraltar","2":"NA"},{"1":"Grenada","2":"NA"},{"1":"Guyana","2":"NA"},{"1":"Isle of Man","2":"NA"},{"1":"Jamaica","2":"NA"},{"1":"Jordan","2":"NA"},{"1":"Korea, Dem. People's Rep.","2":"NA"},{"1":"Lao PDR","2":"NA"},{"1":"Liberia","2":"NA"},{"1":"Liechtenstein","2":"NA"},{"1":"Monaco","2":"NA"},{"1":"Myanmar","2":"NA"},{"1":"Nigeria","2":"NA"},{"1":"Papua New Guinea","2":"NA"},{"1":"Sint Maarten (Dutch part)","2":"NA"},{"1":"South Sudan","2":"NA"},{"1":"St. Kitts and Nevis","2":"NA"},{"1":"St. Lucia","2":"NA"},{"1":"St. Martin (French part)","2":"NA"},{"1":"St. Vincent and the Grenadines","2":"NA"},{"1":"Suriname","2":"NA"},{"1":"Trinidad and Tobago","2":"NA"},{"1":"Turks and Caicos Islands","2":"NA"},{"1":"Tuvalu","2":"NA"},{"1":"Yemen, Rep.","2":"NA"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<p>Pozitif değer ihracat payının, negatif değer ithalat payının daha yüksek olduğunu gösterir. Bu gösterge parasal dış ticaret dengesinin kendisi değildir; iki akımın GSYH içindeki paylarının farkıdır.</p>
+<p><strong>Çözüm 2</strong></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>countries <span class="sc">|&gt;</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">transmute</span>(</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>    country,</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">signed_gap =</span></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>      unemployment_female_pct <span class="sc">-</span> unemployment_male_pct,</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">absolute_gap =</span> <span class="fu">abs</span>(signed_gap)</span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(absolute_gap))</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":["country"],"name":[1],"type":["chr"],"align":["left"]},{"label":["signed_gap"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["absolute_gap"],"name":[3],"type":["dbl"],"align":["right"]}],"data":[{"1":"Saudi Arabia","2":"20.548","3":"20.548"},{"1":"West Bank and Gaza","2":"19.683","3":"19.683"},{"1":"Iraq","2":"17.010","3":"17.010"},{"1":"Egypt, Arab Rep.","2":"16.565","3":"16.565"},{"1":"Gabon","2":"14.350","3":"14.350"},{"1":"Syrian Arab Republic","2":"13.952","3":"13.952"},{"1":"Djibouti","2":"13.876","3":"13.876"},{"1":"Yemen, Rep.","2":"12.830","3":"12.830"},{"1":"Sudan","2":"12.207","3":"12.207"},{"1":"Tunisia","2":"11.451","3":"11.451"},{"1":"Algeria","2":"11.361","3":"11.361"},{"1":"Libya","2":"9.201","3":"9.201"},{"1":"Jordan","2":"8.627","3":"8.627"},{"1":"Iran, Islamic Rep.","2":"8.489","3":"8.489"},{"1":"Somalia, Fed. Rep.","2":"8.074","3":"8.074"},{"1":"Belize","2":"7.741","3":"7.741"},{"1":"Greece","2":"7.497","3":"7.497"},{"1":"Oman","2":"7.458","3":"7.458"},{"1":"Mauritania","2":"6.975","3":"6.975"},{"1":"Samoa","2":"6.792","3":"6.792"},{"1":"Haiti","2":"5.728","3":"5.728"},{"1":"Mauritius","2":"5.644","3":"5.644"},{"1":"Costa Rica","2":"5.587","3":"5.587"},{"1":"Afghanistan","2":"5.540","3":"5.540"},{"1":"Dominican Republic","2":"5.485","3":"5.485"},{"1":"Suriname","2":"5.348","3":"5.348"},{"1":"Bosnia and Herzegovina","2":"5.100","3":"5.100"},{"1":"Kuwait","2":"5.019","3":"5.019"},{"1":"Colombia","2":"4.885","3":"4.885"},{"1":"Lebanon","2":"4.401","3":"4.401"},{"1":"Brazil","2":"4.280","3":"4.280"},{"1":"United Arab Emirates","2":"4.175","3":"4.175"},{"1":"Tajikistan","2":"-4.144","3":"4.144"},{"1":"Turkiye","2":"4.111","3":"4.111"},{"1":"Sri Lanka","2":"4.037","3":"4.037"},{"1":"Lesotho","2":"3.994","3":"3.994"},{"1":"Honduras","2":"3.926","3":"3.926"},{"1":"South Africa","2":"3.713","3":"3.713"},{"1":"St. Vincent and the Grenadines","2":"-3.692","3":"3.692"},{"1":"Botswana","2":"3.553","3":"3.553"},{"1":"Spain","2":"3.550","3":"3.550"},{"1":"Bahrain","2":"3.520","3":"3.520"},{"1":"Uruguay","2":"3.343","3":"3.343"},{"1":"St. Lucia","2":"3.161","3":"3.161"},{"1":"Eswatini","2":"3.135","3":"3.135"},{"1":"Turkmenistan","2":"-3.118","3":"3.118"},{"1":"Paraguay","2":"2.937","3":"2.937"},{"1":"Puerto Rico (US)","2":"-2.869","3":"2.869"},{"1":"Panama","2":"2.842","3":"2.842"},{"1":"Georgia","2":"-2.654","3":"2.654"},{"1":"Congo, Rep.","2":"2.595","3":"2.595"},{"1":"Vanuatu","2":"2.559","3":"2.559"},{"1":"Namibia","2":"-2.548","3":"2.548"},{"1":"Jamaica","2":"2.536","3":"2.536"},{"1":"Guyana","2":"2.518","3":"2.518"},{"1":"South Sudan","2":"2.376","3":"2.376"},{"1":"Barbados","2":"-2.261","3":"2.261"},{"1":"Nepal","2":"2.225","3":"2.225"},{"1":"Brunei Darussalam","2":"2.171","3":"2.171"},{"1":"Bangladesh","2":"2.134","3":"2.134"},{"1":"Fiji","2":"2.091","3":"2.091"},{"1":"Uzbekistan","2":"2.085","3":"2.085"},{"1":"Sierra Leone","2":"-2.050","3":"2.050"},{"1":"Italy","2":"2.005","3":"2.005"},{"1":"Belarus","2":"-1.908","3":"1.908"},{"1":"Ethiopia","2":"1.908","3":"1.908"},{"1":"Morocco","2":"1.875","3":"1.875"},{"1":"Pakistan","2":"1.852","3":"1.852"},{"1":"North Macedonia","2":"1.842","3":"1.842"},{"1":"Armenia","2":"1.806","3":"1.806"},{"1":"Mongolia","2":"-1.786","3":"1.786"},{"1":"Virgin Islands (U.S.)","2":"1.783","3":"1.783"},{"1":"Timor-Leste","2":"1.775","3":"1.775"},{"1":"French Polynesia","2":"1.771","3":"1.771"},{"1":"Cyprus","2":"1.770","3":"1.770"},{"1":"Latvia","2":"-1.770","3":"1.770"},{"1":"Malawi","2":"1.756","3":"1.756"},{"1":"Congo, Dem. Rep.","2":"-1.755","3":"1.755"},{"1":"Gambia, The","2":"-1.665","3":"1.665"},{"1":"Rwanda","2":"1.568","3":"1.568"},{"1":"Lithuania","2":"-1.529","3":"1.529"},{"1":"Argentina","2":"1.516","3":"1.516"},{"1":"Azerbaijan","2":"1.479","3":"1.479"},{"1":"Liberia","2":"-1.415","3":"1.415"},{"1":"Equatorial Guinea","2":"1.414","3":"1.414"},{"1":"Kyrgyz Republic","2":"1.386","3":"1.386"},{"1":"Ecuador","2":"1.334","3":"1.334"},{"1":"Papua New Guinea","2":"-1.322","3":"1.322"},{"1":"New Caledonia","2":"1.296","3":"1.296"},{"1":"Tonga","2":"1.285","3":"1.285"},{"1":"Tanzania","2":"1.283","3":"1.283"},{"1":"Chile","2":"1.268","3":"1.268"},{"1":"Portugal","2":"1.260","3":"1.260"},{"1":"Hong Kong SAR, China","2":"-1.242","3":"1.242"},{"1":"Serbia","2":"1.228","3":"1.228"},{"1":"Central African Republic","2":"1.205","3":"1.205"},{"1":"Eritrea","2":"1.192","3":"1.192"},{"1":"Guatemala","2":"1.106","3":"1.106"},{"1":"Cabo Verde","2":"-1.103","3":"1.103"},{"1":"China","2":"-1.089","3":"1.089"},{"1":"Cote d'Ivoire","2":"1.070","3":"1.070"},{"1":"Kazakhstan","2":"1.054","3":"1.054"},{"1":"Uganda","2":"1.051","3":"1.051"},{"1":"Bhutan","2":"1.047","3":"1.047"},{"1":"Maldives","2":"-1.046","3":"1.046"},{"1":"Comoros","2":"1.038","3":"1.038"},{"1":"Montenegro","2":"1.017","3":"1.017"},{"1":"Finland","2":"-1.002","3":"1.002"},{"1":"Malta","2":"1.001","3":"1.001"},{"1":"Venezuela, RB","2":"1.000","3":"1.000"},{"1":"Cameroon","2":"0.990","3":"0.990"},{"1":"Croatia","2":"0.947","3":"0.947"},{"1":"Slovenia","2":"0.944","3":"0.944"},{"1":"Romania","2":"-0.937","3":"0.937"},{"1":"Trinidad and Tobago","2":"0.909","3":"0.909"},{"1":"Mozambique","2":"0.876","3":"0.876"},{"1":"Lao PDR","2":"-0.871","3":"0.871"},{"1":"Guinea-Bissau","2":"-0.845","3":"0.845"},{"1":"Germany","2":"-0.817","3":"0.817"},{"1":"Canada","2":"-0.807","3":"0.807"},{"1":"Estonia","2":"0.801","3":"0.801"},{"1":"Belgium","2":"-0.793","3":"0.793"},{"1":"Macao SAR, China","2":"-0.791","3":"0.791"},{"1":"Zimbabwe","2":"-0.763","3":"0.763"},{"1":"Iceland","2":"-0.734","3":"0.734"},{"1":"Moldova","2":"-0.698","3":"0.698"},{"1":"Bahamas, The","2":"0.678","3":"0.678"},{"1":"Bulgaria","2":"-0.660","3":"0.660"},{"1":"Peru","2":"0.658","3":"0.658"},{"1":"Czechia","2":"0.654","3":"0.654"},{"1":"Ukraine","2":"-0.648","3":"0.648"},{"1":"Switzerland","2":"0.598","3":"0.598"},{"1":"New Zealand","2":"0.591","3":"0.591"},{"1":"Chad","2":"-0.585","3":"0.585"},{"1":"Zambia","2":"-0.584","3":"0.584"},{"1":"India","2":"-0.580","3":"0.580"},{"1":"Channel Islands","2":"0.574","3":"0.574"},{"1":"Bolivia","2":"0.560","3":"0.560"},{"1":"Mali","2":"0.560","3":"0.560"},{"1":"Nigeria","2":"-0.555","3":"0.555"},{"1":"Norway","2":"-0.552","3":"0.552"},{"1":"Poland","2":"0.550","3":"0.550"},{"1":"Guam","2":"-0.523","3":"0.523"},{"1":"Ireland","2":"-0.490","3":"0.490"},{"1":"Philippines","2":"0.483","3":"0.483"},{"1":"Kenya","2":"0.482","3":"0.482"},{"1":"Denmark","2":"0.474","3":"0.474"},{"1":"Togo","2":"-0.457","3":"0.457"},{"1":"Indonesia","2":"-0.397","3":"0.397"},{"1":"Singapore","2":"0.391","3":"0.391"},{"1":"United Kingdom","2":"-0.374","3":"0.374"},{"1":"El Salvador","2":"0.365","3":"0.365"},{"1":"Slovak Republic","2":"0.359","3":"0.359"},{"1":"Qatar","2":"0.354","3":"0.354"},{"1":"Ghana","2":"0.349","3":"0.349"},{"1":"Japan","2":"-0.328","3":"0.328"},{"1":"Russian Federation","2":"-0.305","3":"0.305"},{"1":"Senegal","2":"0.294","3":"0.294"},{"1":"Korea, Rep.","2":"-0.288","3":"0.288"},{"1":"Korea, Dem. People's Rep.","2":"0.281","3":"0.281"},{"1":"Madagascar","2":"0.281","3":"0.281"},{"1":"Albania","2":"-0.269","3":"0.269"},{"1":"Austria","2":"-0.256","3":"0.256"},{"1":"Benin","2":"0.247","3":"0.247"},{"1":"Malaysia","2":"0.235","3":"0.235"},{"1":"Sweden","2":"0.235","3":"0.235"},{"1":"Israel","2":"0.219","3":"0.219"},{"1":"Cuba","2":"0.201","3":"0.201"},{"1":"Burkina Faso","2":"0.198","3":"0.198"},{"1":"Sao Tome and Principe","2":"0.194","3":"0.194"},{"1":"Burundi","2":"-0.178","3":"0.178"},{"1":"Hungary","2":"0.177","3":"0.177"},{"1":"Viet Nam","2":"-0.160","3":"0.160"},{"1":"Niger","2":"-0.136","3":"0.136"},{"1":"Luxembourg","2":"-0.124","3":"0.124"},{"1":"France","2":"-0.124","3":"0.124"},{"1":"Myanmar","2":"0.116","3":"0.116"},{"1":"United States","2":"-0.112","3":"0.112"},{"1":"Angola","2":"0.100","3":"0.100"},{"1":"Australia","2":"-0.085","3":"0.085"},{"1":"Guinea","2":"0.078","3":"0.078"},{"1":"Cambodia","2":"0.063","3":"0.063"},{"1":"Mexico","2":"0.062","3":"0.062"},{"1":"Nicaragua","2":"0.055","3":"0.055"},{"1":"Solomon Islands","2":"0.054","3":"0.054"},{"1":"Netherlands","2":"-0.045","3":"0.045"},{"1":"Thailand","2":"0.029","3":"0.029"},{"1":"American Samoa","2":"NA","3":"NA"},{"1":"Andorra","2":"NA","3":"NA"},{"1":"Antigua and Barbuda","2":"NA","3":"NA"},{"1":"Aruba","2":"NA","3":"NA"},{"1":"Bermuda","2":"NA","3":"NA"},{"1":"British Virgin Islands","2":"NA","3":"NA"},{"1":"Cayman Islands","2":"NA","3":"NA"},{"1":"Curacao","2":"NA","3":"NA"},{"1":"Dominica","2":"NA","3":"NA"},{"1":"Faroe Islands","2":"NA","3":"NA"},{"1":"Gibraltar","2":"NA","3":"NA"},{"1":"Greenland","2":"NA","3":"NA"},{"1":"Grenada","2":"NA","3":"NA"},{"1":"Isle of Man","2":"NA","3":"NA"},{"1":"Kiribati","2":"NA","3":"NA"},{"1":"Kosovo","2":"NA","3":"NA"},{"1":"Liechtenstein","2":"NA","3":"NA"},{"1":"Marshall Islands","2":"NA","3":"NA"},{"1":"Micronesia, Fed. Sts.","2":"NA","3":"NA"},{"1":"Monaco","2":"NA","3":"NA"},{"1":"Naoero","2":"NA","3":"NA"},{"1":"Northern Mariana Islands","2":"NA","3":"NA"},{"1":"Palau","2":"NA","3":"NA"},{"1":"San Marino","2":"NA","3":"NA"},{"1":"Seychelles","2":"NA","3":"NA"},{"1":"Sint Maarten (Dutch part)","2":"NA","3":"NA"},{"1":"St. Kitts and Nevis","2":"NA","3":"NA"},{"1":"St. Martin (French part)","2":"NA","3":"NA"},{"1":"Turks and Caicos Islands","2":"NA","3":"NA"},{"1":"Tuvalu","2":"NA","3":"NA"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<p>Mutlak fark eşitsizliğin büyüklüğünü korur, hangi cinsiyetin oranının daha yüksek olduğu bilgisini kaybeder.</p>
+<p><strong>Çözüm 3</strong></p>
+<p>Milyona bölmek yalnızca birimi kişiden milyon kişiye çevirir; dağılım biçimi ve göreli uzaklıklar doğrusal olarak korunur. Log dönüşümü çarpımsal farkları temsil eder ve büyük değerleri daha güçlü sıkıştırır.</p>
+<p><strong>Çözüm 4</strong></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>country_indicators <span class="sc">|&gt;</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(country_code <span class="sc">==</span> <span class="st">"TUR"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(year) <span class="sc">|&gt;</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">lag1 =</span> <span class="fu">if_else</span>(year <span class="sc">-</span> <span class="fu">lag</span>(year, <span class="dv">1</span>) <span class="sc">==</span> <span class="dv">1</span>, <span class="fu">lag</span>(gdp_per_capita_usd, <span class="dv">1</span>), <span class="cn">NA_real_</span>),</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">lag2 =</span> <span class="fu">if_else</span>(year <span class="sc">-</span> <span class="fu">lag</span>(year, <span class="dv">2</span>) <span class="sc">==</span> <span class="dv">2</span>, <span class="fu">lag</span>(gdp_per_capita_usd, <span class="dv">2</span>), <span class="cn">NA_real_</span>)</span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(year, gdp_per_capita_usd, lag1, lag2) <span class="sc">|&gt;</span></span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">&gt;=</span> <span class="dv">2015</span>, year <span class="sc">&lt;=</span> <span class="dv">2019</span>)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":["year"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["gdp_per_capita_usd"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["lag1"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["lag2"],"name":[4],"type":["dbl"],"align":["right"]}],"data":[{"1":"2015","2":"11064.649","3":"12209.386","4":"12635.56"},{"1":"2016","2":"10984.364","3":"11064.649","4":"12209.39"},{"1":"2017","2":"10756.388","3":"10984.364","4":"11064.65"},{"1":"2018","2":"9684.118","3":"10756.388","4":"10984.36"},{"1":"2019","2":"9395.234","3":"9684.118","4":"10756.39"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<p><strong>Çözüm 5</strong></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>country_indicators <span class="sc">|&gt;</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">&gt;=</span> <span class="dv">2015</span>, year <span class="sc">&lt;=</span> <span class="dv">2018</span>) <span class="sc">|&gt;</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(country_code, country) <span class="sc">|&gt;</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">internet_mean_2015_2018 =</span> <span class="fu">mean</span>(internet_users_pct, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">n_years =</span> <span class="fu">sum</span>(<span class="sc">!</span><span class="fu">is.na</span>(internet_users_pct)),</span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":["country_code"],"name":[1],"type":["chr"],"align":["left"]},{"label":["country"],"name":[2],"type":["chr"],"align":["left"]},{"label":["internet_mean_2015_2018"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["n_years"],"name":[4],"type":["int"],"align":["right"]}],"data":[{"1":"ABW","2":"Aruba","3":"93.124560","4":"3"},{"1":"AFG","2":"Afghanistan","3":"12.390000","4":"4"},{"1":"AGO","2":"Angola","3":"25.050000","4":"4"},{"1":"ALB","2":"Albania","3":"61.075001","4":"4"},{"1":"AND","2":"Andorra","3":"90.666866","4":"4"},{"1":"ARE","2":"United Arab Emirates","3":"93.592483","4":"4"},{"1":"ARG","2":"Argentina","3":"72.751738","4":"4"},{"1":"ARM","2":"Armenia","3":"64.109200","4":"4"},{"1":"ASM","2":"American Samoa","3":"NaN","4":"0"},{"1":"ATG","2":"Antigua and Barbuda","3":"70.408424","4":"4"},{"1":"AUS","2":"Australia","3":"86.913442","4":"4"},{"1":"AUT","2":"Austria","3":"85.919652","4":"4"},{"1":"AZE","2":"Azerbaijan","3":"78.499999","4":"4"},{"1":"BDI","2":"Burundi","3":"2.720062","4":"4"},{"1":"BEL","2":"Belgium","3":"86.974111","4":"4"},{"1":"BEN","2":"Benin","3":"15.863750","4":"4"},{"1":"BFA","2":"Burkina Faso","3":"7.494000","4":"4"},{"1":"BGD","2":"Bangladesh","3":"19.083250","4":"4"},{"1":"BGR","2":"Bulgaria","3":"61.168478","4":"4"},{"1":"BHR","2":"Bahrain","3":"96.500272","4":"4"},{"1":"BHS","2":"Bahamas, The","3":"80.400000","4":"4"},{"1":"BIH","2":"Bosnia and Herzegovina","3":"61.967172","4":"4"},{"1":"BLR","2":"Belarus","3":"71.727435","4":"4"},{"1":"BLZ","2":"Belize","3":"47.159101","4":"4"},{"1":"BMU","2":"Bermuda","3":"98.231203","4":"3"},{"1":"BOL","2":"Bolivia","3":"41.325689","4":"4"},{"1":"BRA","2":"Brazil","3":"64.276515","4":"4"},{"1":"BRB","2":"Barbados","3":"71.374350","4":"4"},{"1":"BRN","2":"Brunei Darussalam","3":"87.766674","4":"4"},{"1":"BTN","2":"Bhutan","3":"51.031375","4":"4"},{"1":"BWA","2":"Botswana","3":"42.440974","4":"4"},{"1":"CAF","2":"Central African Republic","3":"3.775000","4":"4"},{"1":"CAN","2":"Canada","3":"92.125351","4":"4"},{"1":"CHE","2":"Switzerland","3":"89.524974","4":"4"},{"1":"CHI","2":"Channel Islands","3":"NaN","4":"0"},{"1":"CHL","2":"Chile","3":"81.853917","4":"4"},{"1":"CHN","2":"China","3":"55.789599","4":"4"},{"1":"CIV","2":"Cote d'Ivoire","3":"40.258568","4":"4"},{"1":"CMR","2":"Cameroon","3":"22.950743","4":"4"},{"1":"COD","2":"Congo, Dem. Rep.","3":"8.533333","4":"3"},{"1":"COG","2":"Congo, Rep.","3":"9.048750","4":"4"},{"1":"COL","2":"Colombia","3":"60.106931","4":"4"},{"1":"COM","2":"Comoros","3":"7.958567","4":"3"},{"1":"CPV","2":"Cabo Verde","3":"52.416995","4":"4"},{"1":"CRI","2":"Costa Rica","3":"67.676198","4":"4"},{"1":"CUB","2":"Cuba","3":"50.027775","4":"4"},{"1":"CUW","2":"Curacao","3":"64.991363","4":"2"},{"1":"CYM","2":"Cayman Islands","3":"79.022564","4":"3"},{"1":"CYP","2":"Cyprus","3":"78.198179","4":"4"},{"1":"CZE","2":"Czechia","3":"77.889344","4":"4"},{"1":"DEU","2":"Germany","3":"85.796568","4":"4"},{"1":"DJI","2":"Djibouti","3":"41.610777","4":"4"},{"1":"DMA","2":"Dominica","3":"67.216565","4":"3"},{"1":"DNK","2":"Denmark","3":"96.929213","4":"4"},{"1":"DOM","2":"Dominican Republic","3":"65.119981","4":"4"},{"1":"DZA","2":"Algeria","3":"44.468767","4":"4"},{"1":"ECU","2":"Ecuador","3":"54.075839","4":"4"},{"1":"EGY","2":"Egypt, Arab Rep.","3":"42.735498","4":"4"},{"1":"ERI","2":"Eritrea","3":"2.512475","4":"4"},{"1":"ESP","2":"Spain","3":"82.490112","4":"4"},{"1":"EST","2":"Estonia","3":"88.277350","4":"4"},{"1":"ETH","2":"Ethiopia","3":"15.183175","4":"4"},{"1":"FIN","2":"Finland","3":"87.621168","4":"4"},{"1":"FJI","2":"Fiji","3":"50.950950","4":"4"},{"1":"FRA","2":"France","3":"79.955374","4":"4"},{"1":"FRO","2":"Faroe Islands","3":"95.630214","4":"3"},{"1":"FSM","2":"Micronesia, Fed. Sts.","3":"34.193000","4":"4"},{"1":"GAB","2":"Gabon","3":"50.215475","4":"4"},{"1":"GBR","2":"United Kingdom","3":"91.973165","4":"4"},{"1":"GEO","2":"Georgia","3":"57.113116","4":"4"},{"1":"GHA","2":"Ghana","3":"32.971050","4":"4"},{"1":"GIB","2":"Gibraltar","3":"94.444472","4":"1"},{"1":"GIN","2":"Guinea","3":"15.707506","4":"4"},{"1":"GMB","2":"Gambia, The","3":"22.082625","4":"4"},{"1":"GNB","2":"Guinea-Bissau","3":"12.600000","4":"4"},{"1":"GNQ","2":"Equatorial Guinea","3":"25.185000","4":"4"},{"1":"GRC","2":"Greece","3":"69.513555","4":"4"},{"1":"GRD","2":"Grenada","3":"55.356150","4":"4"},{"1":"GRL","2":"Greenland","3":"68.527926","4":"3"},{"1":"GTM","2":"Guatemala","3":"35.678801","4":"4"},{"1":"GUM","2":"Guam","3":"76.885155","4":"3"},{"1":"GUY","2":"Guyana","3":"40.233550","4":"4"},{"1":"HKG","2":"Hong Kong SAR, China","3":"88.087777","4":"4"},{"1":"HND","2":"Honduras","3":"31.110904","4":"4"},{"1":"HRV","2":"Croatia","3":"71.233281","4":"4"},{"1":"HTI","2":"Haiti","3":"24.168407","4":"4"},{"1":"HUN","2":"Hungary","3":"76.229764","4":"4"},{"1":"IDN","2":"Indonesia","3":"29.937635","4":"4"},{"1":"IMN","2":"Isle of Man","3":"NaN","4":"0"},{"1":"IND","2":"India","3":"17.420325","4":"4"},{"1":"IRL","2":"Ireland","3":"84.527235","4":"4"},{"1":"IRN","2":"Iran, Islamic Rep.","3":"58.201572","4":"4"},{"1":"IRQ","2":"Iraq","3":"23.747225","4":"4"},{"1":"ISL","2":"Iceland","3":"98.426537","4":"4"},{"1":"ISR","2":"Israel","3":"80.579889","4":"4"},{"1":"ITA","2":"Italy","3":"64.232629","4":"4"},{"1":"JAM","2":"Jamaica","3":"52.468665","4":"4"},{"1":"JOR","2":"Jordan","3":"60.017501","4":"4"},{"1":"JPN","2":"Japan","3":"91.178412","4":"4"},{"1":"KAZ","2":"Kazakhstan","3":"75.187082","4":"4"},{"1":"KEN","2":"Kenya","3":"17.628739","4":"4"},{"1":"KGZ","2":"Kyrgyz Republic","3":"46.094625","4":"4"},{"1":"KHM","2":"Cambodia","3":"34.182980","4":"4"},{"1":"KIR","2":"Kiribati","3":"23.153850","4":"4"},{"1":"KNA","2":"St. Kitts and Nevis","3":"67.384050","4":"4"},{"1":"KOR","2":"Korea, Rep.","3":"93.457891","4":"4"},{"1":"KWT","2":"Kuwait","3":"91.299709","4":"4"},{"1":"LAO","2":"Lao PDR","3":"25.462926","4":"4"},{"1":"LBN","2":"Lebanon","3":"77.297701","4":"4"},{"1":"LBR","2":"Liberia","3":"14.819425","4":"4"},{"1":"LBY","2":"Libya","3":"38.750000","4":"4"},{"1":"LCA","2":"St. Lucia","3":"58.689650","4":"4"},{"1":"LIE","2":"Liechtenstein","3":"98.093900","4":"3"},{"1":"LKA","2":"Sri Lanka","3":"22.716050","4":"4"},{"1":"LSO","2":"Lesotho","3":"34.313464","4":"4"},{"1":"LTU","2":"Lithuania","3":"75.773136","4":"4"},{"1":"LUX","2":"Luxembourg","3":"97.234418","4":"4"},{"1":"LVA","2":"Latvia","3":"80.683483","4":"4"},{"1":"MAC","2":"Macao SAR, China","3":"81.552824","4":"4"},{"1":"MAF","2":"St. Martin (French part)","3":"NaN","4":"0"},{"1":"MAR","2":"Morocco","3":"60.479328","4":"4"},{"1":"MCO","2":"Monaco","3":"95.208165","4":"3"},{"1":"MDA","2":"Moldova","3":"71.077374","4":"4"},{"1":"MDG","2":"Madagascar","3":"5.760375","4":"4"},{"1":"MDV","2":"Maldives","3":"62.457850","4":"4"},{"1":"MEX","2":"Mexico","3":"56.665711","4":"4"},{"1":"MHL","2":"Marshall Islands","3":"32.913475","4":"4"},{"1":"MKD","2":"North Macedonia","3":"74.055399","4":"4"},{"1":"MLI","2":"Mali","3":"16.157500","4":"4"},{"1":"MLT","2":"Malta","3":"79.176281","4":"4"},{"1":"MMR","2":"Myanmar","3":"19.975020","4":"4"},{"1":"MNE","2":"Montenegro","3":"70.197716","4":"4"},{"1":"MNG","2":"Mongolia","3":"28.902519","4":"4"},{"1":"MNP","2":"Northern Mariana Islands","3":"NaN","4":"0"},{"1":"MOZ","2":"Mozambique","3":"8.049082","4":"4"},{"1":"MRT","2":"Mauritania","3":"20.204250","4":"4"},{"1":"MUS","2":"Mauritius","3":"54.082507","4":"4"},{"1":"MWI","2":"Malawi","3":"7.024575","4":"4"},{"1":"MYS","2":"Malaysia","3":"77.798476","4":"4"},{"1":"NAM","2":"Namibia","3":"34.094825","4":"4"},{"1":"NCL","2":"New Caledonia","3":"78.003797","4":"2"},{"1":"NER","2":"Niger","3":"6.941278","4":"4"},{"1":"NGA","2":"Nigeria","3":"25.068325","4":"4"},{"1":"NIC","2":"Nicaragua","3":"27.147274","4":"4"},{"1":"NLD","2":"Netherlands","3":"91.806067","4":"4"},{"1":"NOR","2":"Norway","3":"96.739447","4":"4"},{"1":"NPL","2":"Nepal","3":"22.795400","4":"4"},{"1":"NRU","2":"Naoero","3":"62.385101","4":"1"},{"1":"NZL","2":"New Zealand","3":"87.099998","4":"4"},{"1":"OMN","2":"Oman","3":"79.015247","4":"4"},{"1":"PAK","2":"Pakistan","3":"13.126362","4":"4"},{"1":"PAN","2":"Panama","3":"56.740397","4":"4"},{"1":"PER","2":"Peru","3":"47.954772","4":"4"},{"1":"PHL","2":"Philippines","3":"40.450000","4":"4"},{"1":"PLW","2":"Palau","3":"NaN","4":"0"},{"1":"PNG","2":"Papua New Guinea","3":"10.267150","4":"4"},{"1":"POL","2":"Poland","3":"73.706198","4":"4"},{"1":"PRI","2":"Puerto Rico (US)","3":"67.926829","4":"4"},{"1":"PRK","2":"Korea, Dem. People's Rep.","3":"NaN","4":"0"},{"1":"PRT","2":"Portugal","3":"71.877153","4":"4"},{"1":"PRY","2":"Paraguay","3":"57.297433","4":"4"},{"1":"PSE","2":"West Bank and Gaza","3":"61.074999","4":"4"},{"1":"PYF","2":"French Polynesia","3":"68.568175","4":"3"},{"1":"QAT","2":"Qatar","3":"96.262797","4":"4"},{"1":"ROU","2":"Romania","3":"62.423917","4":"4"},{"1":"RUS","2":"Russian Federation","3":"75.015884","4":"4"},{"1":"RWA","2":"Rwanda","3":"15.864925","4":"4"},{"1":"SAU","2":"Saudi Arabia","3":"82.995278","4":"4"},{"1":"SDN","2":"Sudan","3":"14.900000","4":"3"},{"1":"SEN","2":"Senegal","3":"28.076975","4":"4"},{"1":"SGP","2":"Singapore","3":"84.020782","4":"4"},{"1":"SLB","2":"Solomon Islands","3":"14.252300","4":"4"},{"1":"SLE","2":"Sierra Leone","3":"9.435975","4":"4"},{"1":"SLV","2":"El Salvador","3":"33.355108","4":"4"},{"1":"SMR","2":"San Marino","3":"57.591150","4":"2"},{"1":"SOM","2":"Somalia, Fed. Rep.","3":"1.820000","4":"2"},{"1":"SRB","2":"Serbia","3":"69.016353","4":"4"},{"1":"SSD","2":"South Sudan","3":"3.850000","4":"4"},{"1":"STP","2":"Sao Tome and Principe","3":"31.107551","4":"4"},{"1":"SUR","2":"Suriname","3":"48.052776","4":"4"},{"1":"SVK","2":"Slovak Republic","3":"80.046282","4":"4"},{"1":"SVN","2":"Slovenia","3":"76.808142","4":"4"},{"1":"SWE","2":"Sweden","3":"90.628594","4":"4"},{"1":"SWZ","2":"Eswatini","3":"32.231400","4":"4"},{"1":"SXM","2":"Sint Maarten (Dutch part)","3":"NaN","4":"0"},{"1":"SYC","2":"Seychelles","3":"60.641002","4":"4"},{"1":"SYR","2":"Syrian Arab Republic","3":"32.079850","4":"4"},{"1":"TCA","2":"Turks and Caicos Islands","3":"NaN","4":"0"},{"1":"TCD","2":"Chad","3":"5.652050","4":"4"},{"1":"TGO","2":"Togo","3":"11.572556","4":"4"},{"1":"THA","2":"Thailand","3":"49.132626","4":"4"},{"1":"TJK","2":"Tajikistan","3":"23.502499","4":"4"},{"1":"TKM","2":"Turkmenistan","3":"16.493550","4":"2"},{"1":"TLS","2":"Timor-Leste","3":"22.900001","4":"4"},{"1":"TON","2":"Tonga","3":"43.402500","4":"4"},{"1":"TTO","2":"Trinidad and Tobago","3":"69.065075","4":"4"},{"1":"TUN","2":"Tunisia","3":"53.947739","4":"4"},{"1":"TUR","2":"Turkiye","3":"61.955023","4":"4"},{"1":"TUV","2":"Tuvalu","3":"31.166667","4":"3"},{"1":"TZA","2":"Tanzania","3":"13.364583","4":"4"},{"1":"UGA","2":"Uganda","3":"7.086050","4":"4"},{"1":"UKR","2":"Ukraine","3":"55.832062","4":"4"},{"1":"URY","2":"Uruguay","3":"70.504996","4":"4"},{"1":"USA","2":"United States","3":"83.968104","4":"4"},{"1":"UZB","2":"Uzbekistan","3":"48.372825","4":"4"},{"1":"VCT","2":"St. Vincent and the Grenadines","3":"52.650001","4":"4"},{"1":"VEN","2":"Venezuela, RB","3":"59.000000","4":"2"},{"1":"VGB","2":"British Virgin Islands","3":"77.702849","4":"2"},{"1":"VIR","2":"Virgin Islands (U.S.)","3":"59.608316","4":"3"},{"1":"VNM","2":"Viet Nam","3":"56.496982","4":"4"},{"1":"VUT","2":"Vanuatu","3":"22.351400","4":"1"},{"1":"WSM","2":"Samoa","3":"NaN","4":"0"},{"1":"XKX","2":"Kosovo","3":"86.668314","4":"2"},{"1":"YEM","2":"Yemen, Rep.","3":"24.332300","4":"2"},{"1":"ZAF","2":"South Africa","3":"56.121626","4":"4"},{"1":"ZMB","2":"Zambia","3":"11.399999","4":"4"},{"1":"ZWE","2":"Zimbabwe","3":"23.815700","4":"4"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<p>2019 başında tahmin yapıldığı varsayılırsa 2019 yıl sonu göstergesi henüz bilinmez. Kesim tarihi özellik tanımının parçasıdır.</p>
+<p><strong>Çözüm 6</strong></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>gelir_faktor <span class="ot">&lt;-</span> countries <span class="sc">|&gt;</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">income_group =</span> <span class="fu">relevel</span>(<span class="fu">factor</span>(income_group), <span class="at">ref =</span> <span class="st">"High income"</span>)</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">model.matrix</span>(<span class="sc">~</span> income_group, <span class="at">data =</span> gelir_faktor))</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  (Intercept) income_groupLow income income_groupLower middle income
+1           1                      1                               0
+2           1                      0                               0
+3           1                      0                               0
+4           1                      0                               0
+5           1                      0                               0
+6           1                      0                               1
+  income_groupUpper middle income
+1                               0
+2                               1
+3                               1
+4                               0
+5                               0
+6                               0</code></pre>
+</div>
+</div>
+<p>Sabit sütunuyla birlikte “High income” referanstır; diğer sütunlar bu düzeye göre farkları temsil eder.</p>
+<p><strong>Çözüm 7</strong></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>sinirlar <span class="ot">&lt;-</span> <span class="fu">quantile</span>(</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>  countries<span class="sc">$</span>gdp_per_capita_usd,</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">probs =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="fl">0.25</span>),</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">na.rm =</span> <span class="cn">TRUE</span></span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>countries <span class="sc">|&gt;</span></span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">gdp_group =</span> <span class="fu">cut</span>(</span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>      gdp_per_capita_usd,</span>
+<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a>      <span class="at">breaks =</span> <span class="fu">unique</span>(sinirlar),</span>
+<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a>      <span class="at">include.lowest =</span> <span class="cn">TRUE</span></span>
+<span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb30-14"><a href="#cb30-14" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb30-15"><a href="#cb30-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(gdp_group)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":["gdp_group"],"name":[1],"type":["fct"],"align":["left"]},{"label":["n"],"name":[2],"type":["int"],"align":["right"]}],"data":[{"1":"[234,2.52e+03]","2":"53"},{"1":"(2.52e+03,7.04e+03]","2":"53"},{"1":"(7.04e+03,2.52e+04]","2":"52"},{"1":"(2.52e+04,1.94e+05]","2":"53"},{"1":"NA","2":"6"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<p>Modelleme sürecinde <code>sinirlar</code> yalnızca eğitim verisinden hesaplanır ve test/yeni veride aynı nesne kullanılır.</p>
+<p><strong>Çözüm 8</strong></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>countries <span class="sc">|&gt;</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">school_missing =</span> <span class="fu">is.na</span>(school_enrollment_tertiary_pct)</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(region) <span class="sc">|&gt;</span></span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">n =</span> <span class="fu">n</span>(),</span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">missing_rate =</span> <span class="fu">mean</span>(school_missing),</span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(missing_rate))</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":["region"],"name":[1],"type":["chr"],"align":["left"]},{"label":["n"],"name":[2],"type":["int"],"align":["right"]},{"label":["missing_rate"],"name":[3],"type":["dbl"],"align":["right"]}],"data":[{"1":"Sub-Saharan Africa","2":"48","3":"0.6250000"},{"1":"Latin America & Caribbean","2":"42","3":"0.5238095"},{"1":"East Asia & Pacific","2":"37","3":"0.4594595"},{"1":"North America","2":"3","3":"0.3333333"},{"1":"Middle East, North Africa, Afghanistan & Pakistan","2":"23","3":"0.2608696"},{"1":"Europe & Central Asia","2":"58","3":"0.1551724"},{"1":"South Asia","2":"6","3":"0.0000000"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<p><strong>Çözüm 9</strong></p>
+<ul>
+<li>2018 GSYH tahmin anında yayımlanmışsa kullanılabilir.</li>
+<li>2019 sonunda yayımlanan bebek ölüm oranı 2019 başındaki tahminde sızıntıdır.</li>
+<li>2020 internet kullanımı geleceğe ait olduğu için sızıntıdır.</li>
+<li>Bölge önceden bilinen ve kararlı bir bilgidir; tanım değişikliği yoksa kullanılabilir.</li>
+</ul>
+<p>Kesin karar, tahminin yapıldığı tarih ve verinin gerçekte yayımlanma gecikmesine bağlıdır.</p>
+<p><strong>Çözüm 10</strong></p>
+<p>Örnek liste: anlam ve formül, analiz birimi, payda kontrolü, zaman kesimi, birim, eksiklik, sonsuz değer, beklenen aralık, eğitimden öğrenilen parametreler ve yeni veride bulunabilirlik.</p>
+</section>
+<section id="bölüm-özeti" class="level2" data-number="19.18">
+<h2 data-number="19.18" class="anchored" data-anchor-id="bölüm-özeti"><span class="header-section-number">19.18</span> Bölüm Özeti</h2>
+<p>Özellik mühendisliği ham değişkenleri amaçla ilişkili temsillere dönüştürür. Toplam, fark, oran, etkileşim, logaritma, polinom, zaman gecikmesi, hareketli özet, kategori kodu ve eksiklik göstergesi farklı bilgi yapılarını görünür kılar.</p>
+<p>Her özellik analiz birimine, zaman yönüne, birime ve alan bilgisine dayanmalıdır. Oranlarda payda, gecikmelerde grup ve sıralama, hareketli özetlerde pencere, kategorilerde referans ve yeni düzeyler açıkça yönetilmelidir.</p>
+<p>En önemli sınır tahmin anıdır. Gelecekten, sonuçtan veya test verisinden öğrenilen bilgi güçlü görünen fakat sızıntılı özellikler üretir. Özellik üretimi ve seçimi eğitim/yeniden örnekleme sürecinin içinde yapılmalı; kurallar kod, isim ve doğrulama kontrolleriyle tekrar üretilebilir hale getirilmelidir.</p>
+</section>
+<section id="kaynaklar-ve-ek-okuma" class="level2" data-number="19.19">
+<h2 data-number="19.19" class="anchored" data-anchor-id="kaynaklar-ve-ek-okuma"><span class="header-section-number">19.19</span> Kaynaklar ve Ek Okuma</h2>
+<p>Özellik tasarımının temel ilkeleri ve çok sayıdaki uygulamalı örnek için <span class="citation" data-cites="kuhnJohnson2019">(<a href="../../references.html#ref-kuhnJohnson2019" role="doc-biblioref">Kuhn ve Johnson 2019</a>)</span>, temsil ile model karmaşıklığı arasındaki ilişki için <span class="citation" data-cites="hastie2009 james2023">(<a href="../../references.html#ref-hastie2009" role="doc-biblioref">Hastie vd. 2009</a>; <a href="../../references.html#ref-james2023" role="doc-biblioref">James vd. 2023</a>)</span>, R’de tekrar üretilebilir özellik tarifleri için <span class="citation" data-cites="recipes2024">(<a href="../../references.html#ref-recipes2024" role="doc-biblioref">Kuhn vd. 2024</a>)</span> önerilir. Bölümde kullanılan ülke ve ülke-yıl göstergeleri World Development Indicators kaynağına dayanır <span class="citation" data-cites="worldBankWDI">(<a href="../../references.html#ref-worldBankWDI" role="doc-biblioref">World Bank 2026</a>)</span>.</p>
+
+
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="ref-gelmanHillVehtari2020" class="csl-entry" role="listitem">
+Gelman, Andrew, Jennifer Hill, ve Aki Vehtari. 2020. <em>Regression and Other Stories</em>. Cambridge University Press. <a href="https://doi.org/10.1017/9781139161879">https://doi.org/10.1017/9781139161879</a>.
+</div>
+<div id="ref-hastie2009" class="csl-entry" role="listitem">
+Hastie, Trevor, Robert Tibshirani, ve Jerome Friedman. 2009. <em>The Elements of Statistical Learning</em>. 2. bs. Springer. <a href="https://doi.org/10.1007/978-0-387-84858-7">https://doi.org/10.1007/978-0-387-84858-7</a>.
+</div>
+<div id="ref-james2023" class="csl-entry" role="listitem">
+James, Gareth, Daniela Witten, Trevor Hastie, Robert Tibshirani, ve Jonathan Taylor. 2023. <em>An Introduction to Statistical Learning: With Applications in <span>R</span></em>. 2. bs. Springer. <a href="https://doi.org/10.1007/978-3-031-38747-0">https://doi.org/10.1007/978-3-031-38747-0</a>.
+</div>
+<div id="ref-kuhnJohnson2019" class="csl-entry" role="listitem">
+Kuhn, Max, ve Kjell Johnson. 2019. <em>Feature Engineering and Selection: A Practical Approach for Predictive Models</em>. CRC Press.
+</div>
+<div id="ref-recipes2024" class="csl-entry" role="listitem">
+Kuhn, Max, Hadley Wickham, ve Emil Hvitfeldt. 2024. <em>recipes: Preprocessing and Feature Engineering Steps for Modeling</em>. <a href="https://CRAN.R-project.org/package=recipes">https://CRAN.R-project.org/package=recipes</a>.
+</div>
+<div id="ref-worldBankWDI" class="csl-entry" role="listitem">
+World Bank. 2026. <em>World Development Indicators</em>. DataBank. <a href="https://databank.worldbank.org/source/world-development-indicators">https://databank.worldbank.org/source/world-development-indicators</a>.
+</div>
+</div>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Kopyalandı");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Kopyalandı");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/mfatihtuzen\.github\.io\/r-programlama\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../../chapters/03-veri-on-isleme/scaling.html" class="pagination-link" aria-label="Ölçeklendirme">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Ölçeklendirme</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../../chapters/03-veri-on-isleme/data_leakage.html" class="pagination-link" aria-label="Veri Sızıntısı ve Doğru Ön İşleme İş Akışı">
+        <span class="nav-page-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Veri Sızıntısı ve Doğru Ön İşleme İş Akışı</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>© 2026, <a href="https://www.linkedin.com/in/dr-m-fatih-t-2b2a4328/">Muhammed Fatih Tüzen</a></p>
+</div>   
+    <div class="nav-footer-center">
+
+<div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/MFatihTuzen/r-programlama/edit/main/chapters/03-veri-on-isleme/feature_engineering.qmd" class="toc-action"><i class="bi bi-github"></i>Bu sayfayı düzenle</a></li><li><a href="https://github.com/MFatihTuzen/r-programlama/issues/new" class="toc-action"><i class="bi empty"></i>Sorun bildir</a></li></ul></div><div class="cookie-consent-footer"><a href="#" id="open_preferences_center">Cookie Preferences</a></div></div>
+    <div class="nav-footer-right">
+<p>Bu kitap <a href="https://quarto.org/">Quarto</a> ile hazırlanmıştır.</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+<script src="../../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

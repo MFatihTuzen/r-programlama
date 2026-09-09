@@ -1,0 +1,1700 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="tr" xml:lang="tr"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="R programlama, veri analizi ve istatistiksel düşünme üzerine Türkçe açık kaynak kitap.">
+
+<title>14&nbsp; Veri Ön İşlemeye Giriş – R Programlama</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../chapters/03-veri-on-isleme/missing_data_imputation.html" rel="next">
+<link href="../../chapters/02-veri-manipulasyonu/data_join.html" rel="prev">
+<link href="../../images/favicon.png" rel="icon" type="image/png">
+<script src="../../site_libs/cookie-consent/cookie-consent.js"></script>
+<link href="../../site_libs/cookie-consent/cookie-consent.css" rel="stylesheet">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-bb62276ab45c84d9efd712f51ff97b5a.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-5a1953863e1f72ef3b996ef827f01ca7.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-bb62276ab45c84d9efd712f51ff97b5a.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-13239a396cb0d0c215efc9b545bec6ba.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-d3b478853a8d6d29a3ba9ced1f343c7a.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-13239a396cb0d0c215efc9b545bec6ba.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "Sonuç yok",
+    "search-matching-documents-text": "eşleşen belgeler",
+    "search-copy-link-title": "Aramak için bağlantıyı kopyalayın",
+    "search-hide-matches-text": "Ek eşleşmeleri gizle",
+    "search-more-match-text": "bu belgede bir tane daha eşleşme",
+    "search-more-matches-text": "bu belgede daha fazla eşleşme",
+    "search-clear-button-title": "Temizle",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "İptal et",
+    "search-submit-button-title": "Gönder",
+    "search-label": "Ara"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-X6J60MER5G"></script>
+
+<script type="text/plain" cookie-consent="tracking">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-X6J60MER5G', { 'anonymize_ip': true});
+</script>
+
+<script type="text/javascript" charset="UTF-8">
+document.addEventListener('DOMContentLoaded', function () {
+cookieconsent.run({
+  "notice_banner_type":"simple",
+  "consent_type":"express",
+  "palette":"light",
+  "language":"en",
+  "page_load_consent_levels":["strictly-necessary"],
+  "notice_banner_reject_button_hide":false,
+  "preferences_center_close_button_hide":false,
+  "website_name":""
+  ,
+"language":"tr"
+  });
+});
+</script> 
+  
+<style>html{ scroll-behavior: smooth; }</style>
+<link href="../../site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet">
+<script src="../../site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../../styles.css">
+<meta property="og:title" content="14&nbsp; Veri Ön İşlemeye Giriş – R Programlama">
+<meta property="og:description" content="R programlama, veri analizi ve istatistiksel düşünme üzerine Türkçe açık kaynak kitap.">
+<meta property="og:site_name" content="R Programlama">
+<meta name="twitter:title" content="14&nbsp; Veri Ön İşlemeye Giriş – R Programlama">
+<meta name="twitter:description" content="R programlama, veri analizi ve istatistiksel düşünme üzerine Türkçe açık kaynak kitap.">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-sidebar floating quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Kenar çubuğunu değiştir" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../chapters/03-veri-on-isleme/data_preprocessing.html">III · Veri Ön İşleme</a></li><li class="breadcrumb-item"><a href="../../chapters/03-veri-on-isleme/data_preprocessing.html"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Veri Ön İşlemeye Giriş</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Kenar çubuğunu değiştir" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Ara" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../../">R Programlama</a> 
+        <div class="sidebar-tools-main tools-wide">
+    <a href="https://github.com/MFatihTuzen/r-programlama" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+    <div class="dropdown">
+      <a href="" title="Share" id="quarto-navigation-tool-dropdown-0" class="quarto-navigation-tool dropdown-toggle px-1" data-bs-toggle="dropdown" aria-expanded="false" role="link" aria-label="Share"><i class="bi bi-share"></i></a>
+      <ul class="dropdown-menu" aria-labelledby="quarto-navigation-tool-dropdown-0">
+          <li>
+            <a class="dropdown-item sidebar-tools-main-item" href="https://twitter.com/intent/tweet?url=|url|">
+              <i class="bi bi-twitter pe-1"></i>
+            Twitter
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item sidebar-tools-main-item" href="https://www.linkedin.com/sharing/share-offsite/?url=|url|">
+              <i class="bi bi-linkedin pe-1"></i>
+            LinkedIn
+            </a>
+          </li>
+      </ul>
+    </div>
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Karanlık modu değiştir"><i class="bi"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Okuyucu modunu değiştir">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Ara"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Önsöz</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">I · R Programlamaya Giriş</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Bölümü değiştir">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/r_about.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">R Programlama Hakkında</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/R_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">R Çalışma Ortamı</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">R Temel Kullanımı ve İlk Komutlar</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/data_types.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Veri Tipleri ve Yapıları</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/functions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Fonksiyonlar</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/if_else_for.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Karar Yapıları ve Döngüler</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/date_time.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Tarih ve Zaman İşlemleri</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/strings.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Metin İşlemleri</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/apply.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Apply Ailesi</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/import_export.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Verilerin İçe ve Dışa Aktarılması</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">II · Veri Manipülasyonu</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Bölümü değiştir">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/02-veri-manipulasyonu/data_manipulation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Veri Manipülasyonu</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/02-veri-manipulasyonu/data_transformation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Veri Dönüştürme</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/02-veri-manipulasyonu/data_join.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Veri Birleştirme</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">III · Veri Ön İşleme</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Bölümü değiştir">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/03-veri-on-isleme/data_preprocessing.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Veri Ön İşlemeye Giriş</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/03-veri-on-isleme/missing_data_imputation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Eksik Veriler ve İmputasyon</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/03-veri-on-isleme/outliers.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Aykırı Gözlemler</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/03-veri-on-isleme/data_transformations.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Veri Dönüşümleri</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/03-veri-on-isleme/scaling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Ölçeklendirme</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/03-veri-on-isleme/feature_engineering.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Özellik Mühendisliğine Giriş</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/03-veri-on-isleme/data_leakage.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Veri Sızıntısı ve Doğru Ön İşleme İş Akışı</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Kaynakça</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="2">
+    <h2 id="toc-title">İçindekiler</h2>
+   
+  <ul>
+  <li><a href="#veri-ön-işleme-neden-gereklidir" id="toc-veri-ön-işleme-neden-gereklidir" class="nav-link active" data-scroll-target="#veri-ön-işleme-neden-gereklidir"><span class="header-section-number">14.1</span> Veri Ön İşleme Neden Gereklidir?</a></li>
+  <li><a href="#ham-veri-ile-hazır-veri-arasındaki-fark" id="toc-ham-veri-ile-hazır-veri-arasındaki-fark" class="nav-link" data-scroll-target="#ham-veri-ile-hazır-veri-arasındaki-fark"><span class="header-section-number">14.2</span> Ham Veri ile Hazır Veri Arasındaki Fark</a></li>
+  <li><a href="#temizleme-dönüştürme-ve-modellemeye-hazırlama" id="toc-temizleme-dönüştürme-ve-modellemeye-hazırlama" class="nav-link" data-scroll-target="#temizleme-dönüştürme-ve-modellemeye-hazırlama"><span class="header-section-number">14.3</span> Temizleme, Dönüştürme ve Modellemeye Hazırlama</a></li>
+  <li><a href="#küçük-bir-ham-veri-örneği" id="toc-küçük-bir-ham-veri-örneği" class="nav-link" data-scroll-target="#küçük-bir-ham-veri-örneği"><span class="header-section-number">14.4</span> Küçük Bir Ham Veri Örneği</a></li>
+  <li><a href="#ham-veriden-hazır-veriye-genel-iş-akışı" id="toc-ham-veriden-hazır-veriye-genel-iş-akışı" class="nav-link" data-scroll-target="#ham-veriden-hazır-veriye-genel-iş-akışı"><span class="header-section-number">14.5</span> Ham Veriden Hazır Veriye Genel İş Akışı</a></li>
+  <li><a href="#ön-işleme-bir-tarif-değildir" id="toc-ön-işleme-bir-tarif-değildir" class="nav-link" data-scroll-target="#ön-işleme-bir-tarif-değildir"><span class="header-section-number">14.6</span> Ön İşleme Bir Tarif Değildir</a></li>
+  <li><a href="#veri-sızıntısına-ilk-bakış" id="toc-veri-sızıntısına-ilk-bakış" class="nav-link" data-scroll-target="#veri-sızıntısına-ilk-bakış"><span class="header-section-number">14.7</span> Veri Sızıntısına İlk Bakış</a></li>
+  <li><a href="#tekrar-üretilebilir-bir-ön-işleme-düzeni" id="toc-tekrar-üretilebilir-bir-ön-işleme-düzeni" class="nav-link" data-scroll-target="#tekrar-üretilebilir-bir-ön-işleme-düzeni"><span class="header-section-number">14.8</span> Tekrar Üretilebilir Bir Ön İşleme Düzeni</a></li>
+  <li><a href="#bölüm-iii-yol-haritası" id="toc-bölüm-iii-yol-haritası" class="nav-link" data-scroll-target="#bölüm-iii-yol-haritası"><span class="header-section-number">14.9</span> Bölüm III Yol Haritası</a></li>
+  <li><a href="#sık-yapılan-hatalar" id="toc-sık-yapılan-hatalar" class="nav-link" data-scroll-target="#sık-yapılan-hatalar"><span class="header-section-number">14.10</span> Sık Yapılan Hatalar</a></li>
+  <li><a href="#egzersizler" id="toc-egzersizler" class="nav-link" data-scroll-target="#egzersizler"><span class="header-section-number">14.11</span> Egzersizler</a></li>
+  <li><a href="#egzersiz-çözümleri" id="toc-egzersiz-çözümleri" class="nav-link" data-scroll-target="#egzersiz-çözümleri"><span class="header-section-number">14.12</span> Egzersiz Çözümleri</a></li>
+  <li><a href="#bölüm-özeti" id="toc-bölüm-özeti" class="nav-link" data-scroll-target="#bölüm-özeti"><span class="header-section-number">14.13</span> Bölüm Özeti</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/MFatihTuzen/r-programlama/edit/main/chapters/03-veri-on-isleme/data_preprocessing.qmd" class="toc-action"><i class="bi bi-github"></i>Bu sayfayı düzenle</a></li><li><a href="https://github.com/MFatihTuzen/r-programlama/issues/new" class="toc-action"><i class="bi empty"></i>Sorun bildir</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../chapters/03-veri-on-isleme/data_preprocessing.html">III · Veri Ön İşleme</a></li><li class="breadcrumb-item"><a href="../../chapters/03-veri-on-isleme/data_preprocessing.html"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Veri Ön İşlemeye Giriş</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span id="sec-data-preprocessing" class="quarto-section-identifier"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Veri Ön İşlemeye Giriş</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Bir veri setinin dosyaya başarıyla aktarılmış olması, onun analize hazır olduğu anlamına gelmez. Gerçek verilerde eksik değerler, tutarsız kategori adları, yanlış veri tipleri, yinelenen kayıtlar, olağan dışı gözlemler ve birbirinden çok farklı ölçeklerde değişkenler bulunabilir. Bu sorunların bir kısmı hesaplamayı doğrudan engeller; bir kısmı ise kod çalışsa bile elde edilen sonucun güvenilirliğini azaltır.</p>
+<p><strong>Veri ön işleme</strong> (<em>data preprocessing</em>), ham veriyi belirli bir analiz ya da modelleme amacı için daha güvenilir, tutarlı ve kullanılabilir hale getiren kararlar ve işlemler bütünüdür. Buradaki önemli sözcük yalnızca <em>işlem</em> değil, aynı zamanda <em>karar</em>dır. Çünkü eksik bir değerin silinmesi, aykırı bir gözlemin korunması ya da bir değişkenin logaritmasının alınması teknik bir komuttan önce analitik bir gerekçe gerektirir.</p>
+<p>Bu bölümde tek tek yöntemlerin ayrıntısına girmeden veri ön işlemenin genel çerçevesini kuracağız. Amacımız şu üç soruya sistematik biçimde cevap verebilmektir:</p>
+<ul>
+<li><strong>Neden?</strong> Veri üzerinde neden bir müdahaleye ihtiyaç var?</li>
+<li><strong>Ne zaman?</strong> Müdahale analizden ya da modellemeden önce hangi aşamada yapılmalı?</li>
+<li><strong>Nasıl?</strong> Yapılan işlem R ile nasıl uygulanmalı, denetlenmeli ve kaydedilmeli?</li>
+</ul>
+<p>Bölümün sonunda ham veriden analize veya modellemeye hazır veriye giden iş akışını tanıyacak, veri temizleme ile veri dönüştürme arasındaki farkı açıklayabilecek ve ön işleme kararlarının neden analiz amacına bağlı olduğunu değerlendirebileceksiniz.</p>
+<p>Veri ön işleme, çoğu zaman bir yazılım paketindeki komutlar dizisi gibi sunulur. Oysa daha doğru bakış, onu <strong>ölçüm ile çıkarım arasındaki köprü</strong> olarak görmektir. Veri dosyasındaki sütunlar gerçekliğin kendisi değil; belirli tanımlar, ölçüm araçları, kayıt kuralları ve zaman noktaları altında üretilmiş temsillerdir. Bu nedenle iyi bir ön işleme kararı yalnızca “hangi fonksiyon çalışır?” sorusuna değil, “hangi olguyu ölçtük, bu ölçüm nasıl kaydedildi ve yaptığımız işlem bu anlamı koruyor mu?” sorularına da cevap verir. Keşifsel veri analizi ve tekrar üretilebilir veri bilimi literatürü de dönüşümlerin veri üretim bağlamından koparılmaması gerektiğini vurgular <span class="citation" data-cites="tukey1977 wickhamGrolemund2023">(<a href="../../references.html#ref-tukey1977" role="doc-biblioref">Tukey 1977</a>; <a href="../../references.html#ref-wickhamGrolemund2023" role="doc-biblioref">Wickham vd. 2023</a>)</span>.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Not</span>Bu bölümün sınırı
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Bu bölüm bir yöntem kataloğu değildir. Eksik veri, aykırı gözlem, dönüşüm, ölçeklendirme ve özellik mühendisliği sonraki bölümlerde ayrıntılı biçimde ele alınacaktır. Burada bu konuları ortak bir iş akışı içinde konumlandırıyoruz.</p>
+</div>
+</div>
+<section id="veri-ön-işleme-neden-gereklidir" class="level2" data-number="14.1">
+<h2 data-number="14.1" class="anchored" data-anchor-id="veri-ön-işleme-neden-gereklidir"><span class="header-section-number">14.1</span> Veri Ön İşleme Neden Gereklidir?</h2>
+<p>İstatistiksel yöntemler ve makine öğrenmesi algoritmaları girdiler hakkında bazı beklentilere sahiptir. Bir ortalama hesabı sayısal değer bekler; birçok model eksik değerlerle doğrudan çalışamaz; uzaklığa dayalı yöntemler değişkenlerin ölçeklerinden etkilenir. Bununla birlikte veri ön işlemenin amacı yalnızca algoritmanın hata vermesini önlemek değildir.</p>
+<p>İyi bir ön işleme süreci dört temel amaca hizmet eder:</p>
+<ol type="1">
+<li><strong>Doğruluk:</strong> Hatalı veya olanaksız değerleri belirlemek.</li>
+<li><strong>Tutarlılık:</strong> Aynı kavramın farklı biçimlerde temsil edilmesini önlemek.</li>
+<li><strong>Uygunluk:</strong> Veriyi yapılacak analiz ya da modelin ihtiyaçlarına hazırlamak.</li>
+<li><strong>Tekrar üretilebilirlik:</strong> Kararları açık kod ve kayıtlarla yeniden uygulanabilir hale getirmek.</li>
+</ol>
+<p>Örneğin bir yaş değişkeninde <code>-4</code> değeri bulunması veri giriş hatasına işaret edebilir. Buna karşılık gelir değişkenindeki çok yüksek bir değer gerçek bir gözlem olabilir. Her iki değer de dağılımda sıra dışı görünse bile aynı kararı gerektirmez. İlki alan bilgisinden hareketle geçersiz sayılabilir; ikincisini yalnızca büyük olduğu için silmek önemli bir bilgiyi kaybettirebilir.</p>
+<p>Bu ayrımı daha genel biçimde ifade etmek için ham veri kümesini (D), uygulanacak ön işleme dönüşümünü (T), dönüşümün veriden öğrenilen parametrelerini de () ile gösterelim. Hazır veri,</p>
+<p><span class="math display">\[
+D^{*} = T(D; \theta)
+\]</span></p>
+<p>biçiminde düşünülebilir. Burada (T) yalnızca logaritma gibi matematiksel bir dönüşüm değildir; kategori eşleme, eksik değer doldurma, aykırı gözlem işaretleme ve kodlama adımlarının tamamını kapsar. () ise ortalama, medyan, alt-üst sınır, seçilen değişken listesi veya kategori sözlüğü olabilir. Bu gösterim iki önemli sonucu açığa çıkarır. Birincisi, her dönüşüm bir varsayım taşır: medyanla imputasyon, gözlenmeyen değerlerin gözlenen dağılımın merkeziyle temsil edilebileceğini varsayar. İkincisi, () veriden öğreniliyorsa model değerlendirmesinde yalnızca eğitim verisi kullanılmalıdır. Aksi halde test verisinin bilgisi hazırlanmış veri kümesine sızar <span class="citation" data-cites="kaufman2012 kuhnSilge2022">(<a href="../../references.html#ref-kaufman2012" role="doc-biblioref">Kaufman vd. 2012</a>; <a href="../../references.html#ref-kuhnSilge2022" role="doc-biblioref">Kuhn ve Silge 2022</a>)</span>.</p>
+<p>Ön işleme aynı zamanda bir <strong>bilgi koruma problemi</strong>dir. Bazı işlemler gürültüyü veya ölçüm hatasını azaltırken bazıları gerçek farklılıkları da silebilir. Sürekli bir yaşı geniş aralıklara bölmek yorumlamayı kolaylaştırabilir, fakat aynı gruptaki bireyler arasındaki sıralamayı kaybettirir. Nadir kategorileri tek grupta birleştirmek model kararlılığını artırabilir, fakat küçük ve bilimsel açıdan önemli bir alt grubu görünmez kılabilir. Bu nedenle amaç olabildiğince çok işlem yapmak değil, araştırma sorusu için gerekli en az müdahaleyi gerekçesiyle uygulamaktır <span class="citation" data-cites="kuhnJohnson2019">(<a href="../../references.html#ref-kuhnJohnson2019" role="doc-biblioref">Kuhn ve Johnson 2019</a>)</span>.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Önemli</span>Ön işleme veriyi “güzelleştirmek” değildir
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Amaç bütün dağılımları simetrik, bütün tabloları eksiksiz ya da bütün sonuçları beklentiye uygun hale getirmek değildir. Amaç, verinin anlamını koruyarak analiz sorusuna uygun ve denetlenebilir bir temsil üretmektir.</p>
+</div>
+</div>
+</section>
+<section id="ham-veri-ile-hazır-veri-arasındaki-fark" class="level2" data-number="14.2">
+<h2 data-number="14.2" class="anchored" data-anchor-id="ham-veri-ile-hazır-veri-arasındaki-fark"><span class="header-section-number">14.2</span> Ham Veri ile Hazır Veri Arasındaki Fark</h2>
+<p><strong>Ham veri</strong>, kaynaktan alındığı ve henüz analitik müdahaleye uğramadığı haliyle saklanan veridir. Ham veriyi değişmeden korumak, daha sonra alınan kararları gözden geçirebilmek ve işlemleri yeniden üretebilmek için önemlidir.</p>
+<p><strong>Analize hazır veri</strong>, betimsel istatistik, görselleştirme veya çıkarımsal analiz için gerekli kalite kontrollerinden geçirilmiş veridir. Değişken türleri doğru, analiz birimi açık ve kullanılan değerlerin anlamı tutarlı olmalıdır.</p>
+<p><strong>Modellemeye hazır veri</strong> ise bunlara ek olarak modelin teknik gereksinimlerine göre hazırlanmıştır. Kategorik değişkenlerin kodlanması, sayısal değişkenlerin ölçeklendirilmesi veya yeni özelliklerin üretilmesi bu aşamada gündeme gelebilir. Modellemeye hazırlıkta eğitim ve test verisinin ayrılması da kritik önem taşır.</p>
+<p>Bu üç ifade aynı şeyi anlatmaz:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Veri durumu</th>
+<th>Temel soru</th>
+<th>Örnek işlemler</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Ham veri</td>
+<td>Kaynaktan ne geldi?</td>
+<td>Veriyi değişmeden saklama, kaynak ve tarih kaydı</td>
+</tr>
+<tr class="even">
+<td>Analize hazır veri</td>
+<td>Değerler anlamlı ve tutarlı mı?</td>
+<td>Tip düzeltme, kategori standardizasyonu, yinelenen kayıt kontrolü</td>
+</tr>
+<tr class="odd">
+<td>Modellemeye hazır veri</td>
+<td>Model bu temsili güvenle kullanabilir mi?</td>
+<td>İmputasyon, ölçeklendirme, kodlama, özellik üretimi</td>
+</tr>
+</tbody>
+</table>
+<p>Aynı veri setinin “hazır” olup olmadığı amaca göre değişebilir. Yaş gruplarını saymak için yeterli olan bir tablo, yaş değişkenini sürekli bir yordayıcı olarak kullanacak regresyon modeli için yeterli olmayabilir.</p>
+</section>
+<section id="temizleme-dönüştürme-ve-modellemeye-hazırlama" class="level2" data-number="14.3">
+<h2 data-number="14.3" class="anchored" data-anchor-id="temizleme-dönüştürme-ve-modellemeye-hazırlama"><span class="header-section-number">14.3</span> Temizleme, Dönüştürme ve Modellemeye Hazırlama</h2>
+<p>Günlük kullanımda bu kavramlar sık sık birbirinin yerine geçer. Aralarında kesin ve evrensel sınırlar bulunmasa da aşağıdaki ayrım düşünmeyi kolaylaştırır.</p>
+<p><strong>Veri temizleme</strong></p>
+<p>Veri temizleme, verideki hata ve tutarsızlıkları belirlemeye odaklanır. Örneğin:</p>
+<ul>
+<li>boşluk veya yazım farkı taşıyan kategori adlarını birleştirmek,</li>
+<li>sayısal olması gereken bir sütundaki metinsel kodları belirlemek,</li>
+<li>yinelenen kayıtları incelemek,</li>
+<li>olanaksız tarihleri veya değer aralıklarını işaretlemek,</li>
+<li>eksik değerlerin nasıl temsil edildiğini standartlaştırmak.</li>
+</ul>
+<p>Temizleme sorusu genellikle şudur: <strong>Bu değer, temsil ettiğini söylediği şeyi doğru ve tutarlı biçimde gösteriyor mu?</strong></p>
+<p><strong>Veri dönüştürme</strong></p>
+<p>Veri dönüştürme, geçerli bir değeri analiz için daha uygun başka bir temsile taşır. Örneğin:</p>
+<ul>
+<li>sağa çarpık bir değişkene logaritmik dönüşüm uygulamak,</li>
+<li>tarihi ay, çeyrek veya hafta bilgisine dönüştürmek,</li>
+<li>sürekli bir değişkenden anlamlı kategoriler üretmek,</li>
+<li>bir değişkenin merkezini veya ölçeğini değiştirmek.</li>
+</ul>
+<p>Dönüştürme sorusu genellikle şudur: <strong>Bu bilgiyi analiz amacına daha uygun nasıl temsil edebiliriz?</strong></p>
+<p><strong>Modellemeye hazırlama</strong></p>
+<p>Modellemeye hazırlama, bir algoritmanın girdilerini üretirken tahmin sürecinin bütünlüğünü korur. Örneğin:</p>
+<ul>
+<li>eksik değerleri eğitim verisinden öğrenilen bir kuralla doldurmak,</li>
+<li>kategorik değişkenleri gösterge değişkenlerine çevirmek,</li>
+<li>eğitim verisinde hesaplanan ortalama ve standart sapmayla ölçeklendirmek,</li>
+<li>sonuç değişkenine ilişkin bilgiyi yordayıcılardan uzak tutmak.</li>
+</ul>
+<p>Modellemeye hazırlama sorusu şudur: <strong>Bu işlem yeni ve görülmemiş gözlemlere aynı biçimde uygulanabilir mi?</strong></p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">İpucu</span>Bir işlemin adı değil, gerekçesi önemlidir
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Bir sütundaki boşlukları kaldırmak açıkça temizlemedir. Yaşı gruplara ayırmak ise amaca göre dönüştürme veya özellik mühendisliği sayılabilir. Etiket konusunda katı olmak yerine işlemin neden yapıldığını ve sonucu nasıl etkilediğini açıklamak daha değerlidir.</p>
+</div>
+</div>
+</section>
+<section id="küçük-bir-ham-veri-örneği" class="level2" data-number="14.4">
+<h2 data-number="14.4" class="anchored" data-anchor-id="küçük-bir-ham-veri-örneği"><span class="header-section-number">14.4</span> Küçük Bir Ham Veri Örneği</h2>
+<p>Ön işleme sorunlarını küçük ve görünür tutmak için yapay bir müşteri tablosu kullanalım. Her satırın bir müşteriyi temsil ettiğini varsayıyoruz.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>ham_musteriler <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">musteri_id =</span> <span class="fu">c</span>(<span class="dv">101</span>, <span class="dv">102</span>, <span class="dv">103</span>, <span class="dv">104</span>, <span class="dv">105</span>, <span class="dv">105</span>, <span class="dv">106</span>, <span class="dv">107</span>),</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">yas =</span> <span class="fu">c</span>(<span class="st">"24"</span>, <span class="st">" 31"</span>, <span class="st">"bilinmiyor"</span>, <span class="st">"45"</span>, <span class="st">"38"</span>, <span class="st">"38"</span>, <span class="st">"-3"</span>, <span class="st">"52"</span>),</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">uyelik =</span> <span class="fu">c</span>(</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Standart"</span>, <span class="st">" standart "</span>, <span class="st">"Premium"</span>, <span class="st">"premium"</span>,</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"STANDART"</span>, <span class="st">"STANDART"</span>, <span class="st">"Premium"</span>, <span class="st">"Standart"</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">aylik_harcama =</span> <span class="fu">c</span>(<span class="dv">850</span>, <span class="dv">1250</span>, <span class="cn">NA</span>, <span class="dv">2100</span>, <span class="dv">980</span>, <span class="dv">980</span>, <span class="dv">760</span>, <span class="dv">25000</span>),</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">satin_aldi =</span> <span class="fu">c</span>(<span class="st">"evet"</span>, <span class="st">"hayır"</span>, <span class="st">"evet"</span>, <span class="st">"evet"</span>, <span class="st">"hayır"</span>, <span class="st">"hayır"</span>, <span class="st">"evet"</span>, <span class="st">"evet"</span>),</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>ham_musteriler</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":["musteri_id"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["yas"],"name":[2],"type":["chr"],"align":["left"]},{"label":["uyelik"],"name":[3],"type":["chr"],"align":["left"]},{"label":["aylik_harcama"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["satin_aldi"],"name":[5],"type":["chr"],"align":["left"]}],"data":[{"1":"101","2":"24","3":"Standart","4":"850","5":"evet"},{"1":"102","2":"31","3":"standart","4":"1250","5":"hayır"},{"1":"103","2":"bilinmiyor","3":"Premium","4":"NA","5":"evet"},{"1":"104","2":"45","3":"premium","4":"2100","5":"evet"},{"1":"105","2":"38","3":"STANDART","4":"980","5":"hayır"},{"1":"105","2":"38","3":"STANDART","4":"980","5":"hayır"},{"1":"106","2":"-3","3":"Premium","4":"760","5":"evet"},{"1":"107","2":"52","3":"Standart","4":"25000","5":"evet"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<p>Bu tablo küçüktür; fakat gerçek projelerde karşılaşılan birçok sorunu içerir:</p>
+<ul>
+<li><code>105</code> numaralı kayıt iki kez yer almaktadır.</li>
+<li><code>yas</code> sütunu sayılar içeriyor gibi görünmesine rağmen metin türündedir.</li>
+<li><code>bilinmiyor</code> eksikliği özel bir metinle temsil etmektedir.</li>
+<li><code>-3</code> alan bilgisine göre geçersiz bir yaş değeridir.</li>
+<li><code>uyelik</code> değerlerinde büyük-küçük harf ve boşluk farkları vardır.</li>
+<li><code>aylik_harcama</code> değişkeninde eksik ve çok yüksek bir değer vardır.</li>
+</ul>
+<p>İlk değerlendirmede önemli olan hemen düzeltmeye başlamak değil, sorunları görünür hale getirmektir.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(ham_musteriler)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>'data.frame':   8 obs. of  5 variables:
+ $ musteri_id   : num  101 102 103 104 105 105 106 107
+ $ yas          : chr  "24" " 31" "bilinmiyor" "45" ...
+ $ uyelik       : chr  "Standart" " standart " "Premium" "premium" ...
+ $ aylik_harcama: num  850 1250 NA 2100 980 980 760 25000
+ $ satin_aldi   : chr  "evet" "hayır" "evet" "evet" ...</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">degisken =</span> <span class="fu">names</span>(ham_musteriler),</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">sinif =</span> <span class="fu">vapply</span>(ham_musteriler, <span class="cf">function</span>(x) <span class="fu">class</span>(x)[<span class="dv">1</span>], <span class="fu">character</span>(<span class="dv">1</span>)),</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">eksik_sayisi =</span> <span class="fu">vapply</span>(ham_musteriler, <span class="cf">function</span>(x) <span class="fu">sum</span>(<span class="fu">is.na</span>(x)), <span class="fu">integer</span>(<span class="dv">1</span>))</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["degisken"],"name":[1],"type":["chr"],"align":["left"]},{"label":["sinif"],"name":[2],"type":["chr"],"align":["left"]},{"label":["eksik_sayisi"],"name":[3],"type":["int"],"align":["right"]}],"data":[{"1":"musteri_id","2":"numeric","3":"0","_rn_":"musteri_id"},{"1":"yas","2":"character","3":"0","_rn_":"yas"},{"1":"uyelik","2":"character","3":"0","_rn_":"uyelik"},{"1":"aylik_harcama","2":"numeric","3":"1","_rn_":"aylik_harcama"},{"1":"satin_aldi","2":"character","3":"0","_rn_":"satin_aldi"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">duplicated</span>(ham_musteriler<span class="sc">$</span>musteri_id))</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1</code></pre>
+</div>
+</div>
+<p><code>str()</code> değişken türlerini görmemizi sağlar. İkinci çıktı her değişken için açıkça kodlanmış eksik değer sayısını verir. Son satır ise müşteri kimliğinin tekrar edip etmediğini denetler.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Dikkat</span><code>NA</code> saymak tek başına yeterli değildir
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Eksik değerler yalnızca <code>NA</code> olarak tutulmayabilir. <code>"bilinmiyor"</code>, <code>"-"</code>, <code>9999</code> veya boş metin gibi özel kodlar da eksikliği temsil edebilir. Bu kodların anlamı veri sözlüğü ve alan bilgisiyle doğrulanmalıdır.</p>
+</div>
+</div>
+</section>
+<section id="ham-veriden-hazır-veriye-genel-iş-akışı" class="level2" data-number="14.5">
+<h2 data-number="14.5" class="anchored" data-anchor-id="ham-veriden-hazır-veriye-genel-iş-akışı"><span class="header-section-number">14.5</span> Ham Veriden Hazır Veriye Genel İş Akışı</h2>
+<p>Ön işleme doğrusal görünse de uygulamada geri dönüşler içerir. Bir dönüşüm yeni bir kalite sorununu görünür kılabilir; bir aykırı gözlem incelemesi veri kaynağına dönmeyi gerektirebilir. Yine de aşağıdaki sıra sağlam bir başlangıç sunar.</p>
+<p><strong>1. Analiz birimini ve amacı tanımlayın</strong></p>
+<p>Önce her satırın neyi temsil ettiğini ve hangi soruya cevap arandığını belirleyin. Müşteri, işlem, ülke-yıl veya ölçüm düzeylerinin karıştırılması yanlış yinelenen kayıt kararlarına ve hatalı özetlere yol açabilir.</p>
+<p>Bu örnekte analiz birimi <strong>müşteri</strong>, benzersiz anahtar ise <code>musteri_id</code> değişkenidir. Amaç müşterilerin aylık harcama davranışını incelemek olsaydı yinelenen müşteri kimliği araştırılmalıydı. Her satır bir alışveriş işlemini temsil etseydi aynı kimliğin tekrarı doğal olabilirdi.</p>
+<p><strong>2. Ham veriyi değişmeden koruyun</strong></p>
+<p>Temizlenmiş sonucu ham nesnenin üzerine yazmak yerine yeni bir nesne oluşturmak daha güvenlidir. Böylece hangi değerin kaynaktan geldiği, hangisinin bir işlem sonucunda üretildiği ayırt edilebilir.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>calisma_musteriler <span class="ot">&lt;-</span> ham_musteriler</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Gerçek projelerde bu ilke dosya düzeyinde de uygulanır: kaynak dosya salt okunur kabul edilir; işlenmiş veri ayrı bir klasöre veya ayrı bir veri tabanına yazılır.</p>
+<p><strong>3. Veri profilini çıkarın</strong></p>
+<p>Satır ve sütun sayısı, değişken türleri, eksik değerler, benzersiz değerler ve temel dağılımlar incelenir. Amaç bütün olası sorunları tek komutla bulmak değil, veri hakkında sistematik sorular sormaktır.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(calisma_musteriler)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 8 5</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(calisma_musteriler)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "musteri_id"    "yas"           "uyelik"        "aylik_harcama"
+[5] "satin_aldi"   </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sort</span>(<span class="fu">unique</span>(calisma_musteriler<span class="sc">$</span>uyelik))</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] " standart " "Premium"    "STANDART"   "Standart"   "premium"   </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(calisma_musteriler<span class="sc">$</span>aylik_harcama)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
+    760     915     980    4560    1675   25000       1 </code></pre>
+</div>
+</div>
+<p>Profil çıkarma, daha sonraki kararlar için başlangıç değerleri sağlar. Örneğin temizlikten sonra satır sayısının neden azaldığını veya eksik değer sayısının neden değiştiğini bu başlangıçla karşılaştırabiliriz.</p>
+<p><strong>4. Açık tutarsızlıkları düzeltin</strong></p>
+<p>Şimdi yinelenen kaydı kaldırabilir, metinsel eksikliği <code>NA</code> olarak tanımlayabilir, yaşı sayısal türe dönüştürebilir ve üyelik adlarını standartlaştırabiliriz.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>temiz_musteriler <span class="ot">&lt;-</span> calisma_musteriler <span class="sc">|&gt;</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>(musteri_id, <span class="at">.keep_all =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">yas =</span> <span class="fu">trimws</span>(yas),</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">yas =</span> <span class="fu">na_if</span>(yas, <span class="st">"bilinmiyor"</span>),</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">yas =</span> <span class="fu">as.numeric</span>(yas),</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">yas =</span> <span class="fu">if_else</span>(yas <span class="sc">&lt;</span> <span class="dv">0</span>, <span class="cn">NA_real_</span>, yas),</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">uyelik =</span> <span class="fu">trimws</span>(<span class="fu">tolower</span>(uyelik)),</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">uyelik =</span> <span class="fu">recode</span>(</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>      uyelik,</span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>      <span class="st">"standart"</span> <span class="ot">=</span> <span class="st">"Standart"</span>,</span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>      <span class="st">"premium"</span> <span class="ot">=</span> <span class="st">"Premium"</span></span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>temiz_musteriler</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":["musteri_id"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["yas"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["uyelik"],"name":[3],"type":["chr"],"align":["left"]},{"label":["aylik_harcama"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["satin_aldi"],"name":[5],"type":["chr"],"align":["left"]}],"data":[{"1":"101","2":"24","3":"Standart","4":"850","5":"evet"},{"1":"102","2":"31","3":"Standart","4":"1250","5":"hayır"},{"1":"103","2":"NA","3":"Premium","4":"NA","5":"evet"},{"1":"104","2":"45","3":"Premium","4":"2100","5":"evet"},{"1":"105","2":"38","3":"Standart","4":"980","5":"hayır"},{"1":"106","2":"NA","3":"Premium","4":"760","5":"evet"},{"1":"107","2":"52","3":"Standart","4":"25000","5":"evet"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<p>Bu kod teknik olarak çalışır; fakat her satırı bir karar içerir. <code>musteri_id</code> için ilk kaydı korumamız, iki kaydın gerçekten aynı olduğunu doğruladığımız varsayımına dayanır. Negatif yaşı <code>NA</code> yapmak da değerin kaynaktan düzeltilemediği varsayımına dayanır. Gerçek bir projede bu kararlar veri sahibiyle ve veri sözlüğüyle doğrulanmalıdır.</p>
+<p><strong>5. Şüpheli gözlemleri işaretleyin</strong></p>
+<p>Olağan dışı değerleri doğrudan silmek yerine önce işaretlemek, incelemeyi ve alternatif analizleri kolaylaştırır.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>temiz_musteriler <span class="ot">&lt;-</span> temiz_musteriler <span class="sc">|&gt;</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">harcama_inceleme =</span> aylik_harcama <span class="sc">&gt;</span> <span class="dv">10000</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>temiz_musteriler <span class="sc">|&gt;</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(harcama_inceleme <span class="sc">%in%</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":["musteri_id"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["yas"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["uyelik"],"name":[3],"type":["chr"],"align":["left"]},{"label":["aylik_harcama"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["satin_aldi"],"name":[5],"type":["chr"],"align":["left"]},{"label":["harcama_inceleme"],"name":[6],"type":["lgl"],"align":["right"]}],"data":[{"1":"107","2":"52","3":"Standart","4":"25000","5":"evet","6":"TRUE"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<p>Buradaki <code>10000</code> sınırı yalnızca örnek amaçlıdır. Gerçek uygulamada iş kuralı, ölçüm sınırı, dağılım veya sağlam istatistikler gibi bir gerekçeye dayanmalıdır. <code>25000</code> değerinin sıra dışı olması onun hatalı olduğunu kanıtlamaz.</p>
+<p><strong>6. Analiz amacına uygun dönüşümleri planlayın</strong></p>
+<p>Aylık harcama dağılımı güçlü biçimde sağa çarpıksa <code>log1p()</code> dönüşümü düşünülebilir. Bu fonksiyon <code>log(1 + x)</code> hesapladığı için sıfır değerlerinde de tanımlıdır.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>temiz_musteriler <span class="ot">&lt;-</span> temiz_musteriler <span class="sc">|&gt;</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">log_harcama =</span> <span class="fu">log1p</span>(aylik_harcama)</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>temiz_musteriler <span class="sc">|&gt;</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(musteri_id, aylik_harcama, log_harcama)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":["musteri_id"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["aylik_harcama"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["log_harcama"],"name":[3],"type":["dbl"],"align":["right"]}],"data":[{"1":"101","2":"850","3":"6.746412"},{"1":"102","2":"1250","3":"7.131699"},{"1":"103","2":"NA","3":"NA"},{"1":"104","2":"2100","3":"7.650169"},{"1":"105","2":"980","3":"6.888572"},{"1":"106","2":"760","3":"6.634633"},{"1":"107","2":"25000","3":"10.126671"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<p>Ancak dönüşüm otomatik bir zorunluluk değildir. Kullanılacak yöntem, yorumlama ihtiyacı ve analiz varsayımları birlikte değerlendirilmelidir.</p>
+<p><strong>7. Sonucu doğrulayın</strong></p>
+<p>Ön işleme, kodun hatasız tamamlanmasıyla bitmez. Beklenen kısıtları sınayan kontroller eklenmelidir.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">stopifnot</span>(<span class="sc">!</span><span class="fu">anyDuplicated</span>(temiz_musteriler<span class="sc">$</span>musteri_id))</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">stopifnot</span>(<span class="fu">all</span>(<span class="fu">is.na</span>(temiz_musteriler<span class="sc">$</span>yas) <span class="sc">|</span> temiz_musteriler<span class="sc">$</span>yas <span class="sc">&gt;=</span> <span class="dv">0</span>))</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="fu">stopifnot</span>(<span class="fu">all</span>(temiz_musteriler<span class="sc">$</span>uyelik <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"Standart"</span>, <span class="st">"Premium"</span>)))</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p><code>stopifnot()</code> içindeki koşullardan biri sağlanmazsa işlem hata vererek durur. Bu tür kontroller, veri kaynağı değiştiğinde sessizce yanlış sonuç üretme riskini azaltır.</p>
+<p><strong>8. Kararları belgeleyin</strong></p>
+<p>En azından şu bilgiler kaydedilmelidir:</p>
+<ul>
+<li>kaynak veri ve alındığı tarih,</li>
+<li>analiz birimi ve benzersiz anahtarlar,</li>
+<li>eksik değer kodları,</li>
+<li>düzeltilen veya çıkarılan kayıtların gerekçesi,</li>
+<li>dönüşüm ve ölçeklendirme kuralları,</li>
+<li>doğrulama kontrolleri,</li>
+<li>kullanılan paket ve kod sürümleri.</li>
+</ul>
+<p>Kod ne yapıldığını gösterebilir; fakat neden yapıldığını her zaman açıklamaz. Bu nedenle kısa yorumlar, veri sözlüğü ve karar günlüğü ön işleme sürecinin parçasıdır.</p>
+</section>
+<section id="ön-işleme-bir-tarif-değildir" class="level2" data-number="14.6">
+<h2 data-number="14.6" class="anchored" data-anchor-id="ön-işleme-bir-tarif-değildir"><span class="header-section-number">14.6</span> Ön İşleme Bir Tarif Değildir</h2>
+<p>Aynı sorun farklı bağlamlarda farklı çözümler gerektirebilir. Eksik bir gelir değeri betimsel bir tabloda ilgili hesaplamadan çıkarılabilir; tahmin modelinde imputasyon gerektirebilir; araştırma tasarımında ise veri toplama sürecinin yeniden incelenmesini zorunlu kılabilir.</p>
+<p>Bir yöntem seçmeden önce şu sorular sorulmalıdır:</p>
+<ul>
+<li>Değer neden eksik veya sıra dışı olabilir?</li>
+<li>Müdahale hangi gözlemleri daha fazla etkiliyor?</li>
+<li>İşlem dağılımı, varyansı veya değişkenler arası ilişkiyi değiştiriyor mu?</li>
+<li>Sonuçlar özgün ölçekte yorumlanabilecek mi?</li>
+<li>Aynı kural yeni veriye uygulanabilecek mi?</li>
+<li>Farklı makul kararlar sonucu değiştiriyor mu?</li>
+</ul>
+<p>Son soru <strong>duyarlılık analizi</strong> fikrine götürür. Örneğin aykırı gözlemi koruyan ve dışarıda bırakan iki analiz benzer sonuç veriyorsa kararın etkisi sınırlı olabilir. Sonuçlar önemli ölçüde değişiyorsa bu fark raporlanmalıdır.</p>
+</section>
+<section id="veri-sızıntısına-ilk-bakış" class="level2" data-number="14.7">
+<h2 data-number="14.7" class="anchored" data-anchor-id="veri-sızıntısına-ilk-bakış"><span class="header-section-number">14.7</span> Veri Sızıntısına İlk Bakış</h2>
+<p>Bir tahmin problemi kurduğumuzu ve veriyi eğitim ile test kümelerine ayırdığımızı düşünelim. Test kümesi, modelin daha önce görmediği verideki performansını temsil etmelidir. Test verisinden alınan bir bilgi eğitim sürecine taşınırsa <strong>veri sızıntısı</strong> (<em>data leakage</em>) oluşabilir.</p>
+<p>Örneğin bir değişkeni standartlaştırmak için bütün veri setinin ortalamasını kullanmak masum görünebilir. Ancak bütün veri seti test gözlemlerini de içeriyorsa eğitim verisi test dağılımı hakkında bilgi edinmiş olur.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>egitim_harcama <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">800</span>, <span class="dv">900</span>, <span class="dv">1000</span>, <span class="dv">1100</span>, <span class="dv">1200</span>)</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>test_harcama <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1300</span>, <span class="dv">1500</span>)</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>tum_veri_ortalamasi <span class="ot">&lt;-</span> <span class="fu">mean</span>(<span class="fu">c</span>(egitim_harcama, test_harcama))</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>egitim_ortalamasi <span class="ot">&lt;-</span> <span class="fu">mean</span>(egitim_harcama)</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">tum_veri_ortalamasi =</span> tum_veri_ortalamasi,</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">egitim_ortalamasi =</span> egitim_ortalamasi</span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>tum_veri_ortalamasi   egitim_ortalamasi 
+           1114.286            1000.000 </code></pre>
+</div>
+</div>
+<p>Doğru yaklaşım, ortalama gibi veriden <strong>öğrenilen</strong> değerleri yalnızca eğitim kümesinden hesaplamak ve aynı değeri test kümesine uygulamaktır.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>egitim_merkezli <span class="ot">&lt;-</span> egitim_harcama <span class="sc">-</span> egitim_ortalamasi</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>test_merkezli <span class="ot">&lt;-</span> test_harcama <span class="sc">-</span> egitim_ortalamasi</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>egitim_merkezli</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] -200 -100    0  100  200</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>test_merkezli</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 300 500</code></pre>
+</div>
+</div>
+<p>Bu ilke yalnızca ölçeklendirme için geçerli değildir. Medyanla imputasyon, aykırı değer sınırı belirleme, kategori birleştirme ve özellik seçimi gibi veriden öğrenilen adımlar da eğitim kümesi içinde kurulmalıdır.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Dikkat</span>Önce böl, sonra öğren
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Bir ön işleme adımı veriden bir sayı, eşik, kategori veya ilişki öğreniyorsa modelleme iş akışında bu adım eğitim ve test ayrımından sonra kurulmalıdır. Veri sızıntısının türlerini ve güvenli iş akışlarını Bölüm III’ün son bölümünde ayrıntılı olarak ele alacağız.</p>
+</div>
+</div>
+</section>
+<section id="tekrar-üretilebilir-bir-ön-işleme-düzeni" class="level2" data-number="14.8">
+<h2 data-number="14.8" class="anchored" data-anchor-id="tekrar-üretilebilir-bir-ön-işleme-düzeni"><span class="header-section-number">14.8</span> Tekrar Üretilebilir Bir Ön İşleme Düzeni</h2>
+<p>Ön işleme kodunu tek ve uzun bir zincire dönüştürmek her zaman iyi bir fikir değildir. Aşamaları anlamlı nesnelerle ayırmak denetimi kolaylaştırır:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>veri_ham <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"data/raw/veri.csv"</span>)</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>veri_temiz <span class="ot">&lt;-</span> veri_ham <span class="sc">|&gt;</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># açık hata ve tutarsızlıkları düzelt</span></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>  ...</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>veri_hazir <span class="ot">&lt;-</span> veri_temiz <span class="sc">|&gt;</span></span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>  <span class="co"># analiz amacına uygun dönüşümleri uygula</span></span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>  ...</span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Beklenen veri kurallarını doğrula.</span></span>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a><span class="fu">stopifnot</span>(...)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Bu şema gerçek kod değildir; düzenleme ilkesini gösterir. Nesne adları işlemin aşamasını anlatır, ham veri korunur ve doğrulama kontrolleri iş akışına dahil edilir.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">İpucu</span>Satır sayısını izleyin
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Filtreleme, yinelenen kayıt temizliği ve birleştirme işlemlerinden sonra satır sayısını kontrol edin. Beklenmeyen satır kaybı veya artışı, ön işleme hatalarının en erken işaretlerinden biridir.</p>
+</div>
+</div>
+</section>
+<section id="bölüm-iii-yol-haritası" class="level2" data-number="14.9">
+<h2 data-number="14.9" class="anchored" data-anchor-id="bölüm-iii-yol-haritası"><span class="header-section-number">14.9</span> Bölüm III Yol Haritası</h2>
+<p>Bu girişin ardından veri ön işlemenin temel sorunlarını ayrı bölümlerde ele alacağız:</p>
+<ol type="1">
+<li><strong>Eksik Veriler ve İmputasyon:</strong> Eksiklik örüntüleri, MCAR/MAR/MNAR mekanizmaları, silme yöntemleri, basit ve gelişmiş imputasyon yaklaşımları.</li>
+<li><strong>Aykırı Gözlemler:</strong> Aykırılığı tanımlama, görsel ve istatistiksel belirleme, alan bilgisiyle değerlendirme ve sağlam yöntemler.</li>
+<li><strong>Veri Dönüşümleri:</strong> Dağılım, varyans ve ilişki yapısını uygun hale getiren logaritmik, karekök ve güç dönüşümleri.</li>
+<li><strong>Ölçeklendirme:</strong> Normalizasyon, standardizasyon ve robust scaling yöntemleri ile bunların algoritmalar üzerindeki etkileri.</li>
+<li><strong>Özellik Mühendisliğine Giriş:</strong> Mevcut değişkenlerden anlamlı ve modele aktarılabilir yeni özellikler üretme.</li>
+<li><strong>Veri Sızıntısı ve Doğru Ön İşleme İş Akışı:</strong> Eğitim/test ayrımı, yeniden örnekleme içinde ön işleme ve yeni veriye güvenli uygulama.</li>
+</ol>
+<p>Bu sıra tesadüfi değildir. Önce verideki kalite sorunlarını tanıyacak, sonra temsil ve ölçek kararlarına geçecek, en sonunda bütün adımları sızıntısız bir modelleme iş akışında birleştireceğiz.</p>
+</section>
+<section id="sık-yapılan-hatalar" class="level2" data-number="14.10">
+<h2 data-number="14.10" class="anchored" data-anchor-id="sık-yapılan-hatalar"><span class="header-section-number">14.10</span> Sık Yapılan Hatalar</h2>
+<p><strong>Ham verinin üzerine yazmak</strong></p>
+<p>Ham nesne değiştirildiğinde bir kararın sonucunu geri almak veya kaynak değerle karşılaştırmak zorlaşır. Ham veri korunmalı, işlenmiş sonuç yeni bir nesnede tutulmalıdır.</p>
+<p><strong>Sorunu anlamadan otomatik düzeltme yapmak</strong></p>
+<p>Her eksik değeri ortalamayla doldurmak veya her aykırı değeri silmek, yöntem seçimini verinin oluşum sürecinden koparır. Önce sorunun nedeni ve olası etkisi araştırılmalıdır.</p>
+<p><strong>Kodun çalışmasını doğruluk sanmak</strong></p>
+<p>Bir R komutunun hata vermemesi, üretilen verinin analitik olarak doğru olduğunu göstermez. Veri türleri, beklenen aralıklar, benzersiz anahtarlar ve satır sayıları ayrıca kontrol edilmelidir.</p>
+<p><strong>Bütün değişkenlere aynı işlemi uygulamak</strong></p>
+<p>Kimlik numarası sayısal görünse de ölçülebilir bir nicelik değildir. Benzer biçimde sıralı ve sırasız kategoriler aynı kodlama kararını gerektirmez. İşlemler değişkenin anlamına göre seçilmelidir.</p>
+<p><strong>Aykırı değeri hatalı değerle karıştırmak</strong></p>
+<p>Sıra dışı bir gözlem gerçek ve önemli olabilir. Silme kararı yalnızca kutu grafiği veya sabit bir eşik temelinde verilmemelidir.</p>
+<p><strong>Analizden sonra ön işleme kararı vermek</strong></p>
+<p>İstenen sonucu elde etmek için kuralları sonuçlara baktıktan sonra değiştirmek analizin güvenilirliğini azaltır. Mümkün olduğunca kurallar önceden belirlenmeli; değişiklikler gerekçesiyle raporlanmalıdır.</p>
+<p><strong>Test verisini ön işleme kararlarına dahil etmek</strong></p>
+<p>Bütün veri üzerinden imputasyon değeri, ölçek veya eşik hesaplamak performans tahminini iyimser hale getirebilir. Veriden öğrenilen adımlar yalnızca eğitim verisiyle kurulmalıdır.</p>
+</section>
+<section id="egzersizler" class="level2" data-number="14.11">
+<h2 data-number="14.11" class="anchored" data-anchor-id="egzersizler"><span class="header-section-number">14.11</span> Egzersizler</h2>
+<p><strong>Egzersiz 1</strong></p>
+<p>Kendi cümlelerinizle veri temizleme, veri dönüştürme ve modellemeye hazırlama arasındaki farkı açıklayın. Her biri için bir örnek verin.</p>
+<p><strong>Egzersiz 2</strong></p>
+<p><code>ham_musteriler</code> verisinde bulunan en az beş kalite sorununu belirleyin. Her sorun için “hata”, “tutarsızlık”, “eksiklik” veya “inceleme gerektiren değer” sınıflarından uygun olanı belirtin.</p>
+<p><strong>Egzersiz 3</strong></p>
+<p><code>ham_musteriler</code> verisinde her sütunun benzersiz değer sayısını hesaplayın. Kimlik değişkenindeki benzersiz değer sayısı ile satır sayısını karşılaştırın.</p>
+<p><strong>Egzersiz 4</strong></p>
+<p><code>temiz_musteriler</code> içinde eksik yaş ve eksik aylık harcama sayılarını hesaplayın. Bu iki eksikliğin aynı nedenle oluştuğunu söyleyebilir misiniz? Neden?</p>
+<p><strong>Egzersiz 5</strong></p>
+<p>Yaş değişkeni için <code>18</code> ile <code>100</code> arasındaki değerleri geçerli kabul eden bir mantıksal kontrol yazın. Eksik değerlerin bu kontrolde hata oluşturmamasına dikkat edin.</p>
+<p><strong>Egzersiz 6</strong></p>
+<p>Aylık harcaması <code>10000</code> değerinden büyük gözlemi silmek ile işaretlemek arasındaki farkı açıklayın. Hangi ek bilgileri görmeden silme kararı vermemelisiniz?</p>
+<p><strong>Egzersiz 7</strong></p>
+<p><code>egitim_harcama</code> vektörünün standart sapmasını yalnızca eğitim verisinden hesaplayın. Eğitim ve test değerlerini bu ortalama ve standart sapmayla standardize edin.</p>
+<p><strong>Egzersiz 8</strong></p>
+<p>Aşağıdaki iki işlemden hangileri modelleme bağlamında veriden bir kural öğrenir? Gerekçenizi açıklayın.</p>
+<ul>
+<li>metin değerlerinin başındaki ve sonundaki boşlukları kaldırmak,</li>
+<li>eksik gelirleri medyanla doldurmak,</li>
+<li>yaşın negatif olup olmadığını kontrol etmek,</li>
+<li>en sık görülen kategorileri belirleyip diğerlerini “Diğer” altında toplamak.</li>
+</ul>
+</section>
+<section id="egzersiz-çözümleri" class="level2" data-number="14.12">
+<h2 data-number="14.12" class="anchored" data-anchor-id="egzersiz-çözümleri"><span class="header-section-number">14.12</span> Egzersiz Çözümleri</h2>
+<p><strong>Çözüm 1</strong></p>
+<p>Veri temizleme hata ve tutarsızlıkları giderir; örneğin <code>" premium "</code> değerini <code>"Premium"</code> biçimine getirmek. Veri dönüştürme geçerli bilgiyi farklı bir temsile taşır; örneğin harcamanın logaritmasını almak. Modellemeye hazırlama algoritmanın kullanacağı girdileri güvenli biçimde üretir; örneğin eğitim verisinden öğrenilen ortalama ve standart sapmayla ölçeklendirmek.</p>
+<p><strong>Çözüm 2</strong></p>
+<p>Örnek bir sınıflandırma şöyledir:</p>
+<ul>
+<li>yinelenen <code>musteri_id</code>: analiz birimine bağlı tutarsızlık,</li>
+<li><code>yas</code> sütununun metin olması: tür tutarsızlığı,</li>
+<li><code>"bilinmiyor"</code>: özel kodlanmış eksiklik,</li>
+<li>negatif yaş: alan kuralına göre hata,</li>
+<li>farklı yazılan üyelik adları: kategori tutarsızlığı,</li>
+<li><code>NA</code> aylık harcama: açık eksiklik,</li>
+<li><code>25000</code> aylık harcama: inceleme gerektiren değer.</li>
+</ul>
+<p>Son sınıflandırma veri kaynağı ve analiz birimi doğrulandıktan sonra yapılmalıdır.</p>
+<p><strong>Çözüm 3</strong></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">vapply</span>(ham_musteriler, <span class="cf">function</span>(x) <span class="fu">length</span>(<span class="fu">unique</span>(x)), <span class="fu">integer</span>(<span class="dv">1</span>))</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   musteri_id           yas        uyelik aylik_harcama    satin_aldi 
+            7             7             5             7             2 </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(ham_musteriler)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 8</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span>(<span class="fu">unique</span>(ham_musteriler<span class="sc">$</span>musteri_id))</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 7</code></pre>
+</div>
+</div>
+<p>Kimlik sayısının satır sayısından küçük olması en az bir kimliğin tekrar ettiğini gösterir. Bunun hata olup olmadığı analiz birimine bağlıdır.</p>
+<p><strong>Çözüm 4</strong></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>temiz_musteriler <span class="sc">|&gt;</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">eksik_yas =</span> <span class="fu">sum</span>(<span class="fu">is.na</span>(yas)),</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">eksik_harcama =</span> <span class="fu">sum</span>(<span class="fu">is.na</span>(aylik_harcama))</span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":["eksik_yas"],"name":[1],"type":["int"],"align":["right"]},{"label":["eksik_harcama"],"name":[2],"type":["int"],"align":["right"]}],"data":[{"1":"2","2":"1"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<p>Yalnızca sayılara bakarak iki eksikliğin aynı nedenle oluştuğu söylenemez. Yaş eksikliklerinden biri özel bir koddan, diğeri geçersiz bir değerin <code>NA</code> yapılmasından gelmiştir. Harcama eksikliğinin nedeni ise kaynak bilgisi olmadan bilinmez.</p>
+<p><strong>Çözüm 5</strong></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>temiz_musteriler <span class="sc">|&gt;</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">yas_gecerli =</span> <span class="fu">if_else</span>(</span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>      <span class="fu">is.na</span>(yas),</span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>      <span class="cn">NA</span>,</span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>      dplyr<span class="sc">::</span><span class="fu">between</span>(yas, <span class="dv">18</span>, <span class="dv">100</span>)</span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(musteri_id, yas, yas_gecerli)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":["musteri_id"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["yas"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["yas_gecerli"],"name":[3],"type":["lgl"],"align":["right"]}],"data":[{"1":"101","2":"24","3":"TRUE"},{"1":"102","2":"31","3":"TRUE"},{"1":"103","2":"NA","3":"NA"},{"1":"104","2":"45","3":"TRUE"},{"1":"105","2":"38","3":"TRUE"},{"1":"106","2":"NA","3":"NA"},{"1":"107","2":"52","3":"TRUE"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<p>Burada <code>NA</code> değerler “geçerli yaş” olarak işaretlenmemiş, kontrol sonucu da eksik bırakılmıştır.</p>
+<p><strong>Çözüm 6</strong></p>
+<p>Silmek gözlemi sonraki bütün hesaplamalardan çıkarır; işaretlemek ise gözlemi koruyarak inceleme ve duyarlılık analizi yapmayı sağlar. Ölçüm birimi, veri giriş süreci, müşterinin gerçek işlem kayıtları, alan için makul üst sınır ve benzer gözlemler görülmeden yalnızca büyüklüğe dayanarak silme kararı verilmemelidir.</p>
+<p><strong>Çözüm 7</strong></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>egitim_sd <span class="ot">&lt;-</span> <span class="fu">sd</span>(egitim_harcama)</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>egitim_z <span class="ot">&lt;-</span> (egitim_harcama <span class="sc">-</span> egitim_ortalamasi) <span class="sc">/</span> egitim_sd</span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>test_z <span class="ot">&lt;-</span> (test_harcama <span class="sc">-</span> egitim_ortalamasi) <span class="sc">/</span> egitim_sd</span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>egitim_z</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] -1.2649111 -0.6324555  0.0000000  0.6324555  1.2649111</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>test_z</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1.897367 3.162278</code></pre>
+</div>
+</div>
+<p>Test verisinin kendi ortalaması veya standart sapması kullanılmamıştır. Yeni gözlemler eğitim verisinden öğrenilen kurala tabi tutulmuştur.</p>
+<p><strong>Çözüm 8</strong></p>
+<p>Boşluk kaldırma ve negatif yaş kontrolü önceden tanımlanmış sabit kurallardır. Medyanla doldurma, medyan değerini veriden öğrenir. Seyrek kategorileri “Diğer” altında toplamak da hangi kategorilerin sık olduğunu veriden öğrenir. Bu nedenle son iki kural modelleme sürecinde yalnızca eğitim verisi kullanılarak belirlenmelidir.</p>
+</section>
+<section id="bölüm-özeti" class="level2" data-number="14.13">
+<h2 data-number="14.13" class="anchored" data-anchor-id="bölüm-özeti"><span class="header-section-number">14.13</span> Bölüm Özeti</h2>
+<p>Veri ön işleme, ham veriyi mekanik olarak değiştiren tek bir komut değil; analiz amacına bağlı, gerekçelendirilmiş ve denetlenebilir kararlar bütünüdür. Veri temizleme hata ve tutarsızlıklara, veri dönüştürme temsil biçimine, modellemeye hazırlama ise algoritmanın güvenli biçimde kullanacağı girdilere odaklanır.</p>
+<p>Sağlam bir iş akışı analiz birimini tanımlar, ham veriyi korur, veri profilini çıkarır, sorunları görünür hale getirir, gerekli müdahaleleri uygular ve sonucu açık kontrollerle doğrular. Aykırı veya eksik bir gözleme müdahale etmeden önce oluşum sürecini anlamak; kodun çalışmasını analitik doğrulukla karıştırmamak gerekir.</p>
+<p>Modelleme bağlamında veriden öğrenilen bütün ön işleme kuralları eğitim verisiyle kurulmalı ve test ya da yeni veriye değişmeden uygulanmalıdır. Bu ilke, ilerleyen bölümlerde eksik veri, aykırı gözlem, dönüşüm, ölçeklendirme ve özellik mühendisliği yöntemlerini ortak bir çerçevede birleştirecektir.</p>
+
+
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="ref-kaufman2012" class="csl-entry" role="listitem">
+Kaufman, Shachar, Saharon Rosset, Claudia Perlich, ve Ori Stitelman. 2012. <span>“Leakage in Data Mining: Formulation, Detection, and Avoidance”</span>. <em>ACM Transactions on Knowledge Discovery from Data</em> 6 (4): 1-21. <a href="https://doi.org/10.1145/2382577.2382579">https://doi.org/10.1145/2382577.2382579</a>.
+</div>
+<div id="ref-kuhnJohnson2019" class="csl-entry" role="listitem">
+Kuhn, Max, ve Kjell Johnson. 2019. <em>Feature Engineering and Selection: A Practical Approach for Predictive Models</em>. CRC Press.
+</div>
+<div id="ref-kuhnSilge2022" class="csl-entry" role="listitem">
+Kuhn, Max, ve Julia Silge. 2022. <em>Tidy Modeling with <span>R</span></em>. O’Reilly Media. <a href="https://www.tmwr.org/">https://www.tmwr.org/</a>.
+</div>
+<div id="ref-tukey1977" class="csl-entry" role="listitem">
+Tukey, John W. 1977. <em>Exploratory Data Analysis</em>. Addison-Wesley.
+</div>
+<div id="ref-wickhamGrolemund2023" class="csl-entry" role="listitem">
+Wickham, Hadley, Mine Çetinkaya-Rundel, ve Garrett Grolemund. 2023. <em>R for Data Science</em>. 2. bs. O’Reilly Media. <a href="https://r4ds.hadley.nz/">https://r4ds.hadley.nz/</a>.
+</div>
+</div>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Kopyalandı");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Kopyalandı");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/mfatihtuzen\.github\.io\/r-programlama\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../../chapters/02-veri-manipulasyonu/data_join.html" class="pagination-link" aria-label="Veri Birleştirme">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Veri Birleştirme</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../../chapters/03-veri-on-isleme/missing_data_imputation.html" class="pagination-link" aria-label="Eksik Veriler ve İmputasyon">
+        <span class="nav-page-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Eksik Veriler ve İmputasyon</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>© 2026, <a href="https://www.linkedin.com/in/dr-m-fatih-t-2b2a4328/">Muhammed Fatih Tüzen</a></p>
+</div>   
+    <div class="nav-footer-center">
+
+<div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/MFatihTuzen/r-programlama/edit/main/chapters/03-veri-on-isleme/data_preprocessing.qmd" class="toc-action"><i class="bi bi-github"></i>Bu sayfayı düzenle</a></li><li><a href="https://github.com/MFatihTuzen/r-programlama/issues/new" class="toc-action"><i class="bi empty"></i>Sorun bildir</a></li></ul></div><div class="cookie-consent-footer"><a href="#" id="open_preferences_center">Cookie Preferences</a></div></div>
+    <div class="nav-footer-right">
+<p>Bu kitap <a href="https://quarto.org/">Quarto</a> ile hazırlanmıştır.</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+<script src="../../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

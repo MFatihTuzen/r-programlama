@@ -1,0 +1,1831 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="tr" xml:lang="tr"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="R programlama, veri analizi ve istatistiksel düşünme üzerine Türkçe açık kaynak kitap.">
+
+<title>17&nbsp; Veri Dönüşümleri – R Programlama</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../chapters/03-veri-on-isleme/scaling.html" rel="next">
+<link href="../../chapters/03-veri-on-isleme/outliers.html" rel="prev">
+<link href="../../images/favicon.png" rel="icon" type="image/png">
+<script src="../../site_libs/cookie-consent/cookie-consent.js"></script>
+<link href="../../site_libs/cookie-consent/cookie-consent.css" rel="stylesheet">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-bb62276ab45c84d9efd712f51ff97b5a.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-5a1953863e1f72ef3b996ef827f01ca7.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-bb62276ab45c84d9efd712f51ff97b5a.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-13239a396cb0d0c215efc9b545bec6ba.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-d3b478853a8d6d29a3ba9ced1f343c7a.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-13239a396cb0d0c215efc9b545bec6ba.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "Sonuç yok",
+    "search-matching-documents-text": "eşleşen belgeler",
+    "search-copy-link-title": "Aramak için bağlantıyı kopyalayın",
+    "search-hide-matches-text": "Ek eşleşmeleri gizle",
+    "search-more-match-text": "bu belgede bir tane daha eşleşme",
+    "search-more-matches-text": "bu belgede daha fazla eşleşme",
+    "search-clear-button-title": "Temizle",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "İptal et",
+    "search-submit-button-title": "Gönder",
+    "search-label": "Ara"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-X6J60MER5G"></script>
+
+<script type="text/plain" cookie-consent="tracking">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-X6J60MER5G', { 'anonymize_ip': true});
+</script>
+
+<script type="text/javascript" charset="UTF-8">
+document.addEventListener('DOMContentLoaded', function () {
+cookieconsent.run({
+  "notice_banner_type":"simple",
+  "consent_type":"express",
+  "palette":"light",
+  "language":"en",
+  "page_load_consent_levels":["strictly-necessary"],
+  "notice_banner_reject_button_hide":false,
+  "preferences_center_close_button_hide":false,
+  "website_name":""
+  ,
+"language":"tr"
+  });
+});
+</script> 
+  
+<style>html{ scroll-behavior: smooth; }</style>
+<link href="../../site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet">
+<script src="../../site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../../styles.css">
+<meta property="og:title" content="17&nbsp; Veri Dönüşümleri – R Programlama">
+<meta property="og:description" content="R programlama, veri analizi ve istatistiksel düşünme üzerine Türkçe açık kaynak kitap.">
+<meta property="og:image" content="https://mfatihtuzen.github.io/r-programlama/chapters/03-veri-on-isleme/data_transformations_files/figure-html/transform-original-distributions-1.png">
+<meta property="og:site_name" content="R Programlama">
+<meta property="og:image:height" content="960">
+<meta property="og:image:width" content="1344">
+<meta name="twitter:title" content="17&nbsp; Veri Dönüşümleri – R Programlama">
+<meta name="twitter:description" content="R programlama, veri analizi ve istatistiksel düşünme üzerine Türkçe açık kaynak kitap.">
+<meta name="twitter:image" content="https://mfatihtuzen.github.io/r-programlama/chapters/03-veri-on-isleme/data_transformations_files/figure-html/transform-original-distributions-1.png">
+<meta name="twitter:image-height" content="960">
+<meta name="twitter:image-width" content="1344">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="nav-sidebar floating quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Kenar çubuğunu değiştir" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../chapters/03-veri-on-isleme/data_preprocessing.html">III · Veri Ön İşleme</a></li><li class="breadcrumb-item"><a href="../../chapters/03-veri-on-isleme/data_transformations.html"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Veri Dönüşümleri</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Kenar çubuğunu değiştir" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Ara" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../../">R Programlama</a> 
+        <div class="sidebar-tools-main tools-wide">
+    <a href="https://github.com/MFatihTuzen/r-programlama" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+    <div class="dropdown">
+      <a href="" title="Share" id="quarto-navigation-tool-dropdown-0" class="quarto-navigation-tool dropdown-toggle px-1" data-bs-toggle="dropdown" aria-expanded="false" role="link" aria-label="Share"><i class="bi bi-share"></i></a>
+      <ul class="dropdown-menu" aria-labelledby="quarto-navigation-tool-dropdown-0">
+          <li>
+            <a class="dropdown-item sidebar-tools-main-item" href="https://twitter.com/intent/tweet?url=|url|">
+              <i class="bi bi-twitter pe-1"></i>
+            Twitter
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item sidebar-tools-main-item" href="https://www.linkedin.com/sharing/share-offsite/?url=|url|">
+              <i class="bi bi-linkedin pe-1"></i>
+            LinkedIn
+            </a>
+          </li>
+      </ul>
+    </div>
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Karanlık modu değiştir"><i class="bi"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Okuyucu modunu değiştir">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Ara"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Önsöz</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">I · R Programlamaya Giriş</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Bölümü değiştir">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/r_about.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">R Programlama Hakkında</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/R_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">R Çalışma Ortamı</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">R Temel Kullanımı ve İlk Komutlar</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/data_types.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Veri Tipleri ve Yapıları</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/functions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Fonksiyonlar</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/if_else_for.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Karar Yapıları ve Döngüler</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/date_time.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Tarih ve Zaman İşlemleri</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/strings.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Metin İşlemleri</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/apply.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Apply Ailesi</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/import_export.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Verilerin İçe ve Dışa Aktarılması</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">II · Veri Manipülasyonu</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Bölümü değiştir">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/02-veri-manipulasyonu/data_manipulation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Veri Manipülasyonu</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/02-veri-manipulasyonu/data_transformation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Veri Dönüştürme</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/02-veri-manipulasyonu/data_join.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Veri Birleştirme</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">III · Veri Ön İşleme</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Bölümü değiştir">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/03-veri-on-isleme/data_preprocessing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Veri Ön İşlemeye Giriş</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/03-veri-on-isleme/missing_data_imputation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Eksik Veriler ve İmputasyon</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/03-veri-on-isleme/outliers.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Aykırı Gözlemler</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/03-veri-on-isleme/data_transformations.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Veri Dönüşümleri</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/03-veri-on-isleme/scaling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Ölçeklendirme</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/03-veri-on-isleme/feature_engineering.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Özellik Mühendisliğine Giriş</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/03-veri-on-isleme/data_leakage.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Veri Sızıntısı ve Doğru Ön İşleme İş Akışı</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Kaynakça</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="2">
+    <h2 id="toc-title">İçindekiler</h2>
+   
+  <ul>
+  <li><a href="#proje-verisini-tanımak" id="toc-proje-verisini-tanımak" class="nav-link active" data-scroll-target="#proje-verisini-tanımak"><span class="header-section-number">17.1</span> Proje Verisini Tanımak</a></li>
+  <li><a href="#dönüşümden-önce-hangi-soruyu-soruyoruz" id="toc-dönüşümden-önce-hangi-soruyu-soruyoruz" class="nav-link" data-scroll-target="#dönüşümden-önce-hangi-soruyu-soruyoruz"><span class="header-section-number">17.2</span> Dönüşümden Önce Hangi Soruyu Soruyoruz?</a></li>
+  <li><a href="#çarpıklığı-ölçmek-ve-görmek" id="toc-çarpıklığı-ölçmek-ve-görmek" class="nav-link" data-scroll-target="#çarpıklığı-ölçmek-ve-görmek"><span class="header-section-number">17.3</span> Çarpıklığı Ölçmek ve Görmek</a></li>
+  <li><a href="#logaritmik-dönüşüm" id="toc-logaritmik-dönüşüm" class="nav-link" data-scroll-target="#logaritmik-dönüşüm"><span class="header-section-number">17.4</span> Logaritmik Dönüşüm</a></li>
+  <li><a href="#sıfır-ve-negatif-değerler" id="toc-sıfır-ve-negatif-değerler" class="nav-link" data-scroll-target="#sıfır-ve-negatif-değerler"><span class="header-section-number">17.5</span> Sıfır ve Negatif Değerler</a></li>
+  <li><a href="#karekök-dönüşümü" id="toc-karekök-dönüşümü" class="nav-link" data-scroll-target="#karekök-dönüşümü"><span class="header-section-number">17.6</span> Karekök Dönüşümü</a></li>
+  <li><a href="#ters-dönüşüm" id="toc-ters-dönüşüm" class="nav-link" data-scroll-target="#ters-dönüşüm"><span class="header-section-number">17.7</span> Ters Dönüşüm</a></li>
+  <li><a href="#güç-dönüşümleri" id="toc-güç-dönüşümleri" class="nav-link" data-scroll-target="#güç-dönüşümleri"><span class="header-section-number">17.8</span> Güç Dönüşümleri</a></li>
+  <li><a href="#ilişkiyi-dönüştürmek" id="toc-ilişkiyi-dönüştürmek" class="nav-link" data-scroll-target="#ilişkiyi-dönüştürmek"><span class="header-section-number">17.9</span> İlişkiyi Dönüştürmek</a></li>
+  <li><a href="#model-katsayılarını-yorumlamak" id="toc-model-katsayılarını-yorumlamak" class="nav-link" data-scroll-target="#model-katsayılarını-yorumlamak"><span class="header-section-number">17.10</span> Model Katsayılarını Yorumlamak</a></li>
+  <li><a href="#geri-dönüşüm" id="toc-geri-dönüşüm" class="nav-link" data-scroll-target="#geri-dönüşüm"><span class="header-section-number">17.11</span> Geri Dönüşüm</a></li>
+  <li><a href="#dönüşüm-ve-standardizasyon-aynı-şey-değildir" id="toc-dönüşüm-ve-standardizasyon-aynı-şey-değildir" class="nav-link" data-scroll-target="#dönüşüm-ve-standardizasyon-aynı-şey-değildir"><span class="header-section-number">17.12</span> Dönüşüm ve Standardizasyon Aynı Şey Değildir</a></li>
+  <li><a href="#dönüşüm-kararını-değerlendirmek" id="toc-dönüşüm-kararını-değerlendirmek" class="nav-link" data-scroll-target="#dönüşüm-kararını-değerlendirmek"><span class="header-section-number">17.13</span> Dönüşüm Kararını Değerlendirmek</a></li>
+  <li><a href="#modelleme-ve-veri-sızıntısı" id="toc-modelleme-ve-veri-sızıntısı" class="nav-link" data-scroll-target="#modelleme-ve-veri-sızıntısı"><span class="header-section-number">17.14</span> Modelleme ve Veri Sızıntısı</a></li>
+  <li><a href="#sık-yapılan-hatalar" id="toc-sık-yapılan-hatalar" class="nav-link" data-scroll-target="#sık-yapılan-hatalar"><span class="header-section-number">17.15</span> Sık Yapılan Hatalar</a></li>
+  <li><a href="#egzersizler" id="toc-egzersizler" class="nav-link" data-scroll-target="#egzersizler"><span class="header-section-number">17.16</span> Egzersizler</a></li>
+  <li><a href="#egzersiz-çözümleri" id="toc-egzersiz-çözümleri" class="nav-link" data-scroll-target="#egzersiz-çözümleri"><span class="header-section-number">17.17</span> Egzersiz Çözümleri</a></li>
+  <li><a href="#bölüm-özeti" id="toc-bölüm-özeti" class="nav-link" data-scroll-target="#bölüm-özeti"><span class="header-section-number">17.18</span> Bölüm Özeti</a></li>
+  <li><a href="#kaynaklar-ve-ek-okuma" id="toc-kaynaklar-ve-ek-okuma" class="nav-link" data-scroll-target="#kaynaklar-ve-ek-okuma"><span class="header-section-number">17.19</span> Kaynaklar ve Ek Okuma</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/MFatihTuzen/r-programlama/edit/main/chapters/03-veri-on-isleme/data_transformations.qmd" class="toc-action"><i class="bi bi-github"></i>Bu sayfayı düzenle</a></li><li><a href="https://github.com/MFatihTuzen/r-programlama/issues/new" class="toc-action"><i class="bi empty"></i>Sorun bildir</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../chapters/03-veri-on-isleme/data_preprocessing.html">III · Veri Ön İşleme</a></li><li class="breadcrumb-item"><a href="../../chapters/03-veri-on-isleme/data_transformations.html"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Veri Dönüşümleri</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span id="sec-preprocessing-transformations" class="quarto-section-identifier"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Veri Dönüşümleri</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Bir veri değişkeni doğru ölçülmüş ve eksiksiz olabilir; yine de yapmak istediğimiz analiz için uygun bir biçimde temsil edilmiyor olabilir. Ülke nüfusu, GSYH, gelir, firma büyüklüğü ve emisyon gibi değişkenlerde birkaç gözlem diğerlerinden yüzlerce veya binlerce kat büyük olabilir. Bu durumda mutlak farklara dayalı özgün ölçek, verideki yapının yalnızca bir yönünü gösterir.</p>
+<p><strong>Veri dönüşümü</strong>, bir değişkenin her değerine belirli bir matematiksel işlev uygulayarak yeni bir temsil üretmektir:</p>
+<p><span class="math display">\[
+x_i^* = f(x_i)
+\]</span></p>
+<p>Bir dönüşüm, gözlemler arasındaki karşılaştırmanın anlamını da değiştirir. (f) kesin artansa sıralama korunur: (x_i&lt;x_j) ise (f(x_i)&lt;f(x_j)). Ancak farklar ve uzaklıklar genellikle korunmaz. Logaritmada (1000-100=900) ile (100-10=90) farklı mutlak farklarken her ikisi de on katlık oranı temsil eder ve log ölçekte aynı uzaklığa dönüşür. Bu nedenle dönüşüm “aynı verinin yalnızca başka görünümü” değildir; modelin hangi farkları büyük, hangilerini küçük sayacağını belirler.</p>
+<p>Dönüşümün gerekliliği değişkenin tek başına normal görünmesine indirgenemez. Doğrusal regresyonda normal dağılım varsayımı, yordayıcının marjinal dağılımı için değil, model koşullu artıklarının dağılımı için kullanılır. Benzer biçimde sabit varyans varsayımı da (X)’in değil, (Y)’nin (X) verildiğindeki saçılımıyla ilgilidir. Yordayıcıyı, sonucu veya her ikisini dönüştürmenin farklı bilimsel sorular üretebileceği bu yüzden gözden kaçırılmamalıdır <span class="citation" data-cites="gelmanHillVehtari2020 hastie2009">(<a href="../../references.html#ref-gelmanHillVehtari2020" role="doc-biblioref">Gelman vd. 2020</a>; <a href="../../references.html#ref-hastie2009" role="doc-biblioref">Hastie vd. 2009</a>)</span>.</p>
+<p>Olasılık modeli kurulduğunda dönüşümün bir başka yönü daha vardır. Sürekli bir değişken (Y), (Z=f(Y)) biçiminde dönüştürülürse yoğunluk yalnızca yeni değerler yerine konularak elde edilmez; dönüşümün yerel sıkıştırma/genişletmesini gösteren Jacobian terimi de gerekir:</p>
+<p><span class="math display">\[
+p_Y(y)=p_Z\{f(y)\}\left|\frac{df(y)}{dy}\right|.
+\]</span></p>
+<p>Box–Cox yönteminin () parametresini olabilirlikle seçerken bu terimi içermesinin nedeni budur. Basit grafik veya özellik üretiminde Jacobian’ı elle hesaplamayız; fakat dönüşümün istatistiksel modeli gerçekten değiştirdiğini anlamak için bu kuramsal bağlantı önemlidir.</p>
+<p>Dönüşümün amacı veriyi “daha güzel” göstermek değildir. Amaç, analiz sorusuna göre şu ihtiyaçlardan birini karşılamak olabilir:</p>
+<ul>
+<li>çarpımsal farkları daha anlaşılır hale getirmek,</li>
+<li>sağa çarpık dağılımın büyük değerler tarafından baskılanmasını azaltmak,</li>
+<li>değişen varyansı daha dengeli hale getirmek,</li>
+<li>doğrusal olmayan bir ilişkiyi daha basit temsil etmek,</li>
+<li>model artıklarının varsayımlara daha uygun davranmasını sağlamak,</li>
+<li>sayısal hesaplamayı daha kararlı hale getirmek.</li>
+</ul>
+<p>Bu bölümde dönüşümün neden, ne zaman ve nasıl kullanıldığını; özgün ölçekteki yorumun nasıl korunacağını ele alacağız.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Önemli</span>Dönüşüm bir veri düzeltmesi değildir
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Logaritma almak yanlış bir değeri doğru yapmaz. Önce veri türü, birim, eksiklik ve olası hatalar kontrol edilir. Dönüşüm yalnızca geçerli değerlerin temsil biçimini değiştirir.</p>
+</div>
+</div>
+<section id="proje-verisini-tanımak" class="level2" data-number="17.1">
+<h2 data-number="17.1" class="anchored" data-anchor-id="proje-verisini-tanımak"><span class="header-section-number">17.1</span> Proje Verisini Tanımak</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyr)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>countries <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">"data/countries.csv"</span>,</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">show_col_types =</span> <span class="cn">FALSE</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>indicator_dictionary <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="st">"data/indicator_dictionary.csv"</span>,</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">show_col_types =</span> <span class="cn">FALSE</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Kişi başına GSYH göstergesinin birimini ve kaynağını veri sözlüğünden doğrulayalım.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>indicator_dictionary <span class="sc">|&gt;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(indicator <span class="sc">%in%</span> <span class="fu">c</span>(</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"gdp_per_capita_usd"</span>,</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"population_total"</span>,</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"co2_per_capita"</span>,</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"gdp_growth_pct"</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  )) <span class="sc">|&gt;</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(indicator, unit, original_indicator, first_year, last_year)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":["indicator"],"name":[1],"type":["chr"],"align":["left"]},{"label":["unit"],"name":[2],"type":["chr"],"align":["left"]},{"label":["original_indicator"],"name":[3],"type":["chr"],"align":["left"]},{"label":["first_year"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["last_year"],"name":[5],"type":["dbl"],"align":["right"]}],"data":[{"1":"population_total","2":"people","3":"Population, total","4":"1960","5":"2025"},{"1":"gdp_per_capita_usd","2":"current US$","3":"GDP per capita (current US$)","4":"1960","5":"2025"},{"1":"gdp_growth_pct","2":"annual percent","3":"GDP growth (annual %)","4":"1961","5":"2025"},{"1":"co2_per_capita","2":"metric tons CO2e per capita, excluding LULUCF","3":"Carbon dioxide (CO2) emissions excluding LULUCF per capita (t CO2e/capita)","4":"1970","5":"2024"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<p><code>gdp_per_capita_usd</code> cari ABD dolarıdır; zaman içindeki fiyat değişimini kendiliğinden düzeltmez. Bir matematiksel dönüşüm, göstergenin ekonomik tanımını değiştirmez ve enflasyon düzeltmesinin yerine geçmez.</p>
+</section>
+<section id="dönüşümden-önce-hangi-soruyu-soruyoruz" class="level2" data-number="17.2">
+<h2 data-number="17.2" class="anchored" data-anchor-id="dönüşümden-önce-hangi-soruyu-soruyoruz"><span class="header-section-number">17.2</span> Dönüşümden Önce Hangi Soruyu Soruyoruz?</h2>
+<p>Bir dönüşüme karar vermeden önce hedef açık olmalıdır.</p>
+<p><strong>Dağılımı mı anlamak istiyoruz?</strong></p>
+<p>Özgün ölçekteki histogram büyük ülkeler veya yüksek gelirli ekonomiler nedeniyle sıkışabilir. Log ölçek oranları daha görünür kılar.</p>
+<p><strong>Model ilişkisini mi düzeltmek istiyoruz?</strong></p>
+<p>Yaşam beklentisi ile kişi başına gelir arasındaki ilişki özgün ölçekte doğrusal değildir. Gelirin düşük düzeylerindeki artışlar daha büyük yaşam beklentisi farklarıyla, çok yüksek düzeylerindeki artışlar daha küçük farklarla ilişkili olabilir.</p>
+<p><strong>Varyansı mı dengelemek istiyoruz?</strong></p>
+<p>Bir sonuç değişkeninin düzeyi yükseldikçe saçılımı artıyorsa log veya güç dönüşümü değişen varyansı azaltabilir.</p>
+<p><strong>Yalnızca algoritmanın ölçek ihtiyacı mı var?</strong></p>
+<p>Amaç değişkenleri ortak büyüklüğe getirmekse dönüşüm yerine standardizasyon veya normalizasyon gerekebilir. Bu ayrımı <a href="scaling.html" class="quarto-xref"><span>Bölüm 18</span></a> bölümünde ele alacağız.</p>
+</section>
+<section id="çarpıklığı-ölçmek-ve-görmek" class="level2" data-number="17.3">
+<h2 data-number="17.3" class="anchored" data-anchor-id="çarpıklığı-ölçmek-ve-görmek"><span class="header-section-number">17.3</span> Çarpıklığı Ölçmek ve Görmek</h2>
+<p>Çarpıklık dağılımın simetriden hangi yönde ayrıldığını özetler. Öğretim amacıyla moment temelli örnek çarpıklık işlevi yazalım.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>carpiklik <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">&lt;-</span> x[<span class="fu">is.finite</span>(x)]</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  merkez <span class="ot">&lt;-</span> <span class="fu">mean</span>(x)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  olcek <span class="ot">&lt;-</span> <span class="fu">sd</span>(x)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mean</span>(((x <span class="sc">-</span> merkez) <span class="sc">/</span> olcek)<span class="sc">^</span><span class="dv">3</span>)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">nufus =</span> <span class="fu">carpiklik</span>(countries<span class="sc">$</span>population_total),</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">kisi_basi_gsyh =</span> <span class="fu">carpiklik</span>(countries<span class="sc">$</span>gdp_per_capita_usd),</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">yasam_beklentisi =</span> <span class="fu">carpiklik</span>(countries<span class="sc">$</span>life_expectancy_total)</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>           nufus   kisi_basi_gsyh yasam_beklentisi 
+       8.7232197        2.8776688       -0.9377632 </code></pre>
+</div>
+</div>
+<p>Pozitif değer sağa, negatif değer sola uzun kuyruğa işaret eder. Ancak tek bir sayı dağılımın çok tepeli, ayrık veya alt gruplardan oluşan yapısını göstermez; grafikle birlikte kullanılmalıdır.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>countries <span class="sc">|&gt;</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(population_total, gdp_per_capita_usd) <span class="sc">|&gt;</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="fu">everything</span>(), <span class="at">names_to =</span> <span class="st">"gosterge"</span>, <span class="at">values_to =</span> <span class="st">"deger"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> deger)) <span class="sc">+</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">bins =</span> <span class="dv">30</span>, <span class="at">color =</span> <span class="st">"white"</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> gosterge, <span class="at">scales =</span> <span class="st">"free"</span>) <span class="sc">+</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Özgün değer"</span>, <span class="at">y =</span> <span class="st">"Ülke sayısı"</span>) <span class="sc">+</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="data_transformations_files/figure-html/transform-original-distributions-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>2019 ülke göstergelerinin özgün ölçekte dağılımları.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="logaritmik-dönüşüm" class="level2" data-number="17.4">
+<h2 data-number="17.4" class="anchored" data-anchor-id="logaritmik-dönüşüm"><span class="header-section-number">17.4</span> Logaritmik Dönüşüm</h2>
+<p>Logaritma büyük değerleri küçük değerlerden daha fazla sıkıştırır. Pozitif (x) için doğal logaritma:</p>
+<p><span class="math display">\[
+x^* = \log(x)
+\]</span></p>
+<p>biçimindedir. Log ölçeğin temel özelliği mutlak farkları değil <strong>oranları</strong> öne çıkarmasıdır:</p>
+<p><span class="math display">\[
+\log(2x) - \log(x) = \log(2)
+\]</span></p>
+<p>Başlangıç düzeyi ne olursa olsun iki katına çıkma log ölçekte aynı farkı üretir.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>countries_log <span class="ot">&lt;-</span> countries <span class="sc">|&gt;</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">log_population =</span> <span class="fu">log</span>(population_total),</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">log_gdp_per_capita =</span> <span class="fu">log</span>(gdp_per_capita_usd)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">gdp_ozgun_carpiklik =</span> <span class="fu">carpiklik</span>(countries<span class="sc">$</span>gdp_per_capita_usd),</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">gdp_log_carpiklik =</span> <span class="fu">carpiklik</span>(countries_log<span class="sc">$</span>log_gdp_per_capita)</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>gdp_ozgun_carpiklik   gdp_log_carpiklik 
+         2.87766883         -0.06277538 </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>countries <span class="sc">|&gt;</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">transmute</span>(</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Özgün ölçek</span><span class="st">`</span> <span class="ot">=</span> gdp_per_capita_usd,</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Log ölçek</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">log</span>(gdp_per_capita_usd)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="fu">everything</span>(), <span class="at">names_to =</span> <span class="st">"olcek"</span>, <span class="at">values_to =</span> <span class="st">"deger"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> deger)) <span class="sc">+</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">bins =</span> <span class="dv">30</span>, <span class="at">color =</span> <span class="st">"white"</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> olcek, <span class="at">scales =</span> <span class="st">"free"</span>) <span class="sc">+</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="st">"Ülke sayısı"</span>) <span class="sc">+</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="data_transformations_files/figure-html/transform-log-plot-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Kişi başına GSYH dağılımının özgün ve doğal logaritmik ölçekte karşılaştırılması.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Log dönüşümünden sonra dağılım daha simetrik görünebilir; fakat dönüşümün gerekçesi yalnızca normalliğe yaklaşmak değildir. Ülkeler arası gelir farklarını oran olarak düşünmek de içeriksel bir gerekçedir.</p>
+<p><strong>Logaritmanın tabanı</strong></p>
+<p>R’de:</p>
+<ul>
+<li><code>log(x)</code> doğal logaritmayı,</li>
+<li><code>log10(x)</code> 10 tabanındaki logaritmayı,</li>
+<li><code>log2(x)</code> 2 tabanındaki logaritmayı hesaplar.</li>
+</ul>
+<p>Taban ölçeği sabit bir katsayıyla değiştirir. Grafik ekseninde “10 kat artış” yorumunu kolaylaştırmak için <code>log10</code>, istatistiksel modellemede doğal türev yorumları için <code>log</code> sık kullanılır. Kullanılan taban açıkça belirtilmelidir.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">10</span>, <span class="dv">100</span>, <span class="dv">1000</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  x,</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">dogal_log =</span> <span class="fu">log</span>(x),</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">log10 =</span> <span class="fu">log10</span>(x),</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">log2 =</span> <span class="fu">log2</span>(x)</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":["x"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["dogal_log"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["log10"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["log2"],"name":[4],"type":["dbl"],"align":["right"]}],"data":[{"1":"1","2":"0.000000","3":"0","4":"0.000000"},{"1":"10","2":"2.302585","3":"1","4":"3.321928"},{"1":"100","2":"4.605170","3":"2","4":"6.643856"},{"1":"1000","2":"6.907755","3":"3","4":"9.965784"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+</section>
+<section id="sıfır-ve-negatif-değerler" class="level2" data-number="17.5">
+<h2 data-number="17.5" class="anchored" data-anchor-id="sıfır-ve-negatif-değerler"><span class="header-section-number">17.5</span> Sıfır ve Negatif Değerler</h2>
+<p><code>log(0)</code> negatif sonsuzdur; negatif sayıların gerçek sayılar içindeki logaritması tanımsızdır.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">log</span>(<span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">1</span>, <span class="dv">0</span>))</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 2.302585 0.000000     -Inf</code></pre>
+</div>
+</div>
+<p><strong><code>log1p()</code></strong></p>
+<p>Sıfır içeren sayım veya tutar değişkenlerinde:</p>
+<p><span class="math display">\[
+\log(1 + x)
+\]</span></p>
+<p>kullanılabilir.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>ornek_sayim <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">5</span>, <span class="dv">20</span>, <span class="dv">100</span>)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">ozgun =</span> ornek_sayim,</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">log1p =</span> <span class="fu">log1p</span>(ornek_sayim)</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":["ozgun"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["log1p"],"name":[2],"type":["dbl"],"align":["right"]}],"data":[{"1":"0","2":"0.0000000"},{"1":"1","2":"0.6931472"},{"1":"5","2":"1.7917595"},{"1":"20","2":"3.0445224"},{"1":"100","2":"4.6151205"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<p><code>1</code> eklemek otomatik ve etkisiz bir ayrıntı değildir. Ölçü birimi değişirse “1”in göreli anlamı da değişir. Örneğin bir lira eklemek ile bir milyon dolar eklemek aynı değildir.</p>
+<p><strong>Sabit ekleyerek kaydırmak</strong></p>
+<p>Negatif değerlerde bütün seriye sabit ekleyip log almak mümkün görünür:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">log</span>(x <span class="sc">-</span> <span class="fu">min</span>(x) <span class="sc">+</span> <span class="dv">1</span>)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Fakat sonuç seçilen örneklemin minimumuna bağlı olur. Yeni veride daha küçük değer gelirse kural bozulabilir; ölçekteki oran yorumu da kaybolur. Negatif değerleri kabul eden Yeo–Johnson dönüşümü çoğu durumda daha sistematik bir alternatiftir.</p>
+</section>
+<section id="karekök-dönüşümü" class="level2" data-number="17.6">
+<h2 data-number="17.6" class="anchored" data-anchor-id="karekök-dönüşümü"><span class="header-section-number">17.6</span> Karekök Dönüşümü</h2>
+<p>Karekök dönüşümü:</p>
+<p><span class="math display">\[
+x^* = \sqrt{x}
+\]</span></p>
+<p>özellikle sıfır veya pozitif sayımlarda logaritmadan daha ılımlı bir sıkıştırma sağlar.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>ornek_sayim <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">4</span>, <span class="dv">9</span>, <span class="dv">25</span>, <span class="dv">100</span>)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">ozgun =</span> ornek_sayim,</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">karekok =</span> <span class="fu">sqrt</span>(ornek_sayim),</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">log1p =</span> <span class="fu">log1p</span>(ornek_sayim)</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":["ozgun"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["karekok"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["log1p"],"name":[3],"type":["dbl"],"align":["right"]}],"data":[{"1":"0","2":"0","3":"0.0000000"},{"1":"1","2":"1","3":"0.6931472"},{"1":"4","2":"2","3":"1.6094379"},{"1":"9","2":"3","3":"2.3025851"},{"1":"25","2":"5","3":"3.2580965"},{"1":"100","2":"10","3":"4.6151205"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<p>Poisson benzeri sayım süreçlerinde varyansı dengelemek için tarihsel olarak kullanılmıştır. Ancak modern genelleştirilmiş doğrusal modeller, sonucu dönüştürmek yerine uygun olasılık dağılımı ve bağlantı işleviyle doğrudan modelleyebilir.</p>
+</section>
+<section id="ters-dönüşüm" class="level2" data-number="17.7">
+<h2 data-number="17.7" class="anchored" data-anchor-id="ters-dönüşüm"><span class="header-section-number">17.7</span> Ters Dönüşüm</h2>
+<p>Ters dönüşüm:</p>
+<p><span class="math display">\[
+x^* = \frac{1}{x}
+\]</span></p>
+<p>büyük değerleri güçlü biçimde sıkıştırır ve sıralamanın yönünü tersine çevirir. Sıfırda tanımsızdır ve katsayı yorumunu zorlaştırabilir.</p>
+<p>Örneğin “birim zaman başına hız” ile “birim mesafe başına süre” arasında alan açısından anlamlı bir ters ilişki olabilir. Yalnızca çarpıklığı azaltmak için refleks olarak kullanılmamalıdır.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>hiz <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">20</span>, <span class="dv">40</span>, <span class="dv">80</span>)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  hiz,</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">birim_mesafe_suresi =</span> <span class="dv">1</span> <span class="sc">/</span> hiz</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":["hiz"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["birim_mesafe_suresi"],"name":[2],"type":["dbl"],"align":["right"]}],"data":[{"1":"20","2":"0.0500"},{"1":"40","2":"0.0250"},{"1":"80","2":"0.0125"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+</section>
+<section id="güç-dönüşümleri" class="level2" data-number="17.8">
+<h2 data-number="17.8" class="anchored" data-anchor-id="güç-dönüşümleri"><span class="header-section-number">17.8</span> Güç Dönüşümleri</h2>
+<p><strong>Box–Cox dönüşümü</strong></p>
+<p>Box–Cox ailesi pozitif değerler için bir güç parametresi () kullanır:</p>
+<p><span class="math display">\[
+x^{(\lambda)} =
+\begin{cases}
+\dfrac{x^\lambda - 1}{\lambda}, &amp; \lambda \neq 0 \\
+\log(x), &amp; \lambda = 0
+\end{cases}
+\]</span></p>
+<p>Özel durumlar yaklaşık olarak şu dönüşümlere karşılık gelir:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: right;">()</th>
+<th>Yaklaşık dönüşüm</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td>Dönüşüm yok</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">0.5</td>
+<td>Karekök</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">0</td>
+<td>Logaritma</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">-1</td>
+<td>Ters dönüşüm</td>
+</tr>
+</tbody>
+</table>
+<p>Box–Cox sıfır ve negatif değer kabul etmez. Box ve Cox’un özgün yaklaşımında (), dönüştürülmüş yanıt altında kurulan normal doğrusal modelin profil olabilirliğiyle seçilir <span class="citation" data-cites="boxCox1964">(<a href="../../references.html#ref-boxCox1964" role="doc-biblioref">Box ve Cox 1964</a>)</span>. Bu nedenle amaç yalnızca histogramı simetrikleştirmek değil, modelin ortalama-varyans yapısını daha uygun hale getirmektir. Parametre örneklemden tahmin edildiği için modelleme sürecinde yalnızca eğitim verisinden öğrenilmelidir.</p>
+<p><strong>Yeo–Johnson dönüşümü</strong></p>
+<p>Yeo–Johnson ailesi Box–Cox’a benzer; fakat sıfır ve negatif değerleri de tanımlar <span class="citation" data-cites="yeoJohnson2000">(<a href="../../references.html#ref-yeoJohnson2000" role="doc-biblioref">Yeo ve Johnson 2000</a>)</span>. Parçalı tanımı şöyledir:</p>
+<p><span class="math display">\[
+h_\lambda(x)=
+\begin{cases}
+\dfrac{(x+1)^\lambda-1}{\lambda}, &amp; x\geq 0,\ \lambda\neq 0,\\
+\log(x+1), &amp; x\geq 0,\ \lambda=0,\\
+-\dfrac{(-x+1)^{2-\lambda}-1}{2-\lambda}, &amp; x&lt;0,\ \lambda\neq 2,\\
+-\log(-x+1), &amp; x&lt;0,\ \lambda=2.
+\end{cases}
+\]</span></p>
+<p>Pozitif tarafta Box–Cox benzeri bir güç, negatif tarafta ise işareti ve sürekliliği koruyan karşılık kullanılır. (+1) kaydırması sıfırda tanımı mümkün kılar; buna karşın keyfî olarak bütün değerlere büyük bir sabit eklemekle aynı şey değildir. Bu özellik büyüme oranı gibi negatif olabilen göstergelerde kullanışlıdır.</p>
+<p><code>recipes</code> paketiyle GSYH büyüme oranı için parametreyi öğrenelim.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(recipes)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>buyume_verisi <span class="ot">&lt;-</span> countries <span class="sc">|&gt;</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(country, gdp_growth_pct) <span class="sc">|&gt;</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">drop_na</span>()</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>yj_tarifi <span class="ot">&lt;-</span> <span class="fu">recipe</span>(<span class="sc">~</span> gdp_growth_pct, <span class="at">data =</span> buyume_verisi) <span class="sc">|&gt;</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_YeoJohnson</span>(gdp_growth_pct)</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>yj_hazir <span class="ot">&lt;-</span> <span class="fu">prep</span>(yj_tarifi, <span class="at">training =</span> buyume_verisi)</span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>buyume_yj <span class="ot">&lt;-</span> <span class="fu">bake</span>(yj_hazir, <span class="at">new_data =</span> buyume_verisi)</span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a><span class="fu">tidy</span>(yj_hazir, <span class="at">number =</span> <span class="dv">1</span>)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":["terms"],"name":[1],"type":["chr"],"align":["left"]},{"label":["value"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["id"],"name":[3],"type":["chr"],"align":["left"]}],"data":[{"1":"gdp_growth_pct","2":"1.155477","3":"YeoJohnson_ZLYRv"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<p><code>prep()</code> dönüşüm parametresini verilen eğitim verisinden tahmin eder; <code>bake()</code> aynı parametreyi yeni veriye uygular <span class="citation" data-cites="recipes2024">(<a href="../../references.html#ref-recipes2024" role="doc-biblioref">Kuhn vd. 2024</a>)</span>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">ozgun_carpiklik =</span> <span class="fu">carpiklik</span>(buyume_verisi<span class="sc">$</span>gdp_growth_pct),</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">yj_carpiklik =</span> <span class="fu">carpiklik</span>(buyume_yj<span class="sc">$</span>gdp_growth_pct)</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>ozgun_carpiklik    yj_carpiklik 
+      -1.577436        1.113134 </code></pre>
+</div>
+</div>
+<p>Tahmin edilen () değeri “gerçek” bir doğa sabiti değildir; seçilen veri ve hedef ölçüt altında uygun bulunan parametredir.</p>
+</section>
+<section id="ilişkiyi-dönüştürmek" class="level2" data-number="17.9">
+<h2 data-number="17.9" class="anchored" data-anchor-id="ilişkiyi-dönüştürmek"><span class="header-section-number">17.9</span> İlişkiyi Dönüştürmek</h2>
+<p>Yaşam beklentisi ile kişi başına gelirin ilişkisini özgün ve log gelir eksenlerinde karşılaştıralım.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>countries <span class="sc">|&gt;</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(life_expectancy_total, gdp_per_capita_usd) <span class="sc">|&gt;</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">drop_na</span>() <span class="sc">|&gt;</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">log_gdp =</span> <span class="fu">log</span>(gdp_per_capita_usd)) <span class="sc">|&gt;</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(gdp_per_capita_usd, log_gdp),</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_to =</span> <span class="st">"gelir_olcegi"</span>,</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_to =</span> <span class="st">"gelir"</span></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> gelir, <span class="at">y =</span> life_expectancy_total)) <span class="sc">+</span></span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.65</span>) <span class="sc">+</span></span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">se =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> gelir_olcegi, <span class="at">scales =</span> <span class="st">"free_x"</span>) <span class="sc">+</span></span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="st">"Yaşam beklentisi"</span>) <span class="sc">+</span></span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="data_transformations_files/figure-html/transform-relationship-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Yaşam beklentisi ile kişi başına GSYH ilişkisi özgün ve logaritmik gelir ölçeğinde.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Log gelirli gösterim doğrusal ilişkiye daha yakın olabilir. Bu gözlem tek başına nedensellik göstermez; yalnızca temsil biçiminin model yapısıyla daha uyumlu olduğunu düşündürür.</p>
+</section>
+<section id="model-katsayılarını-yorumlamak" class="level2" data-number="17.10">
+<h2 data-number="17.10" class="anchored" data-anchor-id="model-katsayılarını-yorumlamak"><span class="header-section-number">17.10</span> Model Katsayılarını Yorumlamak</h2>
+<p>Dönüşüm hangi tarafta olduğuna göre yorum değişir.</p>
+<p><strong>Sonuç değişkeni logaritmikse</strong></p>
+<p><span class="math display">\[
+\log(Y) = \beta_0 + \beta_1 X
+\]</span></p>
+<p>modelinde (X)’te bir birim artış, (Y)’de yaklaşık (100_1) yüzde değişimle ilişkilidir. Daha doğru yüzde değişim:</p>
+<p><span class="math display">\[
+100(e^{\beta_1} - 1)
+\]</span></p>
+<p>olarak hesaplanır.</p>
+<p><strong>Yordayıcı logaritmikse</strong></p>
+<p><span class="math display">\[
+Y = \beta_0 + \beta_1 \log(X)
+\]</span></p>
+<p>modelinde (X)’te yaklaşık %1 artış, (Y)’de yaklaşık (_1/100) birim değişimle ilişkilidir.</p>
+<p><strong>Her ikisi de logaritmikse</strong></p>
+<p><span class="math display">\[
+\log(Y) = \beta_0 + \beta_1 \log(X)
+\]</span></p>
+<p>modelinde (_1) bir esneklik olarak yorumlanır: (X)’te %1 artış, (Y)’de yaklaşık (_1)% değişimle ilişkilidir.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Dikkat</span>Yaklaşık yorumun sınırı
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><code>100 * beta</code> yaklaşımı küçük katsayılarda uygundur. Büyük katsayılarda <code>100 * (exp(beta) - 1)</code> kullanılmalıdır. İlişki gözlemsel veriden geliyorsa “neden olur” yerine “ilişkilidir” denmelidir.</p>
+</div>
+</div>
+</section>
+<section id="geri-dönüşüm" class="level2" data-number="17.11">
+<h2 data-number="17.11" class="anchored" data-anchor-id="geri-dönüşüm"><span class="header-section-number">17.11</span> Geri Dönüşüm</h2>
+<p>Log ölçekte tahmin edilen değeri özgün ölçeğe taşımak için <code>exp()</code> kullanılır.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>log_deger <span class="ot">&lt;-</span> <span class="fu">log</span>(<span class="fu">c</span>(<span class="dv">1000</span>, <span class="dv">5000</span>, <span class="dv">10000</span>))</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  log_deger,</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">geri_donusmus =</span> <span class="fu">exp</span>(log_deger)</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":["log_deger"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["geri_donusmus"],"name":[2],"type":["dbl"],"align":["right"]}],"data":[{"1":"6.907755","2":"1000"},{"1":"8.517193","2":"5000"},{"1":"9.210340","2":"10000"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<p>Ancak log sonuçlu bir modelde <code>exp(tahmin)</code>, koşullu dağılımın medyanına karşılık gelebilir; aritmetik ortalamanın yansız tahmini olmak zorunda değildir. Artık varyansına bağlı yeniden dönüşüm yanlılığı değerlendirilmelidir. Yalnızca <code>exp()</code> uygulayıp “ortalama tahmin” demek her durumda doğru değildir.</p>
+</section>
+<section id="dönüşüm-ve-standardizasyon-aynı-şey-değildir" class="level2" data-number="17.12">
+<h2 data-number="17.12" class="anchored" data-anchor-id="dönüşüm-ve-standardizasyon-aynı-şey-değildir"><span class="header-section-number">17.12</span> Dönüşüm ve Standardizasyon Aynı Şey Değildir</h2>
+<p>Bir değişkenin logaritmasını almak dağılımın biçimini ve oranların temsilini değiştirir. Z-puanıyla standardize etmek ise merkezini sıfıra, standart sapmasını bire taşır; dağılımın temel biçimini korur.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>gdp_gozlenen <span class="ot">&lt;-</span> countries<span class="sc">$</span>gdp_per_capita_usd[</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="sc">!</span><span class="fu">is.na</span>(countries<span class="sc">$</span>gdp_per_capita_usd)</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">ozgun_carpiklik =</span> <span class="fu">carpiklik</span>(gdp_gozlenen),</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">standart_carpiklik =</span> <span class="fu">carpiklik</span>(<span class="fu">as.numeric</span>(<span class="fu">scale</span>(gdp_gozlenen))),</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">log_carpiklik =</span> <span class="fu">carpiklik</span>(<span class="fu">log</span>(gdp_gozlenen))</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":["ozgun_carpiklik"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["standart_carpiklik"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["log_carpiklik"],"name":[3],"type":["dbl"],"align":["right"]}],"data":[{"1":"2.877669","2":"2.877669","3":"-0.06277538"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<p>Doğrusal standardizasyon çarpıklığı değiştirmez; log dönüşümü değiştirebilir.</p>
+</section>
+<section id="dönüşüm-kararını-değerlendirmek" class="level2" data-number="17.13">
+<h2 data-number="17.13" class="anchored" data-anchor-id="dönüşüm-kararını-değerlendirmek"><span class="header-section-number">17.13</span> Dönüşüm Kararını Değerlendirmek</h2>
+<p>Tek bir “en iyi” ölçüt yoktur. Aşağıdaki kontroller birlikte kullanılabilir:</p>
+<ul>
+<li>dönüşüm öncesi ve sonrası histogram/yoğunluk grafiği,</li>
+<li>yordayıcı–sonuç saçılım grafiği,</li>
+<li>model artıklarının yapısı,</li>
+<li>değişen varyansın azalması,</li>
+<li>çapraz doğrulama performansı,</li>
+<li>katsayı ve tahminlerin yorumlanabilirliği,</li>
+<li>yeni veride uygulanabilirlik,</li>
+<li>farklı makul dönüşümlere karşı sonuç duyarlılığı.</li>
+</ul>
+<p>Normalliğin çoğu modelde ham değişken için değil, hata terimi veya örnekleme dağılımı için ilgili olduğu unutulmamalıdır.</p>
+</section>
+<section id="modelleme-ve-veri-sızıntısı" class="level2" data-number="17.14">
+<h2 data-number="17.14" class="anchored" data-anchor-id="modelleme-ve-veri-sızıntısı"><span class="header-section-number">17.14</span> Modelleme ve Veri Sızıntısı</h2>
+<p>Sabit log dönüşümü veriden parametre öğrenmez; aynı matematiksel kural eğitim ve test verisine uygulanabilir. Buna karşılık Box–Cox veya Yeo–Johnson için () örneklemden tahmin edilir.</p>
+<p>Güvenli sıra:</p>
+<ol type="1">
+<li>Eğitim ve test verisini ayır.</li>
+<li>Dönüşüm parametresini eğitim verisinde tahmin et.</li>
+<li>Eğitim verisini dönüştür.</li>
+<li>Aynı parametreyi test ve yeni veriye uygula.</li>
+</ol>
+<p>Test verisinin çarpıklığına bakarak () seçmek veri sızıntısıdır.</p>
+</section>
+<section id="sık-yapılan-hatalar" class="level2" data-number="17.15">
+<h2 data-number="17.15" class="anchored" data-anchor-id="sık-yapılan-hatalar"><span class="header-section-number">17.15</span> Sık Yapılan Hatalar</h2>
+<p><strong>Her çarpık değişkeni normalleştirmeye çalışmak</strong></p>
+<p>Çarpıklık bazen gerçek veri üretim sürecinin özelliğidir. Kullanılan yöntem ham değişkenin normal olmasını gerektirmeyebilir.</p>
+<p><strong>Log dönüşümünden önce sıfır ve negatifleri kontrol etmemek</strong></p>
+<p>Bu durum <code>-Inf</code> veya <code>NaN</code> üretir. Değerlerin anlamı incelenmeden keyfî sabit eklenmemelidir.</p>
+<p><strong>Log tabanını ve ölçüyü yazmamak</strong></p>
+<p>Doğal log ve log10 farklı sayısal katsayılar üretir. Rapor ve eksen etiketinde kullanılan dönüşüm belirtilmelidir.</p>
+<p><strong>Dönüşmüş katsayıyı özgün ölçekte yorumlamak</strong></p>
+<p>Log sonuç, log yordayıcı ve log–log modellerinin yorumları birbirinden farklıdır.</p>
+<p><strong>Dönüşümü aykırı değerleri saklamak için kullanmak</strong></p>
+<p>Dönüşüm gözlemleri sıkıştırır; olası veri hatalarını doğrulama gereğini ortadan kaldırmaz.</p>
+<p><strong>Box–Cox parametresini bütün veriden öğrenmek</strong></p>
+<p>Örneklemden tahmin edilen her parametre gibi () yalnızca eğitim verisinden öğrenilmelidir.</p>
+<p><strong>Geri dönüşüm yanlılığını unutmak</strong></p>
+<p>Log ölçekteki ortalamayı üs almak, özgün ölçekteki aritmetik ortalamayı her zaman vermez.</p>
+</section>
+<section id="egzersizler" class="level2" data-number="17.16">
+<h2 data-number="17.16" class="anchored" data-anchor-id="egzersizler"><span class="header-section-number">17.16</span> Egzersizler</h2>
+<p><strong>Egzersiz 1</strong></p>
+<p><code>population_total</code>, <code>gdp_current_usd</code> ve <code>co2_per_capita</code> değişkenleri için çarpıklık hesaplayın. Sonuçları histogramlarla karşılaştırın.</p>
+<p><strong>Egzersiz 2</strong></p>
+<p>Kişi başına GSYH için <code>log()</code>, <code>log10()</code> ve <code>sqrt()</code> dönüşümlerini uygulayın. Sıralamanın değişip değişmediğini kontrol edin.</p>
+<p><strong>Egzersiz 3</strong></p>
+<p><code>population_growth_pct</code> değişkenine neden doğrudan log dönüşümü uygulanamayacağını gösterin.</p>
+<p><strong>Egzersiz 4</strong></p>
+<p><code>gdp_growth_pct</code> için Yeo–Johnson dönüşümünün tahmin ettiği () değerini bulun ve dönüşüm öncesi/sonrası dağılımları çizin.</p>
+<p><strong>Egzersiz 5</strong></p>
+<p>Yaşam beklentisini kişi başına GSYH ve log kişi başına GSYH ile ayrı modellerde açıklayın. (R^2) ve artık grafiklerini karşılaştırın.</p>
+<p><strong>Egzersiz 6</strong></p>
+<p><code>log1p(x)</code> ile <code>log(x + 1)</code> sonuçlarının aynı olduğunu sayısal örnekle gösterin. <code>log1p()</code> işlevinin küçük değerlerde hesaplama açısından neden özel olarak bulunduğunu araştırın.</p>
+<p><strong>Egzersiz 7</strong></p>
+<p>Bir log–log modelinde katsayı 0.35 ise ekonomik yorumunu yazın.</p>
+<p><strong>Egzersiz 8</strong></p>
+<p>Standardizasyonun çarpıklığı neden değiştirmediğini doğrusal dönüşüm üzerinden açıklayın.</p>
+<p><strong>Egzersiz 9</strong></p>
+<p>Box–Cox ile Yeo–Johnson arasındaki temel tanım alanı farkını açıklayın.</p>
+<p><strong>Egzersiz 10</strong></p>
+<p>Zaman içinde büyüyen bir göstergede dönüşüm parametresini 1960–2010 verisiyle öğrenip 2011–2019 dönemine uygulamak neden daha güvenli bir değerlendirme sağlar?</p>
+</section>
+<section id="egzersiz-çözümleri" class="level2" data-number="17.17">
+<h2 data-number="17.17" class="anchored" data-anchor-id="egzersiz-çözümleri"><span class="header-section-number">17.17</span> Egzersiz Çözümleri</h2>
+<p><strong>Çözüm 1</strong></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>countries <span class="sc">|&gt;</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">across</span>(</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>      <span class="fu">c</span>(population_total, gdp_current_usd, co2_per_capita),</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>      carpiklik</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":["population_total"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["gdp_current_usd"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["co2_per_capita"],"name":[3],"type":["dbl"],"align":["right"]}],"data":[{"1":"8.72322","2":"8.97143","3":"4.849192"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<p>Pozitif ve büyük değerler sağa çarpıklığı artırır. Histogram, bu sonucun birkaç gözlemden mi yoksa uzun bir kuyruktan mı geldiğini gösterir.</p>
+<p><strong>Çözüm 2</strong></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>gdp_donusum <span class="ot">&lt;-</span> countries <span class="sc">|&gt;</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(gdp_per_capita_usd)) <span class="sc">|&gt;</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">transmute</span>(</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>    country,</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">ozgun =</span> gdp_per_capita_usd,</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">dogal_log =</span> <span class="fu">log</span>(gdp_per_capita_usd),</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">log10 =</span> <span class="fu">log10</span>(gdp_per_capita_usd),</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">karekok =</span> <span class="fu">sqrt</span>(gdp_per_capita_usd)</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a><span class="fu">all</span>(<span class="fu">order</span>(gdp_donusum<span class="sc">$</span>ozgun) <span class="sc">==</span> <span class="fu">order</span>(gdp_donusum<span class="sc">$</span>dogal_log))</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">all</span>(<span class="fu">order</span>(gdp_donusum<span class="sc">$</span>ozgun) <span class="sc">==</span> <span class="fu">order</span>(gdp_donusum<span class="sc">$</span>karekok))</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+</div>
+<p>Bu dönüşümler pozitif alanda monoton artandır; sıralamayı korur, değerler arasındaki uzaklığı değiştirir.</p>
+<p><strong>Çözüm 3</strong></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">range</span>(countries<span class="sc">$</span>population_growth_pct, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] -4.966942  4.893168</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">log</span>(countries<span class="sc">$</span>population_growth_pct[countries<span class="sc">$</span>population_growth_pct <span class="sc">&lt;=</span> <span class="dv">0</span>])</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] NaN NaN NaN NaN NaN NaN NaN NaN NaN NaN NaN NaN NaN NaN NaN NaN NaN NaN NaN
+[20] NaN NaN NaN NaN NaN NaN NaN NaN NaN NaN NaN NaN NaN NaN NaN NaN NaN NaN NaN
+[39] NaN NaN NaN</code></pre>
+</div>
+</div>
+<p>Büyüme oranı sıfır veya negatif olabilir. Doğal log bu değerlerde gerçek sayı üretmez.</p>
+<p><strong>Çözüm 4</strong></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bind_rows</span>(</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tibble</span>(<span class="at">olcek =</span> <span class="st">"Özgün"</span>, <span class="at">deger =</span> buyume_verisi<span class="sc">$</span>gdp_growth_pct),</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tibble</span>(<span class="at">olcek =</span> <span class="st">"Yeo-Johnson"</span>, <span class="at">deger =</span> buyume_yj<span class="sc">$</span>gdp_growth_pct)</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> deger)) <span class="sc">+</span></span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">bins =</span> <span class="dv">30</span>, <span class="at">color =</span> <span class="st">"white"</span>) <span class="sc">+</span></span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> olcek, <span class="at">scales =</span> <span class="st">"free"</span>) <span class="sc">+</span></span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="data_transformations_files/figure-html/transform-solution-4-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>GSYH büyüme oranının özgün ve Yeo–Johnson dönüşümlü dağılımı.</figcaption>
+</figure>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tidy</span>(yj_hazir, <span class="at">number =</span> <span class="dv">1</span>)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div data-pagedtable="false">
+<script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":["terms"],"name":[1],"type":["chr"],"align":["left"]},{"label":["value"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["id"],"name":[3],"type":["chr"],"align":["left"]}],"data":[{"1":"gdp_growth_pct","2":"1.155477","3":"YeoJohnson_ZLYRv"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p>GSYH büyüme oranının özgün ve Yeo–Johnson dönüşümlü dağılımı.</p>
+</div>
+</div>
+<p><strong>Çözüm 5</strong></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>model_verisi <span class="ot">&lt;-</span> countries <span class="sc">|&gt;</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(life_expectancy_total, gdp_per_capita_usd) <span class="sc">|&gt;</span></span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">drop_na</span>()</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>model_ozgun <span class="ot">&lt;-</span> <span class="fu">lm</span>(</span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>  life_expectancy_total <span class="sc">~</span> gdp_per_capita_usd,</span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> model_verisi</span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a>model_log <span class="ot">&lt;-</span> <span class="fu">lm</span>(</span>
+<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a>  life_expectancy_total <span class="sc">~</span> <span class="fu">log</span>(gdp_per_capita_usd),</span>
+<span id="cb33-12"><a href="#cb33-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> model_verisi</span>
+<span id="cb33-13"><a href="#cb33-13" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb33-14"><a href="#cb33-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-15"><a href="#cb33-15" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(</span>
+<span id="cb33-16"><a href="#cb33-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">ozgun_r2 =</span> <span class="fu">summary</span>(model_ozgun)<span class="sc">$</span>r.squared,</span>
+<span id="cb33-17"><a href="#cb33-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">log_r2 =</span> <span class="fu">summary</span>(model_log)<span class="sc">$</span>r.squared</span>
+<span id="cb33-18"><a href="#cb33-18" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> ozgun_r2    log_r2 
+0.3636669 0.6860989 </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">fitted</span>(model_ozgun), <span class="fu">resid</span>(model_ozgun), <span class="at">main =</span> <span class="st">"Özgün gelir"</span>)</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h =</span> <span class="dv">0</span>, <span class="at">lty =</span> <span class="dv">2</span>)</span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">fitted</span>(model_log), <span class="fu">resid</span>(model_log), <span class="at">main =</span> <span class="st">"Log gelir"</span>)</span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h =</span> <span class="dv">0</span>, <span class="at">lty =</span> <span class="dv">2</span>)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="data_transformations_files/figure-html/transform-solution-5-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>))</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Karşılaştırma yalnızca (R^2) ile değil, artık yapısı ve içeriksel yorumla yapılmalıdır.</p>
+<p><strong>Çözüm 6</strong></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">1e-12</span>, <span class="fl">0.1</span>, <span class="dv">1</span>, <span class="dv">10</span>)</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="fu">all.equal</span>(<span class="fu">log1p</span>(x), <span class="fu">log</span>(x <span class="sc">+</span> <span class="dv">1</span>))</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+</div>
+<p><code>log1p()</code> çok küçük <code>x</code> değerlerinde <code>1 + x</code> toplamının yuvarlama kaybını azaltacak biçimde hesaplanır.</p>
+<p><strong>Çözüm 7</strong></p>
+<p>Diğer koşullar sabitken (X)’te %1 artış, (Y)’de yaklaşık %0.35 artışla ilişkilidir. Bu yorum nedensel değildir; model ilişkisidir.</p>
+<p><strong>Çözüm 8</strong></p>
+<p>Standardizasyon (z = (x - {x}) / s) biçiminde doğrusal bir dönüşümdür. Bütün merkezden sapmaları aynı pozitif sabite böler; dağılımın göreli biçimini ve dolayısıyla çarpıklığını değiştirmez.</p>
+<p><strong>Çözüm 9</strong></p>
+<p>Box–Cox kesin olarak pozitif değer gerektirir. Yeo–Johnson sıfır ve negatif değerleri de parçalı tanımıyla dönüştürebilir.</p>
+<p><strong>Çözüm 10</strong></p>
+<p>Gelecek dönemin dağılımı parametre seçimine katılmaz. Böylece 2011–2019 dönemi, geçmişten öğrenilen dönüşümün görülmemiş veride nasıl davrandığını daha gerçekçi gösterir.</p>
+</section>
+<section id="bölüm-özeti" class="level2" data-number="17.18">
+<h2 data-number="17.18" class="anchored" data-anchor-id="bölüm-özeti"><span class="header-section-number">17.18</span> Bölüm Özeti</h2>
+<p>Veri dönüşümü geçerli değerlerin temsilini değiştirir. Logaritma çarpımsal farkları öne çıkarır; karekök daha ılımlı sıkıştırma sağlar; ters dönüşüm yönü ve yorumu güçlü biçimde değiştirir. Box–Cox pozitif değerlerde, Yeo–Johnson ise sıfır ve negatif değerleri de kapsayacak biçimde güç parametresi öğrenir.</p>
+<p>Dönüşüm kararı yalnızca çarpıklık sayısına dayanmaz. Dağılım, model ilişkisi, varyans, yorumlanabilirlik ve yeni veriye uygulanabilirlik birlikte değerlendirilir. Ham değişkenin normal olması çoğu yöntemin doğrudan varsayımı değildir.</p>
+<p>Dönüşmüş katsayılar kullanılan matematiksel biçime göre yorumlanmalı; özgün ölçeğe dönüşte ortalama–medyan ve yeniden dönüşüm yanlılığı ayrımı korunmalıdır. Veriden öğrenilen dönüşüm parametreleri yalnızca eğitim verisinde tahmin edilmelidir.</p>
+</section>
+<section id="kaynaklar-ve-ek-okuma" class="level2" data-number="17.19">
+<h2 data-number="17.19" class="anchored" data-anchor-id="kaynaklar-ve-ek-okuma"><span class="header-section-number">17.19</span> Kaynaklar ve Ek Okuma</h2>
+<p>Güç dönüşümlerinin olabilirlik temelli kuruluşu için <span class="citation" data-cites="boxCox1964">(<a href="../../references.html#ref-boxCox1964" role="doc-biblioref">Box ve Cox 1964</a>)</span>, sıfır ve negatif değerleri kapsayan dönüşüm ailesi için <span class="citation" data-cites="yeoJohnson2000">(<a href="../../references.html#ref-yeoJohnson2000" role="doc-biblioref">Yeo ve Johnson 2000</a>)</span> temel kaynaklardır. Dönüşümlerin regresyon varsayımları ve yorumla ilişkisi <span class="citation" data-cites="gelmanHillVehtari2020 hastie2009">(<a href="../../references.html#ref-gelmanHillVehtari2020" role="doc-biblioref">Gelman vd. 2020</a>; <a href="../../references.html#ref-hastie2009" role="doc-biblioref">Hastie vd. 2009</a>)</span>, R iş akışındaki uygulaması ise <span class="citation" data-cites="recipes2024">(<a href="../../references.html#ref-recipes2024" role="doc-biblioref">Kuhn vd. 2024</a>)</span> ile birlikte okunabilir. Bölümde kullanılan göstergelerin kaynağı World Development Indicators’dır <span class="citation" data-cites="worldBankWDI">(<a href="../../references.html#ref-worldBankWDI" role="doc-biblioref">World Bank 2026</a>)</span>.</p>
+
+
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="ref-boxCox1964" class="csl-entry" role="listitem">
+Box, George E. P., ve David R. Cox. 1964. <span>“An Analysis of Transformations”</span>. <em>Journal of the Royal Statistical Society: Series B (Methodological)</em> 26 (2): 211-43. <a href="https://doi.org/10.1111/j.2517-6161.1964.tb00553.x">https://doi.org/10.1111/j.2517-6161.1964.tb00553.x</a>.
+</div>
+<div id="ref-gelmanHillVehtari2020" class="csl-entry" role="listitem">
+Gelman, Andrew, Jennifer Hill, ve Aki Vehtari. 2020. <em>Regression and Other Stories</em>. Cambridge University Press. <a href="https://doi.org/10.1017/9781139161879">https://doi.org/10.1017/9781139161879</a>.
+</div>
+<div id="ref-hastie2009" class="csl-entry" role="listitem">
+Hastie, Trevor, Robert Tibshirani, ve Jerome Friedman. 2009. <em>The Elements of Statistical Learning</em>. 2. bs. Springer. <a href="https://doi.org/10.1007/978-0-387-84858-7">https://doi.org/10.1007/978-0-387-84858-7</a>.
+</div>
+<div id="ref-recipes2024" class="csl-entry" role="listitem">
+Kuhn, Max, Hadley Wickham, ve Emil Hvitfeldt. 2024. <em>recipes: Preprocessing and Feature Engineering Steps for Modeling</em>. <a href="https://CRAN.R-project.org/package=recipes">https://CRAN.R-project.org/package=recipes</a>.
+</div>
+<div id="ref-worldBankWDI" class="csl-entry" role="listitem">
+World Bank. 2026. <em>World Development Indicators</em>. DataBank. <a href="https://databank.worldbank.org/source/world-development-indicators">https://databank.worldbank.org/source/world-development-indicators</a>.
+</div>
+<div id="ref-yeoJohnson2000" class="csl-entry" role="listitem">
+Yeo, In-Kwon, ve Richard A. Johnson. 2000. <span>“A New Family of Power Transformations to Improve Normality or Symmetry”</span>. <em>Biometrika</em> 87 (4): 954-59. <a href="https://doi.org/10.1093/biomet/87.4.954">https://doi.org/10.1093/biomet/87.4.954</a>.
+</div>
+</div>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Kopyalandı");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Kopyalandı");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/mfatihtuzen\.github\.io\/r-programlama\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../../chapters/03-veri-on-isleme/outliers.html" class="pagination-link" aria-label="Aykırı Gözlemler">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Aykırı Gözlemler</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../../chapters/03-veri-on-isleme/scaling.html" class="pagination-link" aria-label="Ölçeklendirme">
+        <span class="nav-page-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Ölçeklendirme</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>© 2026, <a href="https://www.linkedin.com/in/dr-m-fatih-t-2b2a4328/">Muhammed Fatih Tüzen</a></p>
+</div>   
+    <div class="nav-footer-center">
+
+<div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/MFatihTuzen/r-programlama/edit/main/chapters/03-veri-on-isleme/data_transformations.qmd" class="toc-action"><i class="bi bi-github"></i>Bu sayfayı düzenle</a></li><li><a href="https://github.com/MFatihTuzen/r-programlama/issues/new" class="toc-action"><i class="bi empty"></i>Sorun bildir</a></li></ul></div><div class="cookie-consent-footer"><a href="#" id="open_preferences_center">Cookie Preferences</a></div></div>
+    <div class="nav-footer-right">
+<p>Bu kitap <a href="https://quarto.org/">Quarto</a> ile hazırlanmıştır.</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+<script src="../../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>
