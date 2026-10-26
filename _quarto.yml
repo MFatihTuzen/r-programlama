@@ -70,15 +70,10 @@ book:
         - chapters/03-veri-on-isleme/feature_engineering.qmd
         - chapters/03-veri-on-isleme/data_leakage.qmd
     # 
-    # - part: "IV · Veri Görselleştirme"
-    #   chapters:
-    #     - chapters/03-kesifci-analiz/data_analysis.qmd
-    #     - chapters/03-kesifci-analiz/ggplot2.qmd
-    # 
-    # - part: "V · İstatistiksel Analiz"
-    #   chapters:
-    #     - chapters/05-istatistiksel-analiz/statistics.qmd
-    #     - chapters/05-istatistiksel-analiz/regresyon.qmd
+    # Part IV — Veri Görselleştirme henüz etkinleştirilmedi.
+    # Alt bölüm kapsamı ve gerçek .qmd dosya yolları ROADMAP.md ve
+    # Codex ön incelemesi sonrasında onaylanınca buraya eklenecek.
+    # Kaynakça: references.bib; kaynakça sayfası: references.qmd.
     - references.qmd
 
 language:

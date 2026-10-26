@@ -1,66 +1,29 @@
-# Değişiklik Günlüğü
+# CHANGELOG.md
 
-Bu dosya, R Programlama kitabının önemli sürümlerini ve bu sürümlerde tamamlanan çalışmaları özetler.
+Bu dosya, kitabın önemli sürümlerini ve yapılan değişiklikleri özetlemektedir.
 
-## v0.3.0 — 2026-09-09
+---
 
-### Bölüm III — Veri Ön İşleme
+# v0.1.0
 
-Kitabın üçüncü ana bölümü tamamlandı ve kitap navigasyonuna eklendi.
+## R Programlamaya Giriş
 
-#### Yeni bölümler
+İlk ana bölüm tamamlandı.
 
-- **Veri Ön İşlemeye Giriş:** Ham veriden analize ve modellemeye hazır veriye geçiş; temizleme, dönüştürme ve modellemeye hazırlama ayrımı.
-- **Eksik Veriler ve İmputasyon:** MCAR, MAR ve MNAR mekanizmaları; silme, basit imputasyon, kNN, regresyon, MICE ve Rubin birleştirme kuralları.
-- **Aykırı Gözlemler:** IQR, z-puanı, sağlam ölçüler, Mahalanobis ve Cook uzaklıkları ile duyarlılık analizi.
-- **Veri Dönüşümleri:** Logaritma, karekök, ters, Box--Cox ve Yeo--Johnson dönüşümleri; katsayı ve geri dönüşüm yorumları.
-- **Ölçeklendirme:** Min--max normalizasyonu, z-puanı standardizasyonu ve sağlam ölçeklendirme.
-- **Özellik Mühendisliğine Giriş:** Aritmetik, etkileşim, polinom, zaman, kategorik ve toplulaştırılmış özellikler.
-- **Veri Sızıntısı ve Doğru Ön İşleme İş Akışı:** Hedef, zaman, grup ve değerlendirme sızıntıları; eğitim/test ayrımı ve kat içi ön işleme.
+### Yeni
 
-#### Akademik ve teknik altyapı
+- GitHub Pages'e geçildi.
+- Repository yeniden düzenlendi.
+- README yeniden yazıldı.
+- LICENSE eklendi.
+- Google Analytics yapılandırıldı.
+- Cookie Consent eklendi.
+- Yeni favicon eklendi.
+- Yeni kapak tasarımı hazırlandı.
+- Bölümler yeniden organize edildi.
+- GitHub Project yapısı oluşturuldu.
 
-- Yöntemlerin kuramsal gerekçeleri, varsayımları ve istatistiksel etkileri genişletildi.
-- Matematiksel ifadeler Quarto uyumlu blok denklemler olarak düzenlendi.
-- Otomatik bölüm numaralandırmasıyla çakışan elle numaralandırılmış alt başlıklar kaldırıldı.
-- Kitap genelinde kullanılmak üzere BibTeX kaynakçası ve metin içi atıf altyapısı eklendi.
-- Kitabın sonunda ortak Kaynakça bölümü oluşturuldu.
-- Bölüm III örnekleri mevcut World Bank WDI tabanlı proje verileriyle bütünleştirildi.
-- Quarto freeze çıktıları Bölüm III için oluşturuldu ve kitabın tamamı R 4.4.2 ile doğrulandı.
-
-## v0.2.0 — 2026-08-11
-
-### Bölüm II — Veri Manipülasyonu ve Dönüştürme
-
-Kitabın ikinci ana kısmı tamamlandı ve kitap navigasyonuna eklendi.
-
-#### Yeni bölümler
-
-- **Veri Manipülasyonu:** `dplyr`, pipe kullanımı, sütun ve satır işlemleri, yeni değişken üretme, gruplama ve özetleme.
-- **Veri Dönüştürme:** tidy data yaklaşımı, uzun ve geniş veri yapıları, `pivot_longer()`, `pivot_wider()` ve sütun ayırma/birleştirme işlemleri.
-- **Veri Birleştirme:** anahtarlar, tablo ilişkileri, mutating ve filtering join türleri, kardinalite ve birleştirme kalite kontrolleri.
-
-#### Veri altyapısı
-
-- World Bank World Development Indicators (WDI) tabanlı ülke veri koleksiyonu eklendi.
-- 217 ülke/ekonomiyi, 1960–2025 dönemini ve 29 seçilmiş göstergeyi kapsayan geniş ve uzun biçimli veri setleri oluşturuldu.
-- Göstergelerin ortak kapsamasına göre 2019 referans yılı seçildi.
-- Ülke metadatası, gösterge sözlüğü, kapsama, kalite ve üretim özeti dosyaları eklendi.
-- Ana veri üretim süreci `R/build_book_data.R` ile belgelenerek yeniden üretilebilir hale getirildi.
-- `data-raw/` alanı, yerel ham veri ve WDI önbelleği için tanımlandı.
-
-#### Kitap ve proje yapısı
-
-- `_quarto.yml` içinde Part II etkinleştirildi.
-- Bölümlerdeki veri yollarının proje kökünden tutarlı biçimde çözülmesi için `execute-dir: project` eklendi.
-- Quarto freeze çıktıları Part II bölümleri için güncellendi.
-- Sürüm yönetimi için `CHANGELOG.md` ve `ROADMAP.md` eklendi.
-
-## v0.1.0 — 2026-07-09
-
-### Bölüm I — R Programlamaya Giriş
-
-Kitabın ilk ana kısmı tamamlandı.
+### Tamamlanan Bölümler
 
 - R Programlama Hakkında
 - R Çalışma Ortamı
@@ -73,4 +36,40 @@ Kitabın ilk ana kısmı tamamlandı.
 - Apply Ailesi
 - Verilerin İçe ve Dışa Aktarılması
 
-Bu sürümde ayrıca GitHub Pages yayın yapısı, kitap navigasyonu, kapak, favicon ve temel proje varlıkları düzenlendi.
+---
+
+# v0.2.0
+
+Henüz yayımlanmadı.
+
+Planlanan içerik:
+
+- Veri Manipülasyonu ve Dönüştürme
+
+---
+
+# v0.3.0
+
+Henüz yayımlanmadı.
+
+Planlanan içerik:
+
+- Veri Ön İşleme
+
+---
+
+# v0.4.0
+
+Henüz yayımlanmadı.
+
+Planlanan içerik (taslak; henüz uygulanmadı):
+
+- Veri Görselleştirme: görselleştirmenin amacı ve felsefesi, ggplot2 temelleri, grafik türleri, gruplandırma/facet, ölçekler/renkler, temalar, etkili ve etik görseller, dışa aktarma.
+
+Not: Bu satırlar sürümde tamamlanan değişiklikleri değil, planlanan kapsamı gösterir. Nihai sürüm notları yayın öncesinde gerçek değişikliklerden oluşturulacaktır.
+
+---
+
+# Sonraki Sürümler
+
+Kitap yeni bölümler tamamlandıkça güncellenecek ve her ana bölüm sonunda yeni bir sürüm yayımlanacaktır.
