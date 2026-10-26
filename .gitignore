@@ -9,7 +9,7 @@
 # ==================================================
 # Quarto
 # ==================================================
-.quarto/
+/.quarto/
 **/*.quarto_ipynb
 
 # Render çıktıları
@@ -29,7 +29,16 @@ Thumbs.db
 
 # Cache
 *_cache/
-/.quarto/
 
 # Yerel ham veri ve WDI önbelleği
 data-raw/wdi_cache/
+
+# Yeniden üretilebilir yerel çıktılar
+/outputs/
+
+# Yerel proje, yazım ve çalışma belgeleri
+/BOOK_GUIDE.md
+/PROJECT_CONTEXT.md
+/ROADMAP.md
+/CHANGELOG.md
+/AGENTS.md

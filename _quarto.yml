@@ -39,8 +39,7 @@ book:
     right: |
       Bu kitap [Quarto](https://quarto.org/) ile hazırlanmıştır.
 
-  # Şimdilik yalnızca taşınan dosyalar aktif.
-  # Diğer bölümler yeni repoya taşındıkça aşağıdaki listeye eklenecek.
+  # Kitabın mevcut dört ana bölümü ve ortak kaynakçası.
   chapters:
     - index.qmd
     - part: "I · R Programlamaya Giriş"
@@ -55,7 +54,7 @@ book:
         - chapters/01-giris/strings.qmd
         - chapters/01-giris/apply.qmd
         - chapters/01-giris/import_export.qmd
-    - part: "II · Veri Manipülasyonu"
+    - part: "II · Veri Manipülasyonu ve Dönüştürme"
       chapters:
         - chapters/02-veri-manipulasyonu/data_manipulation.qmd
         - chapters/02-veri-manipulasyonu/data_transformation.qmd
@@ -69,11 +68,16 @@ book:
         - chapters/03-veri-on-isleme/scaling.qmd
         - chapters/03-veri-on-isleme/feature_engineering.qmd
         - chapters/03-veri-on-isleme/data_leakage.qmd
-    # 
-    # Part IV — Veri Görselleştirme henüz etkinleştirilmedi.
-    # Alt bölüm kapsamı ve gerçek .qmd dosya yolları ROADMAP.md ve
-    # Codex ön incelemesi sonrasında onaylanınca buraya eklenecek.
-    # Kaynakça: references.bib; kaynakça sayfası: references.qmd.
+    - part: "IV · Veri Görselleştirme"
+      chapters:
+        - chapters/04-veri-gorsellestirme/data_visualization.qmd
+        - chapters/04-veri-gorsellestirme/ggplot2_basics.qmd
+        - chapters/04-veri-gorsellestirme/plot_types.qmd
+        - chapters/04-veri-gorsellestirme/grouping_facets.qmd
+        - chapters/04-veri-gorsellestirme/scales_colors_labels.qmd
+        - chapters/04-veri-gorsellestirme/themes_customization.qmd
+        - chapters/04-veri-gorsellestirme/effective_graphics.qmd
+        - chapters/04-veri-gorsellestirme/exporting_graphics.qmd
     - references.qmd
 
 language:

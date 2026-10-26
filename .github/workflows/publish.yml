@@ -36,6 +36,9 @@ jobs:
             any::ggplot2
             any::dplyr
             any::tidyr
+            any::scales
+            any::recipes
+            any::mice
 
       - name: Render book
         run: quarto render --to html

@@ -1,0 +1,250 @@
+# Grafik Temaları ve Özelleştirme {#sec-themes-customization}
+
+Bir grafiğin görevi veriyi görünür kılmaktır. Başlığın çok büyük, eksen yazısının çok küçük veya ızgaranın noktalardan daha baskın olduğu bir grafikte okuyucunun dikkati yanlış yere çekilebilir. Tema düzenlemesi, bu dikkat dağılımını araştırma sorusuna uygun hale getirmeyi amaçlar.
+
+**Tema**, grafik başlığı, eksen yazıları, arka plan, ızgara ve lejant yerleşimi gibi veri dışı bileşenlerin görünümünü düzenler. Noktanın hangi gruba ait olduğunu renk ölçeği; lejanttaki yazının büyüklüğünü tema belirler. Bu ayrım, tasarımı değiştirirken verinin anlamını korumamıza yardımcı olur [@wickham2016ggplot2].
+
+## Öğrenme Hedefleri ve Ön Koşullar
+
+Bu bölümün sonunda hazır temalarla başlayabilecek; `theme()` ve `element_*()` işlevlerini kullanabilecek; tekrar kullanılabilir bir tema fonksiyonu yazabilecek; yazı, lejant ve panel düzenini son çıktı boyutunda değerlendirebileceksiniz. Önceki ölçek ve etiket bölümüyle temel fonksiyon bilgisi kullanılacaktır.
+
+## Tema, Ölçek ve Etiketin Görevleri
+
+Bir yazıyı değiştirmek istediğimizde önce neyi değiştirdiğimizi belirleyelim.
+
+| İstenen değişiklik | Kullanılacak bileşen |
+|---|---|
+| Dikey eksen başlığını “Yaşam süresi (yıl)” yapmak | `labs(y = ...)` |
+| Eksendeki sayıların yazımını düzenlemek | Ölçeğin `labels` argümanı |
+| Noktalardaki grupların renklerini değiştirmek | `scale_colour_manual()` gibi renk ölçeği |
+| Eksen yazısını büyütmek | `theme(axis.text = element_text(...))` |
+| Dikey ızgarayı kaldırmak | Tema içindeki panel ızgara öğeleri |
+| Renk lejantını alta taşımak | `theme(legend.position = "bottom")` |
+
+Tema değiştirmek, sayısal değerleri veya istatistiksel yöntemi düzeltmez. Yanlış ortalama, yanlış birim veya yanıltıcı kapsam sorununu yalnızca görünümle çözemeyiz.
+
+## Hazır Bir Temayla Başlamak
+
+Önce aynı yapay veriyi farklı hazır temalarla gösterelim. Her satır bir hizmet birimini ve onun ortalama bekleme süresini temsil eder. Bu özetler dağılım veya belirsizlik bilgisi içermez.
+
+```{r}
+#| label: theme-setup
+
+library(ggplot2)
+
+bekleme <- data.frame(
+  birim = factor(c("Danışma", "Başvuru", "Ödeme"),
+                 levels = c("Danışma", "Başvuru", "Ödeme")),
+  dakika = c(8, 14, 6)
+)
+
+p <- ggplot(bekleme, aes(x = dakika, y = birim)) +
+  geom_point(size = 3, colour = "#27647B") +
+  labs(title = "Birimlere göre ortalama bekleme",
+       x = "Ortalama bekleme süresi (dakika)", y = NULL,
+       caption = "Kaynak: Yapay birim özetleri; belirsizlik verilmemiştir.")
+```
+
+Yatay düzen, kategori adlarını döndürmeden okumamızı sağlar. Başvurunun ortalama beklemesi en uzun, ödemeninki en kısadır. Bunun nedeni veya bütün bireylerin deneyimi yalnızca bu üç sayıdan anlaşılamaz.
+
+```{r}
+#| label: fig-theme-compare
+#| layout-ncol: 2
+#| fig-subcap: ["Beyaz arka plan ve panel çerçevesi", "Daha az görsel öğe"]
+#| fig-cap: "Tema değişir; veri değerleri ve nokta konumlarının anlamı değişmez."
+#| fig-alt: "Aynı üç birimin 8, 14 ve 6 dakikalık ortalamaları theme_bw ve theme_minimal ile çizilir. Birincide panel çerçevesi, ikincide daha sade bir arka plan bulunur."
+#| fig-width: 4.5
+#| fig-height: 3.8
+
+p + theme_bw(base_size = 11)
+p + theme_minimal(base_size = 11)
+```
+
+`theme_bw()` beyaz arka planlı ve çerçeveli, `theme_minimal()` daha az arka plan bileşeni içeren bir başlangıç sağlar. `theme_classic()` eksen çizgilerini vurgulayan başka bir seçenektir. `theme_void()` ise eksen ve arka planı büyük ölçüde kaldırır; konumsal değer okumamız gereken bu örnekte uygun bir varsayılan değildir.
+
+`base_size` temanın temel yazı büyüklüğüdür ve punto birimindedir. Diğer öğelerin bir kısmı bu temelden türetilir. `base_family`, kullanılacak yazı ailesini belirtir; aile cihazda bulunmuyorsa sonuç ortama göre değişebilir. Taşınabilir örneklerde sistemde yaygın bir aile veya varsayılan aileyle başlamak daha güvenilirdir [@ggplot2Reference].
+
+## `theme()` ve Tema Öğeleri
+
+Hazır tema bir başlangıç düzenidir; `theme()` bu düzenin seçilmiş öğelerini değiştirir. Öğenin türüne uygun `element_*()` fonksiyonu kullanılmalıdır.
+
+| Fonksiyon | Düzenlediği öğe | Önemli seçenekler |
+|---|---|---|
+| `element_text()` | Yazı | `size`, `face`, `colour`, `angle`, `hjust`, `margin` |
+| `element_line()` | Çizgi | `colour`, `linewidth`, `linetype` |
+| `element_rect()` | Dikdörtgen ve arka plan | `fill`, `colour`, `linewidth` |
+| `element_blank()` | Öğeyi kaldırır | Parametre verilmez. |
+| `margin()` | Boşluk | `t`, `r`, `b`, `l`, `unit` |
+
+`margin()` sırası üst, sağ, alt, soldur. Varsayılan birim puntodur. `hjust = 0` metni ilgili alanın soluna, `hjust = 1` sağına hizalar; hangi metin alanının düzenlendiğini bilmek gerekir. `face = "bold"` kalın yazıdır.
+
+```{r}
+#| label: fig-theme-custom
+#| fig-cap: "Kategori yönündeki gereksiz ızgaralar azaltılmış; dakika okumayı destekleyen çizgiler korunmuştur."
+#| fig-alt: "Üç yatay nokta aynı bekleme sürelerini gösterir. Kalın başlık, okunur etiketler ve açık gri dikey ana ızgaralar dakika karşılaştırmasını destekler."
+#| fig-width: 7
+#| fig-height: 4
+
+p_duzenli <- p +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold", size = 14, hjust = 0),
+    axis.text = element_text(colour = "grey20"),
+    panel.grid.minor = element_blank(),
+    panel.grid.major.y = element_blank(),
+    panel.grid.major.x = element_line(colour = "grey85", linewidth = 0.3),
+    plot.caption = element_text(hjust = 0, colour = "grey30", size = 9),
+    plot.margin = margin(t = 10, r = 16, b = 10, l = 10)
+  )
+p_duzenli
+```
+
+Burada dakika ekseni yataydır. Dikey ana ızgaralar dakika değerlerini okumaya yardım eder; kategori satırları boyunca giden yatay ızgaralar kaldırılmıştır. Sadeleştirme kararını “bütün ızgaraları kaldırmak” gibi genel bir kurala değil, bu grafiğin okuma görevine bağladık.
+
+### Tema Sırası Neden Önemlidir?
+
+Önce tam tema, ardından özel değişiklikler ekledik. Sıra ters olsaydı sonradan eklenen tam tema bazı özel ayarları yeniden belirleyebilirdi. “Ayarımı yazdım ama görünmüyor” durumunda katman ve tema sırasını kontrol etmek yararlıdır.
+
+Tema öğeleri arasında miras ilişkisi vardır: genel `text` bütün yazılara temel olabilir; `axis.text` eksen yazılarına, `axis.text.x` yalnızca yatay eksen yazılarına daha özel bir düzen getirir. Değişikliğin kapsamını mümkün olduğunca açık seçelim. Örneğin sadece x etiketini eğmek için bütün yazıları döndürmemeliyiz.
+
+## Lejantı Okuma Akışına Yerleştirmek
+
+Lejant, veri işaretleriyle anlamları arasındaki anahtardır. Kalabalık bir lejantı taşımak her sorunu çözmez; önce kategorilerin ve eşlemelerin gerçekten gerekli olup olmadığını düşünmeliyiz.
+
+```{r}
+#| label: fig-theme-legend
+#| fig-cap: "Aynı kategori hem renk hem şekille belirtilir; ortak lejant grafiğin altındadır."
+#| fig-alt: "İki grubun 2017–2019 puanları renk ve şekille ayrılır. Alt kısımdaki lejant her iki işareti grup adıyla birlikte açıklar."
+#| fig-width: 6.5
+#| fig-height: 4
+
+gruplar <- data.frame(
+  grup = rep(c("A", "B"), each = 3), yil = rep(2017:2019, 2),
+  puan = c(50, 54, 60, 55, 57, 63)
+)
+p_lejant <- ggplot(gruplar, aes(yil, puan, colour = grup, shape = grup)) +
+  geom_point(size = 3) +
+  scale_colour_manual(values = c("A" = "#0072B2", "B" = "#B44A00")) +
+  scale_x_continuous(breaks = 2017:2019) +
+  labs(x = "Yıl", y = "Puan", colour = "Grup", shape = "Grup",
+       caption = "Kaynak: Yapay veri.") +
+  theme_minimal(base_size = 12) +
+  theme(legend.position = "bottom", legend.title = element_text(face = "bold"))
+p_lejant
+```
+
+Renk ve şekil aynı değişkene eşlenip aynı başlıkla adlandırıldığı için uyumlu bir lejant oluşturulabilir. `legend.position` dış yerleşim için `"bottom"`, `"top"`, `"left"`, `"right"` veya `"none"` alabilir. Lejantı kaldırmak, grup kimlikleri başka biçimde açıkça veriliyorsa uygundur. Sadece yer kazanmak için kaldırmak bilgiyi kaybettirebilir.
+
+## Tekrar Kullanılabilir Bir Tema Fonksiyonu
+
+Kitap boyunca tutarlılık için aynı ayarları kopyalamak yerine küçük bir fonksiyonda toplayabiliriz. Bu fonksiyon grafik verisini almaz; yalnızca tema nesnesi döndürür.
+
+```{r}
+#| label: theme-function
+
+tema_kitap <- function(base_size = 12, base_family = "") {
+  theme_minimal(base_size = base_size, base_family = base_family) +
+    theme(
+      plot.title = element_text(face = "bold", hjust = 0),
+      plot.caption = element_text(hjust = 0, size = rel(0.8)),
+      panel.grid.minor = element_blank(),
+      legend.position = "bottom",
+      plot.background = element_rect(fill = "white", colour = NA),
+      panel.background = element_rect(fill = "white", colour = NA),
+      plot.margin = margin(10, 14, 10, 10)
+    )
+}
+
+p_kitap <- p + tema_kitap(base_size = 12)
+```
+
+`base_size` ve `base_family` argümanlarını hazır temaya iletiyoruz. `rel(0.8)` açıklama yazısının boyutunu miras aldığı metne göre göreli ayarlar. Arka planı açıkça beyaz seçmek, grafiği koyu sayfada veya başka belgeye taşırken görünümün belirsizleşmesini azaltır. Bu yalnızca grafik arka planıdır; kitabın CSS veya Quarto temasını değiştirmez.
+
+Tek bir ortak tema her geometri için son karar değildir. Örneğin yatay nokta grafiğinde gereksiz ana ızgaraları ayrıca kaldırabiliriz. Tutarlılık, her grafiğe sorusunu gözetmeden aynı bütün ayrıntıları zorlamak anlamına gelmez.
+
+### Yerel ve Genel Tema Değişikliği
+
+`p + tema_kitap()` belirli grafiği etkiler. `theme_set()` ise o R oturumundaki sonraki grafiklerin varsayılan temasını değiştirir. Kitap bölümlerinin bağımsız ve izlenebilir olması için örneklerde çoğunlukla yerel eklemeyi tercih ediyoruz.
+
+```{r}
+#| label: theme-global-example
+#| eval: false
+
+eski_tema <- theme_set(tema_kitap())
+# Bu arada oluşturulan grafikler yeni varsayılan temayı kullanır.
+theme_set(eski_tema)
+```
+
+Bu etkileşimli kullanım örneği, eski temanın nasıl geri getirileceğini gösterir. Genel ayarların varlığını unutmak, aynı kodun farklı oturumlarda farklı görünmesine neden olabilir.
+
+## Okunabilirliği Son Boyutta Değerlendirmek
+
+Ekranda büyütülmüş bir şekil, kitap sayfasına küçültüldüğünde aynı okunabilirliği korumaz. Başlık ve eksen yazıları son fiziksel boyutta kontrol edilmelidir. Küçük yazıyı yalnızca DPI artırarak okunur hale getiremeyiz; DPI raster ayrıntısını artırır, yazının fiziksel büyüklüğünü değil.
+
+Uzun kategori adlarında önce yatay düzeni düşünelim. Etiket döndürmek gerekiyorsa açıyla birlikte hizalamayı da kontrol edelim. Gereksiz eğik yazı ve aşırı kalabalık işaretler okuyucunun dikkatini veriden uzaklaştırabilir [@wilkeDataviz, Bölüm 24].
+
+::: callout-important
+## Açık ve koyu sayfa teması grafik dosyasını otomatik dönüştürmez
+
+R'nin ürettiği bir PNG kendi yazı ve arka plan renklerine sahiptir. Sayfa temasının değişmesi bu dosyanın içini yeniden çizmez. Özellikle saydam arka planda koyu yazı kaybolabilir. Grafiği kullanılacağı arka planda kontrol edin; arka plan kararını dışa aktarmada da açıkça belirtin.
+:::
+
+## Sık Yapılan Hatalar
+
+- `theme()` ile noktanın grup renklerini değiştirmeye çalışmak; veri renkleri ölçeğe aittir.
+- Tam temayı özel ayarlardan sonra ekleyip önceki değişiklikleri kaybetmek.
+- Bütün ızgaraları kaldırarak değer okumayı güçleştirmek.
+- Konum anlamı önemliyken `theme_void()` ile eksenleri gizlemek.
+- Yazı ailesinin bütün bilgisayarlarda kurulu olduğunu varsaymak.
+- Lejantı, kimlikleri başka yerde belirtmeden kaldırmak.
+- Genel tema ayarını değiştirip sonraki örneklere etkisini unutmamak.
+
+## Egzersizler
+
+1. **Kolay:** `labs(y = ...)` ile `theme(axis.title.y = ...)` farkını açıklayın.
+2. **Kolay:** Başlığı kalın, açıklama metnini sola hizalı yapmak için hangi öğeler değiştirilir?
+3. **Orta:** `p_kitap` grafiğinde kategori yönündeki ana ızgarayı kaldırın. Dakika okumaya yardım eden ızgarayı koruyun.
+4. **Orta:** `tema_kitap()` fonksiyonunu `base_size = 14` ile kullanın. Artan yazı büyüklüğü neden daha fazla şekil alanı gerektirebilir?
+5. **Zor:** Bir grafik çok kalabalık olduğu için bütün eksenler ve lejant kaldırılıyor. Hangi bilgilerin kaybolabileceğini ve iki daha uygun çözümü tartışın.
+6. **Zor:** Beyaz arka planlı bir grafik, koyu sayfada otomatik koyulaşmıyorsa bu bir kod hatası mıdır? Nasıl test edersiniz?
+
+## Egzersiz Çözümleri
+
+**Çözüm 1:** `labs()` başlık metnini; `theme()` bu başlığın yazı boyutu, rengi, boşluğu gibi görünümünü değiştirir.
+
+**Çözüm 2:** `plot.title = element_text(face = "bold")` ve `plot.caption = element_text(hjust = 0)` kullanılabilir. Önce hazır tema, sonra bu özel ayarlar eklenmelidir.
+
+**Çözüm 3:**
+
+```{r}
+#| label: theme-solution-grid
+
+son_grafik <- p_kitap +
+  theme(panel.grid.major.y = element_blank())
+```
+
+Yatay kategori çizgileri kaldırılır; yatay sayısal eksenin konumlarını izlemeye yardım eden dikey çizgiler kalır.
+
+**Çözüm 4:**
+
+```{r}
+#| label: theme-solution-size
+
+buyuk_yazili <- p + tema_kitap(base_size = 14)
+```
+
+Yazı alanı büyüdüğünde veri paneli daralabilir, başlık taşabilir veya etiketler çakışabilir. Daha geniş çıktı veya daha kısa, anlamı korunmuş etiket gerekebilir.
+
+**Çözüm 5:** Birim, büyüklük, kategori kimliği ve renk anlamı kaybolabilir. Öncelikle gereksiz eşlemeleri azaltmak veya facet kullanmak; uzun kategoriler için yatay düzene geçmek daha uygun çözümler olabilir.
+
+**Çözüm 6:** Hayır; dosya kendi arka planını taşır. Grafik hem açık hem koyu hedef arka planda, son görüntüleme boyutunda incelenmelidir. Saydam çıktı isteniyorsa yazı ve çizgi kontrastı ayrıca kontrol edilmelidir.
+
+## Bölüm Özeti
+
+Tema, veri dışındaki bileşenleri düzenler. Hazır temayla başlamak, gerekli öğeleri uygun `element_*()` işlevleriyle değiştirmek ve kararları soruya bağlamak tutarlı grafikler üretir. Okunabilirlik, son boyut ve gerçek arka plan üzerinde değerlendirilmelidir.
+
+Bir sonraki bölümde bu becerileri bilimsel doğruluk, belirsizlik, erişilebilirlik ve açık anlatımla birleştirerek bir grafiği baştan sona gözden geçireceğiz.
+
+## Kaynaklar ve Ek Okuma
+
+Görsel hiyerarşi ve okunabilirlik için [@wilkeDataviz], grafik grameri için [@wickham2016ggplot2] incelenebilir. Güncel teknik ayrıntılar [hazır temalar](https://ggplot2.tidyverse.org/reference/ggtheme.html), [theme()](https://ggplot2.tidyverse.org/reference/theme.html) ve [tema öğeleri](https://ggplot2.tidyverse.org/reference/element.html) belgelerinde yer alır [@ggplot2Reference].
