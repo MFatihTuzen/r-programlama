@@ -1,0 +1,1546 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="tr" xml:lang="tr"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.19">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="R programlama, veri analizi ve istatistiksel düşünme üzerine Türkçe açık kaynak kitap.">
+
+<title>23&nbsp; Grafik Türleri – R Programlama</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../chapters/04-veri-gorsellestirme/grouping_facets.html" rel="next">
+<link href="../../chapters/04-veri-gorsellestirme/ggplot2_basics.html" rel="prev">
+<link href="../../images/favicon.png" rel="icon" type="image/png">
+<script src="../../site_libs/cookie-consent/cookie-consent.js"></script>
+<link href="../../site_libs/cookie-consent/cookie-consent.css" rel="stylesheet">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-5c1318cf63eba56dbef7ba16bc7d56f5.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-6453f418aeef366c23116eb9cb0b6816.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-5c1318cf63eba56dbef7ba16bc7d56f5.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-c16f430fe295f19fa7843ef0f918a581.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-a2b91ec66cfe0c714d720bb2db095b04.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-c16f430fe295f19fa7843ef0f918a581.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "Sonuç yok",
+    "search-matching-documents-text": "eşleşen belgeler",
+    "search-copy-link-title": "Aramak için bağlantıyı kopyalayın",
+    "search-hide-matches-text": "Ek eşleşmeleri gizle",
+    "search-more-match-text": "bu belgede bir tane daha eşleşme",
+    "search-more-matches-text": "bu belgede daha fazla eşleşme",
+    "search-clear-button-title": "Temizle",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "İptal et",
+    "search-submit-button-title": "Gönder",
+    "search-label": "Ara"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-X6J60MER5G"></script>
+
+<script type="text/plain" cookie-consent="tracking">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-X6J60MER5G', { 'anonymize_ip': true});
+</script>
+
+<script type="text/javascript" charset="UTF-8">
+document.addEventListener('DOMContentLoaded', function () {
+cookieconsent.run({
+  "notice_banner_type":"simple",
+  "consent_type":"express",
+  "palette":"light",
+  "language":"en",
+  "page_load_consent_levels":["strictly-necessary"],
+  "notice_banner_reject_button_hide":false,
+  "preferences_center_close_button_hide":false,
+  "website_name":""
+  ,
+"language":"tr"
+  });
+});
+</script> 
+  
+<style>html{ scroll-behavior: smooth; }</style>
+<link href="../../site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet">
+<script src="../../site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+
+
+<link rel="stylesheet" href="../../styles.css">
+<meta property="og:title" content="23&nbsp; Grafik Türleri – R Programlama">
+<meta property="og:description" content="R programlama, veri analizi ve istatistiksel düşünme üzerine Türkçe açık kaynak kitap.">
+<meta property="og:image" content="https://mfatihtuzen.github.io/r-programlama/chapters/04-veri-gorsellestirme/plot_types_files/figure-html/fig-types-hist-1.png">
+<meta property="og:site_name" content="R Programlama">
+<meta property="og:image:alt" content="24 yapay öğrenci puanı 10 puan genişliğindeki histogram aralıklarında gösterilir. Dağılımın ortası daha yoğundur; iki uçta daha az gözlem bulunur.">
+<meta property="og:image:height" content="768">
+<meta property="og:image:width" content="1248">
+<meta name="twitter:title" content="23&nbsp; Grafik Türleri – R Programlama">
+<meta name="twitter:description" content="R programlama, veri analizi ve istatistiksel düşünme üzerine Türkçe açık kaynak kitap.">
+<meta name="twitter:image" content="https://mfatihtuzen.github.io/r-programlama/chapters/04-veri-gorsellestirme/plot_types_files/figure-html/fig-types-hist-1.png">
+<meta name="twitter:image:alt" content="24 yapay öğrenci puanı 10 puan genişliğindeki histogram aralıklarında gösterilir. Dağılımın ortası daha yoğundur; iki uçta daha az gözlem bulunur.">
+<meta name="twitter:image-height" content="768">
+<meta name="twitter:image-width" content="1248">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="nav-sidebar floating quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Kenar çubuğunu değiştir" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../chapters/04-veri-gorsellestirme/data_visualization.html">IV · Veri Görselleştirme</a></li><li class="breadcrumb-item"><a href="../../chapters/04-veri-gorsellestirme/plot_types.html"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Grafik Türleri</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Kenar çubuğunu değiştir" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Ara" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../../">R Programlama</a> 
+        <div class="sidebar-tools-main tools-wide">
+    <a href="https://github.com/MFatihTuzen/r-programlama" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+    <div class="dropdown">
+      <a href="" title="Share" id="quarto-navigation-tool-dropdown-0" class="quarto-navigation-tool dropdown-toggle px-1" data-bs-toggle="dropdown" aria-expanded="false" role="link" aria-label="Share"><i class="bi bi-share"></i></a>
+      <ul class="dropdown-menu" aria-labelledby="quarto-navigation-tool-dropdown-0">
+          <li>
+            <a class="dropdown-item sidebar-tools-main-item" href="https://twitter.com/intent/tweet?url=|url|">
+              <i class="bi bi-twitter pe-1"></i>
+            Twitter
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item sidebar-tools-main-item" href="https://www.linkedin.com/sharing/share-offsite/?url=|url|">
+              <i class="bi bi-linkedin pe-1"></i>
+            LinkedIn
+            </a>
+          </li>
+      </ul>
+    </div>
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Karanlık modu değiştir"><i class="bi"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Okuyucu modunu değiştir">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Ara"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Önsöz</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">I · R Programlamaya Giriş</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Bölümü değiştir">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/r_about.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">R Programlama Hakkında</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/R_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">R Çalışma Ortamı</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">R Temel Kullanımı ve İlk Komutlar</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/data_types.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Veri Tipleri ve Yapıları</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/functions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Fonksiyonlar</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/if_else_for.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Karar Yapıları ve Döngüler</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/date_time.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Tarih ve Zaman İşlemleri</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/strings.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Metin İşlemleri</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/apply.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Apply Ailesi</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/import_export.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Verilerin İçe ve Dışa Aktarılması</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">II · Veri Manipülasyonu ve Dönüştürme</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Bölümü değiştir">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/02-veri-manipulasyonu/data_manipulation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Veri Manipülasyonu</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/02-veri-manipulasyonu/data_transformation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Veri Dönüştürme</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/02-veri-manipulasyonu/data_join.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Veri Birleştirme</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">III · Veri Ön İşleme</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Bölümü değiştir">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/03-veri-on-isleme/data_preprocessing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Veri Ön İşlemeye Giriş</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/03-veri-on-isleme/missing_data_imputation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Eksik Veriler ve İmputasyon</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/03-veri-on-isleme/outliers.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Aykırı Gözlemler</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/03-veri-on-isleme/data_transformations.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Veri Dönüşümleri</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/03-veri-on-isleme/scaling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Ölçeklendirme</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/03-veri-on-isleme/feature_engineering.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Özellik Mühendisliğine Giriş</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/03-veri-on-isleme/data_leakage.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Veri Sızıntısı ve Doğru Ön İşleme İş Akışı</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">IV · Veri Görselleştirme</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Bölümü değiştir">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/04-veri-gorsellestirme/data_visualization.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Veri Görselleştirmeye Giriş</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/04-veri-gorsellestirme/ggplot2_basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">ggplot2 Temelleri</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/04-veri-gorsellestirme/plot_types.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Grafik Türleri</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/04-veri-gorsellestirme/grouping_facets.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Gruplandırma ve Facet Yapıları</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/04-veri-gorsellestirme/scales_colors_labels.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Ölçekler, Renkler ve Etiketler</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/04-veri-gorsellestirme/themes_customization.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Grafik Temaları ve Özelleştirme</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/04-veri-gorsellestirme/effective_graphics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Etkili ve Yayın Kalitesinde Grafikler</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/04-veri-gorsellestirme/exporting_graphics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Grafiklerin Dışa Aktarılması</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Kaynakça</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="2">
+    <h2 id="toc-title">İçindekiler</h2>
+   
+  <ul>
+  <li><a href="#öğrenme-hedefleri-ve-ön-koşullar" id="toc-öğrenme-hedefleri-ve-ön-koşullar" class="nav-link active" data-scroll-target="#öğrenme-hedefleri-ve-ön-koşullar"><span class="header-section-number">23.1</span> Öğrenme Hedefleri ve Ön Koşullar</a></li>
+  <li><a href="#veriyi-hazırlamak-ve-kapsamı-belirtmek" id="toc-veriyi-hazırlamak-ve-kapsamı-belirtmek" class="nav-link" data-scroll-target="#veriyi-hazırlamak-ve-kapsamı-belirtmek"><span class="header-section-number">23.2</span> Veriyi Hazırlamak ve Kapsamı Belirtmek</a></li>
+  <li><a href="#dağılımı-incelemek-histogram" id="toc-dağılımı-incelemek-histogram" class="nav-link" data-scroll-target="#dağılımı-incelemek-histogram"><span class="header-section-number">23.3</span> Dağılımı İncelemek: Histogram</a></li>
+  <li><a href="#dağılımı-düzgünleştirmek-yoğunluk-grafiği" id="toc-dağılımı-düzgünleştirmek-yoğunluk-grafiği" class="nav-link" data-scroll-target="#dağılımı-düzgünleştirmek-yoğunluk-grafiği"><span class="header-section-number">23.4</span> Dağılımı Düzgünleştirmek: Yoğunluk Grafiği</a></li>
+  <li><a href="#grupların-dağılımları-kutu-grafiği-ve-ham-noktalar" id="toc-grupların-dağılımları-kutu-grafiği-ve-ham-noktalar" class="nav-link" data-scroll-target="#grupların-dağılımları-kutu-grafiği-ve-ham-noktalar"><span class="header-section-number">23.5</span> Grupların Dağılımları: Kutu Grafiği ve Ham Noktalar</a></li>
+  <li><a href="#kategorileri-saymak-geom_bar" id="toc-kategorileri-saymak-geom_bar" class="nav-link" data-scroll-target="#kategorileri-saymak-geom_bar"><span class="header-section-number">23.6</span> Kategorileri Saymak: <code>geom_bar()</code></a></li>
+  <li><a href="#hazır-değerleri-karşılaştırmak-geom_col-ve-nokta-grafiği" id="toc-hazır-değerleri-karşılaştırmak-geom_col-ve-nokta-grafiği" class="nav-link" data-scroll-target="#hazır-değerleri-karşılaştırmak-geom_col-ve-nokta-grafiği"><span class="header-section-number">23.7</span> Hazır Değerleri Karşılaştırmak: <code>geom_col()</code> ve Nokta Grafiği</a></li>
+  <li><a href="#iki-sayısal-değişken-saçılım-grafiği" id="toc-iki-sayısal-değişken-saçılım-grafiği" class="nav-link" data-scroll-target="#iki-sayısal-değişken-saçılım-grafiği"><span class="header-section-number">23.8</span> İki Sayısal Değişken: Saçılım Grafiği</a>
+  <ul>
+  <li><a href="#eğilim-çizgisi-bir-modeldir" id="toc-eğilim-çizgisi-bir-modeldir" class="nav-link" data-scroll-target="#eğilim-çizgisi-bir-modeldir"><span class="header-section-number">23.8.1</span> Eğilim Çizgisi Bir Modeldir</a></li>
+  </ul></li>
+  <li><a href="#zaman-içindeki-değişim-çizgi-grafiği" id="toc-zaman-içindeki-değişim-çizgi-grafiği" class="nav-link" data-scroll-target="#zaman-içindeki-değişim-çizgi-grafiği"><span class="header-section-number">23.9</span> Zaman İçindeki Değişim: Çizgi Grafiği</a></li>
+  <li><a href="#hangi-argüman-hangi-kararı-etkiler" id="toc-hangi-argüman-hangi-kararı-etkiler" class="nav-link" data-scroll-target="#hangi-argüman-hangi-kararı-etkiler"><span class="header-section-number">23.10</span> Hangi Argüman Hangi Kararı Etkiler?</a></li>
+  <li><a href="#sık-yapılan-hatalar" id="toc-sık-yapılan-hatalar" class="nav-link" data-scroll-target="#sık-yapılan-hatalar"><span class="header-section-number">23.11</span> Sık Yapılan Hatalar</a></li>
+  <li><a href="#egzersizler" id="toc-egzersizler" class="nav-link" data-scroll-target="#egzersizler"><span class="header-section-number">23.12</span> Egzersizler</a></li>
+  <li><a href="#egzersiz-çözümleri" id="toc-egzersiz-çözümleri" class="nav-link" data-scroll-target="#egzersiz-çözümleri"><span class="header-section-number">23.13</span> Egzersiz Çözümleri</a></li>
+  <li><a href="#bölüm-özeti" id="toc-bölüm-özeti" class="nav-link" data-scroll-target="#bölüm-özeti"><span class="header-section-number">23.14</span> Bölüm Özeti</a></li>
+  <li><a href="#kaynaklar-ve-ek-okuma" id="toc-kaynaklar-ve-ek-okuma" class="nav-link" data-scroll-target="#kaynaklar-ve-ek-okuma"><span class="header-section-number">23.15</span> Kaynaklar ve Ek Okuma</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/MFatihTuzen/r-programlama/edit/main/chapters/04-veri-gorsellestirme/plot_types.qmd" class="toc-action"><i class="bi bi-github"></i>Bu sayfayı düzenle</a></li><li><a href="https://github.com/MFatihTuzen/r-programlama/issues/new" class="toc-action"><i class="bi empty"></i>Sorun bildir</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../chapters/04-veri-gorsellestirme/data_visualization.html">IV · Veri Görselleştirme</a></li><li class="breadcrumb-item"><a href="../../chapters/04-veri-gorsellestirme/plot_types.html"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Grafik Türleri</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span id="sec-plot-types" class="quarto-section-identifier"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Grafik Türleri</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Bir geometri seçmek, hangi bilgiyi görünür kılacağımıza karar vermektir. Histogram dağılımı aralıklara ayırır; kutu grafiği dağılımı birkaç özete indirger; saçılım grafiği gözlemler arasındaki ilişkiyi gösterir. Aynı veri için birkaç doğru gösterim bulunabilir, fakat bunların cevapladıkları sorular aynı olmayabilir.</p>
+<p><a href="ggplot2_basics.html" class="quarto-xref"><span>Bölüm 22</span></a> bölümündeki veri–eşleme–geometri yapısını şimdi farklı sorularda kullanacağız. Her grafikte önce neyi öğrenmek istediğimizi, ardından geometriyi ve onun önemli argümanlarını ele alacağız <span class="citation" data-cites="wickham2016ggplot2 ggplot2Reference">(<a href="../../references.html#ref-wickham2016ggplot2" role="doc-biblioref">Wickham 2016</a>; <a href="../../references.html#ref-ggplot2Reference" role="doc-biblioref"><span class="nocase">ggplot2</span>, t.y.</a>)</span>.</p>
+<section id="öğrenme-hedefleri-ve-ön-koşullar" class="level2" data-number="23.1">
+<h2 data-number="23.1" class="anchored" data-anchor-id="öğrenme-hedefleri-ve-ön-koşullar"><span class="header-section-number">23.1</span> Öğrenme Hedefleri ve Ön Koşullar</h2>
+<p>Bu bölümün sonunda dağılım, karşılaştırma, ilişki ve zaman sorularına uygun grafik seçebilecek; <code>geom_bar()</code> ile <code>geom_col()</code> farkını açıklayabilecek; histogram aralıklarının, yoğunluk düzgünleştirmesinin ve kutu özetlerinin yoruma etkisini değerlendirebileceksiniz. <code>ggplot()</code>, <code>aes()</code>, katmanlar ve temel veri süzme işlemleri ön koşuldur.</p>
+</section>
+<section id="veriyi-hazırlamak-ve-kapsamı-belirtmek" class="level2" data-number="23.2">
+<h2 data-number="23.2" class="anchored" data-anchor-id="veriyi-hazırlamak-ve-kapsamı-belirtmek"><span class="header-section-number">23.2</span> Veriyi Hazırlamak ve Kapsamı Belirtmek</h2>
+<p>Dağılım örneklerinde küçük yapay puan verisi; ilişki örneğinde kitabın 2019 WDI kesiti kullanılacak. Bütün veri hazırlığı bu bölümde yapılır; önceki bölümdeki R nesnelerine ihtiyaç yoktur.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>puanlar <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">grup =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">"A"</span>, <span class="st">"B"</span>), <span class="at">each =</span> <span class="dv">12</span>),</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">puan =</span> <span class="fu">c</span>(<span class="dv">42</span>, <span class="dv">48</span>, <span class="dv">50</span>, <span class="dv">52</span>, <span class="dv">55</span>, <span class="dv">57</span>, <span class="dv">58</span>, <span class="dv">60</span>, <span class="dv">62</span>, <span class="dv">65</span>, <span class="dv">68</span>, <span class="dv">73</span>,</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>           <span class="dv">35</span>, <span class="dv">45</span>, <span class="dv">52</span>, <span class="dv">58</span>, <span class="dv">62</span>, <span class="dv">66</span>, <span class="dv">70</span>, <span class="dv">74</span>, <span class="dv">78</span>, <span class="dv">82</span>, <span class="dv">88</span>, <span class="dv">95</span>)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>countries <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(<span class="st">"data/countries.csv"</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Puanlar 0–100 ölçeğinde yapay ölçümlerdir. Her grupta 12 öğrenci bulunur. WDI verisindeki her satır ise bir ülke veya ekonomidir <span class="citation" data-cites="worldBankWDI">(<a href="../../references.html#ref-worldBankWDI" role="doc-biblioref">World Bank 2026</a>)</span>. Bu iki veri setinin analiz birimleri farklıdır; örnekler arasında yorum düzeyini değiştirmemeliyiz.</p>
+</section>
+<section id="dağılımı-incelemek-histogram" class="level2" data-number="23.3">
+<h2 data-number="23.3" class="anchored" data-anchor-id="dağılımı-incelemek-histogram"><span class="header-section-number">23.3</span> Dağılımı İncelemek: Histogram</h2>
+<p><strong>Sorumuz:</strong> Puanlar hangi aralıklarda toplanıyor? <code>geom_histogram()</code> sayısal ekseni aralıklara böler ve her aralıktaki gözlemleri sayar. Sütunların bitişik olması, ayrı kategorileri değil sayısal aralıkları temsil ettiklerini hatırlatır.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>p_hist <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(puanlar, <span class="fu">aes</span>(<span class="at">x =</span> puan)) <span class="sc">+</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">binwidth =</span> <span class="dv">10</span>, <span class="at">boundary =</span> <span class="dv">0</span>,</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>                 <span class="at">fill =</span> <span class="st">"#27647B"</span>, <span class="at">colour =</span> <span class="st">"white"</span>) <span class="sc">+</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Puanların dağılımı"</span>, <span class="at">x =</span> <span class="st">"Sınav puanı (0–100)"</span>,</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Öğrenci sayısı"</span>, <span class="at">caption =</span> <span class="st">"Kaynak: Yapay veri; n = 24."</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">12</span>)</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>p_hist</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-types-hist" class="quarto-float quarto-figure quarto-figure-center anchored" alt="24 yapay öğrenci puanı 10 puan genişliğindeki histogram aralıklarında gösterilir. Dağılımın ortası daha yoğundur; iki uçta daha az gözlem bulunur.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-types-hist-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="plot_types_files/figure-html/fig-types-hist-1.png" class="img-fluid figure-img" alt="24 yapay öğrenci puanı 10 puan genişliğindeki histogram aralıklarında gösterilir. Dağılımın ortası daha yoğundur; iki uçta daha az gözlem bulunur." width="624">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-types-hist-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Şekil&nbsp;23.1: Puanlar 10 puan genişliğindeki aralıklara ayrılmıştır.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p><code>binwidth = 10</code> aralık genişliğini belirler. <code>boundary = 0</code> sınırları 0’ın katlarıyla hizalar; dolgu <code>fill</code>, sütun sınırı <code>colour</code> ile ayarlanır. Alternatif olarak <code>bins</code> ile hedef aralık sayısı verilebilir. İkisini birlikte vermek yerine, ölçüm birimini bildiğimizde <code>binwidth</code> kullanmak daha açıklayıcı olabilir.</p>
+<p><a href="#fig-types-hist" class="quarto-xref">Şekil&nbsp;<span>23.1</span></a> tek tek puanları gizler. Az sayıda gözlemde histogram biçimi aralık seçimine duyarlıdır. 5 veya 20 puanlık genişlikle yeniden çizerek gördüğümüz örüntünün seçime dayanıklı olup olmadığını sorgulamalıyız. Görsel olarak belirgin iki tepe, tek başına iki ayrı anakütle bulunduğunu kanıtlamaz.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Not</span>Frekans ve yoğunluk aynı dikey eksen değildir
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Bu örnekte dikey eksen sayımdır ve aralıklar eşit genişliktedir. Eşit olmayan aralıklarda yükseklikleri doğrudan sayım olarak karşılaştırmak yanıltıcı olabilir; alanın anlamını koruyan yoğunluk gösterimi gerekir. Histogramın seçenekleri için <a href="https://ggplot2.tidyverse.org/reference/geom_histogram.html">resmî belgeye</a> bakabilirsiniz.</p>
+</div>
+</div>
+</section>
+<section id="dağılımı-düzgünleştirmek-yoğunluk-grafiği" class="level2" data-number="23.4">
+<h2 data-number="23.4" class="anchored" data-anchor-id="dağılımı-düzgünleştirmek-yoğunluk-grafiği"><span class="header-section-number">23.4</span> Dağılımı Düzgünleştirmek: Yoğunluk Grafiği</h2>
+<p>Yoğunluk eğrisi, gözlemlerden hesaplanan düzgünleştirilmiş bir dağılım tahminidir. Ham veride bulunmayan ara konumlarda da değer gösterir. Bu nedenle ölçülmüş bir sıklık çizgisi olarak okunmamalıdır.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>p_density <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(puanlar, <span class="fu">aes</span>(<span class="at">x =</span> puan)) <span class="sc">+</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>(<span class="fu">aes</span>(<span class="at">linetype =</span> <span class="st">"Daha az düzgün: 0,7"</span>), <span class="at">adjust =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>(<span class="fu">aes</span>(<span class="at">linetype =</span> <span class="st">"Daha çok düzgün: 1,5"</span>), <span class="at">adjust =</span> <span class="fl">1.5</span>) <span class="sc">+</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_rug</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Sınav puanı (0–100)"</span>, <span class="at">y =</span> <span class="st">"Yoğunluk"</span>, <span class="at">linetype =</span> <span class="st">"adjust"</span>,</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">caption =</span> <span class="st">"Kaynak: Aynı yapay puanlar; n = 24."</span>) <span class="sc">+</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">12</span>)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>p_density</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-types-density" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Yoğunluk eğrileri aynı 24 puandan hesaplanmıştır. adjust 0,7 eğrisi daha dalgalı, adjust 1,5 eğrisi daha düzgündür; kısa taban çizgileri puanların konumlarını işaretler.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-types-density-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="plot_types_files/figure-html/fig-types-density-1.png" class="img-fluid figure-img" alt="Yoğunluk eğrileri aynı 24 puandan hesaplanmıştır. adjust 0,7 eğrisi daha dalgalı, adjust 1,5 eğrisi daha düzgündür; kısa taban çizgileri puanların konumlarını işaretler." width="624">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-types-density-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Şekil&nbsp;23.2: Aynı puanlar için iki düzgünleştirme düzeyi. Alttaki kısa çizgiler ham gözlemleri gösterir.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p><code>adjust</code>, seçilen bant genişliğini çarpar: küçük değer daha dalgalı, büyük değer daha düzgün bir eğri üretir. <code>linetype</code> sabit metinlere eşlenerek iki eğri için bir açıklama anahtarı oluşturulmuştur. Bu, önceki bölümde gördüğümüz sabit metni kategoriye eşlemenin bilinçli bir kullanımıdır. <code>geom_rug()</code> gözlemleri eksen kenarında kısa işaretlerle gösterir.</p>
+<p>Bir yoğunluk değeri, tek bir puanın olasılığı değildir. Bir aralığa ait olasılık eğrinin o aralıktaki alanıyla ilişkilidir; her grup için ayrı hesaplanan yoğunluklar, varsayılan durumda grup büyüklüğünü doğrudan göstermez. Az veride, kesikli ölçümlerde veya 0–100 gibi sınırları bulunan değişkenlerde düzgünleştirme sınırların dışına da taşabilir. Bu küçük örneği bir “gerçek dağılım” keşfi olarak yorumlamayalım <span class="citation" data-cites="wilkeDataviz">(<a href="../../references.html#ref-wilkeDataviz" role="doc-biblioref">Wilke 2019, böl. 7</a>)</span>.</p>
+</section>
+<section id="grupların-dağılımları-kutu-grafiği-ve-ham-noktalar" class="level2" data-number="23.5">
+<h2 data-number="23.5" class="anchored" data-anchor-id="grupların-dağılımları-kutu-grafiği-ve-ham-noktalar"><span class="header-section-number">23.5</span> Grupların Dağılımları: Kutu Grafiği ve Ham Noktalar</h2>
+<p><strong>Sorumuz:</strong> İki grubun merkezi ve yayılımı nasıl farklılaşıyor? Kutu grafiği bu karşılaştırmayı az yer kaplayarak yapar.</p>
+<p>Kutunun iç çizgisi medyanı, alt ve üst kenarları alt ve üst çeyrekleri temsil eder. Çeyrekler arası aralık <code>IQR = Q3 - Q1</code> biçimindedir. Varsayılan bıyıklar, çeyreklerden 1,5 IQR sınırları içinde kalan en uç gözlemlere uzanır. Sınırın ötesindeki noktalar ayrıca işaretlenir; bunlar otomatik olarak hata değildir <span class="citation" data-cites="tukey1977">(<a href="../../references.html#ref-tukey1977" role="doc-biblioref">Tukey 1977</a>)</span>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>p_box <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(puanlar, <span class="fu">aes</span>(<span class="at">x =</span> grup, <span class="at">y =</span> puan)) <span class="sc">+</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">width =</span> <span class="fl">0.45</span>, <span class="at">outlier.shape =</span> <span class="cn">NA</span>, <span class="at">fill =</span> <span class="st">"grey90"</span>) <span class="sc">+</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">position =</span> <span class="fu">position_jitter</span>(<span class="at">width =</span> <span class="fl">0.08</span>, <span class="at">height =</span> <span class="dv">0</span>, <span class="at">seed =</span> <span class="dv">17</span>),</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">alpha =</span> <span class="fl">0.8</span>, <span class="at">size =</span> <span class="dv">2</span>, <span class="at">colour =</span> <span class="st">"#27647B"</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Grup"</span>, <span class="at">y =</span> <span class="st">"Sınav puanı (0–100)"</span>,</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">caption =</span> <span class="st">"Kaynak: Yapay veri; her grupta 12 öğrenci."</span>) <span class="sc">+</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">12</span>)</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>p_box</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-types-box" class="quarto-float quarto-figure quarto-figure-center anchored" alt="A ve B gruplarının kutu grafikleri ve ham puanları gösterilir. B grubunun medyanı daha yüksek ve dağılımı daha geniştir. Her grupta 12 puan bulunur.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-types-box-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="plot_types_files/figure-html/fig-types-box-1.png" class="img-fluid figure-img" alt="A ve B gruplarının kutu grafikleri ve ham puanları gösterilir. B grubunun medyanı daha yüksek ve dağılımı daha geniştir. Her grupta 12 puan bulunur." width="624">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-types-box-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Şekil&nbsp;23.3: Kutu özetine ham gözlemler eklenerek küçük örneklemde gizlenen ayrıntılar görünür tutulmuştur.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p><code>width</code> kutu genişliğini ayarlar. <code>outlier.shape = NA</code> yalnızca kutu katmanının uç nokta işaretlerini gizler; veriyi silmez. Bütün gözlemleri ikinci katmanda çizdiğimiz için aynı noktayı iki kez göstermemiş oluruz. <code>position_jitter()</code> örtüşmeyi azaltmak amacıyla yalnızca yatay konuma küçük bir kaydırma ekler. <code>height = 0</code> puanları değiştirmez; <code>seed</code> kaydırmayı yeniden üretilebilir yapar.</p>
+<p>Bu örnekte B’nin medyanı ve yayılımı daha yüksektir. Ancak kutular örneklem büyüklüğünü varsayılan genişlikleriyle kodlamaz. Küçük gruplarda çeyrek tahminleri kararsız olabilir ve farklı çeyrek hesaplama yöntemleri küçük farklar üretebilir. İki kutunun örtüşmesi veya ayrılması da tek başına bir hipotez testi değildir.</p>
+</section>
+<section id="kategorileri-saymak-geom_bar" class="level2" data-number="23.6">
+<h2 data-number="23.6" class="anchored" data-anchor-id="kategorileri-saymak-geom_bar"><span class="header-section-number">23.6</span> Kategorileri Saymak: <code>geom_bar()</code></h2>
+<p>Bir tablodaki her satır bir öğrenci olduğunda “her grupta kaç öğrenci var?” sorusu bir sayım sorusudur. <code>geom_bar()</code> varsayılan olarak her kategorideki satırları sayar; dikey eksen için hazır bir sayı sütunu istemez.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>p_count <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(puanlar, <span class="fu">aes</span>(<span class="at">x =</span> grup)) <span class="sc">+</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">width =</span> <span class="fl">0.6</span>, <span class="at">fill =</span> <span class="st">"#27647B"</span>) <span class="sc">+</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">12</span>, <span class="at">by =</span> <span class="dv">3</span>)) <span class="sc">+</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Grup"</span>, <span class="at">y =</span> <span class="st">"Öğrenci sayısı"</span>, <span class="at">caption =</span> <span class="st">"Kaynak: Yapay veri."</span>) <span class="sc">+</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">12</span>)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>p_count</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-types-count" class="quarto-float quarto-figure quarto-figure-center anchored" alt="A ve B gruplarında öğrenci sayıları eşittir: her sütun 12 öğrenciyi gösterir.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-types-count-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="plot_types_files/figure-html/fig-types-count-1.png" class="img-fluid figure-img" alt="A ve B gruplarında öğrenci sayıları eşittir: her sütun 12 öğrenciyi gösterir." width="528">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-types-count-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Şekil&nbsp;23.4: Ham öğrenci tablosundan kategori sayımları otomatik hesaplanır.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Bu sütunlar puanı değil öğrenci sayısını gösterir. Her grupta 12 öğrenci olması başarıların aynı olduğu anlamına gelmez. Sayısal bir ölçümü kategoriymiş gibi <code>geom_bar()</code> ile saymak ise çoğu zaman asıl dağılım sorusunu yanıtlamaz.</p>
+</section>
+<section id="hazır-değerleri-karşılaştırmak-geom_col-ve-nokta-grafiği" class="level2" data-number="23.7">
+<h2 data-number="23.7" class="anchored" data-anchor-id="hazır-değerleri-karşılaştırmak-geom_col-ve-nokta-grafiği"><span class="header-section-number">23.7</span> Hazır Değerleri Karşılaştırmak: <code>geom_col()</code> ve Nokta Grafiği</h2>
+<p><strong>Sorumuz:</strong> Grupların ortalama puanları kaçtır? Önce ortalamaları hesaplayıp sonra hazır değerleri çizeceğiz. <code>geom_col()</code> verideki <code>y</code> değerlerini sütun yüksekliği olarak kullanır; kendiliğinden ortalama hesaplamaz.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>ozet <span class="ot">&lt;-</span> puanlar <span class="sc">|&gt;</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(grup) <span class="sc">|&gt;</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">summarise</span>(<span class="at">n =</span> dplyr<span class="sc">::</span><span class="fu">n</span>(), <span class="at">ortalama =</span> <span class="fu">mean</span>(puan), <span class="at">.groups =</span> <span class="st">"drop"</span>)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>ozet</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":["grup"],"name":[1],"type":["chr"],"align":["left"]},{"label":["n"],"name":[2],"type":["int"],"align":["right"]},{"label":["ortalama"],"name":[3],"type":["dbl"],"align":["right"]}],"data":[{"1":"A","2":"12","3":"57.50000"},{"1":"B","2":"12","3":"67.08333"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<p><code>n</code> örneklem büyüklüğünü, <code>ortalama</code> çizilecek özeti kaydeder. Aynı kategori için birden fazla satır kalırsa <code>geom_col()</code> bunları varsayılan olarak üst üste yığabilir. Bu yüzden çizimden önce tablonun analiz birimini kontrol ederiz.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>p_col <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(ozet, <span class="fu">aes</span>(<span class="at">x =</span> grup, <span class="at">y =</span> ortalama)) <span class="sc">+</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">width =</span> <span class="fl">0.6</span>, <span class="at">fill =</span> <span class="st">"#27647B"</span>) <span class="sc">+</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Grup"</span>, <span class="at">y =</span> <span class="st">"Ortalama puan (0–100)"</span>, <span class="at">caption =</span> <span class="st">"Kaynak: Yapay veri."</span>) <span class="sc">+</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">12</span>)</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>p_col</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-types-col" class="quarto-float quarto-figure quarto-figure-center anchored" alt="A ve B gruplarının ortalama puanları sıfırdan başlayan sütunlarla karşılaştırılır. B'nin ortalaması A'dan yüksektir; bu grafik bireysel puanları göstermez.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-types-col-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="plot_types_files/figure-html/fig-types-col-1.png" class="img-fluid figure-img" alt="A ve B gruplarının ortalama puanları sıfırdan başlayan sütunlarla karşılaştırılır. B'nin ortalaması A'dan yüksektir; bu grafik bireysel puanları göstermez." width="528">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-types-col-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Şekil&nbsp;23.5: Sütunlar hazır hesaplanmış ortalama puanları gösterir; grup içi yayılımı göstermez.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Sütun uzunluğu büyüklüğü temsil ettiği için sıfır başlangıcı korunur. Alternatif olarak <code>geom_point()</code> kullanıp aynı ortalamaları konumla gösterebiliriz. Çok sayıda kategori ve uzun adlar varsa yatay nokta grafiği yararlı olabilir. Her iki gösterim de ortalamanın belirsizliğini ve dağılımı tek başına vermez; ham veriyi gördüğümüz kutu ve nokta grafiği bu nedenle tamamlayıcıdır <span class="citation" data-cites="wilkeDataviz">(<a href="../../references.html#ref-wilkeDataviz" role="doc-biblioref">Wilke 2019, böl. 6</a>)</span>.</p>
+</section>
+<section id="iki-sayısal-değişken-saçılım-grafiği" class="level2" data-number="23.8">
+<h2 data-number="23.8" class="anchored" data-anchor-id="iki-sayısal-değişken-saçılım-grafiği"><span class="header-section-number">23.8</span> İki Sayısal Değişken: Saçılım Grafiği</h2>
+<p><strong>Sorumuz:</strong> 2019 yılında internet kullanım oranı ile yaşam beklentisi nasıl ilişkilidir? Sayısal iki ölçüm için her ülkeyi bir nokta yapalım.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>internet_yasam <span class="ot">&lt;-</span> countries <span class="sc">|&gt;</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(year <span class="sc">==</span> <span class="dv">2019</span>, <span class="sc">!</span><span class="fu">is.na</span>(internet_users_pct),</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>                <span class="sc">!</span><span class="fu">is.na</span>(life_expectancy_total))</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="at">kullanilan =</span> <span class="fu">nrow</span>(internet_yasam),</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">dislanan =</span> <span class="fu">nrow</span>(countries) <span class="sc">-</span> <span class="fu">nrow</span>(internet_yasam))</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>kullanilan   dislanan 
+       189         28 </code></pre>
+</div>
+</div>
+<p>Mevcut kesitte 189 ülke/ekonomi çizilir, internet verisi eksik 28 kayıt dışlanır. Yaşam beklentisi yıl, internet kullanımı nüfusun yüzdesi birimindedir. Kayıp internet değerleri sıfır kabul edilmemiştir.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>p_scatter <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(internet_yasam,</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">aes</span>(<span class="at">x =</span> internet_users_pct, <span class="at">y =</span> life_expectancy_total)) <span class="sc">+</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.65</span>, <span class="at">size =</span> <span class="dv">2</span>, <span class="at">colour =</span> <span class="st">"#27647B"</span>) <span class="sc">+</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"İnternet kullanan nüfus (%)"</span>,</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Doğuşta beklenen yaşam süresi (yıl)"</span>,</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">caption =</span> <span class="st">"Kaynak: Dünya Bankası WDI; 2019, n = 189."</span>) <span class="sc">+</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">12</span>)</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>p_scatter</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-types-scatter" class="quarto-float quarto-figure quarto-figure-center anchored" alt="İnternet kullanım oranı yüksek ülkelerde yaşam beklentisi genel olarak daha yüksektir. Aynı internet kullanım düzeyinde yaşam beklentileri değişir; noktalar tek bir doğru üzerinde değildir.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-types-scatter-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="plot_types_files/figure-html/fig-types-scatter-1.png" class="img-fluid figure-img" alt="İnternet kullanım oranı yüksek ülkelerde yaşam beklentisi genel olarak daha yüksektir. Aynı internet kullanım düzeyinde yaşam beklentileri değişir; noktalar tek bir doğru üzerinde değildir." width="624">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-types-scatter-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Şekil&nbsp;23.6: İnternet kullanımı ve yaşam beklentisi: 2019’da iki göstergesi gözlenen 189 ülke/ekonomi.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Genel örüntü pozitif yönlüdür; tek başına internet kullanımının yaşam süresini artırdığı sonucunu vermez. Gelir, eğitim ve sağlık altyapısı gibi başka etkenler iki ölçümle de ilişkili olabilir. Saydamlık, örtüşmeyi azaltır; yoğun bölgelerde kaç ülke bulunduğunu kesin okumak için tablo veya başka bir yoğunluk gösterimi gerekebilir.</p>
+<section id="eğilim-çizgisi-bir-modeldir" class="level3" data-number="23.8.1">
+<h3 data-number="23.8.1" class="anchored" data-anchor-id="eğilim-çizgisi-bir-modeldir"><span class="header-section-number">23.8.1</span> Eğilim Çizgisi Bir Modeldir</h3>
+<p>Saçılım grafiğine <code>geom_smooth()</code> eklemek bir hesaplama ve modelleme kararıdır. Örneğin aşağıdaki nesne, doğrusal ortalama ilişkisini özetler; burada ayrıca çizdirmiyoruz.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>p_dogrusal <span class="ot">&lt;-</span> p_scatter <span class="sc">+</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">formula =</span> y <span class="sc">~</span> x, <span class="at">se =</span> <span class="cn">TRUE</span>, <span class="at">level =</span> <span class="fl">0.95</span>)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p><code>method = "lm"</code> doğrusal modeli, <code>formula = y ~ x</code> model formunu, <code>se = TRUE</code> tahmin edilen ortalama eğilimin belirsizlik bandını ister. <code>level = 0.95</code> güven düzeyidir. Bant, ülkelerin yüzde 95’inin içinde bulunacağı aralık değildir. Model varsayımları ve veri yapısı uygun değilse çizgi ve bant da güvenilir bir çıkarım sağlamaz. Doğrusal olmayan bir örüntüyü zorla doğruya indirgememeliyiz <span class="citation" data-cites="gelmanHillVehtari2020">(<a href="../../references.html#ref-gelmanHillVehtari2020" role="doc-biblioref">Gelman vd. 2020</a>)</span>.</p>
+</section>
+</section>
+<section id="zaman-içindeki-değişim-çizgi-grafiği" class="level2" data-number="23.9">
+<h2 data-number="23.9" class="anchored" data-anchor-id="zaman-içindeki-değişim-çizgi-grafiği"><span class="header-section-number">23.9</span> Zaman İçindeki Değişim: Çizgi Grafiği</h2>
+<p>Çizgi, noktalar arasında bir bağlantı olduğunu ima eder. Bu yüzden zaman gibi anlamlı bir sıralama bulunduğunda kullanılır. Birbirinden bağımsız ülkeleri ad sırasıyla bağlamak çoğu zaman anlamlı değildir.</p>
+<p>Eksik bir ayın nasıl gösterileceğini küçük bir yapay seriyle görelim:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>aylik <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">ay =</span> <span class="fu">seq</span>(<span class="fu">as.Date</span>(<span class="st">"2024-01-01"</span>), <span class="at">by =</span> <span class="st">"month"</span>, <span class="at">length.out =</span> <span class="dv">6</span>),</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">deger =</span> <span class="fu">c</span>(<span class="dv">20</span>, <span class="dv">24</span>, <span class="dv">23</span>, <span class="cn">NA</span>, <span class="dv">28</span>, <span class="dv">30</span>)</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>p_time <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(aylik, <span class="fu">aes</span>(<span class="at">x =</span> ay, <span class="at">y =</span> deger)) <span class="sc">+</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="fl">0.8</span>) <span class="sc">+</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">2</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_date</span>(<span class="at">date_breaks =</span> <span class="st">"1 month"</span>, <span class="at">date_labels =</span> <span class="st">"%m/%Y"</span>) <span class="sc">+</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Ay"</span>, <span class="at">y =</span> <span class="st">"Gösterge (birim)"</span>,</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>       <span class="at">caption =</span> <span class="st">"Kaynak: Yapay veri; 04/2024 değeri eksiktir."</span>) <span class="sc">+</span></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">12</span>)</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>p_time</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-types-time" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Ocaktan hazirana uzanan yapay aylık seride değerler 20, 24, 23, eksik, 28 ve 30'dur. Nisan ayında nokta yoktur ve çizgi bu boşluğu birleştirmez.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-types-time-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="plot_types_files/figure-html/fig-types-time-1.png" class="img-fluid figure-img" alt="Ocaktan hazirana uzanan yapay aylık seride değerler 20, 24, 23, eksik, 28 ve 30'dur. Nisan ayında nokta yoktur ve çizgi bu boşluğu birleştirmez." width="624">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-types-time-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Şekil&nbsp;23.7: Eksik nisan değeri açık NA olarak korunduğu için çizgide boşluk vardır.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p><code>geom_line()</code> her grup içinde <code>x</code> sırasına göre bağlar. <code>linewidth</code> çizgi kalınlığıdır; noktalarda kullandığımız <code>size</code> ile karıştırmayalım. <code>scale_x_date()</code> tarih ekseninde işaret aralığını ve etiket biçimini belirler. Nokta katmanında <code>na.rm = TRUE</code> kullandık; çünkü eksik ayı önceden açıkça tanımlayıp açıklamada belirttik.</p>
+<p>Eksik satırı tamamen silseydik mart ile mayıs doğrudan bağlanabilirdi. Bu, nisan için ölçüm yapıldığı anlamına gelmez. Gerçek panel verisinde olmayan ülke–yıl satırları ile bulunan satırdaki <code>NA</code> farklı durumlardır; çizimden önce ikisini de kontrol etmeliyiz.</p>
+</section>
+<section id="hangi-argüman-hangi-kararı-etkiler" class="level2" data-number="23.10">
+<h2 data-number="23.10" class="anchored" data-anchor-id="hangi-argüman-hangi-kararı-etkiler"><span class="header-section-number">23.10</span> Hangi Argüman Hangi Kararı Etkiler?</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Geometri</th>
+<th>Önemli seçenek</th>
+<th>Etkilediği karar</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>geom_histogram()</code></td>
+<td><code>binwidth</code>, <code>boundary</code>, <code>bins</code></td>
+<td>Sayısal dağılımın aralıklara ayrılması</td>
+</tr>
+<tr class="even">
+<td><code>geom_density()</code></td>
+<td><code>adjust</code>, <code>bw</code></td>
+<td>Dağılım tahmininin düzgünlüğü</td>
+</tr>
+<tr class="odd">
+<td><code>geom_boxplot()</code></td>
+<td><code>coef</code>, <code>width</code>, <code>outlier.shape</code></td>
+<td>Bıyık sınırı ve özetin görünümü</td>
+</tr>
+<tr class="even">
+<td><code>geom_bar()</code></td>
+<td><code>position</code>, <code>width</code></td>
+<td>Sayımların yerleşimi ve sütun görünümü</td>
+</tr>
+<tr class="odd">
+<td><code>geom_col()</code></td>
+<td><code>position</code>, <code>width</code></td>
+<td>Hazır değerlerin yerleşimi; özet hesaplamaz</td>
+</tr>
+<tr class="even">
+<td><code>geom_point()</code></td>
+<td><code>alpha</code>, <code>size</code>, <code>shape</code></td>
+<td>Noktaların okunması ve örtüşme</td>
+</tr>
+<tr class="odd">
+<td><code>geom_line()</code></td>
+<td><code>group</code>, <code>linewidth</code>, <code>linetype</code></td>
+<td>Hangi gözlemlerin bağlandığı ve çizgi görünümü</td>
+</tr>
+<tr class="even">
+<td><code>geom_smooth()</code></td>
+<td><code>method</code>, <code>formula</code>, <code>se</code>, <code>level</code></td>
+<td>Model ve belirsizlik gösterimi</td>
+</tr>
+</tbody>
+</table>
+<p><code>group</code>, eşlenebilen bir görsel gruplama özelliğidir; <code>aes()</code> içinde verilebilir. Bütün seçenekler yalnızca görünümü değiştirmez: aralık genişliği ve düzgünleştirme, görünen özeti de değiştirir.</p>
+</section>
+<section id="sık-yapılan-hatalar" class="level2" data-number="23.11">
+<h2 data-number="23.11" class="anchored" data-anchor-id="sık-yapılan-hatalar"><span class="header-section-number">23.11</span> Sık Yapılan Hatalar</h2>
+<ul>
+<li>Sayım sorusuyla ortalama sorusunu karıştırmak.</li>
+<li>Varsayılan histogram aralıklarını sorgulamadan “iki tepe var” demek.</li>
+<li>Yoğunluk yüksekliğini kişi sayısı veya tek bir değerin olasılığı sanmak.</li>
+<li>Kutu grafiğinin uç noktalarını otomatik silmek.</li>
+<li>Ortalama sütunlarından dağılım veya istatistiksel anlamlılık çıkarmak.</li>
+<li>İlişki grafiğine gerekçesiz bir model eklemek veya çizgiyi nedensellik gibi okumak.</li>
+<li>Eksik dönemleri kaldırıp çizginin oluşan boşluğu atlamasına dikkat etmemek.</li>
+</ul>
+</section>
+<section id="egzersizler" class="level2" data-number="23.12">
+<h2 data-number="23.12" class="anchored" data-anchor-id="egzersizler"><span class="header-section-number">23.12</span> Egzersizler</h2>
+<ol type="1">
+<li><strong>Kolay:</strong> Histogram ile kategori sütun grafiğinin yatay eksenleri neden farklı anlam taşır?</li>
+<li><strong>Kolay:</strong> Elinizde <code>grup</code> ve önceden hesaplanmış <code>ogrenci_sayisi</code> sütunları varsa hangi geometri uygundur?</li>
+<li><strong>Orta:</strong> Puan histogramını 5 ve 20 puanlık genişlikle oluşturun. Hangi ayrıntılar değişiyor? Yeni veri üretilmiş oluyor mu?</li>
+<li><strong>Orta:</strong> <code>ozet</code> tablosundaki ortalamaları yatay nokta grafiğiyle gösterin. Bunu kutu grafiğiyle hangi bakımdan tamamlamanız gerekir?</li>
+<li><strong>Orta:</strong> Yoğunluk eğrisindeki küçük bir tepe, küçük <code>adjust</code> değeriyle belirginleşiyor ve büyük değerle kayboluyor. Nasıl yorumlarsınız?</li>
+<li><strong>Zor:</strong> Nisan satırını çıkaran zaman grafiği ile mevcut grafiğin farkını açıklayın. Boşluğu sıfırla doldurmak neden başka bir yanlış bilgi üretir?</li>
+<li><strong>Zor:</strong> <code>p_dogrusal</code> nesnesindeki güven bandını “ülkelerin yüzde 95’i bu aralıktadır” diye açıklayan yorumu düzeltin.</li>
+</ol>
+</section>
+<section id="egzersiz-çözümleri" class="level2" data-number="23.13">
+<h2 data-number="23.13" class="anchored" data-anchor-id="egzersiz-çözümleri"><span class="header-section-number">23.13</span> Egzersiz Çözümleri</h2>
+<p><strong>Çözüm 1:</strong> Histogramın yatay ekseni nicel aralıkları, kategori grafiğinin ekseni ayrı sınıfları gösterir. Histogram aralık genişliğine duyarlıdır; kategorilerin genişliği sayısal bir aralık anlamına gelmez.</p>
+<p><strong>Çözüm 2:</strong> <code>aes(x = grup, y = ogrenci_sayisi)</code> ile <code>geom_col()</code> uygundur. Ham satırların sayılması istenmiyor; değerler zaten hesaplanmıştır.</p>
+<p><strong>Çözüm 3:</strong></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>hist_5 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(puanlar, <span class="fu">aes</span>(puan)) <span class="sc">+</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">binwidth =</span> <span class="dv">5</span>, <span class="at">boundary =</span> <span class="dv">0</span>)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>hist_20 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(puanlar, <span class="fu">aes</span>(puan)) <span class="sc">+</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">binwidth =</span> <span class="dv">20</span>, <span class="at">boundary =</span> <span class="dv">0</span>)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Bu nesneleri ekrana yazdırarak karşılaştırabilirsiniz. Dar aralıklar yerel boşluk ve yığılmaları belirginleştirir; geniş aralıklar ayrıntıyı azaltır. Veri aynı, onun özeti farklıdır.</p>
+<p><strong>Çözüm 4:</strong></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>ortalama_noktalari <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(ozet, <span class="fu">aes</span>(<span class="at">x =</span> ortalama, <span class="at">y =</span> grup)) <span class="sc">+</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Ortalama puan (0–100)"</span>, <span class="at">y =</span> <span class="st">"Grup"</span>)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Kutu ve ham noktalar grup içindeki yayılımı ve sıra dışı gözlemleri gösterir. İki ortalama noktası bunları göstermez.</p>
+<p><strong>Çözüm 5:</strong> Tepe düzgünleştirme seçimine duyarlıdır. Özellikle bu küçük örneklemde ayrı bir alt grubun kanıtı sayılmamalı; ham noktalar ve farklı gösterimlerle araştırılmalıdır.</p>
+<p><strong>Çözüm 6:</strong> Satır kaldırılırsa mart–mayıs bağlantısı eksik ayı atlayabilir. Açık <code>NA</code> boşluk bırakır. Sıfırla doldurmak ise ölçülmemiş ayda gerçek değerin sıfır olduğu iddiasını üretir.</p>
+<p><strong>Çözüm 7:</strong> Bant, seçilen doğrusal modelin tahmin ettiği ortalama ilişkinin belirsizliğini gösterir. Tek tek gözlemler için tahmin aralığı değildir; model ve örnekleme varsayımlarının uygunluğu ayrıca değerlendirilmelidir.</p>
+</section>
+<section id="bölüm-özeti" class="level2" data-number="23.14">
+<h2 data-number="23.14" class="anchored" data-anchor-id="bölüm-özeti"><span class="header-section-number">23.14</span> Bölüm Özeti</h2>
+<p>Grafik türleri, dağılımı, kategorileri, ilişkileri veya zaman içindeki değişimi farklı biçimlerde temsil eder. Hangi bilginin hesaplandığını ve hangisinin gizlendiğini bilmek geometri adını bilmek kadar önemlidir. Aralık, düzgünleştirme, özetleme ve eksik dönem kararları yorumu doğrudan etkiler.</p>
+<p>Bir sonraki bölümde aynı grafikte birden fazla grubu karşılaştırmayı ve veriyi facet panellerine ayırmayı öğreneceğiz.</p>
+</section>
+<section id="kaynaklar-ve-ek-okuma" class="level2" data-number="23.15">
+<h2 data-number="23.15" class="anchored" data-anchor-id="kaynaklar-ve-ek-okuma"><span class="header-section-number">23.15</span> Kaynaklar ve Ek Okuma</h2>
+<p>Dağılım ve karşılaştırma tasarımı için <span class="citation" data-cites="wilkeDataviz">(<a href="../../references.html#ref-wilkeDataviz" role="doc-biblioref">Wilke 2019</a>)</span>, kutu özetlerinin keşifsel kullanımı için <span class="citation" data-cites="tukey1977">(<a href="../../references.html#ref-tukey1977" role="doc-biblioref">Tukey 1977</a>)</span>, model yorumları için <span class="citation" data-cites="gelmanHillVehtari2020">(<a href="../../references.html#ref-gelmanHillVehtari2020" role="doc-biblioref">Gelman vd. 2020</a>)</span> önerilir. Teknik seçenekler <span class="citation" data-cites="ggplot2Reference">(<a href="../../references.html#ref-ggplot2Reference" role="doc-biblioref"><span class="nocase">ggplot2</span>, t.y.</a>)</span> içindeki <a href="https://ggplot2.tidyverse.org/reference/geom_histogram.html">histogram</a>, <a href="https://ggplot2.tidyverse.org/reference/geom_density.html">yoğunluk</a>, <a href="https://ggplot2.tidyverse.org/reference/geom_boxplot.html">kutu grafiği</a>, <a href="https://ggplot2.tidyverse.org/reference/geom_bar.html">sütun grafikleri</a>, <a href="https://ggplot2.tidyverse.org/reference/geom_path.html">çizgiler</a> ve <a href="https://ggplot2.tidyverse.org/reference/geom_smooth.html">eğilim çizgisi</a> sayfalarından doğrulanabilir.</p>
+
+
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="ref-gelmanHillVehtari2020" class="csl-entry" role="listitem">
+Gelman, Andrew, Jennifer Hill, ve Aki Vehtari. 2020. <em>Regression and Other Stories</em>. Cambridge University Press. <a href="https://doi.org/10.1017/9781139161879">https://doi.org/10.1017/9781139161879</a>.
+</div>
+<div id="ref-ggplot2Reference" class="csl-entry" role="listitem">
+<span class="nocase">ggplot2</span>. t.y. <span>“ggplot2 Reference”</span>. Erişim 26 Ekim 2026. <a href="https://ggplot2.tidyverse.org/reference/">https://ggplot2.tidyverse.org/reference/</a>.
+</div>
+<div id="ref-tukey1977" class="csl-entry" role="listitem">
+Tukey, John W. 1977. <em>Exploratory Data Analysis</em>. Addison-Wesley.
+</div>
+<div id="ref-wickham2016ggplot2" class="csl-entry" role="listitem">
+Wickham, Hadley. 2016. <em>ggplot2: Elegant Graphics for Data Analysis</em>. Springer. <a href="https://ggplot2.tidyverse.org/">https://ggplot2.tidyverse.org/</a>.
+</div>
+<div id="ref-wilkeDataviz" class="csl-entry" role="listitem">
+Wilke, Claus O. 2019. <em>Fundamentals of Data Visualization</em>. O’Reilly Media. <a href="https://clauswilke.com/dataviz/">https://clauswilke.com/dataviz/</a>.
+</div>
+<div id="ref-worldBankWDI" class="csl-entry" role="listitem">
+World Bank. 2026. <em>World Development Indicators</em>. DataBank. <a href="https://databank.worldbank.org/source/world-development-indicators">https://databank.worldbank.org/source/world-development-indicators</a>.
+</div>
+</div>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Kopyalandı");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Kopyalandı");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/mfatihtuzen\.github\.io\/r-programlama\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../../chapters/04-veri-gorsellestirme/ggplot2_basics.html" class="pagination-link" aria-label="ggplot2 Temelleri">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">ggplot2 Temelleri</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../../chapters/04-veri-gorsellestirme/grouping_facets.html" class="pagination-link" aria-label="Gruplandırma ve Facet Yapıları">
+        <span class="nav-page-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Gruplandırma ve Facet Yapıları</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>© 2026, <a href="https://www.linkedin.com/in/dr-m-fatih-t-2b2a4328/">Muhammed Fatih Tüzen</a></p>
+</div>   
+    <div class="nav-footer-center">
+
+<div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/MFatihTuzen/r-programlama/edit/main/chapters/04-veri-gorsellestirme/plot_types.qmd" class="toc-action"><i class="bi bi-github"></i>Bu sayfayı düzenle</a></li><li><a href="https://github.com/MFatihTuzen/r-programlama/issues/new" class="toc-action"><i class="bi empty"></i>Sorun bildir</a></li></ul></div><div class="cookie-consent-footer"><a href="#" id="open_preferences_center">Cookie Preferences</a></div></div>
+    <div class="nav-footer-right">
+<p>Bu kitap <a href="https://quarto.org/">Quarto</a> ile hazırlanmıştır.</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+<script src="../../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

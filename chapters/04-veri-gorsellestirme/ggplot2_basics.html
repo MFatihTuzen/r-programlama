@@ -1,0 +1,1556 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="tr" xml:lang="tr"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.19">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="R programlama, veri analizi ve istatistiksel düşünme üzerine Türkçe açık kaynak kitap.">
+
+<title>22&nbsp; ggplot2 Temelleri – R Programlama</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../chapters/04-veri-gorsellestirme/plot_types.html" rel="next">
+<link href="../../chapters/04-veri-gorsellestirme/data_visualization.html" rel="prev">
+<link href="../../images/favicon.png" rel="icon" type="image/png">
+<script src="../../site_libs/cookie-consent/cookie-consent.js"></script>
+<link href="../../site_libs/cookie-consent/cookie-consent.css" rel="stylesheet">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-5c1318cf63eba56dbef7ba16bc7d56f5.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-6453f418aeef366c23116eb9cb0b6816.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-5c1318cf63eba56dbef7ba16bc7d56f5.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-c16f430fe295f19fa7843ef0f918a581.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-a2b91ec66cfe0c714d720bb2db095b04.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-c16f430fe295f19fa7843ef0f918a581.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "Sonuç yok",
+    "search-matching-documents-text": "eşleşen belgeler",
+    "search-copy-link-title": "Aramak için bağlantıyı kopyalayın",
+    "search-hide-matches-text": "Ek eşleşmeleri gizle",
+    "search-more-match-text": "bu belgede bir tane daha eşleşme",
+    "search-more-matches-text": "bu belgede daha fazla eşleşme",
+    "search-clear-button-title": "Temizle",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "İptal et",
+    "search-submit-button-title": "Gönder",
+    "search-label": "Ara"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-X6J60MER5G"></script>
+
+<script type="text/plain" cookie-consent="tracking">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-X6J60MER5G', { 'anonymize_ip': true});
+</script>
+
+<script type="text/javascript" charset="UTF-8">
+document.addEventListener('DOMContentLoaded', function () {
+cookieconsent.run({
+  "notice_banner_type":"simple",
+  "consent_type":"express",
+  "palette":"light",
+  "language":"en",
+  "page_load_consent_levels":["strictly-necessary"],
+  "notice_banner_reject_button_hide":false,
+  "preferences_center_close_button_hide":false,
+  "website_name":""
+  ,
+"language":"tr"
+  });
+});
+</script> 
+  
+<style>html{ scroll-behavior: smooth; }</style>
+<link href="../../site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet">
+<script src="../../site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+
+
+<link rel="stylesheet" href="../../styles.css">
+<meta property="og:title" content="22&nbsp; ggplot2 Temelleri – R Programlama">
+<meta property="og:description" content="R programlama, veri analizi ve istatistiksel düşünme üzerine Türkçe açık kaynak kitap.">
+<meta property="og:image" content="https://mfatihtuzen.github.io/r-programlama/chapters/04-veri-gorsellestirme/ggplot2_basics_files/figure-html/fig-ggbase-first-1.png">
+<meta property="og:site_name" content="R Programlama">
+<meta property="og:image:alt" content="Sekiz öğrencide haftalık çalışma süresi 1–4 saat, puanlar 45–78 arasındadır. Daha çok çalışan öğrencilerin puanları bu örnekte genel olarak daha yüksektir.">
+<meta property="og:image:height" content="768">
+<meta property="og:image:width" content="1248">
+<meta name="twitter:title" content="22&nbsp; ggplot2 Temelleri – R Programlama">
+<meta name="twitter:description" content="R programlama, veri analizi ve istatistiksel düşünme üzerine Türkçe açık kaynak kitap.">
+<meta name="twitter:image" content="https://mfatihtuzen.github.io/r-programlama/chapters/04-veri-gorsellestirme/ggplot2_basics_files/figure-html/fig-ggbase-first-1.png">
+<meta name="twitter:image:alt" content="Sekiz öğrencide haftalık çalışma süresi 1–4 saat, puanlar 45–78 arasındadır. Daha çok çalışan öğrencilerin puanları bu örnekte genel olarak daha yüksektir.">
+<meta name="twitter:image-height" content="768">
+<meta name="twitter:image-width" content="1248">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="nav-sidebar floating quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Kenar çubuğunu değiştir" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../chapters/04-veri-gorsellestirme/data_visualization.html">IV · Veri Görselleştirme</a></li><li class="breadcrumb-item"><a href="../../chapters/04-veri-gorsellestirme/ggplot2_basics.html"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">ggplot2 Temelleri</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Kenar çubuğunu değiştir" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Ara" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../../">R Programlama</a> 
+        <div class="sidebar-tools-main tools-wide">
+    <a href="https://github.com/MFatihTuzen/r-programlama" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+    <div class="dropdown">
+      <a href="" title="Share" id="quarto-navigation-tool-dropdown-0" class="quarto-navigation-tool dropdown-toggle px-1" data-bs-toggle="dropdown" aria-expanded="false" role="link" aria-label="Share"><i class="bi bi-share"></i></a>
+      <ul class="dropdown-menu" aria-labelledby="quarto-navigation-tool-dropdown-0">
+          <li>
+            <a class="dropdown-item sidebar-tools-main-item" href="https://twitter.com/intent/tweet?url=|url|">
+              <i class="bi bi-twitter pe-1"></i>
+            Twitter
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item sidebar-tools-main-item" href="https://www.linkedin.com/sharing/share-offsite/?url=|url|">
+              <i class="bi bi-linkedin pe-1"></i>
+            LinkedIn
+            </a>
+          </li>
+      </ul>
+    </div>
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Karanlık modu değiştir"><i class="bi"></i></a>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Okuyucu modunu değiştir">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Ara"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Önsöz</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">I · R Programlamaya Giriş</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Bölümü değiştir">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/r_about.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">R Programlama Hakkında</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/R_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">R Çalışma Ortamı</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">R Temel Kullanımı ve İlk Komutlar</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/data_types.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Veri Tipleri ve Yapıları</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/functions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Fonksiyonlar</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/if_else_for.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Karar Yapıları ve Döngüler</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/date_time.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Tarih ve Zaman İşlemleri</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/strings.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Metin İşlemleri</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/apply.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Apply Ailesi</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/import_export.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Verilerin İçe ve Dışa Aktarılması</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">II · Veri Manipülasyonu ve Dönüştürme</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Bölümü değiştir">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/02-veri-manipulasyonu/data_manipulation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Veri Manipülasyonu</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/02-veri-manipulasyonu/data_transformation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Veri Dönüştürme</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/02-veri-manipulasyonu/data_join.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Veri Birleştirme</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">III · Veri Ön İşleme</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Bölümü değiştir">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/03-veri-on-isleme/data_preprocessing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Veri Ön İşlemeye Giriş</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/03-veri-on-isleme/missing_data_imputation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Eksik Veriler ve İmputasyon</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/03-veri-on-isleme/outliers.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Aykırı Gözlemler</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/03-veri-on-isleme/data_transformations.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Veri Dönüşümleri</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/03-veri-on-isleme/scaling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Ölçeklendirme</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/03-veri-on-isleme/feature_engineering.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Özellik Mühendisliğine Giriş</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/03-veri-on-isleme/data_leakage.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Veri Sızıntısı ve Doğru Ön İşleme İş Akışı</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">IV · Veri Görselleştirme</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Bölümü değiştir">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/04-veri-gorsellestirme/data_visualization.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Veri Görselleştirmeye Giriş</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/04-veri-gorsellestirme/ggplot2_basics.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">ggplot2 Temelleri</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/04-veri-gorsellestirme/plot_types.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Grafik Türleri</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/04-veri-gorsellestirme/grouping_facets.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Gruplandırma ve Facet Yapıları</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/04-veri-gorsellestirme/scales_colors_labels.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Ölçekler, Renkler ve Etiketler</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/04-veri-gorsellestirme/themes_customization.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Grafik Temaları ve Özelleştirme</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/04-veri-gorsellestirme/effective_graphics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Etkili ve Yayın Kalitesinde Grafikler</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/04-veri-gorsellestirme/exporting_graphics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Grafiklerin Dışa Aktarılması</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Kaynakça</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="2">
+    <h2 id="toc-title">İçindekiler</h2>
+   
+  <ul>
+  <li><a href="#öğrenme-hedefleri-ve-ön-koşullar" id="toc-öğrenme-hedefleri-ve-ön-koşullar" class="nav-link active" data-scroll-target="#öğrenme-hedefleri-ve-ön-koşullar"><span class="header-section-number">22.1</span> Öğrenme Hedefleri ve Ön Koşullar</a></li>
+  <li><a href="#paketi-kullanıma-hazırlamak" id="toc-paketi-kullanıma-hazırlamak" class="nav-link" data-scroll-target="#paketi-kullanıma-hazırlamak"><span class="header-section-number">22.2</span> Paketi Kullanıma Hazırlamak</a></li>
+  <li><a href="#grafiğin-bileşenleri" id="toc-grafiğin-bileşenleri" class="nav-link" data-scroll-target="#grafiğin-bileşenleri"><span class="header-section-number">22.3</span> Grafiğin Bileşenleri</a></li>
+  <li><a href="#ilk-grafiği-adım-adım-kurmak" id="toc-ilk-grafiği-adım-adım-kurmak" class="nav-link" data-scroll-target="#ilk-grafiği-adım-adım-kurmak"><span class="header-section-number">22.4</span> İlk Grafiği Adım Adım Kurmak</a>
+  <ul>
+  <li><a href="#ile-aynı-işlemi-yapmaz" id="toc-ile-aynı-işlemi-yapmaz" class="nav-link" data-scroll-target="#ile-aynı-işlemi-yapmaz"><span class="header-section-number">22.4.1</span> <code>+</code> ile <code>|&gt;</code> Aynı İşlemi Yapmaz</a></li>
+  </ul></li>
+  <li><a href="#estetik-eşleme-ve-sabit-ayar" id="toc-estetik-eşleme-ve-sabit-ayar" class="nav-link" data-scroll-target="#estetik-eşleme-ve-sabit-ayar"><span class="header-section-number">22.5</span> Estetik Eşleme ve Sabit Ayar</a></li>
+  <li><a href="#geom_point-argümanlarını-okumak" id="toc-geom_point-argümanlarını-okumak" class="nav-link" data-scroll-target="#geom_point-argümanlarını-okumak"><span class="header-section-number">22.6</span> <code>geom_point()</code> Argümanlarını Okumak</a></li>
+  <li><a href="#katmanlar-ve-eşlemelerin-devralınması" id="toc-katmanlar-ve-eşlemelerin-devralınması" class="nav-link" data-scroll-target="#katmanlar-ve-eşlemelerin-devralınması"><span class="header-section-number">22.7</span> Katmanlar ve Eşlemelerin Devralınması</a></li>
+  <li><a href="#grafik-nesnesini-görüntülemek-ve-yardım-almak" id="toc-grafik-nesnesini-görüntülemek-ve-yardım-almak" class="nav-link" data-scroll-target="#grafik-nesnesini-görüntülemek-ve-yardım-almak"><span class="header-section-number">22.8</span> Grafik Nesnesini Görüntülemek ve Yardım Almak</a></li>
+  <li><a href="#sık-yapılan-hatalar" id="toc-sık-yapılan-hatalar" class="nav-link" data-scroll-target="#sık-yapılan-hatalar"><span class="header-section-number">22.9</span> Sık Yapılan Hatalar</a></li>
+  <li><a href="#egzersizler" id="toc-egzersizler" class="nav-link" data-scroll-target="#egzersizler"><span class="header-section-number">22.10</span> Egzersizler</a></li>
+  <li><a href="#egzersiz-çözümleri" id="toc-egzersiz-çözümleri" class="nav-link" data-scroll-target="#egzersiz-çözümleri"><span class="header-section-number">22.11</span> Egzersiz Çözümleri</a></li>
+  <li><a href="#bölüm-özeti" id="toc-bölüm-özeti" class="nav-link" data-scroll-target="#bölüm-özeti"><span class="header-section-number">22.12</span> Bölüm Özeti</a></li>
+  <li><a href="#kaynaklar-ve-ek-okuma" id="toc-kaynaklar-ve-ek-okuma" class="nav-link" data-scroll-target="#kaynaklar-ve-ek-okuma"><span class="header-section-number">22.13</span> Kaynaklar ve Ek Okuma</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/MFatihTuzen/r-programlama/edit/main/chapters/04-veri-gorsellestirme/ggplot2_basics.qmd" class="toc-action"><i class="bi bi-github"></i>Bu sayfayı düzenle</a></li><li><a href="https://github.com/MFatihTuzen/r-programlama/issues/new" class="toc-action"><i class="bi empty"></i>Sorun bildir</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../chapters/04-veri-gorsellestirme/data_visualization.html">IV · Veri Görselleştirme</a></li><li class="breadcrumb-item"><a href="../../chapters/04-veri-gorsellestirme/ggplot2_basics.html"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">ggplot2 Temelleri</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span id="sec-ggplot2-basics" class="quarto-section-identifier"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">ggplot2 Temelleri</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p><a href="data_visualization.html" class="quarto-xref"><span>Bölüm 21</span></a> bölümünde iyi bir grafiğin bir sorudan başladığını gördük. Şimdi bu soruyu R’de bir grafiğe dönüştürmenin dilini öğreneceğiz. Amacımız hazır bir kodu ezberlemek yerine, grafiği oluşturan parçaların görevlerini anlamaktır.</p>
+<p><code>ggplot2</code>, grafiklerin ortak bileşenlerle kurulabileceği düşüncesine dayanır. Farklı grafik türleri birbirinden bütünüyle bağımsız komutlar değildir: veriyi seçer, değişkenleri görsel özelliklerle eşler, gözlemleri hangi geometrik biçimle göstereceğimizi belirleriz. <strong>Grafik grameri</strong> bu ortak yapıyı tarif eder <span class="citation" data-cites="wickham2016ggplot2">(<a href="../../references.html#ref-wickham2016ggplot2" role="doc-biblioref">Wickham 2016</a>)</span>. Bu yaklaşım, “hangi düğmeye basmalıyım?” sorusunun yerini “hangi bilgiyi hangi görsel özellikle temsil ediyorum?” sorusuna bırakır.</p>
+<section id="öğrenme-hedefleri-ve-ön-koşullar" class="level2" data-number="22.1">
+<h2 data-number="22.1" class="anchored" data-anchor-id="öğrenme-hedefleri-ve-ön-koşullar"><span class="header-section-number">22.1</span> Öğrenme Hedefleri ve Ön Koşullar</h2>
+<p>Bu bölümün sonunda <code>ggplot()</code>, <code>aes()</code> ve <code>geom_point()</code> ile bir grafik kurabilecek; eşleme ile sabit ayarı ayırabilecek; katmanların veriyi nasıl devraldığını açıklayabilecek ve bir grafik nesnesini yeniden kullanabileceksiniz. Veri çerçevesi, fonksiyon çağrısı ve temel sütun adlandırma bilgisi yeterlidir.</p>
+</section>
+<section id="paketi-kullanıma-hazırlamak" class="level2" data-number="22.2">
+<h2 data-number="22.2" class="anchored" data-anchor-id="paketi-kullanıma-hazırlamak"><span class="header-section-number">22.2</span> Paketi Kullanıma Hazırlamak</h2>
+<p>Paketin kurulması ile oturuma yüklenmesi farklı işlemlerdir. <code>install.packages()</code> paketi bilgisayara kurar; <code>library()</code> kurulu paketi geçerli R oturumunda kullanıma açar. Aşağıdaki kurulum komutu yalnızca paket kurulu değilse kullanıcı tarafından çalıştırılır; kitabın render sürecinde paket kurulmaz.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"ggplot2"</span>)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Örnekler için küçük bir yapay öğrenci tablosu hazırlayalım. Her satır bir öğrenciyi, <code>calisma_saati</code> haftalık çalışma süresini, <code>puan</code> 0–100 aralığındaki sınav puanını gösterir. Veriler gözlemsel bir araştırmadan alınmamıştır.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>ogrenciler <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">ogrenci =</span> <span class="fu">paste0</span>(<span class="st">"Ö"</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">8</span>),</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">grup =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">"A"</span>, <span class="st">"B"</span>), <span class="at">each =</span> <span class="dv">4</span>),</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">calisma_saati =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>),</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">puan =</span> <span class="fu">c</span>(<span class="dv">45</span>, <span class="dv">55</span>, <span class="dv">60</span>, <span class="dv">70</span>, <span class="dv">50</span>, <span class="dv">58</span>, <span class="dv">72</span>, <span class="dv">78</span>)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>ogrenciler</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":["ogrenci"],"name":[1],"type":["chr"],"align":["left"]},{"label":["grup"],"name":[2],"type":["chr"],"align":["left"]},{"label":["calisma_saati"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["puan"],"name":[4],"type":["dbl"],"align":["right"]}],"data":[{"1":"Ö1","2":"A","3":"1","4":"45"},{"1":"Ö2","2":"A","3":"2","4":"55"},{"1":"Ö3","2":"A","3":"3","4":"60"},{"1":"Ö4","2":"A","3":"4","4":"70"},{"1":"Ö5","2":"B","3":"1","4":"50"},{"1":"Ö6","2":"B","3":"2","4":"58"},{"1":"Ö7","2":"B","3":"3","4":"72"},{"1":"Ö8","2":"B","3":"4","4":"78"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<p>Bu tabloda grup bir kategori, çalışma saati ve puan sayısal değişkendir. Öğrenci adı bir kimliktir; adları sayısal bir eksen gibi kullanmayacağız. Az sayıda gözlemle çalışmak, kodun hangi noktayı ürettiğini takip etmemizi sağlar.</p>
+</section>
+<section id="grafiğin-bileşenleri" class="level2" data-number="22.3">
+<h2 data-number="22.3" class="anchored" data-anchor-id="grafiğin-bileşenleri"><span class="header-section-number">22.3</span> Grafiğin Bileşenleri</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Bileşen</th>
+<th>Sorduğu soru</th>
+<th>Örnek</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Veri</td>
+<td>Hangi gözlemler çizilecek?</td>
+<td><code>ogrenciler</code></td>
+</tr>
+<tr class="even">
+<td>Estetik eşleme</td>
+<td>Hangi değişken hangi görsel özelliğe bağlanacak?</td>
+<td><code>aes(x = calisma_saati, y = puan)</code></td>
+</tr>
+<tr class="odd">
+<td>Geometri</td>
+<td>Gözlemleri hangi işaretlerle göstereceğiz?</td>
+<td><code>geom_point()</code></td>
+</tr>
+<tr class="even">
+<td>İstatistiksel dönüşüm</td>
+<td>Ham değer mi, hesaplanan özet mi çizilecek?</td>
+<td>Sayım, histogram aralıkları</td>
+</tr>
+<tr class="odd">
+<td>Ölçek</td>
+<td>Değerler konum ve renge nasıl dönüştürülecek?</td>
+<td>Doğrusal veya logaritmik eksen</td>
+</tr>
+<tr class="even">
+<td>Koordinat sistemi</td>
+<td>Grafik hangi uzamsal düzende gösterilecek?</td>
+<td>Kartezyen eksenler</td>
+</tr>
+<tr class="odd">
+<td>Facet</td>
+<td>Veri hangi alt panellere ayrılacak?</td>
+<td>Her grup için bir panel</td>
+</tr>
+<tr class="even">
+<td>Tema</td>
+<td>Veri dışındaki görünüm nasıl düzenlenecek?</td>
+<td>Yazılar ve ızgara çizgileri</td>
+</tr>
+</tbody>
+</table>
+<p>İlk üç bileşenle başlayacağız. Diğer bileşenlerin bir kısmı varsayılan olarak belirlenir. Böylece başlangıçta bütün ayrıntıları yazmadan anlamlı bir grafik oluşturabiliriz. Varsayılanların bulunması, bunların her soruya uygun olduğu anlamına gelmez.</p>
+</section>
+<section id="ilk-grafiği-adım-adım-kurmak" class="level2" data-number="22.4">
+<h2 data-number="22.4" class="anchored" data-anchor-id="ilk-grafiği-adım-adım-kurmak"><span class="header-section-number">22.4</span> İlk Grafiği Adım Adım Kurmak</h2>
+<p><strong>Sorumuz:</strong> Bu yapay öğrencilerde çalışma süresi ile puan birlikte nasıl değişiyor? İki sayısal değişkenin ilişkisini görmek için saçılım grafiği seçeceğiz.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># data hangi tabloyu, mapping hangi eşlemeleri kullanacağımızı belirtir.</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>temel_grafik <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> ogrenciler,</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> calisma_saati, <span class="at">y =</span> puan)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p><code>ggplot()</code> bir grafik nesnesi başlatır. <code>data</code> varsayılan tabloyu, <code>mapping</code> ise <code>aes()</code> ile oluşturulan varsayılan görsel eşlemeleri alır. Henüz bir geometri eklemediğimiz için gözlemleri çizen katman yoktur. Nesneyi <code>&lt;-</code> ile kaydetmek de tek başına ekrana çizmez.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>ilk_grafik <span class="ot">&lt;-</span> temel_grafik <span class="sc">+</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Çalışma süresi ve sınav puanı"</span>,</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Haftalık çalışma süresi (saat)"</span>, <span class="at">y =</span> <span class="st">"Sınav puanı (0–100)"</span>,</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">"Kaynak: Öğretim amacıyla oluşturulan yapay veri."</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>ilk_grafik</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-ggbase-first" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Sekiz öğrencide haftalık çalışma süresi 1–4 saat, puanlar 45–78 arasındadır. Daha çok çalışan öğrencilerin puanları bu örnekte genel olarak daha yüksektir.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-ggbase-first-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="ggplot2_basics_files/figure-html/fig-ggbase-first-1.png" class="img-fluid figure-img" alt="Sekiz öğrencide haftalık çalışma süresi 1–4 saat, puanlar 45–78 arasındadır. Daha çok çalışan öğrencilerin puanları bu örnekte genel olarak daha yüksektir." width="624">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ggbase-first-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Şekil&nbsp;22.1: Çalışma süresi ve puan: her nokta yapay verideki bir öğrencidir.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p><code>geom_point()</code> her gözlemi bir noktayla gösterir; <code>size = 3</code> noktaların büyüklüğünü sabitler. <code>labs()</code> başlıkları ve açıklamaları belirler. <code>title</code> ana başlık, <code>x</code> ve <code>y</code> eksen adları, <code>caption</code> alttaki açıklamadır. Bunlar verideki değerleri değiştirmez.</p>
+<p><a href="#fig-ggbase-first" class="quarto-xref">Şekil&nbsp;<span>22.1</span></a> içinde çalışma süresi arttıkça puanın da yükseldiği görülür. Bu verileri öğretim amacıyla biz oluşturduk. Grafik bir eğitim müdahalesinin etkisini ölçmez; gerçek dünyada aynı örüntünün oluşacağını da kanıtlamaz.</p>
+<section id="ile-aynı-işlemi-yapmaz" class="level3" data-number="22.4.1">
+<h3 data-number="22.4.1" class="anchored" data-anchor-id="ile-aynı-işlemi-yapmaz"><span class="header-section-number">22.4.1</span> <code>+</code> ile <code>|&gt;</code> Aynı İşlemi Yapmaz</h3>
+<p><code>+</code>, ggplot nesnesine katman veya başka bir bileşen ekler. Satır sonunda kullanmak, R’ye ifadenin devam edeceğini bildirir. <code>|&gt;</code> ise soldaki nesneyi sonraki fonksiyona iletir. Veriyi hazırlarken pipe, grafiği kurarken <code>+</code> kullanabiliriz:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>a_grubu <span class="ot">&lt;-</span> ogrenciler <span class="sc">|&gt;</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(grup <span class="sc">==</span> <span class="st">"A"</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>a_grafigi <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(a_grubu, <span class="fu">aes</span>(calisma_saati, puan)) <span class="sc">+</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>İlk işlem tabloyu süzer; ikinci işlem bu tablodan grafik oluşturur. <code>ggplot()</code> çağrısında sırayı koruduğumuz için <code>data =</code> ve <code>mapping =</code> adlarını kısalttık. Öğrenirken adları açık yazmak yararlı olabilir. <code>aes(calisma_saati, puan)</code> yazımında ilk iki konum sırasıyla <code>x</code> ve <code>y</code> anlamındadır; renk gibi diğer eşlemeleri adlarıyla yazarız <span class="citation" data-cites="ggplot2Reference">(<a href="../../references.html#ref-ggplot2Reference" role="doc-biblioref"><span class="nocase">ggplot2</span>, t.y.</a>)</span>.</p>
+</section>
+</section>
+<section id="estetik-eşleme-ve-sabit-ayar" class="level2" data-number="22.5">
+<h2 data-number="22.5" class="anchored" data-anchor-id="estetik-eşleme-ve-sabit-ayar"><span class="header-section-number">22.5</span> Estetik Eşleme ve Sabit Ayar</h2>
+<p><strong>Estetik</strong>, ggplot2 bağlamında “güzel görünme” anlamına gelmez. Konum, renk, şekil ve büyüklük gibi veriyle ilişkilendirilebilen görsel özelliklerin ortak adıdır.</p>
+<p>Grupları farklı renk ve şekillerle ayıralım. Böylece renkleri ayırt edemeyen okuyucu da şekillerden yararlanabilir.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>gruplu_grafik <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  ogrenciler,</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(<span class="at">x =</span> calisma_saati, <span class="at">y =</span> puan, <span class="at">colour =</span> grup, <span class="at">shape =</span> grup)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"İlişkiyi grupları ayırarak incelemek"</span>,</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Haftalık çalışma süresi (saat)"</span>, <span class="at">y =</span> <span class="st">"Sınav puanı (0–100)"</span>,</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">colour =</span> <span class="st">"Grup"</span>, <span class="at">shape =</span> <span class="st">"Grup"</span>, <span class="at">caption =</span> <span class="st">"Kaynak: Yapay veri."</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">12</span>)</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>gruplu_grafik</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-ggbase-mapping" class="quarto-float quarto-figure quarto-figure-center anchored" alt="A ve B grupları farklı renk ve şekillerle gösterilir. İki grupta da çalışma süresi arttıkça puan yükselir; aynı sürede B puanları bu yapay örnekte daha yüksektir.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-ggbase-mapping-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="ggplot2_basics_files/figure-html/fig-ggbase-mapping-1.png" class="img-fluid figure-img" alt="A ve B grupları farklı renk ve şekillerle gösterilir. İki grupta da çalışma süresi arttıkça puan yükselir; aynı sürede B puanları bu yapay örnekte daha yüksektir." width="624">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ggbase-mapping-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Şekil&nbsp;22.2: Grup bilgisi hem renkle hem nokta şekliyle temsil edilmiştir.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p><code>colour = grup</code> ve <code>shape = grup</code>, <code>aes()</code> içinde oldukları için grup değerlerini görsel özelliklere bağlar. ggplot2 uygun ölçekleri ve lejantı üretir. <code>size = 3</code> ise <code>aes()</code> dışındadır: büyüklük bir değişkenden gelmez ve bütün noktalar için aynıdır.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Yazım</th>
+<th>Anlamı</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>aes(colour = grup)</code></td>
+<td>Renk grup değerine göre değişir.</td>
+</tr>
+<tr class="even">
+<td><code>geom_point(colour = "steelblue")</code></td>
+<td>Bütün noktalar belirtilen renkte çizilir.</td>
+</tr>
+<tr class="odd">
+<td><code>aes(colour = "steelblue")</code></td>
+<td>Sabit metin bir kategoriye eşlenir; adı steelblue olan bir lejant üretilebilir.</td>
+</tr>
+<tr class="even">
+<td><code>aes(size = calisma_saati)</code></td>
+<td>Nokta büyüklüğü çalışma süresini temsil eder.</td>
+</tr>
+<tr class="odd">
+<td><code>geom_point(size = 3)</code></td>
+<td>Nokta büyüklüğü sabittir.</td>
+</tr>
+</tbody>
+</table>
+<p>Son iki yazımın ikisi de geçerlidir; farklı soruları yanıtlarlar. Bu örnekte çalışma süresi zaten yatay eksendedir. Aynı bilgiyi ayrıca büyüklüğe yüklemek gerekli değildir.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">İpucu</span>Sütun adlarını doğrudan yazın
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><code>aes(x = calisma_saati)</code> yazımı sütunu katmanın verisi içinde arar. <code>aes(x = "calisma_saati")</code> aynı şeyi yapmaz; tırnak içindeki metin bir sabittir. <code>aes(x = ogrenciler$calisma_saati)</code> gibi dış tabloya bağlanan yazımlardan da kaçının: katmanın verisi değiştiğinde eşleme beklenmedik biçimde davranabilir.</p>
+</div>
+</div>
+<p><code>colour</code> ve <code>color</code> aynı estetik adının iki yazımıdır. Kitapta tutarlılık için <code>colour</code> kullanacağız. <code>fill</code> ise içi doldurulabilen geometrilerin dolgu rengidir. Örneğin sütunlarda dolgu ile kenarlık ayrıdır; bütün nokta şekilleri <code>fill</code> kullanmaz. Fonksiyonun desteklediği estetikleri yardım sayfasından kontrol etmek gerekir.</p>
+</section>
+<section id="geom_point-argümanlarını-okumak" class="level2" data-number="22.6">
+<h2 data-number="22.6" class="anchored" data-anchor-id="geom_point-argümanlarını-okumak"><span class="header-section-number">22.6</span> <code>geom_point()</code> Argümanlarını Okumak</h2>
+<p>Bir fonksiyonun bütün seçeneklerini ilk kullanımda ezberlememiz gerekmez. Önce veri akışını etkileyen argümanları, sonra görünüm ayarlarını ayıralım.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Argüman veya ayar</th>
+<th>Görevi</th>
+<th>Bu bölümdeki kullanım</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>mapping</code></td>
+<td>Katmana özgü <code>aes()</code> eşlemeleri</td>
+<td>Gerekirse genel eşlemeye eklenir.</td>
+</tr>
+<tr class="even">
+<td><code>data</code></td>
+<td>Katmana özgü veri</td>
+<td>Verilmezse grafiğin verisi kullanılır.</td>
+</tr>
+<tr class="odd">
+<td><code>inherit.aes</code></td>
+<td>Genel eşlemelerin devralınması</td>
+<td>Varsayılan <code>TRUE</code>; bağımsız katmanda <code>FALSE</code> olabilir.</td>
+</tr>
+<tr class="even">
+<td><code>size</code></td>
+<td>Nokta büyüklüğü</td>
+<td>Sabit örnek: <code>size = 3</code></td>
+</tr>
+<tr class="odd">
+<td><code>alpha</code></td>
+<td>Saydamlık; 0 görünmez, 1 opak</td>
+<td>Örtüşmede <code>alpha = 0.6</code> denenebilir.</td>
+</tr>
+<tr class="even">
+<td><code>shape</code></td>
+<td>Noktanın biçimi</td>
+<td>Sabit veya kategoriye eşlenmiş olabilir.</td>
+</tr>
+<tr class="odd">
+<td><code>na.rm</code></td>
+<td>Eksiklerin çıkarılma uyarısı</td>
+<td><code>TRUE</code> eksikleri doldurmaz; uyarıyı susturur.</td>
+</tr>
+<tr class="even">
+<td><code>show.legend</code></td>
+<td>Katmanın lejanta katılması</td>
+<td><code>FALSE</code> bu katmanın lejant gösterimini kapatır.</td>
+</tr>
+</tbody>
+</table>
+<p><code>size</code> gibi bazı görünüm ayarları fonksiyonun <code>...</code> argümanı üzerinden aktarılır. <code>...</code>, her yazımın geçerli olduğu anlamına gelmez. Desteklenmeyen bir argüman uyarı verebilir ve istenen etkiyi oluşturmayabilir. <a href="https://ggplot2.tidyverse.org/reference/geom_point.html">Nokta geometrisinin resmî belgesi</a> kullanım imzasını, argümanları ve desteklenen estetikleri ayrı başlıklarda verir.</p>
+</section>
+<section id="katmanlar-ve-eşlemelerin-devralınması" class="level2" data-number="22.7">
+<h2 data-number="22.7" class="anchored" data-anchor-id="katmanlar-ve-eşlemelerin-devralınması"><span class="header-section-number">22.7</span> Katmanlar ve Eşlemelerin Devralınması</h2>
+<p><strong>Sorumuz:</strong> Ham gözlemler ile grup ortalamalarını aynı grafikte görebilir miyiz? Önceki gruplu grafiğe, ayrı tablodan hesaplanan büyük ortalama noktaları ekleyelim.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>ortalamalar <span class="ot">&lt;-</span> <span class="fu">aggregate</span>(</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cbind</span>(calisma_saati, puan) <span class="sc">~</span> grup,</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> ogrenciler,</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">FUN =</span> mean</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>ortalamalar</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":["grup"],"name":[1],"type":["chr"],"align":["left"]},{"label":["calisma_saati"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["puan"],"name":[3],"type":["dbl"],"align":["right"]}],"data":[{"1":"A","2":"2.5","3":"57.5"},{"1":"B","2":"2.5","3":"64.5"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<p><code>cbind()</code> iki sayısal sütunu aynı özetleme işlemine alır. Formüldeki <code>~ grup</code>, ortalamaların her grup için ayrı hesaplanmasını ister. Buradaki ortalama noktası iki değişkenin aritmetik ortalamasıdır; gerçek bir öğrenciyi temsil etmek zorunda değildir.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>katmanli_grafik <span class="ot">&lt;-</span> gruplu_grafik <span class="sc">+</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> ortalamalar,</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> calisma_saati, <span class="at">y =</span> puan),</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">inherit.aes =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">shape =</span> <span class="dv">1</span>, <span class="at">size =</span> <span class="dv">6</span>, <span class="at">stroke =</span> <span class="fl">1.2</span>, <span class="at">colour =</span> <span class="st">"black"</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>katmanli_grafik</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-ggbase-layers" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Ham puanlara eklenen iki büyük içi boş ortalama noktasının çalışma süresi 2,5 saattir. A ortalaması 57,5, B ortalaması 64,5 puandır.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-ggbase-layers-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="ggplot2_basics_files/figure-html/fig-ggbase-layers-1.png" class="img-fluid figure-img" alt="Ham puanlara eklenen iki büyük içi boş ortalama noktasının çalışma süresi 2,5 saattir. A ortalaması 57,5, B ortalaması 64,5 puandır." width="624">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ggbase-layers-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Şekil&nbsp;22.3: Küçük noktalar öğrencileri, büyük içi boş noktalar grup ortalamalarını gösterir.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Yeni katmanda <code>data</code> değişti. <code>inherit.aes = FALSE</code>, genel renk ve şekil eşlemelerini devralmamayı sağlar; katmanın <code>x</code> ve <code>y</code> eşlemelerini yeniden yazdık. <code>stroke</code>, nokta kenarlığının kalınlığıdır. Bu iki büyük nokta 2,5 saatte 57,5 ve 64,5 puandadır. Aradaki fark grup özetidir; müdahale etkisi olarak yorumlanamaz.</p>
+<p>Katmanların sırası önemlidir. Son eklenen katman öncekilerin üzerine çizilir. Özet noktalarını önce çizseydik ham noktalar bunları örtebilirdi. Grafik nesnesine yeni katman eklemek, önceki nesneyi kendiliğinden değiştirmez; sonucu yeni bir nesneye atadık.</p>
+</section>
+<section id="grafik-nesnesini-görüntülemek-ve-yardım-almak" class="level2" data-number="22.8">
+<h2 data-number="22.8" class="anchored" data-anchor-id="grafik-nesnesini-görüntülemek-ve-yardım-almak"><span class="header-section-number">22.8</span> Grafik Nesnesini Görüntülemek ve Yardım Almak</h2>
+<p>Konsolda nesnenin adını yazmak genellikle yeterlidir. Döngü veya fonksiyon içinde görüntülemek için <code>print()</code> kullanmak gerekir. Böylece grafiği üretmekle çizdirmek arasındaki ayrımı koruruz.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(ilk_grafik)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">help</span>(<span class="st">"geom_point"</span>, <span class="at">package =</span> <span class="st">"ggplot2"</span>)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>?ggplot2<span class="sc">::</span>aes</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Bu blok yardım kullanımını gösterir; etkileşimli yardım penceresi kitap üretimi için açılmaz. Yardım sayfasında önce <strong>Usage</strong>, sonra <strong>Arguments</strong>, ardından <strong>Examples</strong> bölümlerini okuyun. Örnekleri kendi sorunuza uyarlarken verinin ve analiz biriminin değişip değişmediğini kontrol edin.</p>
+</section>
+<section id="sık-yapılan-hatalar" class="level2" data-number="22.9">
+<h2 data-number="22.9" class="anchored" data-anchor-id="sık-yapılan-hatalar"><span class="header-section-number">22.9</span> Sık Yapılan Hatalar</h2>
+<ul>
+<li><code>library(ggplot2)</code> çağrısını unutmak: yeni oturumda fonksiyonlar bulunamayabilir; bölümün kurulum bloğunu çalıştırın.</li>
+<li>Sütun adını tırnak içine almak: değişken yerine sabit metin eşlenebilir.</li>
+<li>Sabit rengi <code>aes()</code> içine yazmak: beklenen renk yerine kategori ölçeği ve gereksiz lejant oluşabilir.</li>
+<li><code>+</code> işaretini yeni satırın başına koymak: önceki ifade tamamlanmış sayılabilir; devam işaretini satır sonunda bırakın.</li>
+<li><code>na.rm = TRUE</code> ile veri sorununu çözdüğünü sanmak: eksikler görünmez olur, nedenleri açıklanmış olmaz.</li>
+<li>Her katmanın aynı veriyi kullandığını varsaymak: katman düzeyindeki <code>data</code> genel veriyi değiştirebilir.</li>
+</ul>
+</section>
+<section id="egzersizler" class="level2" data-number="22.10">
+<h2 data-number="22.10" class="anchored" data-anchor-id="egzersizler"><span class="header-section-number">22.10</span> Egzersizler</h2>
+<ol type="1">
+<li><strong>Kolay:</strong> <code>ggplot()</code>, <code>aes()</code> ve <code>geom_point()</code> görevlerini birer cümleyle açıklayın.</li>
+<li><strong>Kolay:</strong> <code>ilk_grafik</code> nesnesinin noktalarını mavi yapmak için renk ayarı nereye yazılmalıdır? Grup rengi istenirse ne değişir?</li>
+<li><strong>Orta:</strong> Puanı yatay, çalışma süresini dikey eksene koyan ve grupları şekille ayıran bir grafik hazırlayın. Birimleri belirtin.</li>
+<li><strong>Orta:</strong> <code>ggplot(ogrenciler, aes(calisma_saati, puan)) + geom_point(aes(colour = "blue"))</code> kodunun neden bütün noktaları doğrudan maviye boyamakla aynı olmadığını açıklayın.</li>
+<li><strong>Orta:</strong> Ortalamaların bulunduğu tablodan, ham öğrenciler olmadan yalnızca iki grup ortalamasını çizin. Neden bu grafik dağılımı göstermez?</li>
+<li><strong>Zor:</strong> Yeni bir katmanın verisinde <code>grup</code> sütunu bulunmadığını düşünün. Genel eşlemede <code>colour = grup</code> varsa ne sorun oluşabilir? <code>inherit.aes = FALSE</code> ile nasıl çözersiniz?</li>
+</ol>
+</section>
+<section id="egzersiz-çözümleri" class="level2" data-number="22.11">
+<h2 data-number="22.11" class="anchored" data-anchor-id="egzersiz-çözümleri"><span class="header-section-number">22.11</span> Egzersiz Çözümleri</h2>
+<p><strong>Çözüm 1:</strong> <code>ggplot()</code> veri ve varsayılan eşlemelerle grafik nesnesini başlatır. <code>aes()</code> değişkenleri görsel özelliklere bağlar. <code>geom_point()</code> nokta katmanını ekler.</p>
+<p><strong>Çözüm 2:</strong> Sabit renk <code>geom_point(colour = "blue")</code> biçiminde <code>aes()</code> dışında verilir. Grupları ayırmak için <code>aes(colour = grup)</code> kullanılır; renkler ölçek tarafından atanır.</p>
+<p><strong>Çözüm 3:</strong></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(ogrenciler, <span class="fu">aes</span>(<span class="at">x =</span> puan, <span class="at">y =</span> calisma_saati, <span class="at">shape =</span> grup)) <span class="sc">+</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Sınav puanı (0–100)"</span>, <span class="at">y =</span> <span class="st">"Haftalık çalışma süresi (saat)"</span>,</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">shape =</span> <span class="st">"Grup"</span>, <span class="at">caption =</span> <span class="st">"Kaynak: Yapay veri."</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">12</span>)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-ggbase-solution" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Puan yatay, haftalık çalışma saati dikey eksendedir. İki öğrenci grubu farklı nokta şekilleriyle gösterilir.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-ggbase-solution-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="ggplot2_basics_files/figure-html/fig-ggbase-solution-1.png" class="img-fluid figure-img" alt="Puan yatay, haftalık çalışma saati dikey eksendedir. İki öğrenci grubu farklı nokta şekilleriyle gösterilir." width="576">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ggbase-solution-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Şekil&nbsp;22.4: Eksenler yer değiştirdiğinde temsil edilen değişkenlerin anlamı korunur.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Eksenleri değiştirmek nedensel yönü belirlemez. Hangi değişkenin açıklayıcı olduğu sorudan ve araştırma tasarımından gelir.</p>
+<p><strong>Çözüm 4:</strong> <code>"blue"</code> metni tek düzeyli bir kategoriye eşlenir. Varsayılan renk ölçeği bu kategoriye bir renk atar; bu rengin mavi olması gerekmez.</p>
+<p><strong>Çözüm 5:</strong></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>ortalama_grafigi <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(ortalamalar, <span class="fu">aes</span>(<span class="at">x =</span> grup, <span class="at">y =</span> puan)) <span class="sc">+</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">4</span>) <span class="sc">+</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Grup"</span>, <span class="at">y =</span> <span class="st">"Ortalama puan (0–100)"</span>)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>İki nokta yalnızca iki aritmetik ortalamadır. Grup içi yayılımı veya her grupta kaç öğrenci bulunduğunu bu iki değerden öğrenemeyiz.</p>
+<p><strong>Çözüm 6:</strong> Katman devraldığı renk eşlemesini kendi verisinde değerlendiremez. Yeni katmana yalnızca gerekli <code>x</code> ve <code>y</code> eşlemelerini verip <code>inherit.aes = FALSE</code> kullanabiliriz. Bu, kayıp grup bilgisini geri getirmez; katmanın başka bir amaçla çizildiğini açıkça belirtir.</p>
+</section>
+<section id="bölüm-özeti" class="level2" data-number="22.12">
+<h2 data-number="22.12" class="anchored" data-anchor-id="bölüm-özeti"><span class="header-section-number">22.12</span> Bölüm Özeti</h2>
+<p><code>ggplot2</code> ile grafik kurmak, veriyi görsel özelliklere eşleyip uygun geometrilerle katmanlar oluşturmaktır. <code>aes()</code> içindeki değişken eşlemesi ile dışındaki sabit ayarı ayırmak, hem doğru kod hem doğru lejant için temel beceridir. Katmanlar genel veri ve eşlemeleri devralabilir; gerektiğinde kendi verilerini ve eşlemelerini kullanırlar.</p>
+<p>Bir sonraki bölümde bu dilin farklı araştırma sorularında nasıl kullanıldığını göreceğiz. Grafik türlerini, hangi soruyu yanıtladıkları ve hangi bilgiyi gizleyebildikleri üzerinden inceleyeceğiz.</p>
+</section>
+<section id="kaynaklar-ve-ek-okuma" class="level2" data-number="22.13">
+<h2 data-number="22.13" class="anchored" data-anchor-id="kaynaklar-ve-ek-okuma"><span class="header-section-number">22.13</span> Kaynaklar ve Ek Okuma</h2>
+<p>Grafik grameri ve katman yaklaşımı için <span class="citation" data-cites="wickham2016ggplot2">(<a href="../../references.html#ref-wickham2016ggplot2" role="doc-biblioref">Wickham 2016</a>)</span>, başlangıç örnekleri için <span class="citation" data-cites="wickhamGrolemund2023">(<a href="../../references.html#ref-wickhamGrolemund2023" role="doc-biblioref">Wickham vd. 2023</a>)</span>, güncel işlev davranışları için <span class="citation" data-cites="ggplot2Reference">(<a href="../../references.html#ref-ggplot2Reference" role="doc-biblioref"><span class="nocase">ggplot2</span>, t.y.</a>)</span> kullanılabilir. Temel başvuru sayfaları: <a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot()</a>, <a href="https://ggplot2.tidyverse.org/reference/aes.html">aes()</a> ve <a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point()</a>.</p>
+
+
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="ref-ggplot2Reference" class="csl-entry" role="listitem">
+<span class="nocase">ggplot2</span>. t.y. <span>“ggplot2 Reference”</span>. Erişim 26 Ekim 2026. <a href="https://ggplot2.tidyverse.org/reference/">https://ggplot2.tidyverse.org/reference/</a>.
+</div>
+<div id="ref-wickham2016ggplot2" class="csl-entry" role="listitem">
+Wickham, Hadley. 2016. <em>ggplot2: Elegant Graphics for Data Analysis</em>. Springer. <a href="https://ggplot2.tidyverse.org/">https://ggplot2.tidyverse.org/</a>.
+</div>
+<div id="ref-wickhamGrolemund2023" class="csl-entry" role="listitem">
+Wickham, Hadley, Mine Çetinkaya-Rundel, ve Garrett Grolemund. 2023. <em>R for Data Science</em>. 2. bs. O’Reilly Media. <a href="https://r4ds.hadley.nz/">https://r4ds.hadley.nz/</a>.
+</div>
+</div>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Kopyalandı");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Kopyalandı");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/mfatihtuzen\.github\.io\/r-programlama\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../../chapters/04-veri-gorsellestirme/data_visualization.html" class="pagination-link" aria-label="Veri Görselleştirmeye Giriş">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Veri Görselleştirmeye Giriş</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../../chapters/04-veri-gorsellestirme/plot_types.html" class="pagination-link" aria-label="Grafik Türleri">
+        <span class="nav-page-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Grafik Türleri</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>© 2026, <a href="https://www.linkedin.com/in/dr-m-fatih-t-2b2a4328/">Muhammed Fatih Tüzen</a></p>
+</div>   
+    <div class="nav-footer-center">
+
+<div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/MFatihTuzen/r-programlama/edit/main/chapters/04-veri-gorsellestirme/ggplot2_basics.qmd" class="toc-action"><i class="bi bi-github"></i>Bu sayfayı düzenle</a></li><li><a href="https://github.com/MFatihTuzen/r-programlama/issues/new" class="toc-action"><i class="bi empty"></i>Sorun bildir</a></li></ul></div><div class="cookie-consent-footer"><a href="#" id="open_preferences_center">Cookie Preferences</a></div></div>
+    <div class="nav-footer-right">
+<p>Bu kitap <a href="https://quarto.org/">Quarto</a> ile hazırlanmıştır.</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+<script src="../../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>
