@@ -40,10 +40,8 @@ $\operatorname{MSE}$, **ortalama karesel hatayı** gösterir. Sonlu ikinci momen
 
 $$
 \begin{aligned}
-\operatorname{MSE}(\hat{\theta})
-&=E[(\hat{\theta}-\theta)^2]\\
-&=\operatorname{Var}(\hat{\theta})\\
-&\quad+\operatorname{Bias}(\hat{\theta})^2.
+\operatorname{MSE}(\hat{\theta}) &= E[(\hat{\theta}-\theta)^2]\\
+&=\operatorname{Var}(\hat{\theta})+\operatorname{Bias}(\hat{\theta})^2.
 \end{aligned}
 $$
 
