@@ -102,10 +102,10 @@ knitr::kable(data.frame(
   genislik_n_25 = 2 * kritik * 4 / sqrt(25),
   genislik_n_100 = 2 * kritik * 4 / sqrt(100),
   genislik_sigma_8 = 2 * kritik * 8 / sqrt(25)
-), digits = 2)
+), digits = 2, col.names = c("Güven", "z", "25 / 4", "100 / 4", "25 / 8"))
 ```
 
-Son sütunda $n=25$ sabit tutuldu ve süreç standart sapması 8 mL'ye çıkarıldı. Tabloda aynı büyüklük için %99 aralığının %90 aralığından daha geniş, aynı güven düzeyi için $n=100$ aralığının $n=25$ aralığının yarısı olduğu görülür. t aralığında örnek büyüdükçe kritik değer de değişir. Ayrıca gerçek örneklerde $s$ sabit kalmaz. Kapsam yanlılığı veya sistematik yanıtsızlık varsa daha dar bir aralık, yanlış hedef çevresinde daha kesin bir ölçüm anlamına gelebilir.
+Genişlik sütunlarının başlıkları örneklem büyüklüğünü ve standart sapmayı bu sırayla gösterir. Genişlikler mL cinsindendir. Son sütunda $n=25$ sabit tutuldu ve süreç standart sapması 8 mL'ye çıkarıldı. Tabloda aynı büyüklük için %99 aralığının %90 aralığından daha geniş, aynı güven düzeyi için $n=100$ aralığının $n=25$ aralığının yarısı olduğu görülür. t aralığında örnek büyüdükçe kritik değer de değişir. Ayrıca gerçek örneklerde $s$ sabit kalmaz. Kapsam yanlılığı veya sistematik yanıtsızlık varsa daha dar bir aralık, yanlış hedef çevresinde daha kesin bir ölçüm anlamına gelebilir.
 
 ## Bir oran için Wald ve Wilson aralıkları
 
@@ -170,7 +170,17 @@ oran_araligi <- function(x, n, guven = 0.95) {
 basari <- c(60, 1, 0)
 n_oran <- c(100, 20, 20)
 oran_ornekleri <- oran_araligi(basari, n_oran)
-knitr::kable(cbind(basari, n = n_oran, oran_ornekleri), digits = 3)
+aralik_yaz <- function(alt, ust) {
+  paste(formatC(alt, format = "f", digits = 3, decimal.mark = ","),
+        formatC(ust, format = "f", digits = 3, decimal.mark = ","),
+        sep = " – ")
+}
+knitr::kable(data.frame(
+  "Başarı / n" = paste(basari, n_oran, sep = " / "),
+  Wald = aralik_yaz(oran_ornekleri$wald_alt, oran_ornekleri$wald_ust),
+  Wilson = aralik_yaz(oran_ornekleri$wilson_alt, oran_ornekleri$wilson_ust),
+  check.names = FALSE
+))
 ```
 
 100 kişide 60 başarı için iki yöntem birbirine yakın sonuç verir. 20 kişide bir başarı için Wald negatif bir alt sınır verirken Wilson bunu pozitif tutar. 20 kişide sıfır başarı için Wald yalnız 0'ı içerir. Wilson üst sınırı yaklaşık 0,161 olur. R'nin `binom.test()` aralığı ise Wilson'dan farklıdır. Bu işlev, binom kuyruklarını tersine çeviren Clopper–Pearson aralığını verir. Bu aralığın model altındaki kapsaması nominal düzeyin altına düşmez ve bazı parametrelerde onu aşar. Aşağıdaki görselde Wald değerlerini kesmeden gösteriyoruz. Bir alt sınırı sıfıra çekmek aralığın görünümünü değiştirir. Ancak [0,1] içindeki gerçek bir $p$ için bu kesme, tek başına kapsama olayını değiştirmez.
