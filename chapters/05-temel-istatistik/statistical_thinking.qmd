@@ -70,7 +70,7 @@ $$
 \bar y = \frac{1}{n}\sum_{j=1}^{n} y_{s_j}.
 $$
 
-Burada \(N\) anakütledeki yolcu sayısı, \(n\) örneklemdeki ölçümlerin sayısıdır. \(y_i\), anakütlede \(i\) numaralı yolcunun dakika cinsinden bekleme süresidir. \(s_j\), örneklemdeki \(j\). yolcunun anakütledeki numarasını gösterir. Toplam işareti \(\sum\), belirtilen yolcuların bekleme sürelerini toplar. \(\mu\) anakütle ortalaması, \(\bar y\) ise örneklem ortalamasıdır. Bu gösterimde örneğe seçilen herkes için ölçüm olduğunu kabul ediyoruz. Yanıtsızlık varsa hangi ölçümlere dayanarak ortalama aldığımızı ayrıca belirtmemiz gerekir.
+Burada $N$ anakütledeki yolcu sayısı, $n$ örneklemdeki ölçümlerin sayısıdır. $y_i$, anakütlede $i$ numaralı yolcunun dakika cinsinden bekleme süresidir. $s_j$, örneklemdeki $j$. yolcunun anakütledeki numarasını gösterir. Toplam işareti $\sum$, belirtilen yolcuların bekleme sürelerini toplar. $\mu$ anakütle ortalaması, $\bar y$ ise örneklem ortalamasıdır. Bu gösterimde örneğe seçilen herkes için ölçüm olduğunu kabul ediyoruz. Yanıtsızlık varsa hangi ölçümlere dayanarak ortalama aldığımızı ayrıca belirtmemiz gerekir.
 
 Memnuniyet oranında da aynı mantık geçerlidir. “Memnun” ve “çok memnun” yanıtlarını 1, diğer geçerli yanıtları 0 kodlarsak bu değerlerin ortalaması memnuniyet oranını verir. Boş bir yanıtı 0 kodlamak, bilinmeyen görüşü “memnun değil” diye tanımlamış olur. Aynı anakütleden farklı örnekler seçtiğimizde örneklem ortalamalarının değişmesini bekleriz. Bir çekimde 24 dakika bulmamız, 25 dakikalık parametreyi bir dakika eksik tahmin ettiğimizi gösterir. Yöntemin sistematik biçimde düşük tahmin ürettiğini söylemek için, seçim sürecinin tekrarlanan uygulamalarda kısa bekleyenleri kayırıp kayırmadığını incelemek gerekir.
 

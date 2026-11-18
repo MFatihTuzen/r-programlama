@@ -173,7 +173,7 @@ elde edilir. Gözlenen tabloda $k=a$ ve $s-k=c$'dir. Bu hipergeometrik model, ba
 
 Her düzen sayısını $\binom{15}{9}=5005$'e böleriz. Örneğin $k=1$ için $5\binom{10}{8}=225$ düzen vardır ve tablo satırları $(1,4)$ ile $(8,2)$ olur. Memnuniyet odds oranı sık grupta daha düşük yönünde önceden belirlenmiş bir alternatif için $K\le1$ alınır. p-değeri $(10+225)/5005$ olur. Yüksek yön için karşı kuyruk kullanılır.
 
-R'nin iki yönlü hesabı, **olasılığı gözlenen tablonunkinden büyük olmayan** tabloları toplar. Bu örnekte $k=0,1,5$ girer. Dolayısıyla $p=445/5005\approx0{,}0889$ olur. Alt kuyruğun iki katı $470/5005$'tir. Kesikli ve asimetrik dağılımda bu iki kural farklı sonuç verir. @sec-hypothesis-testing bölümündeki uçluk burada sıfır hipotezi altındaki tablo olasılığıyla tanımlanır [@rFisher450].
+R'nin iki yönlü hesabı, **olasılığı gözlenen tablonunkinden büyük olmayan** tabloları toplar. Bu örnekte $k=0,1,5$ girer. Dolayısıyla $p=445/5005\approx0{,}0889$ olur. Alt kuyruğun iki katı $470/5005$'tir. Kesikli ve asimetrik dağılımda bu iki kural farklı sonuç verir. @sec-hypothesis-testing bölümündeki “en az gözlenen kadar uç” ölçütü burada sıfır hipotezi altındaki tablo olasılığına dayanır [@rFisher450].
 
 ```{r}
 #| label: cat-fisher

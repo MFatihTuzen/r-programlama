@@ -25,7 +25,10 @@ $$
 Bir olay ile tümleyeni birbirini dışlar ve birlikte bütün uzayı kapsar. Bu yüzden $P(A)+P(A^c)=1$, dolayısıyla $P(A^c)=1-P(A)$ olur. $A$ ile $B$ örtüşüyorsa olasılıklarını topladığımızda kesişime iki kez yer veririz. Birini çıkarınca genel toplama kuralı elde edilir [@diezRundelBarr2019]:
 
 $$
-P(A\cup B)=P(A)+P(B)-P(A\cap B).
+\begin{aligned}
+P(A\cup B)&=P(A)+P(B)\\
+&\quad-P(A\cap B).
+\end{aligned}
 $$
 
 Örneğin 100 üründen 20'sinde ambalaj hasarı, 10'unda etiket hatası ve 4'ünde iki sorun birlikte görülmüş olsun. Bu 100 üründen birini eşit olasılıkla seçersek en az bir kusur görme olasılığı $(20+10-4)/100=0{,}26$, hiçbirini görmeme olasılığı 0,74'tür. Bu hesap, söz konusu 100 ürün içindeki rastgele seçimi tanımlar. Gelecekteki üretimin kusur oranını tahmin etmek için hangi ürünlerin denetlendiğini ve sürecin değişip değişmediğini de bilmek gerekir.
@@ -65,7 +68,10 @@ $$
 Pozitif sonuçlar birbirini dışlayan iki yoldan gelir. Durum mevcuttur ve test pozitiftir ya da durum mevcut değildir ve test pozitiftir. Bu iki yolun olasılıklarını toplamak **toplam olasılık kuralının** bu örnekteki biçimidir:
 
 $$
-P(B)=P(B\mid A)P(A)+P(B\mid A^c)P(A^c).
+\begin{aligned}
+P(B)&=P(B\mid A)P(A)\\
+&\quad+P(B\mid A^c)P(A^c).
+\end{aligned}
 $$
 
 Test sonucu bilinmeden önceki $P(A)$ **önsel olasılıktır**. Pozitif sonucu sabit tutup varsayılan duruma göre $P(B\mid A)$ ve $P(B\mid A^c)$ değerlerine baktığımızda, bunlar pozitif verinin iki durum altındaki **olabilirlikleridir**. Durumu bilinmeyen pozitif bir kişi için $P(A\mid B)$ **sonrasal olasılıktır**. Bu bağlamda buna **pozitif öngörü değeri** denir. Duyarlılık $P(B\mid A)$, özgüllük $P(B^c\mid A^c)$, yanlış pozitif oranı ise özgüllüğün tümleyeni $P(B\mid A^c)$'dir [@diezRundelBarr2019].
