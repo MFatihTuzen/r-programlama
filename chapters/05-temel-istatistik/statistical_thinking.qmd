@@ -125,6 +125,7 @@ knitr::kable(
                      character(1)),
     ortalama = unname(ortalamalar)
   ),
+  row.names = FALSE,
   digits = 2, format.args = list(decimal.mark = ","),
   col.names = c("Grup", "Bekleme süreleri (dakika)", "Ortalama (dakika)")
 )
@@ -258,7 +259,7 @@ ggplot(internet_gozlemleri, aes(x = internet_users_pct, y = gelir)) +
 
 @fig-thinking-wdi grafiğinde yüksek gelir grubundaki gözlemler genel olarak daha yüksek kullanım yüzdelerinde toplanıyor. Düşük gelir grubunun medyanı %12,10, yüksek gelir grubunun medyanı %87,38. Öte yandan grup içindeki değerler tek bir sayıya sıkışmıyor ve bazı grupların değerleri örtüşüyor. Noktalar üst üste yığılmasın diye yalnızca grup yönünde hafifçe kaydırıldı. Yatay konumlar gözlenen yüzdeleri koruyor. Medyanla birlikte ham gözlemleri sunmanın yararını @sec-effective-graphics bölümünde görmüştük.
 
-Ekonomilerin ortalaması alınsaydı her ekonomi bir kez sayılırdı. Örneğin nüfusu 100 bin olan bir ekonomide kullanım %90, nüfusu 900 bin olan bir ekonomide %40 ise ülke yüzdelerinin eşit ağırlıklı ortalaması %65'tir. Birlikte ele alınan nüfusun kullanım oranı ise, iki ölçümün tanımı ve paydaları uyumlu kabul edildiğinde, \((90\,000 + 360\,000) / 1\,000\,000 = 0{,}45\), yani %45 olur. İlk hesap “bir ekonomiye eşit ağırlık verirsek ortalama yüzde kaç?” sorusunu, ikincisi “bu ekonomilerde yaşayan bireylerin ne kadarı internet kullanıyor?” sorusunu yanıtlar. İkinci hedef için nüfus ağırlıkları göstergenin paydasıyla ve gözlem dönemiyle uyumlu olmalıdır. Eksik ekonomileri dışarıda bırakan nüfus ağırlıklı bir oran da yalnızca hesaplamaya giren nüfusu kapsar. Medyan ise ülke yüzdelerinin sıralamasına dayanır. Paydanın toplulaştırmaya etkisini @fig-effective-denominator üzerinde başka bir örnekte incelemiştik.
+Ekonomilerin ortalaması alınsaydı her ekonomi bir kez sayılırdı. Örneğin nüfusu 100 bin olan bir ekonomide kullanım %90, nüfusu 900 bin olan bir ekonomide %40 ise ülke yüzdelerinin eşit ağırlıklı ortalaması %65'tir. Birlikte ele alınan nüfusun kullanım oranı ise, iki ölçümün tanımı ve paydaları uyumlu kabul edildiğinde, $(90\,000 + 360\,000) / 1\,000\,000 = 0{,}45$, yani %45 olur. İlk hesap “bir ekonomiye eşit ağırlık verirsek ortalama yüzde kaç?” sorusunu, ikincisi “bu ekonomilerde yaşayan bireylerin ne kadarı internet kullanıyor?” sorusunu yanıtlar. İkinci hedef için nüfus ağırlıkları göstergenin paydasıyla ve gözlem dönemiyle uyumlu olmalıdır. Eksik ekonomileri dışarıda bırakan nüfus ağırlıklı bir oran da yalnızca hesaplamaya giren nüfusu kapsar. Medyan ise ülke yüzdelerinin sıralamasına dayanır. Paydanın toplulaştırmaya etkisini @fig-effective-denominator üzerinde başka bir örnekte incelemiştik.
 
 Buradaki veri, dünya ekonomileri arasından bilinen seçim olasılıklarıyla çekilmiş bir örneklem olarak tasarlanmamıştır. Özetler, **2019 kitap kesitinde ilgili göstergesi bulunan ülke ve ekonomileri** betimler. Gelir grubu ile internet kullanımı arasındaki gözlemsel fark, gelirin artmasının tek başına internet kullanımını artıracağını göstermez. Altyapı, fiyat ve eğitim gibi başka özellikler de iki göstergeyle ilişkili olabilir. Grup medyanlarının farkı burada betimsel bir sonuç olarak raporlanır.
 
