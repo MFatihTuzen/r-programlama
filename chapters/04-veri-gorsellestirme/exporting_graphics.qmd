@@ -53,17 +53,17 @@ p_son
 
 `ggsave()` grafik nesnesini seçilen grafik cihazıyla dosyaya yazar. Dosya uzantısı çoğu zaman biçimi seçmeye yeterlidir. Bununla birlikte kayıt işlemini açıkça tanımlamak, oturumda en son hangi grafiğin gösterildiğine bağımlılığı azaltır [@ggplot2Reference].
 
-| Argüman | Görevi | Örnekteki karar |
-|---|---|---|
-| `filename` | Dosya adı | `"bekleme_300dpi.png"` |
-| `plot` | Kaydedilecek grafik nesnesi | `p_son` açıkça verilir. |
-| `path` | Hedef klasör | Proje içindeki çıktı klasörü |
-| `width`, `height` | Çıktının boyutları | 6 × 4 |
-| `units` | Boyut birimi | `"in"`; alternatif `"cm"`, `"mm"`, `"px"` |
-| `dpi` | Raster çözünürlüğü | 300 piksel/inç |
-| `device` | Yazacak cihaz | Gerekirse açıkça R cihazı verilir. |
-| `bg` | Arka plan | `"white"` |
-| `limitsize` | Yanlışlıkla çok büyük boyutları önleyen kontrol | Varsayılan `TRUE` korunur. |
+| Argüman | Görevi ve örnekteki karar |
+|---|---|
+| `filename` | Dosya adı `"bekleme_300dpi.png"`. |
+| `plot` | Kaydedilecek grafik nesnesi `p_son` açıkça verilir. |
+| `path` | Hedef, proje içindeki çıktı klasörüdür. |
+| `width`, `height` | Çıktının boyutları 6 × 4. |
+| `units` | Boyut birimi `"in"`. Alternatifler `"cm"`, `"mm"` ve `"px"`. |
+| `dpi` | Raster çözünürlüğü 300 piksel/inç. |
+| `device` | Gerekirse R grafik cihazı açıkça verilir. |
+| `bg` | Arka plan `"white"`. |
+| `limitsize` | Çok büyük çıktıları önleyen varsayılan `TRUE` korunur. |
 
 Varsayılan `plot`, son gösterilen grafiktir. Bu kolaylık etkileşimli kullanımda işe yarasa da üretim kodunda yanlış nesnenin kaydedilmesine yol açabilir. Her kayıtta `plot = p_son` yazacağız. `ggsave()` aynı adlı dosyanın üzerine yazabildiği için hedef klasör ve dosya adları bilinçli seçilmelidir.
 

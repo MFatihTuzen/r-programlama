@@ -8,7 +8,7 @@ Bir önceki bölümde `dplyr` ile veri setinin içeriği üzerinde çalıştık:
 
 Bu amaçla ağırlıklı olarak **`tidyr`** paketini kullanacağız. `tidyr`, tidyverse ekosisteminin veri düzenleme araçlarını içeren temel paketlerinden biridir. Paket adındaki *tidy* sözcüğü İngilizcede “düzenli, derli toplu” anlamına gelir. `tidyr` paketinin temel amacı da veriyi, analiz araçlarının daha kolay kullanabileceği **düzenli (tidy)** bir yapıya getirmektir. Resmî `tidyr` dokümantasyonunda düzenli veri; her değişkenin bir sütunda, her gözlemin bir satırda ve her değerin tek bir hücrede yer aldığı yapı olarak tanımlanır.[^data_transformation-1]
 
-[^data_transformation-1]: `tidyr` resmî dokümantasyonu: <https://tidyr.tidyverse.org/>
+[^data_transformation-1]: `tidyr` resmî dokümantasyonu: [tidyr resmî sitesi](https://tidyr.tidyverse.org/)
 
 Bu bölümde özellikle iki temel dönüşüm üzerinde duracağız:
 
@@ -76,7 +76,7 @@ Bu ise **uzun format (long format)** yapısıdır. Yıllar artık ayrı sütunla
 
 `pivot_longer()` ve `pivot_wider()` fonksiyonlarının temel mantığı tam olarak budur. Resmî `tidyr` dokümantasyonu pivot işlemlerini, verinin içerdiği değerleri değiştirmeden gösterim biçimini değiştiren dönüşümler olarak açıklar.[^data_transformation-2]
 
-[^data_transformation-2]: `tidyr` pivoting rehberi: <https://tidyr.tidyverse.org/articles/pivot.html>
+[^data_transformation-2]: `tidyr` pivoting rehberi: [tidyr pivoting rehberi](https://tidyr.tidyverse.org/articles/pivot.html)
 
 ## Neden uzun ve geniş formatlara ihtiyaç duyarız?
 
@@ -128,7 +128,7 @@ Tidyverse dünyasında uzun format çok sık kullanılır; ancak bu, geniş form
 
 Hadley Wickham tarafından sistematik hale getirilen **tidy data** yaklaşımı, veri setinin anlamı ile fiziksel yapısı arasında tutarlı bir ilişki kurmayı amaçlar. Wickham'ın 2014 tarihli *Tidy Data* makalesinde düzenli veri yapısı; değişkenlerin sütunlara, gözlemlerin satırlara ve gözlemsel birim türlerinin tablolara karşılık gelmesi üzerine kuruludur.[^data_transformation-3]
 
-[^data_transformation-3]: Wickham, H. (2014). *Tidy Data*. Journal of Statistical Software, 59(10), 1–23. <https://www.jstatsoft.org/article/view/v059i10>
+[^data_transformation-3]: Wickham, H. (2014). *Tidy Data*. Journal of Statistical Software, 59(10), 1–23. [Journal of Statistical Software](https://www.jstatsoft.org/article/view/v059i10)
 
 Basit haliyle üç kuralı hatırlamak yeterlidir:
 
@@ -155,7 +155,7 @@ Böyle bir yapı insanlar için okunabilir olabilir; ancak analiz açısından y
 
 R for Data Science kitabının ikinci baskısı da pivot işlemlerini, değerleri değiştirmeden verinin biçimini yeniden düzenlemenin temel aracı olarak ele alır.[^data_transformation-4]
 
-[^data_transformation-4]: Wickham, H., Çetinkaya-Rundel, M. & Grolemund, G. *R for Data Science (2e)*, Data tidying bölümü: <https://r4ds.hadley.nz/data-tidy.html>
+[^data_transformation-4]: Wickham, H., Çetinkaya-Rundel, M. & Grolemund, G. *R for Data Science (2e)*, Data tidying bölümü: [Data tidying bölümü](https://r4ds.hadley.nz/data-tidy.html)
 
 ## `tidyr` paketine giriş
 
@@ -190,7 +190,7 @@ Her iki tablo da aynı World Bank — World Development Indicators (WDI) veri al
 
 `pivot_longer()` sözcük olarak “daha uzun hale döndürmek” fikrini taşır. Fonksiyon, seçilen sütunları satırlara taşıyarak veri setinin **satır sayısını artırır**, buna karşılık genellikle sütun sayısını azaltır. Resmî `tidyr` dokümantasyonunda da `pivot_longer()` bu şekilde tanımlanır.[^data_transformation-5]
 
-[^data_transformation-5]: `pivot_longer()` resmî dokümantasyonu: <https://tidyr.tidyverse.org/reference/pivot_longer.html>
+[^data_transformation-5]: `pivot_longer()` resmî dokümantasyonu: [pivot_longer() başvurusu](https://tidyr.tidyverse.org/reference/pivot_longer.html)
 
 ### İlk dönüşüm
 
@@ -440,7 +440,7 @@ employment_wide |>
 
 `pivot_wider()` uzun veriyi daha geniş hale getirir: satır sayısı genellikle azalırken sütun sayısı artar. `pivot_longer()` işleminin ters yönlü karşılığıdır.[^data_transformation-6]
 
-[^data_transformation-6]: `pivot_wider()` resmî dokümantasyonu: <https://tidyr.tidyverse.org/reference/pivot_wider.html>
+[^data_transformation-6]: `pivot_wider()` resmî dokümantasyonu: [pivot_wider() başvurusu](https://tidyr.tidyverse.org/reference/pivot_wider.html)
 
 Küçük uzun veri setimizi tekrar kullanalım:
 
@@ -739,7 +739,7 @@ country_period
 
 Güncel `tidyr` yaklaşımında ayırıcı karaktere göre bir sütunu parçalamak için `separate_wider_delim()` kullanılabilir.[^data_transformation-7]
 
-[^data_transformation-7]: `tidyr` sütun ayırma fonksiyonları: <https://tidyr.tidyverse.org/reference/separate_wider_delim.html>
+[^data_transformation-7]: `tidyr` sütun ayırma fonksiyonları: [Sütun ayırma başvurusu](https://tidyr.tidyverse.org/reference/separate_wider_delim.html)
 
 ```{r}
 #| label: separate-wider-delim
@@ -839,7 +839,7 @@ Eski tidyverse kitaplarında veya internet örneklerinde şu fonksiyonlarla kar�
 
 kullanılır. `tidyr` pivot rehberi de bu fonksiyonların `gather()` ve `spread()` arayüzünü geliştirmek amacıyla tasarlandığını belirtir.[^data_transformation-8]
 
-[^data_transformation-8]: `tidyr` pivoting rehberi: <https://tidyr.tidyverse.org/articles/pivot.html>
+[^data_transformation-8]: `tidyr` pivoting rehberi: [tidyr pivoting rehberi](https://tidyr.tidyverse.org/articles/pivot.html)
 
 Benzer biçimde sütun ayırma işlemlerinde yeni kodlarda `separate_wider_delim()`, `separate_wider_position()` ve gerektiğinde `separate_wider_regex()` ailesini tercih etmek daha uygundur.
 
@@ -1398,10 +1398,10 @@ En önemli nokta şudur:
 
 ## Kaynaklar ve ileri okuma
 
-- Wickham, H. (2014). *Tidy Data*. Journal of Statistical Software, 59(10), 1–23. <https://www.jstatsoft.org/article/view/v059i10>
-- Wickham, H., Çetinkaya-Rundel, M. & Grolemund, G. *R for Data Science (2e): Data tidying*. <https://r4ds.hadley.nz/data-tidy.html>
-- `tidyr` resmî web sitesi ve tidy data yaklaşımı: <https://tidyr.tidyverse.org/>
-- `tidyr` pivoting rehberi: <https://tidyr.tidyverse.org/articles/pivot.html>
-- `pivot_longer()` dokümantasyonu: <https://tidyr.tidyverse.org/reference/pivot_longer.html>
-- `pivot_wider()` dokümantasyonu: <https://tidyr.tidyverse.org/reference/pivot_wider.html>
-- `separate_wider_delim()` ve ilgili fonksiyonlar: <https://tidyr.tidyverse.org/reference/separate_wider_delim.html>
+- Wickham, H. (2014). *Tidy Data*. Journal of Statistical Software, 59(10), 1–23. [Journal of Statistical Software](https://www.jstatsoft.org/article/view/v059i10)
+- Wickham, H., Çetinkaya-Rundel, M. & Grolemund, G. *R for Data Science (2e): Data tidying*. [Data tidying bölümü](https://r4ds.hadley.nz/data-tidy.html)
+- `tidyr` resmî web sitesi ve tidy data yaklaşımı: [tidyr resmî sitesi](https://tidyr.tidyverse.org/)
+- `tidyr` pivoting rehberi: [tidyr pivoting rehberi](https://tidyr.tidyverse.org/articles/pivot.html)
+- `pivot_longer()` dokümantasyonu: [pivot_longer() başvurusu](https://tidyr.tidyverse.org/reference/pivot_longer.html)
+- `pivot_wider()` dokümantasyonu: [pivot_wider() başvurusu](https://tidyr.tidyverse.org/reference/pivot_wider.html)
+- `separate_wider_delim()` ve ilgili fonksiyonlar: [Sütun ayırma başvurusu](https://tidyr.tidyverse.org/reference/separate_wider_delim.html)

@@ -134,6 +134,7 @@ Ortalamanın medyandan büyük olması ve maksimumun üçüncü çeyrekten çok 
 ```{r}
 #| label: outlier-gdp-histogram
 #| fig-cap: "2019 kişi başına GSYH dağılımı özgün ölçekte güçlü biçimde sağa çarpıktır."
+#| fig-alt: "Ülke sayısı, 2019 kişi başına GSYH arttıkça hızla azalıyor. Az sayıda ülke sağ kuyruğu yaklaşık 200 bin dolara kadar uzatıyor."
 
 countries |>
   ggplot(aes(x = gdp_per_capita_usd)) +
@@ -150,6 +151,7 @@ Histogram dağılımın tamamını, kutu grafiği ise merkez ve kuyrukları sık
 ```{r}
 #| label: outlier-gdp-boxplot
 #| fig-cap: "Kişi başına GSYH için kutu grafiği; noktalar otomatik silme listesi değildir."
+#| fig-alt: "2019 kişi başına GSYH kutusu ölçeğin alt kısmında. Üst bıyığın üzerindeki ülkeler ayrı noktalarla gösteriliyor."
 
 countries |>
   ggplot(aes(y = gdp_per_capita_usd)) +
@@ -269,7 +271,10 @@ countries |>
 Ortalama yerine medyanı, standart sapma yerine **medyan mutlak sapmayı** (MAD) kullanabiliriz:
 
 $$
-MAD = median(|x_i - median(x)|)
+\begin{aligned}
+\mathrm{MAD} &= \operatorname{median}(d_i), \\
+d_i &= \lvert x_i - \operatorname{median}(x)\rvert.
+\end{aligned}
 $$
 
 R'deki `mad()` işlevi varsayılan olarak normal dağılımla karşılaştırılabilir bir ölçek elde etmek için 1.4826 düzeltme katsayısı kullanır.
@@ -297,6 +302,7 @@ Nüfus dağılımında küçük ülke ve büyük ülkeler arasında çok büyük
 
 ```{r}
 #| label: outlier-log-comparison
+#| fig-alt: "Logaritmik nüfus ekseninde en yüksek sütun log10 değeri 7 civarında. Bu değer yaklaşık 10 milyon kişiye karşılık geliyor."
 
 countries |>
   select(country, population_total) |>
@@ -660,6 +666,7 @@ Kurallar farklı merkez ve ölçek ölçüleri kullandığı için aynı gözlem
 ```{r}
 #| label: outlier-solution-3
 #| fig-cap: "Gelir grubuna göre kişi başına CO₂ dağılımları."
+#| fig-alt: "Kişi başına CO₂ kutu grafiğinde yüksek gelir grubunun medyanı daha yukarıda. En yüksek tekil noktalar bu grupta görülüyor."
 
 countries |>
   ggplot(aes(x = income_group, y = co2_per_capita)) +
