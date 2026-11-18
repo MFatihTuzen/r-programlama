@@ -104,6 +104,52 @@ c(sayimla = dogru_pozitif / (dogru_pozitif + yanlis_pozitif),
 
 İki hesap da yaklaşık 0,154 verir. Pozitif sonuç alanların yaklaşık %15,4'ünde durumun mevcut olması, bu varsayımlar altındaki model sonucudur. Aynı test özellikleri korunup yaygınlık değişirse pozitif sonuçların hangi gruplardan geldiği ve dolayısıyla öngörü değeri de değişir.
 
+```{r}
+#| label: fig-prob-bayes-tree
+#| echo: false
+#| fig-width: 6.8
+#| fig-height: 4.2
+#| fig-cap: "Varsayımsal 10.000 kişilik taramada beklenen doğal frekanslar. Kalın dallar pozitif sonuçları, alttaki kutu pozitif öngörü değerinin paydasını gösterir."
+#| fig-alt: "10.000 kişi ikiye ayrılıyor. Durum mevcut olan 100 kişide 90 pozitif ve 10 negatif, durum mevcut olmayan 9.900 kişide 495 pozitif ve 9.405 negatif bekleniyor. Pozitifler 90 artı 495, toplam 585. Bunların 90'ı doğru pozitif, oran yüzde 15,38."
+
+adet <- function(x) formatC(round(x), format = "f", digits = 0, big.mark = ".")
+eski_par <- par(mar = rep(0.2, 4))
+plot.new()
+plot.window(xlim = c(0, 10), ylim = c(0, 8))
+segments(5, 6.85, c(2.5, 7.5), 5.9, col = "grey45")
+segments(rep(c(2.5, 7.5), each = 2), 4.85,
+         c(1.25, 3.75, 6.25, 8.75), 3.85,
+         lwd = c(2.7, 1, 2.7, 1),
+         col = rep(c("#244C61", "grey45"), 2))
+rect(3.6, 6.85, 6.4, 7.8, col = "#EAF3F7", border = "#244C61")
+text(5, 7.33, paste(adet(toplam), "kişi"), font = 2)
+rect(c(0.62, 5.62), 4.85, c(4.38, 9.38), 5.9,
+     col = "#F1F4F5", border = "grey45")
+text(c(2.5, 7.5), 5.38,
+     paste(c("Durum mevcut", "Durum mevcut değil"),
+           adet(c(mevcut, yok)), sep = "\n"))
+uc <- c(1.25, 3.75, 6.25, 8.75)
+rect(uc - 1.1, 2.65, uc + 1.1, 3.85,
+     col = rep(c("#D8EBF4", "#F1F4F5"), 2), border = "grey45")
+text(uc, 3.25, paste(rep(c("Pozitif", "Negatif"), 2),
+                    adet(c(dogru_pozitif, mevcut - dogru_pozitif,
+                           yanlis_pozitif, yok - yanlis_pozitif)), sep = "\n"))
+pozitif_sayisi <- dogru_pozitif + yanlis_pozitif
+pozitif_yuzde <- formatC(100 * dogru_pozitif / pozitif_sayisi,
+                         format = "f", digits = 2, decimal.mark = ",")
+segments(c(1.25, 6.25), 2.65, c(3.45, 6.55), 1.65,
+         lwd = 2, col = "#244C61")
+rect(1.2, 0.3, 8.8, 1.65, col = "#D8EBF4", border = "#244C61")
+text(5, 0.97,
+     paste0("Pozitiflerin toplamı: ", adet(dogru_pozitif), " + ",
+            adet(yanlis_pozitif), " = ", adet(pozitif_sayisi), "\n",
+            "Doğru pozitif payı: ", adet(dogru_pozitif), " / ",
+            adet(pozitif_sayisi), " = %", pozitif_yuzde))
+par(eski_par)
+```
+
+@fig-prob-bayes-tree üzerinde 90 ve 495 pozitif sonuç, farklı ana dallardan aynı kutuya geliyor. Pozitif sonuç verildikten sonra yeni payda iki pozitif dalın toplamı olan 585'tir. Duyarlılığı hesaplarken ise yalnız durumun mevcut olduğu dalın 100 kişisini payda alırız.
+
 ## Rassal değişken ve olasılık dağılımı
 
 Lojistik merkezi, gönderileri “kusurlu” ve “kusursuz” olarak kaydediyor olsun. Üç gönderinin kontrol sonuçlarının sırası kimi sorular için değerlidir. Ancak ayrılması gereken gönderi sayısını planlarken yalnızca toplam kusurlu sayısı yeterlidir. Her olası kontrol sonucunu bu sayıyla eşleyen kurala **rassal değişken** deriz. $X$ bu kuralı, küçük $x$ ise alabileceği belirli bir değeri gösterir. $X=2$ olayı, üç kontrolden tam ikisinin kusurlu olduğu bütün sonuçları kapsar.
@@ -217,6 +263,17 @@ Tam beş çağrının olasılığı yaklaşık %10,1, en az beş çağrının ol
 ## Sürekli dağılımlar ve normal dağılım
 
 Bir dolum makinesinin şişelere verdiği sıvı miktarını düşünelim. Makine hedefe yakın çalışıyor ve küçük sapmalar iki yöne dağılabiliyorsa, ölçümü yaklaşık modellemek için simetrik bir yoğunluk düşünülebilir. **Normal dağılım** böyle bir modeldir. $X\sim N(\mu,\sigma^2)$ gösteriminde $\sim$ dağılımı izlemek anlamındadır. $N$ normal dağılımı, $\mu$ konumu ve beklenen değeri, $\sigma>0$ standart sapmayı, $\sigma^2$ varyansı belirtir. Dağılım $\mu$ çevresinde simetriktir. $\sigma$ büyüdüğünde eğri genişler ve toplam alan 1 kaldığı için tepe alçalır.
+
+Normal modelin yoğunluğu, gerçek sayı doğrusundaki bir $x$ değeri için şöyle yazılır:
+
+$$
+f(x)=\frac{1}{\sigma\sqrt{2\pi}}
+\exp\!\left(-\frac{(x-\mu)^2}{2\sigma^2}\right).
+$$
+
+Burada $\sigma>0$, $\pi$ çember sabiti ve $\exp$ doğal üstel fonksiyondur. Üstelin içindeki kare, merkezden aynı uzaklıktaki iki değerin aynı yoğunluğa sahip olmasını sağlar. Merkezde üstelin girdisi sıfırdır ve üstel terim 1 olur. Merkezden uzaklaştıkça girdi daha negatif olur ve eğri alçalır. $\sigma$, merkezden uzaklığın hangi ölçeğe göre büyük veya küçük sayılacağını belirler.
+
+Öndeki $1/(\sigma\sqrt{2\pi})$ çarpanı eğrinin yüksekliğini ayarlar. Merkezlenmiş standart ölçekte normal eğrinin ölçeklenmemiş alanı $\sqrt{2\pi}$ değerindedir. Yatay ölçeği $\sigma$ ile genişletmek alanı da $\sigma$ ile çarpar. Bu yüzden toplam alanı 1 yapmak için yükseklik, bu iki çarpanın çarpımına bölünür. Tepe yüksekliği de bu katsayıdır. Bir noktanın olasılığı içinse yüksekliği tek başına kullanamayız.
 
 Bir miktarın hedefe göre kaç standart sapma yukarıda veya aşağıda olduğunu bilmek, mililitre cinsinden farkı başka süreçlerle karşılaştırmaya yardım eder. Bunun için ölçümden merkezi çıkarıp farkı standart sapmaya böleriz:
 
