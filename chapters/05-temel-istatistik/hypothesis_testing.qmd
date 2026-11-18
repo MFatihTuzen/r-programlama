@@ -50,7 +50,7 @@ p_{\mathrm{çift}}
 \end{aligned}
 $$
 
-İkinci eşitlik, bu simetrik referans dağılımında $-2$'nin soluyla $+2$'nin sağının eşit olmasından gelir. Sonuç yaklaşık 0,0455'tir. İki yönlü hesabı her zaman tek yönlü p-değerini ikiyle çarparak yapamayız. Seçilen tek yön karşı kuyruk olabilir. Asimetrik veya kesikli bir referansta da uçluk kuralı farklı bir hesap gerektirebilir.
+İkinci eşitlik, bu simetrik referans dağılımında $-2$'nin soluyla $+2$'nin sağının eşit olmasından gelir. Sonuç yaklaşık 0,0455'tir. İki yönlü hesabı her zaman tek yönlü p-değerini ikiyle çarparak yapamayız. Seçilen tek yön karşı kuyruk olabilir. Asimetrik veya kesikli bir referans dağılımında hangi sonuçların daha uç kabul edildiği farklı biçimde tanımlanabilir; bu nedenle iki taraflı p-değerinin hesabı da değişebilir.
 
 ```{r}
 #| label: ht-tail-values
