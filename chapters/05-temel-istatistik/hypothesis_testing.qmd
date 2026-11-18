@@ -30,7 +30,7 @@ $H_0$ altında payın beklenen değeri sıfır, standart sapması paydada yazan 
 
 ## p-değeri nasıl hesaplanır?
 
-Bir test istatistiğinin değeri tek başına ne kadar seyrek olduğunu söylemez. Bunun için sıfır hipotezi altındaki referans dağılımına ve hangi sonuçların daha uç sayılacağını belirleyen kurala ihtiyacımız var. **p-değeri**, bu model altında, önceden seçilen uçluk kuralına göre gözlenen test istatistiği kadar veya daha uç bir sonuç elde etme olasılığıdır [@casellaBerger2002; @wassersteinLazar2016].
+Bir test istatistiğinin gözlenen değeri, tek başına ne kadar sıra dışı olduğunu söylemez. Bunun için sıfır hipotezi altındaki referans dağılımına ve hangi sonuçların en az gözlenen kadar uç sayılacağını belirleyen bir ölçüte ihtiyacımız var. **p-değeri**, bu model altında, seçilen ölçüte göre gözlenen test istatistiği kadar veya daha uç bir sonuç elde etme olasılığıdır [@casellaBerger2002; @wassersteinLazar2016].
 
 Eksik dolum sorusunda, $-2$ ile karşılaştırıldığında $-2{,}5$ daha uçtur. $+2{,}5$ ise aynı ölçüde büyük bir sapma olsa da eksik dolum yönünde değildir. Sol yönlü p-değeri, standart normal eğrinin $-2$ ve solundaki alandır:
 
@@ -290,4 +290,4 @@ $$
 
 ## Bölüm özeti
 
-Bir test, araştırma sorusuna uygun bir uçluk kuralı ve sıfır hipotezi altında bir referans dağılımı gerektirir. p-değeri bu referansta gözlenen kadar veya daha uç sonuçların olasılığıdır. Önceden seçilen eşik, yanlış ret riski ile belirli alternatifleri saptama gücü arasında bir tercih oluşturur. Bilimsel yorum, kararın yanında etkinin büyüklüğünü, belirsizliğini ve araştırma tasarımını da taşır.
+Bir test, hangi sonuçların daha uç sayılacağını belirleyen araştırma sorusuna uygun bir ölçüt ve sıfır hipotezi altında bir referans dağılımı gerektirir. p-değeri bu referansta gözlenen kadar veya daha uç sonuçların olasılığıdır. Önceden seçilen eşik, yanlış ret riski ile belirli alternatifleri saptama gücü arasında bir tercih oluşturur. Bilimsel yorum, kararın yanında etkinin büyüklüğünü, belirsizliğini ve araştırma tasarımını da taşır.
