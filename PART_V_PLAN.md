@@ -1,6 +1,6 @@
 # PART_V_PLAN.md — Part V İçerik ve Öğretim Taslağı
 
-> **Durum:** 18 Kasım 2026 — Part V teması ve dengeli öğretim yaklaşımı üzerinde mutabakat var. Alt bölüm düzeni bir **tartışma ve geliştirme taslağıdır**, henüz yazılmış/teslim edilmiş kitap içeriği değildir.
+> **Durum:** 18 Kasım 2026 — On alt bölüm yazıldı ve bütünleşik bilimsel denetimden geçti. Part V, geliştirme dalındaki Quarto kitabına eklendi. GitHub Pages yayını ayrı onay bekliyor.
 
 ## 1. Bölüm kimliği ve amaç
 
@@ -55,7 +55,7 @@ Kod miktarı değil, kavramın anlaşılabilirliği ve örneklerin bilimsel doğ
 - Kaynak sadece kaynakçada değil, desteklediği iddianın yanında Quarto/Pandoc `[@anahtar]` biçiminde bulunur.
 - Simülasyon ve formüller matematiksel/statistiksel bakımdan, kodlar temiz oturumda, ilgili `.qmd` HTML çıktısı Quarto ile test edilir. `freeze: auto` nedeniyle tam render, tüm kodların yeni baştan çalıştırıldığı anlamına gelmez.
 
-## 7. Yazım öncesi karar ve üretim sırası
+## 7. Yazım öncesinde belirlenen üretim sırası
 
 1. Bu taslaktaki alt başlıkları, gerekirse birleştirme/ayırma ile kesinleştir.
 2. 5.1–5.4 için kavram–örnek–görsel–kaynak eşlemesi oluştur.
@@ -71,5 +71,3 @@ Kod miktarı değil, kavramın anlaşılabilirliği ve örneklerin bilimsel doğ
 - **Part VII:** Tekrarlanabilir Analiz ve Raporlama.
 - **Part VIII:** Uygulamalı Veri Analizi Projeleri.
 - Daha ileri başlıklar: zaman serileri, çok değişkenli yöntemler, makine öğrenmesi, Shiny, R mühendisliği (ileride değerlendirilecek).
-
-**Durum notu:** Bu dosya bir planlama belgesidir. Part V `.qmd` dosyaları henüz üretilmemiştir; `_quarto.yml` yalnızca dört tamamlanmış ana bölümü içerir. `v0.5.0` gelecekteki hedef adı olabilir, yayımlanmış sürüm değildir.

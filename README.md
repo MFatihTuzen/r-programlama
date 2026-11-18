@@ -8,7 +8,7 @@ Bu Türkçe, açık kaynak kitap; R programlamayı veriyle düşünme, analiz ya
 
 ## İçerik
 
-Depoda dört ana bölüm ve toplam 28 alt bölüm bulunmaktadır:
+Geliştirme dalındaki kitap beş ana bölüm ve toplam 38 alt bölüm içerir. GitHub Pages sürümü Part I–IV’ü içerir.
 
 | Ana bölüm | Kapsam | Alt bölüm sayısı |
 |---|---|---:|
@@ -16,10 +16,11 @@ Depoda dört ana bölüm ve toplam 28 alt bölüm bulunmaktadır:
 | II — Veri Manipülasyonu ve Dönüştürme | `dplyr`, uzun/geniş veri dönüşümleri ve tablo birleştirmeleri | 3 |
 | III — Veri Ön İşleme | Eksik veri, aykırı gözlemler, dönüşümler, ölçeklendirme, özellik mühendisliği ve veri sızıntısı | 7 |
 | IV — Veri Görselleştirme | Grafik seçimi ve yorumlama, `ggplot2`, gruplama ve facet, ölçekler, renkler, temalar, bilimsel sunum ve dışa aktarma | 8 |
+| V — Temel İstatistik ve İstatistiksel Çıkarım | İstatistiksel düşünme, betimsel istatistikler, olasılık ve örnekleme, güven aralıkları, hipotez testleri, grup karşılaştırmaları, parametrik olmayan yöntemler, kategorik ilişki ve korelasyon, bütünleşik analiz | 10 |
 
 Veri görselleştirme bölümleri, fonksiyon ve argüman açıklamalarını kavramsal gerekçelerle birleştirir. Grafiklerin kapsamı, eksik değerleri, ölçü birimleri ve yorum sınırları ele alınır. Part IV'te çözümleriyle birlikte 51 egzersiz bulunmaktadır.
 
-Temel istatistik ve regresyon gibi ileri konular kitabın gelecekte genişletilebilecek alanlarıdır; mevcut kapsamla karıştırılmamalıdır.
+Part V’in içeriği ve bilimsel denetimi tamamlandı. On alt bölüm geliştirme dalında kitap sırasına eklendi. Regresyon, sonraki geliştirme aşaması için önerilen konulardan biridir.
 
 ## Kimler İçin?
 
@@ -31,7 +32,7 @@ Kitap; R öğrenmeye başlayan öğrenciler, araştırmacılar, akademisyenler v
 |---|---|
 | `_quarto.yml` | Kitap menüsü, HTML biçimi ve yürütme ayarları |
 | `index.qmd` | Önsöz |
-| `chapters/` | Dört ana bölümün Quarto kaynakları |
+| `chapters/` | Beş ana bölümün Quarto kaynakları |
 | `data/` | Kitapta kullanılan ortak veri dosyaları ve veri sözlüğü |
 | `R/` | Veri hazırlama betikleri |
 | `images/` | Kapak ve diğer görseller |
