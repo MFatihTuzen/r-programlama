@@ -91,8 +91,7 @@ Kod örnekleri;
 
 - okunabilir olmalıdır.
 - gereksiz uzun olmamalıdır.
-- her kod bloğu açıklanmalıdır.
-- mümkün olduğunca satır satır yorumlanmalıdır.
+- her kod bloğunun amacı, sonucu belirleyen kritik işlemleri ve çıktısı açıklanmalıdır. Açık işlemler için satır satır yorum gerekmez.
 
 Kod gösterildikten sonra
 
@@ -173,7 +172,7 @@ gibi okuyucuyla konuşan bir anlatım tercih edilmelidir.
 
 # Kullanılmaması Gerekenler
 
-- Gereksiz uzun teorik açıklamalar
+- Araştırma sorusuna veya kavramın anlaşılmasına katkı sağlamayan teorik ayrıntılar. Açıklamanın uzunluğunu öğretici katkısına ve bilimsel doğruluğuna göre değerlendir.
 - Çok büyük veri setleri
 - Gereksiz matematiksel gösterimler
 - İlk seviyede karmaşık tidy evaluation örnekleri
@@ -272,6 +271,12 @@ Bu ilkeler genel yazım standardına **ek** olarak uygulanır.
 
 
 ---
+
+## Kavramları Geliştirme ve Matematiği Açıklama
+
+Kitabın bütün ana bölümlerinde kavramı, onu gerekli kılan sorudan hareketle geliştir. Günlük yaşamdan, araştırmadan veya gerçek veriden öğretici bir örnek seç. Sezgiyi gerekli varsayımlar, tanımlar ve matematikle tamamla. Formüllerde sembolleri tanımla ve mümkün olduğunda formülün neden o biçimde kurulduğunu küçük bir hesap ya da kısa bir türetimle göster. Kavramın anlaşılmasına katkı sağlıyorsa doğrulanmış tarihsel veya etimolojik açıklamalardan yararlan.
+
+Açıklamayı bağlantılı paragraflarla sürdür. Tablo, liste ve kodu anlatımı desteklediği yerde kullan. R çıktısını, araştırma sorusu ve verinin sınırları içinde istatistiksel olarak yorumla.
 
 ## Part V ve Sonrası İçin Anlatım Standardı (18 Kasım 2026)
 

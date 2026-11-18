@@ -97,6 +97,12 @@ img {
   border-radius: 6px;
 }
 
+/* Kaynakça bağlantılarını kendi metin alanında sar */
+#refs .csl-entry,
+#refs a {
+  overflow-wrap: anywhere;
+}
+
 /* Alıntılar */
 blockquote {
   border-left: 4px solid rgba(120, 120, 120, 0.35);

@@ -38,7 +38,7 @@ Kalite, geliştirme hızından daha önceliklidir.
 
 # Tamamlanan ve GitHub'a Aktarılan Bölümler
 
-Kitabın dört ana bölümü (toplam **28 alt bölüm**) `_quarto.yml` dosyasında etkindir ve GitHub deposunda yer almaktadır. Kullanıcının bildirdiğine göre kitap render edilerek GitHub Pages'e gönderilmiştir. **GitHub Release/etiketlerinin varlığı ayrıca doğrulanmalıdır**; kitapta içerik bulunması bir Release yayımlandığı anlamına gelmez.
+Part I–IV (toplam **28 alt bölüm**) kitabın yayımlanan kapsamını oluşturur. Kullanıcının bildirdiğine göre kitap render edilerek GitHub Pages'e gönderilmiştir. **GitHub Release/etiketlerinin varlığı ayrıca doğrulanmalıdır**; kitapta içerik bulunması bir Release yayımlandığı anlamına gelmez.
 
 | Ana bölüm | Alt bölüm | Durum | Sürüm hedefi |
 |---|---:|---|---|
@@ -66,7 +66,7 @@ Kitabın dört ana bölümü (toplam **28 alt bölüm**) `_quarto.yml` dosyasın
 
 ---
 
-## Part V — Temel İstatistik ve İstatistiksel Çıkarım (planlama aşamasında)
+## Part V — Temel İstatistik ve İstatistiksel Çıkarım (geliştirme dalında entegre)
 
 **Kapsam kararı (18 Kasım 2026):** Dengeli yaklaşım benimsendi: konu derinliği, sezgisel teori, basitten zora R uygulamaları, yorumlama, varsayımlar, simülasyonlar, grafikler ve doğrulanmış akademik/teknik kaynaklar. Kod kataloğu oluşturulmayacak. Alt bölüm başlıkları çalışma taslağıdır; yazım başlamadan ayrıntıları gözden geçirilecektir.
 
@@ -83,7 +83,7 @@ Kitabın dört ana bölümü (toplam **28 alt bölüm**) `_quarto.yml` dosyasın
 
 Ayrıntılı öğretim planı, kapsam sınırları, kontrol listeleri ve kaynak stratejisi: [`PART_V_PLAN.md`](PART_V_PLAN.md).
 
-**Henüz yapılmadı:** Part V `.qmd` yazımı, `_quarto.yml` içine ekleme, render, commit, push ve sürüm yayımlama. Hedef sürüm `v0.5.0` bir planlamadır, gerçek Git etiketi değildir.
+On alt bölüm yazıldı, bütünleşik bilimsel denetim tamamlandı ve içerik geliştirme dalındaki Quarto kitap sırasına eklendi. GitHub Pages yayını ayrı onay bekliyor. `v0.5.0` gelecek yayın için hedef sürümdür.
 
 ## Part VI–VIII — Önerilen devam planı
 

@@ -39,7 +39,7 @@ book:
     right: |
       Bu kitap [Quarto](https://quarto.org/) ile hazırlanmıştır.
 
-  # Kitabın mevcut dört ana bölümü ve ortak kaynakçası.
+  # Kitabın beş ana bölümü ve ortak kaynakçası.
   chapters:
     - index.qmd
     - part: "I · R Programlamaya Giriş"
@@ -78,6 +78,18 @@ book:
         - chapters/04-veri-gorsellestirme/themes_customization.qmd
         - chapters/04-veri-gorsellestirme/effective_graphics.qmd
         - chapters/04-veri-gorsellestirme/exporting_graphics.qmd
+    - part: "V · Temel İstatistik ve İstatistiksel Çıkarım"
+      chapters:
+        - chapters/05-temel-istatistik/statistical_thinking.qmd
+        - chapters/05-temel-istatistik/descriptive_statistics.qmd
+        - chapters/05-temel-istatistik/probability_distributions.qmd
+        - chapters/05-temel-istatistik/sampling_distributions.qmd
+        - chapters/05-temel-istatistik/confidence_intervals.qmd
+        - chapters/05-temel-istatistik/hypothesis_testing.qmd
+        - chapters/05-temel-istatistik/comparing_means.qmd
+        - chapters/05-temel-istatistik/nonparametric_tests.qmd
+        - chapters/05-temel-istatistik/categorical_association.qmd
+        - chapters/05-temel-istatistik/integrated_analysis.qmd
     - references.qmd
 
 language:

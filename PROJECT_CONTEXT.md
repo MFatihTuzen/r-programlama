@@ -43,13 +43,13 @@ https://github.com/MFatihTuzen/r-programlama
 
 Kitap GitHub Pages üzerinden yayınlanmaktadır.
 
-Her değişiklik GitHub repository'sine gönderildikten sonra GitHub Actions tarafından otomatik olarak yayınlanmaktadır.
+`main` dalına gönderilen değişikliklerde yayın iş akışı tetiklenir. İş akışı elle de başlatılabilir.
 
 ---
 
 # Güncel Kitap Kapsamı
 
-Kitapta GitHub deposuna aktarılmış **4 ana bölüm ve 28 alt bölüm** bulunmaktadır:
+Geliştirme dalında **5 ana bölüm ve 38 alt bölüm** bulunur. GitHub Pages sürümü Part I–IV kapsamındadır:
 
 | Ana bölüm | Alt bölüm sayısı |
 |---|---:|
@@ -57,6 +57,7 @@ Kitapta GitHub deposuna aktarılmış **4 ana bölüm ve 28 alt bölüm** bulunm
 | II — Veri Manipülasyonu ve Dönüştürme | 3 |
 | III — Veri Ön İşleme | 7 |
 | IV — Veri Görselleştirme | 8 |
+| V — Temel İstatistik ve İstatistiksel Çıkarım | 10 |
 
 Part IV görselleştirmenin önemini, uygun grafik seçimini, `ggplot2` uygulamasını, istatistiksel yorumun sınırlarını ve etik görsel iletişimi birlikte işler. README'ye göre Part IV'te **51 çözümlü egzersiz** bulunmaktadır.
 
@@ -97,11 +98,11 @@ olacaktır.
 
 # Güncel Geliştirme Odağı: Kitap Bakımı ve Sonraki Kapsam
 
-Part IV geliştirme çalışması tamamlanmış ve GitHub deposuna aktarılmıştır. **18 Kasım 2026 itibarıyla sıradaki ana bölüm Part V — Temel İstatistik ve İstatistiksel Çıkarım olarak seçildi; içerik hâlâ planlanıyor ve yazılmadı.** On alt bölümlük öneri ve pedagojik ilkeler `PART_V_PLAN.md` dosyasındadır; `ROADMAP.md` Part VI–VIII için henüz kesinleşmemiş sonraki yönü gösterir. Öncelik fonksiyon kataloğu değil; teori, sezgisel açıklama, gerekçeli R uygulaması, analiz ve yorumdur.
+Part V’in on alt bölümü yazıldı, bilimsel ve editöryal denetimi tamamlandı ve içerik geliştirme dalındaki Quarto kitap sırasına eklendi. GitHub Pages yayını ayrı onay bekliyor. Öğretim planı `PART_V_PLAN.md` dosyasında, Part VI–VIII için önerilen kapsam `ROADMAP.md` dosyasındadır.
 
 İçerik geliştirmede `BOOK_GUIDE.md` bağlayıcı yazım ve kaynakça standardıdır. Yeni çalışmadan önce gerçek repo durumu, mevcut `.qmd` dosyaları, atıf anahtarları ve çalışma ağacı incelenir. Yapılan işler Codex'te olsa bile kullanıcı onayı olmadan commit/push/Release yapılmaz.
 
-Güncel `_quarto.yml` ayarları: `project.execute-dir: project`, `bibliography: references.bib`, `references.qmd`, dört etkin Part ve `freeze: auto`. Bunlar gerekçesiz değiştirilmez.
+Güncel `_quarto.yml` ayarları: `project.execute-dir: project`, `bibliography: references.bib`, `references.qmd`, beş etkin Part ve `freeze: auto`. Bunlar gerekçesiz değiştirilmez.
 
 Kullanıcının yerel Windows depo yolu `D:\GitHub\r-programlama` olarak bildirilmiştir; bulut ortamlarında bu konumun var olduğu varsayılmaz.
 

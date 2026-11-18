@@ -1,0 +1,433 @@
+# Kategorik Veriler ve İlişki Analizi {#sec-categorical-association}
+
+Bir ulaşım işletmesi, yolcuların %45'inin hizmetten memnun olduğunu biliyor. Sık ve seyrek kullanıcıların memnuniyet oranları aynı mı? Genel oran bu soruyu yanıtlamak için yeterli değildir. İki değişkeni aynı yolcu üzerinde birlikte gözlemlemek gerekir. Benzer bir soru iki sayısal değişken için de ortaya çıkar. Örneğin her vardiyanın çalışma süresi ve üretimi birlikte arttığında bu örüntüyü nasıl ölçeriz?
+
+**İlişki**, bir değişkenin değerine göre diğerinin dağılımının değişmesidir. **Bağımsızlık**, bu koşullu dağılımın aynı kalmasıdır. **Nedensellik** ise bir müdahalenin sonucu nasıl değiştireceğiyle ilgilenir. Bu bölümde önce ortak sayımlarla, ardından gözlem çiftleriyle çalışacağız. Amaç bir ilişkiyi betimlemek, uygun referans dağılımıyla belirsizliği değerlendirmek ve sonucu araştırma tasarımına göre sınırlamaktır. Örneklerin tamamı sentetiktir. Kodlar temel R ve onun standart paketleriyle çalışır.
+
+## Çapraz tablo: Hangi toplam paydada?
+
+120 ayrı yolcuya kullanım sıklığı ve memnuniyeti sorulduğunu düşünelim. Her yolcu tek hücreye katkı yapar. İlk örnekte çıkarım için ortak bir anakütleden birbirinden bağımsız yolcular seçildiğini varsayacağız. Sayılar bir ulaşım araştırmasından alınmamıştır.
+
+| Kullanım | Memnun | Değil |
+|---|---:|---:|
+| Sık | 36 | 24 |
+| Seyrek | 18 | 42 |
+
+- **Satır yüzdesi.** Sık kullanıcıların $36/60=\%60$'ı memnun. Seyrek kullanıcılarda bu oran $18/60=\%30$.
+- **Sütun yüzdesi.** Memnun kişilerin $36/54\approx\%66{,}7$'si sık kullanıcı.
+- **Genel yüzde.** Tüm yolcuların $36/120=\%30$'u hem sık kullanıcı hem memnun.
+
+$P(\text{Memnun}\mid\text{Sık})$ ile $P(\text{Sık}\mid\text{Memnun})$ aynı ortak hücreyi farklı paydalara böler. @sec-probability-distributions bölümündeki koşullu olasılık ve Bayes ilişkisi tam olarak bu payda değişimini açıklar. Örneğin memnunlar arasındaki sık kullanıcı payı, sık kullanıcıların memnuniyet olasılığı ile sık kullanıcıların genel payının çarpımını genel memnuniyet olasılığına bölerek de bulunur.
+
+```{r}
+#| label: cat-table
+kullanim <- factor(rep(c("Sık", "Seyrek"), each = 60),
+                   levels = c("Sık", "Seyrek"))
+memnuniyet <- factor(rep(c("Memnun", "Değil", "Memnun", "Değil"),
+                         c(36, 24, 18, 42)), levels = c("Memnun", "Değil"))
+ulasim <- table(kullanim, memnuniyet)
+addmargins(ulasim)
+margin.table(ulasim, 1)
+margin.table(ulasim, 2)
+round(100 * prop.table(ulasim, 1), 1)
+round(100 * prop.table(ulasim, 2), 1)
+round(100 * prop.table(ulasim), 1)
+```
+
+R'de marj numarası 1 satırı, 2 sütunu belirtir. Marj verilmezse bütün tablo tek paydada değerlendirilir. @fig-cat-rates satır koşullu oranlarla ilk soruyu gösterir. Ham sayılar tahminin kaç gözleme dayandığını da bildirir.
+
+```{r}
+#| label: fig-cat-rates
+#| fig-cap: "Kullanım sıklığına göre memnuniyet"
+#| fig-alt: "Sık kullanıcıların 60 kişide 36'sı, seyrek kullanıcıların 60 kişide 18'i memnun. Oranlar yüzde 60 ve 30."
+#| fig-width: 6.2
+#| fig-height: 3.6
+par(mar = c(4, 4.5, 0.8, 0.8), bg = "white")
+pay <- prop.table(ulasim, 1)[, "Memnun"] * 100
+yer <- barplot(pay, ylim = c(0, 100), col = c("#145675", "#97391C"),
+               ylab = "Memnun yolcu (%)")
+text(yer, pay, c("36/60", "18/60"), pos = 3)
+```
+
+## Bağımsızlık altında beklenen sayılar
+
+$A$ kullanım sıklığı, $B$ memnuniyet olsun. $i$ ve $j$ sırasıyla bu değişkenlerin kategorilerini gösterir. Bağımsızlık altında her hücre için
+
+$$
+\begin{aligned}
+P(A=i,B=j)\\[-0.15em]
+\quad{}=P(A=i)\,P(B=j).
+\end{aligned}
+$$
+
+olur. Satır olasılığı sıfırdan büyükse iki tarafı ona böldüğümüzde $P(B=j\mid A=i)=P(B=j)$ elde ederiz. Örneklemde tesadüfi farklar oluşabilir. İki gözlenen satır oranının farklı çıkması tek başına gerçek bir ilişkiyi göstermez. Bu ayrımı @sec-sampling-distributions bölümündeki örnekleme değişkenliğiyle düşünün.
+
+$O_{ij}$ gözlenen hücre sayısı, $n_{i+}$ satır toplamı, $n_{+j}$ sütun toplamı ve $n$ genel toplamdır. Bilinmeyen iki marjinal olasılığı örneklem oranlarıyla tahmin ederiz. Çarpımları, bağımsızlık modeliyle uyumlu hücre payıdır. $n$ ile çarptığımızda hücre sayısı ölçeğine döneriz:
+
+$$
+\begin{aligned}
+E_{ij}&=n\frac{n_{i+}}{n}\frac{n_{+j}}{n}\\
+      &=\frac{n_{i+}n_{+j}}{n}.
+\end{aligned}
+$$
+
+İki satırda da 60 kişi var. Memnun sütununun genel payı $54/120$ olduğundan her satırda $60(54/120)=27$ memnun yolcu beklenir. Diğer sütunda her satır için $60(66/120)=33$ elde edilir. Beklenen frekanslar modeli temsil eder ve tam sayı olmak zorunda değildir.
+
+## Pearson ki-kare testi: Sapmaları birleştirmek
+
+$r$ satır ve $c$ sütun sayısı olsun. Gözlenen–beklenen farkının karesi, artı ve eksi sapmaların birbirini götürmesini önler. Bölende $E_{ij}$ kullanmak, aynı sayısal sapmaya küçük beklenen hücrede daha çok ağırlık verir. Sayımlardaki rastgele dalgalanmaların ölçeği hücre büyüklüğüne bağlıdır. Her hücrenin katkısı negatif olamaz:
+
+$$
+\begin{aligned}
+X^2&=\sum_{i=1}^{r}\sum_{j=1}^{c} q_{ij},\\
+q_{ij}&=\frac{(O_{ij}-E_{ij})^2}{E_{ij}}.
+\end{aligned}
+$$
+
+Bağımsızlık altında yeterli veriyle frekansların standartlaştırılmış sapmaları yaklaşık ortak normal davranış gösterir. Marjlar modelden tahmin edildiğinde geriye kalan serbest sapmaların kareli toplamı yaklaşık ki-kare dağılımı verir. Marjlar bilindiğinde sol üst $(r-1)$ satır ve $(c-1)$ sütunun hücreleri seçilince son sütun ve son satır toplamlarla belirlenir. Bu nedenle serbestlik derecesi $(r-1)(c-1)$'dir. Örnekte sol üst hücre 36 olunca diğer hücreler marjlardan 24, 18 ve 42 olur. Büyük $X^2$ bağımsızlıkla daha az uyumlu olduğundan p-değerini **sağ kuyrukta** hesaplarız [@casellaBerger2002; @diezRundelBarr2019].
+
+```{r}
+#| label: cat-chi
+E <- outer(rowSums(ulasim), colSums(ulasim)) / sum(ulasim)
+katki <- (ulasim - E)^2 / E
+X2 <- sum(katki)
+sd_ki <- prod(dim(ulasim) - 1)
+pearson_ki <- chisq.test(ulasim, correct = FALSE)
+yates <- chisq.test(ulasim)
+pearson_ki$expected
+katki
+c(X2 = X2, sd = sd_ki, p_elle = pchisq(X2, sd_ki, lower.tail = FALSE),
+  p_R = pearson_ki$p.value, X2_Yates = unname(yates$statistic), p_Yates = yates$p.value)
+```
+
+Dört hücrede sapmanın mutlak değeri 9'dur. Katkılar iki kez $81/27$ ve iki kez $81/33$ gelir. $X^2\approx10{,}91$, serbestlik derecesi 1 ve $p\approx0{,}00096$ olur. @fig-cat-expected her hücrede gözlenen ve modelin beklediği sayıları karşılaştırır. Aynı mutlak sapma, beklenen frekansı farklı olan iki sütunda farklı katkılar verir.
+
+```{r}
+#| label: fig-cat-expected
+#| fig-cap: "Bağımsızlık modeline göre gözlenen ve beklenen sayılar"
+#| fig-alt: "Sık yolcularda memnun gözlenen 36, beklenen 27. Sık ve memnun değil 24 ve 33. Seyrek ve memnun 18 ve 27. Seyrek ve memnun değil 42 ve 33."
+#| fig-width: 6.4
+#| fig-height: 4.0
+par(mar = c(5, 4, 1, 0.7), bg = "white")
+goz <- as.vector(t(ulasim))
+bek <- as.vector(t(E))
+gr <- seq_along(goz)
+plot(gr, goz, ylim = c(0, 52), xaxt = "n", xlab = "", ylab = "Yolcu sayısı",
+     pch = 19, col = "#145675")
+axis(1, at = gr, labels = c("Sık\nMemnun", "Sık\nDeğil", "Seyrek\nMemnun", "Seyrek\nDeğil"))
+segments(gr, bek, gr, goz, col = "gray60")
+points(gr, bek, pch = 1, lwd = 2, col = "#97391C")
+legend("top", c("Gözlenen", "Beklenen"), pch = c(19, 1),
+       col = c("#145675", "#97391C"), horiz = TRUE, bty = "n")
+```
+
+R 4.5.0'da `chisq.test()` 2×2 tabloda varsayılan olarak Yates süreklilik düzeltmesini kullanır. Ayrık sayımları sürekli ki-kare eğrisiyle karşılaştırırken mutlak sapmadan 0,5'e kadar çıkarır. Bu örnekte düzeltilmiş istatistik yaklaşık 9,73 olur ve p-değeri büyür. Düzeltme bazı tablolarda muhafazakâr olabilir. Eşitliği elle kurduğumuz Pearson istatistiği üzerinde sınamak için `correct = FALSE` kullandık [@rChisq450].
+
+### Üç hizmet türünde serbest sapmalar
+
+Üç ayrı hizmet türünden bağımsız yolcuların ayrı anket kayıtları olsun. Satırlara otobüs, metro ve vapur, sütunlara memnuniyet yerleştirelim. $r=3$, $c=2$ olduğundan tek bir hücre yerine ilk iki satırdaki iki serbest hücre vardır.
+
+```{r}
+#| label: cat-three
+hizmet <- rbind(Otobüs = c(24, 16), Metro = c(31, 9), Vapur = c(20, 20))
+colnames(hizmet) <- c("Memnun", "Değil")
+hizmet_test <- chisq.test(hizmet)
+hizmet_test$expected
+hizmet_test$residuals
+hizmet_test
+```
+
+Her satırda beklenen frekans 25 memnun ve 15 memnun olmayandır. Pearson artığı $(O_{ij}-E_{ij})/\sqrt{E_{ij}}$ yönü korur. Artıkların kareleri $X^2$'ye toplanır. Metroda gözlenen memnun sayısı beklenenden 6 fazla, vapurda 5 eksiktir. Genel test hangi hücrelerin ayrı ayrı seçilmiş bir eşikte farklılaştığına karar vermez.
+
+### Yaklaşım hangi koşullarda güvenilir?
+
+Her gözlem bir hücreye katkı yapmalı ve birimler tasarıma göre bağımsız olmalıdır. Beklenen frekansların 5 civarında ya da üzerinde olması pratik bir kılavuzdur. Tablo boyutu, küçük hücrelerin sayısı ve dengesizlik de önemlidir. Özellikle seyrek tablolarda asimptotik p-değeri değişebilir. Bir kategorinin gerçekleşmesi mantıken mümkün değilse **yapısal sıfır** oluşur. Örneğin vapur kullanmamış kişilerde vapur içi servis tercihi tanımsızdır. Böyle bir hücreyi sıradan örneklem sıfırı gibi kabul etmek yanlış model ve serbestlik derecesi verir.
+
+Aynı yolcunun iki yanıtı, aynı haneden birden çok yolcu veya aynı araçtan kümelenmiş gözlemler bağımsızlığı bozabilir. Eşleştirilmiş ikili ölçümlerde çift yapısını kullanan yöntemler gerekir. Örnekleme ağırlıklarını ham frekans gibi girerek standart p-değeri elde etmek de karmaşık araştırma tasarımını hesaba katmaz. Bu durumlarda örnekleme birimi ve varyans hesabı tasarımla uyumlu olmalıdır.
+
+## Fisher'ın kesin testi: Sabit marjlarla hangi tablolar mümkün?
+
+Yalnız 15 yolcu içeren ikinci bir örnek düşünelim. Sık kullanıcıların biri memnun, dördü değil. Seyrek kullanıcıların sekizi memnun, ikisi değil. Satır toplamları 5 ve 10, memnun sütunu 9, genel toplam 15'tir. Sol üst hücre seçilince diğer üç hücre belirlenir.
+
+$$
+\begin{pmatrix}a&b\\c&d\end{pmatrix}
+$$
+
+Burada $a,b$ birinci, $c,d$ ikinci satırın sayılarıdır. $m=a+b$ birinci satır toplamı, $s=a+c$ memnun toplamı olsun. Sabit marjlar ve bağımsızlık altında $n$ yolcu arasından $s$ memnun etiketi eşit olasılıkla dağıtılabilir. Birinci satırda $k$ memnun seçmek için $m$ yerden $k$, ikinci satırda $n-m$ yerden $s-k$ seçeriz. Sol üst sayıyı $K$ ile gösterirsek
+
+$$
+P(K=k)=
+\frac{\binom{m}{k}\binom{n-m}{s-k}}{\binom{n}{s}}
+$$
+
+elde edilir. Gözlenen tabloda $k=a$ ve $s-k=c$'dir. Bu hipergeometrik model, bağımsız yolcuların ortak bir anakütleden seçilmesi veya bağımsız grup örneklemelerinde eşit başarı olasılığı gibi modellerde gözlenen marjlar üzerinden koşullamayla elde edilebilir. Veri toplama aşamasında iki marjın da sabitlenmesi gerekmez [@rFisher450; @diezRundelBarr2019].
+
+| Sol üst $k$ | Düzen sayısı | İki yönlü hesaba girer |
+|---:|---:|:---:|
+| 0 | 10 | Evet |
+| 1 | 225 | Evet |
+| 2 | 1200 | |
+| 3 | 2100 | |
+| 4 | 1260 | |
+| 5 | 210 | Evet |
+
+Her düzen sayısını $\binom{15}{9}=5005$'e böleriz. Örneğin $k=1$ için $5\binom{10}{8}=225$ düzen vardır ve tablo satırları $(1,4)$ ile $(8,2)$ olur. Memnuniyet odds oranı sık grupta daha düşük yönünde önceden belirlenmiş bir alternatif için $K\le1$ alınır. p-değeri $(10+225)/5005$ olur. Yüksek yön için karşı kuyruk kullanılır.
+
+R'nin iki yönlü hesabı, **olasılığı gözlenen tablonunkinden büyük olmayan** tabloları toplar. Bu örnekte $k=0,1,5$ girer. Dolayısıyla $p=445/5005\approx0{,}0889$ olur. Alt kuyruğun iki katı $470/5005$'tir. Kesikli ve asimetrik dağılımda bu iki kural farklı sonuç verir. @sec-hypothesis-testing bölümündeki uçluk burada sıfır hipotezi altındaki tablo olasılığıyla tanımlanır [@rFisher450].
+
+```{r}
+#| label: cat-fisher
+seyrek <- rbind(c(1, 4), c(8, 2))
+k <- 0:5
+olasilik <- dhyper(k, m = 5, n = 10, k = 9)
+giren <- olasilik <= olasilik[k == 1]
+c(alt = sum(olasilik[k <= 1]), R_alt = fisher.test(seyrek, alternative = "less")$p.value,
+  iki_yon = sum(olasilik[giren]), R_iki = fisher.test(seyrek)$p.value)
+# Hücreler özellikle seyrek. Ki-kare sonuçları yalnız karşılaştırma içindir.
+c(Pearson = suppressWarnings(chisq.test(seyrek, correct = FALSE))$p.value,
+  Yates = suppressWarnings(chisq.test(seyrek))$p.value,
+  Fisher = fisher.test(seyrek)$p.value)
+```
+
+Uyarıları yalnızca bu öğretim karşılaştırmasında bastırdık. Pearson p-değeri yaklaşık 0,025, Yates yaklaşık 0,094 ve Fisher yaklaşık 0,089'dur. Fisher'ın kesinliği, belirtilen model ve marjlar altında ayrık referansın doğrudan hesaplanmasıdır. Testin gerçek ret olasılığı ayrıklık nedeniyle nominal düzeyin altında kalabilir. Güç alternatiflere, marjlara ve seçilen teste bağlıdır. Dolu ve büyüyen tablolarda yaklaşımlar yakınlaşabilir. Bağımlı yolcu gözlemleri için bu iki hesap da tasarımı kendiliğinden düzeltmez.
+
+## Kategorik ilişkinin büyüklüğü ve belirsizliği
+
+Sık ve seyrek kullanıcılarda memnuniyet payları $p_1=0{,}60$ ve $p_0=0{,}30$ olarak tahmin edildi. **Oran farkı** 0,30, yani 30 yüzde puandır. **Oran oranı** 2'dir. Bir olayın **odds** değeri $p/(1-p)$, yani gerçekleşme olasılığının gerçekleşmeme olasılığına oranıdır. İlk grupta 1,5, ikinci grupta yaklaşık 0,429 olur. Odds oranı $ad/(bc)=3{,}5$'tir. Kesitsel memnuniyet verisinde bunlar koşullu yaygınlık karşılaştırmalarıdır. Zaman içinde yeni olay riskini veya kullanım sıklığının nedensel etkisini doğrudan ölçmezler.
+
+Genel tabloda Cramér'in $V$ katsayısı, düzeltilmemiş Pearson $X^2$'yi tablo büyüklüğüne göre ölçekler:
+
+$$
+V=\sqrt{\frac{X^2}{n\min(r-1,c-1)}} .
+$$
+
+$V$ 0 ile 1 arasında yönsüz bir örneklem özetidir. Örnekte yaklaşık 0,302'dir. Genel hizmet tablosunda hangi hizmetin daha yüksek memnuniyet taşıdığını satır oranları gösterir. Aynı oranlarla örneklemi büyütmek $V$'yi değiştirmezken p-değerini küçültebilir. Uygulamada hedef niceliğin güven aralığını, örnekleme tasarımını ve bağlama göre anlamlı sayılacak farkı belirtiriz.
+
+```{r}
+#| label: cat-effect
+p1 <- pay[1] / 100
+p0 <- pay[2] / 100
+fark <- p1 - p0
+fark_sh <- sqrt(p1 * (1 - p1) / 60 + p0 * (1 - p0) / 60)
+c(fark = unname(fark), oran_orani = unname(p1 / p0), odds_orani = 36 * 42 / (24 * 18),
+  V_ulasim = sqrt(X2 / sum(ulasim)),
+  V_hizmet = sqrt(unname(hizmet_test$statistic) / sum(hizmet)))
+unname(fark + c(-1, 1) * qnorm(0.975) * fark_sh)
+```
+
+Bağımsız grupların binom varyanslarını toplayarak oran farkı için yaklaşık %95 Wald aralığı elde ettik. Yaklaşık 13–47 yüzde puandır. Küçük ve sınır değerlere yakın oranlarda kapsama değişebilir. @sec-confidence-intervals bölümündeki yaklaşık aralık ve kapsama ayrımı burada da geçerlidir. Fisher çıktısındaki 2×2 odds oranı tahmini ve aralığı ise koşullu modele dayanır. R'nin koşullu tahmini ham çapraz çarpım oranıyla bire bir aynı olmak zorunda değildir [@rFisher450].
+
+## Kovaryans: Vardiya çiftlerinin birlikte değişimi
+
+Kategorik tabloda bir yolcunun iki yanıtı aynı hücreye gider. Sayısal karşılığı, her vardiyanın çalışma süresi ile üretimini bir gözlem çifti olarak saklamaktır. Üretimi düşük ve yüksek süre gruplarına ayırmak mümkündür ama saatler arasındaki uzaklığı kaybederiz. Bu kez özgün sayıları kullanalım.
+
+$X$ süreyi, $Y$ üretimi, $\mu_X$ ve $\mu_Y$ anakütle ortalamalarını göstersin. Sonlu ikinci momentler altında kovaryans, merkezden sapmaların çarpımının beklenen değeridir. $U=X-\mu_X$ ve $V=Y-\mu_Y$ bu sapmaları göstersin:
+
+$$
+\operatorname{Cov}(X,Y)=E(UV).
+$$
+
+$x_i,y_i$ vardiya $i$'nin ölçümleri, $\bar x,\bar y$ örneklem ortalamaları ve $n$ vardiya sayısıdır. Örneklem kovaryansında anakütle ortalamaları yerine örneklem ortalamalarını, paydada $n$ yerine $n-1$ kullanırız:
+
+$$
+s_{XY}=\frac{\sum_{i=1}^n (x_i-\bar x)(y_i-\bar y)}{n-1}.
+$$
+
+Örneğin $(1,2),(2,4),(3,6)$ çiftlerinde merkez $(2,4)$, sapma çarpımları $2,0,2$ ve kovaryans 2'dir. Üretim dizisi $6,4,2$ olsaydı çarpımlar $-2,0,-2$ ve kovaryans −2 olurdu. Üretim $4,2,4$ olursa çarpımlar $-2/3,0,2/3$ birbirini götürür. Pozitif kovaryans aynı yönlü sapmaların, negatif kovaryans zıt yönlü sapmaların ağır bastığını gösterir. Sıfıra yakın değer katkıların dengelenmesiyle de ortaya çıkabilir.
+
+Kovaryansın birimi saat × ürün adedidir. Saat yerine dakika yazınca kovaryans 60 katına çıkar. Bu yüzden farklı ölçeklerdeki değişken çiftlerini karşılaştırmak için birimsiz bir ölçüye ihtiyaç duyarız.
+
+## Pearson korelasyonu: Kovaryansı standartlaştırmak
+
+Anakütlede $\sigma_X,\sigma_Y$ pozitif standart sapmalar olsun. $\rho=\operatorname{Cov}(X,Y)/(\sigma_X\sigma_Y)$ Pearson korelasyonudur. Örneklem korelasyonu $r=s_{XY}/(s_Xs_Y)$ olup $s_X,s_Y$ örneklem standart sapmalarıdır. Çarpımın birimi kovaryansla aynıdır ve $n-1$ çarpanları sadeleşir. $u_i=x_i-\bar x$ ve $v_i=y_i-\bar y$ dersek
+
+$$
+r=\frac{\sum_i u_i v_i}{\sqrt{\sum_i u_i^2\sum_i v_i^2}} .
+$$
+
+Pay iki merkezlenmiş vektörün iç çarpımı, payda uzunluklarının çarpımıdır. Cauchy–Schwarz eşitsizliği $|r|\le1$ sınırını verir. Uç değerlere, merkezlenmiş vektörler aynı ya da zıt doğrultudaysa ulaşılır. Noktalar sabit olmayan artan bir doğru üzerindeyse $r=1$, azalan doğru üzerindeyse $r=-1$ olur. Ortalamayı kaydırmak veya pozitif bir sayı ile ölçeklemek $r$'yi korur. Tek değişkeni negatif bir sayıyla ölçeklemek işareti tersine çevirir. Değişkenlerden biri sabitse standart sapma sıfır ve korelasyon tanımsızdır [@casellaBerger2002; @ismayKim2020ModernDive].
+
+### Katsayının sıfır olması ne anlama gelir?
+
+$X$ düzgün olarak $[-1,1]$ aralığından çekilsin ve $Y=X^2$ olsun. Değişkenler sınırlı olduğundan gerekli momentler sonludur. Simetriyle $E(X)=E(X^3)=0$ ve kovaryans $E(X^3)-E(X)E(X^2)=0$ olur. Her iki varyans da pozitiftir. Bununla birlikte $Y$ tamamen $X$ tarafından belirlenir. Örneğin $|X|<1/2$ ve $Y<1/4$ aynı olaydır. Ortak olasılık $1/2$, marjinal olasılıkların çarpımı $1/4$'tür. Dolayısıyla $\rho=0$ ile bağımsızlık farklı iddialardır. Sonlu momentleri olan bağımsız değişkenler için kovaryans sıfırdır. İkili normal aile içinde sıfır korelasyon ayrıca bağımsızlık getirir.
+
+Tek bir uç çift ortalamaları, standart sapmaları ve sapma çarpımlarını etkileyebilir. Vardiyaları dar bir süre aralığına kısıtlamak da ilişkiyi değiştirebilir. Örneğin $Y=X+\varepsilon$ ve bağımsız, sabit varyanslı hata modelinde $X$'in varyansı azalınca sinyalin hata karşısındaki payı düşer. Bu mekanizmada korelasyon küçülür. Her veri setinde yönün aynı olacağı varsayılmamalıdır.
+
+## Pearson testi ve Fisher z güven aralığı
+
+Sekiz ayrı vardiyanın saat ve ürün sayıları sentetik olarak aşağıdaki gibi olsun. Katsayı her zaman betimleyici olarak hesaplanabilir. Testi ve aralığı bir anakütleye taşımak için çiftlerin bağımsız, aynı ikili normal dağılımdan geldiği modeli kullanacağız. Sabitlenmiş ya da bağımlı bir vardiya çizelgesinde bu model ayrıca gerekçelendirilmelidir.
+
+$H_0:\rho=0$ altında, ikili normal modelde $X$ verildiğinde $Y$ için sabit varyanslı normal doğrusal model elde edilir. Sıfır eğim testi iki doğrultudaki ortak değişimi ve kalan hatayı karşılaştırır. İki katsayı tahmin edildiği için hata serbestlik derecesi $n-2$'dir. Eğim t istatistiği korelasyonla ifade edilebilir:
+
+$$
+t=r\sqrt{\frac{n-2}{1-r^2}} .
+$$
+
+Bu istatistik hipotez altında $t_{n-2}$ dağılımını izler. İki taraflı hesap $|t|$ ve üzerindeki değerlerin olasılığını iki kuyrukta toplar. Çok sayıda kayıt, aynı kişiden veya aynı zaman serisinden gelen gözlemleri bağımsız kılmaz. Çarpıklık, uç değerler ve grup yapısı da referans hesabını etkileyebilir [@casellaBerger2002; @rCor450].
+
+$r$'nin sınırları −1 ve 1, dağılımının biçimi de $\rho$'ya bağlıdır. Fisher dönüşümüyle
+
+$$
+\begin{aligned}
+z_r&=\tfrac12\log\!\left(\frac{1+r}{1-r}\right)\\
+   &=\operatorname{atanh}(r)
+\end{aligned}
+$$
+
+elde edilir. İkili normal modelde, yeterli örneklem büyüklüğünde dönüşmüş değerin standart hatası yaklaşık $1/\sqrt{n-3}$'tür. %95 aralık için dönüşmüş değer çevresinde yaklaşık 1,96 standart hata ilerleyip uçlara $\tanh$ uygularız. Bu aralık yaklaşık olup küçük örneklemlerde ve model ihlallerinde kapsaması değişebilir. R 4.5.0, en az dört tam çift olduğunda Pearson için Fisher z aralığını verir [@rCor450].
+
+```{r}
+#| label: cat-pearson
+saat <- 1:8
+uretim <- c(5, 11, 8, 16, 12, 19, 15, 22)
+u <- saat - mean(saat)
+v <- uretim - mean(uretim)
+n <- length(saat)
+sxy <- sum(u * v) / (n - 1)
+r <- sum(u * v) / sqrt(sum(u^2) * sum(v^2))
+t_r <- r * sqrt((n - 2) / (1 - r^2))
+aralik_r <- tanh(atanh(r) + c(-1, 1) * qnorm(0.975) / sqrt(n - 3))
+c(elle_kov = sxy, R_kov = cov(saat, uretim),
+  elle_r = r, R_r = cor(saat, uretim),
+  elle_t = t_r, elle_p = 2 * pt(-abs(t_r), n - 2))
+aralik_r
+cor.test(saat, uretim, method = "pearson")
+```
+
+Örneklem kovaryansı 12 saat × ürün adedi ve Pearson katsayısı 0,870’tir. İki taraflı model testi $t(6)=4{,}32$ ve $p=0{,}00498$ verir. Yaklaşık %95 korelasyon aralığı 0,427–0,976’dır. Örneklemde daha uzun vardiyalar genellikle daha çok üretimle birlikte gözleniyor. Katsayı ve aralığı doğrusal ilişkinin yönü ve büyüklüğüyle yorumlayın. Vardiya süresinin artırılmasının ne kadar üretim sağlayacağını belirlemek için deney tasarımı veya başka bir nedensel gerekçe gerekir.
+
+## Spearman: Ortak değişim sıralarda da görünüyor mu?
+
+İki sıralı değerlendirme toplayalım. Her müşteri hizmet kalitesi ve genel memnuniyet için sıralı kategori bildiriyor. Arka arkaya iki kategori arasındaki uzaklığın sabit olduğunu varsaymadan, yüksek kalite değerlendirmesinin yüksek genel memnuniyetle eşleşip eşleşmediğini sorabiliriz. @sec-nonparametric-tests bölümündeki ortalama sıra kuralıyla eşit puanlara aynı ortalama sırayı veririz.
+
+Spearman örneklem korelasyonu $r_s$, iki sıra vektörünün Pearson korelasyonudur:
+
+$$
+r_s=\operatorname{cor}\bigl(\operatorname{rank}(X),
+                             \operatorname{rank}(Y)\bigr).
+$$
+
+Bağ yoksa iki sıra vektörü de $1,\ldots,n$ sayılarını içerir. Ortalamaları ve kareli sapma toplamları eşittir. İki sıra arasındaki fark $d_i$ olsun. $\sum_i d_i^2$ açıldığında iki sıra kareleri toplamından çapraz çarpımların iki katı çıkar. Ortak merkezlenmiş kare toplamı $n(n^2-1)/12$ olduğundan sadeleştirmeyle
+
+$$
+r_s=1-\frac{6\sum_i d_i^2}{n(n^2-1)}
+$$
+
+elde edilir. Bağlar sıra varyanslarını değiştirdiğinden kısa formülü bağlı veride koşulsuz kullanmayız. Sıkı artan dönüşüm sıraları korur. Monoton azalışta sıralar zıt yönde ilerler. Bir uç değerin ham büyüklüğü etkisini yitirir ama gözlemin sıra konumu, örneklem büyüklüğü ve bağ örüntüsü sonucu hâlâ etkiler.
+
+```{r}
+#| label: cat-spearman
+kalite <- c(1, 2, 2, 3, 4, 4)
+genel <- c(1, 3, 2, 2, 4, 5)
+rank(kalite)
+rank(genel)
+c(elle = cor(rank(kalite), rank(genel)),
+  R = cor(kalite, genel, method = "spearman"))
+cor.test(kalite, genel, method = "spearman", exact = FALSE)
+```
+
+Müşteri çiftleri bağımsızsa, değişkenler arası bağımsızlık altında bir sıra vektörünün müşteri etiketlerini ötekine göre yeniden atamak bir referans oluşturur. Bu gerekçe, genel olarak yalnız sıfır sıra korelasyonu varsayımından çıkmaz. R 4.5.0 yardımında AS 89 için $n<1290$ belirtilir. Bu sürümün [kaynak kodundaki sınır](https://github.com/wch/r-source/blob/tags/R-4-5-0/src/library/stats/R/cor.test.R) $n\le1290$'dır. Bağsız veride `exact = TRUE` seçildiğinde bu hesap $n<10$ için tamdır. Daha büyük boyutlarda Edgeworth yaklaşımı kullanılır. Diğer durumda asimptotik t yaklaşımı seçilir. Bağlarla tam hesap istendiğinde R uyarı verip yaklaşıma geçer. Bu yüzden örnekte `exact = FALSE` açıkça yazıldı. Örneklemde $r_s\approx0{,}851$ ve yaklaşık $p=0{,}032$ bulunur. Altı müşterili bağlı örneğin yaklaşık p-değeri dikkatle yorumlanmalıdır. Base R bu çağrıda Spearman güven aralığı vermez. Uygun örneklemde çiftleri birim olarak yeniden örneklemek belirsizliği incelemek için kullanılabilir [@rCor450].
+
+### Aynı katsayılar, farklı örüntüler
+
+@fig-cat-patterns dört sentetik mekanizmayı karşılaştırır. İlk panelde artan doğru, ikincide artan fakat eğri ilişki, üçüncüde U biçimi vardır. Son panel, ilk paneldeki gözlemlere tek bir uç çift ekler. Paneller kendi ölçeklerini kullanır. Başlıklarda Pearson $r$ ile sıra korelasyonu $r_s$ birlikte gösterilir.
+
+```{r}
+#| label: fig-cat-patterns
+#| fig-cap: "İlişki biçimi ve uç gözlem Pearson ile Spearman'ı nasıl etkiler?"
+#| fig-alt: "Dört panelde artan doğru, artan dışbükey eğri, simetrik U ve bir uç çift eklenmiş doğru gösterilir. İlk iki panelde sıralar tam artar. U biçiminde iki katsayı sıfırdır."
+#| fig-width: 6.2
+#| fig-height: 6.8
+par(mfrow = c(2, 2), mar = c(3.5, 3.6, 3, 0.6), bg = "white")
+ciz <- function(x, y, baslik, uc = FALSE) {
+  katsayilar <- sprintf("r = %.2f   rs = %.2f", cor(x, y),
+                        cor(x, y, method = "spearman"))
+  plot(x, y, pch = 19, col = "#145675", xlab = "X", ylab = "Y",
+       main = paste(baslik, katsayilar, sep = "\n"))
+  if (uc) points(tail(x, 1), tail(y, 1), pch = 4, lwd = 2, cex = 1.8,
+                 col = "#97391C")
+}
+x <- -4:4
+ciz(x, 2 * x + 1, "Doğrusal")
+ciz(x, exp(x), "Monoton eğri")
+ciz(x, x^2, "U biçimi")
+ciz(c(x, 14), c(2 * x + 1, -15), "Tek uç çift", uc = TRUE)
+par(mfrow = c(1, 1))
+```
+
+Monoton eğride sıralar bütünüyle aynı kalır, Pearson ise doğrusal uyumdan etkilenir. U biçiminde aynı uzaklıktaki eksi ve artı $X$ değerleri zıt katkılar yapar. Bu simetri sıralar için de geçerlidir. Uç çift eklendiğinde Pearson −0,245’e, Spearman 0,455’e iner. Ham büyüklüğün etkisi Pearson’ın yönünü tersine çevirir. Bu dört örüntü için hesaplanan değerler genel bir Pearson–Spearman sıralaması kurmaz. Bir saçılım grafiği katsayıların özetlediği örüntüyü görmeye yardım eder.
+
+## İlişki ve nedensellik: Hangi süreç veriyi üretti?
+
+- **Ortak neden.** Karmaşık siparişlerin tamamlanması daha uzun sürebilir ve karmaşık vardiyalar daha fazla çalışana atanabilir. Ekip büyüklüğü ile süre arasında ilişki görülürse işin karmaşıklığı her ikisini açıklayabilir.
+- **Ters nedensellik.** Duraktan sık geçenler hizmeti daha iyi tanıyor olabilir. Hizmetten memnun olanların daha sık kullanması da aynı kesitsel ilişkiyi üretebilir.
+- **Seçim yanlılığı.** Yalnız şikâyet hattına ulaşanlar analize alınırsa hem beklemenin hem önceki memnuniyetin başvuruya etkisi olabilir. Başvuranlardaki örüntü bütün yolculara taşınamayabilir.
+- **Zaman içinde ortak hareket.** Sıcak aylarda yolcu sayısı ve arıza bildirimleri birlikte artabilir. Zaman eğilimini ve ardışık gözlemlerin bağımlılığını hesaba katmadan sıradan korelasyon p-değeri yanıltabilir.
+- **Çalışma tasarımı.** Rastgele atama, müdahale gruplarını başlangıçta olasılık bakımından karşılaştırılabilir kılar. Gözlemsel araştırmada ise atama mekanizması, ölçüm ve seçim süreçleri nedensel yorum için ayrıca incelenir.
+
+### Simpson paradoksu: Alt grupları birleştirince yön değişebilir
+
+İki destek yönteminde başarılı işlem sayıları aşağıdaki gibi olsun. Görev zorluğu destek yönteminden önce sınıflandırılmıştır. Sayılar öğretim için seçilmiştir [@simpson1951].
+
+| Görev | A başarı | B başarı |
+|---|---:|---:|
+| Kolay | 9/10 | 80/100 |
+| Zor | 20/100 | 1/10 |
+| Genel | 29/110 | 81/110 |
+
+Kolay görevlerde A %90, B %80. Zor görevlerde A %20, B %10. Görevler birleştirildiğinde A yaklaşık %26,4 ve B %73,6 olur. A daha çok zor işlem, B daha çok kolay işlem üstlenmiştir. Genel oranlar kendi grup büyüklükleriyle ağırlıklandırılmış ortalamalardır. @fig-cat-simpson yön değişimini görselleştirir. Görev zorluğu olası bir karıştırıcıdır. Bu tablo tek başına diğer karıştırıcıların dışlandığını, atamanın rastgele olduğunu veya hangi karşılaştırmanın bir nedensel etkiyi tanımladığını göstermez.
+
+```{r}
+#| label: fig-cat-simpson
+#| fig-cap: "Görev zorluğuna göre ve birleştirilmiş başarı oranları"
+#| fig-alt: "A kolay görevlerde yüzde 90 ve zor görevlerde yüzde 20, B yüzde 80 ve yüzde 10 başarılı. Toplamda A yüzde 26,4 ve B yüzde 73,6."
+#| fig-width: 6.2
+#| fig-height: 4
+basari <- rbind(A = c(9, 20), B = c(80, 1))
+toplam <- rbind(A = c(10, 100), B = c(100, 10))
+oran <- cbind(100 * basari / toplam,
+             100 * rowSums(basari) / rowSums(toplam))
+par(mar = c(4, 4.5, 1, 0.8), bg = "white")
+plot(1:3, oran[1, ], ylim = c(0, 100), pch = 19, col = "#145675",
+     xlab = "", ylab = "Başarı (%)", xaxt = "n", xlim = c(0.8, 3.3))
+points(1:3, oran[2, ], pch = 17, col = "#97391C")
+text(1:3, oran[1, ], "A", pos = 4)
+text(1:3, oran[2, ], "B", pos = 4)
+axis(1, 1:3, c("Kolay", "Zor", "Genel"))
+```
+
+## Hangi ilişkiyi ölçmek istiyoruz?
+
+- **Kategorik değişkenlerde** önce koşullu yüzdelerin paydasını seçin. Ham frekansları ve örnekleme birimini belirleyin. Genel bağımsızlık hipotezi için beklenen sayıları, seyrek 2×2 tabloda koşullu referansın uygunluğunu değerlendirin. Bulguyu bir oran farkı, oran oranı, odds oranı veya $V$ gibi amaca uygun etkiyle tamamlayın.
+- **Sayısal ya da sıralı değişkenlerde** önce çiftleri çizin. Doğrusal ortak değişim için Pearson, sıraların monoton uyumu için Spearman düşünülebilir. Dar aralık, uç gözlemler, bağlar ve alt gruplar hangi yorumu destekleyebileceğinizi etkiler.
+- **Her iki durumda** betimleyici etkiyle çıkarımın varsayımlarını ayrı dile getirin. Bağımlı gözlem, ağırlık veya seçim süreci varsa standart R çağrıları bunları kendi başına hesaba katmaz. Nedensel yorum araştırma tasarımına dayanır.
+
+## Egzersizler
+
+1. **Kolay.** Altı yolcunun kullanım sıklıkları S, S, S, Y, Y, Y ve memnuniyetleri E, E, H, E, H, H olsun. Çapraz tabloyu kurun. $P(E\mid S)$, $P(S\mid E)$ ve $P(S,E)$ değerlerini bulun.
+2. **Kolay.** Satırları $(12,8)$ ile $(8,12)$ olan tabloda beklenen sayıları, Pearson $X^2$ ve serbestlik derecesini elle hesaplayın.
+3. **Orta.** Seyrek örneğin marjları sabitken $K=5$ tablosunu kurun. Olasılığını ve iki yönlü hesaba neden girdiğini açıklayın.
+4. **Orta.** Aynı seyrek örnekte Pearson ile Fisher farklı kararlara yol açabiliyor. %5 düzeyinde sonuçları, referanslarını ve Yates farkını açıklayın.
+5. **Orta.** Ulaşım örneğinde oran farkı, oran oranı, odds oranı ve $V$ değerini hesaplayın. Tüm hücreleri iki katına çıkarınca $V$ ve Pearson istatistiği nasıl değişir?
+6. **Orta.** $(1,2),(2,4),(3,6)$ için kovaryans ve Pearson korelasyonunu bulun. Süreyi dakikaya çevirince ve sonra süreye eksi işareti verince neler değişir?
+7. **Orta.** Üretim verisinde Pearson t istatistiğinin serbestlik derecesini ve Fisher z standart hatasını hesaplayın. Güven aralığını model bağlamında yorumlayın.
+8. **Orta.** Bağlı $X=(1,2,2,3)$ ve $Y=(4,2,2,1)$ çiftlerinin sıralarını ve Spearman katsayısını bulun. Kısa formül neden uygun değildir?
+9. **Zor.** $X$ simetrik ve sürekli, $Y=X^2$ olsun. U biçimi ile sıkı monoton ilişkiyi Pearson ve Spearman açısından ayırın. Vardiya verisinde güçlü ilişki için bir nedensel olmayan açıklama verin.
+10. **Zor.** Simpson örneğinin yön değişimini ağırlıklarla açıklayın. Ardından ulaşım örneği için etki, güven aralığı, p-değeri ve varsayım içeren iki cümlelik bir sonuç yazın.
+
+## Egzersiz çözümleri
+
+1. S satırı $(2,1)$, Y satırı $(1,2)$'dir. $P(E\mid S)=2/3$, $P(S\mid E)=2/3$ ve $P(S,E)=2/6$. İlk iki sayı bu örnekte paydalar eşit olduğu için çakışır. Koşullandıkları olaylar farklıdır.
+2. Her marj 20 ve genel toplam 40'tır. Her beklenen hücre 10'dur. Dört katkı da $4/10$ olduğundan $X^2=1{,}6$. Tek serbest hücre vardır ve serbestlik derecesi 1'dir.
+3. Satırlar $(5,0)$ ve $(4,6)$ olur. $\binom55\binom{10}{4}/5005=210/5005$. Olasılık gözlenen $225/5005$'ten küçük olduğundan iki taraflı Fisher hesabına girer.
+4. Düzeltilmemiş Pearson yaklaşık $p=0{,}025$ verir. Fisher koşullu tam hesapta yaklaşık $0{,}089$ verir. Yates sapmayı küçülttüğü için yaklaşık p-değeri 0,094'e çıkar. Bu tablonun küçük beklenen hücreleri asimptotik referansın güvenilirliğini sınırlar. Fisher için %5 düzeyinde bağımsızlık reddedilmez.
+5. Fark 0,30, oran oranı 2 ve odds oranı 3,5'tir. $V\approx0{,}302$. Frekanslar ikiye katlanınca her Pearson katkısı ikiye katlanır. $n$ de ikiye katlandığından $V$ aynı kalır.
+6. Sapma çarpımlarının toplamı 4'tür. Kovaryans 2, katsayı 1 olur. Dakika dönüşümüyle kovaryans 120 olur ve $r$ değişmez. Negatif ölçeklemeyle kovaryans −120 ve $r=-1$ olur.
+7. Sekiz bağımsız çift modelinde serbestlik derecesi 6, z standart hatası $1/\sqrt5\approx0{,}447$'dir. Dönüşmüş aralığın uçları $\tanh$ ile geri çevrilir. Kapsama, benzer tekrar örneklemelerine ve kullanılan ikili normal modele ilişkin yaklaşık bir özelliktir.
+8. $X$ sıraları $(1,2{,}5,2{,}5,4)$ ve $Y$ sıraları $(4,2{,}5,2{,}5,1)$ olur. Biri diğerinin tam tersidir ve $r_s=-1$. Bağlar, bağsız kısa formülün varsaydığı sıra kareleri toplamını değiştirir.
+9. Yeterli momentlerle simetrik $X$ için $E(X)=E(X^3)=0$ ve Pearson sıfırdır. Sürekli simetrik dağılımda, $X$'in alt ve üst sıra konumları birbirinin tümleyeni olurken $X^2$ sıra konumu aynı kalır. Spearman da sıfırdır. Sıkı monoton dönüşümde Spearman tam artış veya azalışı yakalar. Vardiya türünün hem süreyi hem üretimi belirlemesi nedensel olmayan bir ortak neden açıklamasıdır.
+10. A'da kolay görev ağırlığı $10/110$, B'de $100/110$'dur. Bu ağırlık farkı iki alt gruptaki üstünlüğe rağmen genel yönü çevirir. Sık yolcularda memnuniyet %60, seyrek yolcularda %30 olup fark 30 yüzde puandı ve yaklaşık %95 güven aralığı 13–47 yüzde puandı. Bağımsız yolcu örneklemesi ve yeterli beklenen frekanslar altında Pearson testi $X^2(1)=10{,}91$, $p\approx0{,}00096$ verdi.
+
+## Bölüm özeti
+
+Çapraz tablonun paydası hangi koşullu sorunun yanıtlandığını belirler. Bağımsızlık modeli beklenen sayıları marjinal olasılıkların çarpımından kurar. Pearson ki-kare ve Fisher testi farklı referanslarla çalışır. İlişkinin büyüklüğü ve belirsizliği ayrıca raporlanır. Pearson standartlaştırılmış kovaryansı, Spearman sıra uyumunu ölçer. Grafikler ve çalışma tasarımı, katsayıların hangi örüntüleri özetlediğini ve nedensel yorumun sınırlarını gösterir. 5.10'da bu seçimleri tek bir analiz boyunca veri, yöntem, sonuç ve bilimsel yorumla birleştireceğiz.
