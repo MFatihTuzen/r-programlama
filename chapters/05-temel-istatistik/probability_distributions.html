@@ -1,0 +1,1737 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="tr" xml:lang="tr"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.11.9">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="R programlama, veri analizi ve istatistiksel düşünme üzerine Türkçe açık kaynak kitap.">
+
+<title>31&nbsp; Olasılık ve Olasılık Dağılımları – R Programlama</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../chapters/05-temel-istatistik/sampling_distributions.html" rel="next">
+<link href="../../chapters/05-temel-istatistik/descriptive_statistics.html" rel="prev">
+<link href="../../images/favicon.png" rel="icon" type="image/png">
+<script src="../../site_libs/cookie-consent/cookie-consent.js"></script>
+<link href="../../site_libs/cookie-consent/cookie-consent.css" rel="stylesheet">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/scrollable-regions/scrollable-regions.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-5de16f5e46225c21e2daa90d340bf64f.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-3218d7d29a29f08bc4fdf3802c3e3ca5.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-5de16f5e46225c21e2daa90d340bf64f.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-f08995f13779f27c8b207ab2aba9430d.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-90559a1ce82236f35e86d40c0ff756a0.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-f08995f13779f27c8b207ab2aba9430d.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "Sonuç yok",
+    "search-matching-documents-text": "eşleşen belgeler",
+    "search-copy-link-title": "Aramak için bağlantıyı kopyalayın",
+    "search-hide-matches-text": "Ek eşleşmeleri gizle",
+    "search-more-match-text": "bu belgede bir tane daha eşleşme",
+    "search-more-matches-text": "bu belgede daha fazla eşleşme",
+    "search-clear-button-title": "Temizle",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "İptal et",
+    "search-submit-button-title": "Gönder",
+    "search-label": "Ara"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-X6J60MER5G"></script>
+
+<script type="text/plain" cookie-consent="tracking">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-X6J60MER5G', { 'anonymize_ip': true});
+</script>
+
+<script type="text/javascript" charset="UTF-8">
+document.addEventListener('DOMContentLoaded', function () {
+cookieconsent.run({
+  "notice_banner_type":"simple",
+  "consent_type":"express",
+  "palette":"light",
+  "language":"en",
+  "page_load_consent_levels":["strictly-necessary"],
+  "notice_banner_reject_button_hide":false,
+  "preferences_center_close_button_hide":false,
+  "website_name":""
+  ,
+"language":"tr"
+  });
+});
+</script> 
+  
+<style>html{ scroll-behavior: smooth; }</style>
+<link href="../../site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet">
+<script src="../../site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../../styles.css">
+<meta property="og:title" content="31&nbsp; Olasılık ve Olasılık Dağılımları – R Programlama">
+<meta property="og:description" content="R programlama, veri analizi ve istatistiksel düşünme üzerine Türkçe açık kaynak kitap.">
+<meta property="og:image" content="https://mfatihtuzen.github.io/r-programlama/chapters/05-temel-istatistik/probability_distributions_files/figure-html/fig-prob-bayes-tree-1.png">
+<meta property="og:site_name" content="R Programlama">
+<meta property="og:image:alt" content="10.000 kişi ikiye ayrılıyor. Durum mevcut olan 100 kişide 90 pozitif ve 10 negatif, durum mevcut olmayan 9.900 kişide 495 pozitif ve 9.405 negatif bekleniyor. Pozitifler 90 artı 495, toplam 585. Bunların 90'ı doğru pozitif, oran yüzde 15,38.">
+<meta property="og:image:height" content="806">
+<meta property="og:image:width" content="1305">
+<meta name="twitter:title" content="31&nbsp; Olasılık ve Olasılık Dağılımları – R Programlama">
+<meta name="twitter:description" content="R programlama, veri analizi ve istatistiksel düşünme üzerine Türkçe açık kaynak kitap.">
+<meta name="twitter:image" content="https://mfatihtuzen.github.io/r-programlama/chapters/05-temel-istatistik/probability_distributions_files/figure-html/fig-prob-bayes-tree-1.png">
+<meta name="twitter:image:alt" content="10.000 kişi ikiye ayrılıyor. Durum mevcut olan 100 kişide 90 pozitif ve 10 negatif, durum mevcut olmayan 9.900 kişide 495 pozitif ve 9.405 negatif bekleniyor. Pozitifler 90 artı 495, toplam 585. Bunların 90'ı doğru pozitif, oran yüzde 15,38.">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="nav-sidebar floating quarto-light"><a id="quarto-skip-link" class="visually-hidden-focusable" href="#quarto-document-content">Skip to main content</a><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          toggle.setAttribute("aria-checked", alternate ? "true" : "false");
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455).
+    // Not run on load: stylesheets are set before first paint there, and
+    // scrolling would undo the scroll to a URL fragment (#14973).
+    // The one pixel nudge keeps the reader where they were.
+    const refreshSafariScrollbar = () => {
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        const scrollY = window.scrollY;
+        window.scrollTo(0, scrollY > 0 ? scrollY - 1 : 1);
+        setTimeout(() => {
+          window.scrollTo(0, scrollY);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      refreshSafariScrollbar();
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav" aria-label="Araç çubuğu">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Kenar çubuğunu değiştir" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="Yol"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../chapters/05-temel-istatistik/statistical_thinking.html">V · Temel İstatistik ve İstatistiksel Çıkarım</a></li><li class="breadcrumb-item"><a href="../../chapters/05-temel-istatistik/probability_distributions.html"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Olasılık ve Olasılık Dağılımları</span></a></li></ol></nav>
+        <a class="flex-grow-1" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Ara" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto" aria-label="Internet sitesi">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../../">R Programlama</a> 
+        <div class="sidebar-tools-main tools-wide">
+    <a href="https://github.com/MFatihTuzen/r-programlama" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+    <div class="dropdown">
+      <a href="" title="Share" id="quarto-navigation-tool-dropdown-0" class="quarto-navigation-tool dropdown-toggle px-1" data-bs-toggle="dropdown" aria-expanded="false" role="link" aria-label="Share"><i class="bi bi-share"></i></a>
+      <ul class="dropdown-menu" aria-labelledby="quarto-navigation-tool-dropdown-0">
+          <li>
+            <a class="dropdown-item sidebar-tools-main-item" href="https://twitter.com/intent/tweet?url=|url|">
+              <i class="bi bi-twitter pe-1"></i>
+            Twitter
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item sidebar-tools-main-item" href="https://www.linkedin.com/sharing/share-offsite/?url=|url|">
+              <i class="bi bi-linkedin pe-1"></i>
+            LinkedIn
+            </a>
+          </li>
+      </ul>
+    </div>
+  <button type="button" role="switch" aria-checked="false" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Karanlık modu değiştir" aria-label="Karanlık modu değiştir"><i class="bi"></i></button>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Okuyucu modunu değiştir">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Ara"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Önsöz</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-controls="quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-1-label">I · R Programlamaya Giriş</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-1" aria-labelledby="quarto-sidebar-section-1-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/r_about.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">R Programlama Hakkında</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/R_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">R Çalışma Ortamı</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">R Temel Kullanımı ve İlk Komutlar</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/data_types.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Veri Tipleri ve Yapıları</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/functions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Fonksiyonlar</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/if_else_for.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Karar Yapıları ve Döngüler</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/date_time.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Tarih ve Zaman İşlemleri</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/strings.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Metin İşlemleri</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/apply.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Apply Ailesi</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/import_export.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Verilerin İçe ve Dışa Aktarılması</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-controls="quarto-sidebar-section-2" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-2-label">II · Veri Manipülasyonu ve Dönüştürme</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-2" aria-labelledby="quarto-sidebar-section-2-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/02-veri-manipulasyonu/data_manipulation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Veri Manipülasyonu</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/02-veri-manipulasyonu/data_transformation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Veri Dönüştürme</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/02-veri-manipulasyonu/data_join.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Veri Birleştirme</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-controls="quarto-sidebar-section-3" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-3-label">III · Veri Ön İşleme</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-3" aria-labelledby="quarto-sidebar-section-3-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/03-veri-on-isleme/data_preprocessing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Veri Ön İşlemeye Giriş</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/03-veri-on-isleme/missing_data_imputation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Eksik Veriler ve İmputasyon</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/03-veri-on-isleme/outliers.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Aykırı Gözlemler</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/03-veri-on-isleme/data_transformations.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Veri Dönüşümleri</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/03-veri-on-isleme/scaling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Ölçeklendirme</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/03-veri-on-isleme/feature_engineering.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Özellik Mühendisliğine Giriş</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/03-veri-on-isleme/data_leakage.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Veri Sızıntısı ve Doğru Ön İşleme İş Akışı</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-controls="quarto-sidebar-section-4" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-4-label">IV · Veri Görselleştirme</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-4" aria-labelledby="quarto-sidebar-section-4-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/04-veri-gorsellestirme/data_visualization.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Veri Görselleştirmeye Giriş</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/04-veri-gorsellestirme/ggplot2_basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">ggplot2 Temelleri</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/04-veri-gorsellestirme/plot_types.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Grafik Türleri</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/04-veri-gorsellestirme/grouping_facets.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Gruplandırma ve Facet Yapıları</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/04-veri-gorsellestirme/scales_colors_labels.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Ölçekler, Renkler ve Etiketler</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/04-veri-gorsellestirme/themes_customization.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Grafik Temaları ve Özelleştirme</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/04-veri-gorsellestirme/effective_graphics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Etkili ve Yayın Kalitesinde Grafikler</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/04-veri-gorsellestirme/exporting_graphics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Grafiklerin Dışa Aktarılması</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-controls="quarto-sidebar-section-5" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-5-label">V · Temel İstatistik ve İstatistiksel Çıkarım</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-5" aria-labelledby="quarto-sidebar-section-5-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/05-temel-istatistik/statistical_thinking.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">İstatistiksel Düşünmeye Giriş</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/05-temel-istatistik/descriptive_statistics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Betimsel İstatistikler</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/05-temel-istatistik/probability_distributions.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Olasılık ve Olasılık Dağılımları</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/05-temel-istatistik/sampling_distributions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Örnekleme ve Örnekleme Dağılımları</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/05-temel-istatistik/confidence_intervals.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">İstatistiksel Tahmin ve Güven Aralıkları</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/05-temel-istatistik/hypothesis_testing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Hipotez Testlerinin Mantığı</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/05-temel-istatistik/comparing_means.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">Ortalamaların Karşılaştırılması</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/05-temel-istatistik/nonparametric_tests.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">36</span>&nbsp; <span class="chapter-title">Parametrik Olmayan Testler</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/05-temel-istatistik/categorical_association.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">37</span>&nbsp; <span class="chapter-title">Kategorik Veriler ve İlişki Analizi</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/05-temel-istatistik/integrated_analysis.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">38</span>&nbsp; <span class="chapter-title">Bütünleşik İstatistiksel Analiz</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Kaynakça</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" aria-labelledby="toc-title" class="toc-active" data-toc-expanded="2">
+    <h2 id="toc-title">İçindekiler</h2>
+   
+  <ul>
+  <li><a href="#belirsizliği-nasıl-ölçeriz" id="toc-belirsizliği-nasıl-ölçeriz" class="nav-link active" data-scroll-target="#belirsizliği-nasıl-ölçeriz"><span class="header-section-number">31.1</span> Belirsizliği nasıl ölçeriz?</a></li>
+  <li><a href="#rastgele-deney-örneklem-uzayı-ve-olaylar" id="toc-rastgele-deney-örneklem-uzayı-ve-olaylar" class="nav-link" data-scroll-target="#rastgele-deney-örneklem-uzayı-ve-olaylar"><span class="header-section-number">31.2</span> Rastgele deney, örneklem uzayı ve olaylar</a></li>
+  <li><a href="#koşullu-olasılık-ve-bağımsızlık" id="toc-koşullu-olasılık-ve-bağımsızlık" class="nav-link" data-scroll-target="#koşullu-olasılık-ve-bağımsızlık"><span class="header-section-number">31.3</span> Koşullu olasılık ve bağımsızlık</a></li>
+  <li><a href="#bayes-teoremi-ve-tarama-sonucu" id="toc-bayes-teoremi-ve-tarama-sonucu" class="nav-link" data-scroll-target="#bayes-teoremi-ve-tarama-sonucu"><span class="header-section-number">31.4</span> Bayes teoremi ve tarama sonucu</a></li>
+  <li><a href="#rassal-değişken-ve-olasılık-dağılımı" id="toc-rassal-değişken-ve-olasılık-dağılımı" class="nav-link" data-scroll-target="#rassal-değişken-ve-olasılık-dağılımı"><span class="header-section-number">31.5</span> Rassal değişken ve olasılık dağılımı</a></li>
+  <li><a href="#beklenen-değer-ve-varyans" id="toc-beklenen-değer-ve-varyans" class="nav-link" data-scroll-target="#beklenen-değer-ve-varyans"><span class="header-section-number">31.6</span> Beklenen değer ve varyans</a></li>
+  <li><a href="#kesikli-olasılık-dağılımları" id="toc-kesikli-olasılık-dağılımları" class="nav-link" data-scroll-target="#kesikli-olasılık-dağılımları"><span class="header-section-number">31.7</span> Kesikli olasılık dağılımları</a>
+  <ul>
+  <li><a href="#bernoulli-ve-binom" id="toc-bernoulli-ve-binom" class="nav-link" data-scroll-target="#bernoulli-ve-binom"><span class="header-section-number">31.7.1</span> Bernoulli ve binom</a></li>
+  <li><a href="#poisson" id="toc-poisson" class="nav-link" data-scroll-target="#poisson"><span class="header-section-number">31.7.2</span> Poisson</a></li>
+  </ul></li>
+  <li><a href="#sürekli-dağılımlar-ve-normal-dağılım" id="toc-sürekli-dağılımlar-ve-normal-dağılım" class="nav-link" data-scroll-target="#sürekli-dağılımlar-ve-normal-dağılım"><span class="header-section-number">31.8</span> Sürekli dağılımlar ve normal dağılım</a></li>
+  <li><a href="#r-ile-olasılık-hesaplama-ve-simülasyon" id="toc-r-ile-olasılık-hesaplama-ve-simülasyon" class="nav-link" data-scroll-target="#r-ile-olasılık-hesaplama-ve-simülasyon"><span class="header-section-number">31.9</span> R ile olasılık hesaplama ve simülasyon</a></li>
+  <li><a href="#egzersizler" id="toc-egzersizler" class="nav-link" data-scroll-target="#egzersizler"><span class="header-section-number">31.10</span> Egzersizler</a></li>
+  <li><a href="#egzersiz-çözümleri" id="toc-egzersiz-çözümleri" class="nav-link" data-scroll-target="#egzersiz-çözümleri"><span class="header-section-number">31.11</span> Egzersiz çözümleri</a></li>
+  <li><a href="#bölüm-özeti" id="toc-bölüm-özeti" class="nav-link" data-scroll-target="#bölüm-özeti"><span class="header-section-number">31.12</span> Bölüm özeti</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/MFatihTuzen/r-programlama/edit/main/chapters/05-temel-istatistik/probability_distributions.qmd" class="toc-action"><i class="bi bi-github"></i>Bu sayfayı düzenle</a></li><li><a href="https://github.com/MFatihTuzen/r-programlama/issues/new" class="toc-action"><i class="bi empty"></i>Sorun bildir</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content" tabindex="-1">
+
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="Yol"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../chapters/05-temel-istatistik/statistical_thinking.html">V · Temel İstatistik ve İstatistiksel Çıkarım</a></li><li class="breadcrumb-item"><a href="../../chapters/05-temel-istatistik/probability_distributions.html"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Olasılık ve Olasılık Dağılımları</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span id="sec-probability-distributions" class="quarto-section-identifier"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Olasılık ve Olasılık Dağılımları</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="belirsizliği-nasıl-ölçeriz" class="level2" data-number="31.1">
+<h2 data-number="31.1" class="anchored" data-anchor-id="belirsizliği-nasıl-ölçeriz"><span class="header-section-number">31.1</span> Belirsizliği nasıl ölçeriz?</h2>
+<p>“Yarın yağmur olasılığı %70.” Bu cümle, günün %70’inde mi yağmur yağacağını söylüyor? Bölgenin %70’ini mi anlatıyor? Cevap, tahminde <strong>neyin bir yağış olayı sayıldığına</strong>, yere ve zaman aralığına bağlıdır. Örneğin bir modelin belirli bir noktada yarın 06.00–18.00 arasında en az 1 mm yağış düşmesi olayına %70 olasılık verdiğini varsayalım. Buradaki sayı, bu tanımlı olayın gerçekleşmesine ilişkin tahmindir. Olay gerçekleşse bile yağışın ne kadar süreceğini veya bölgeye nasıl yayılacağını öğrenmiş olmayız. Ölçüm eşiği, konum ve saatler bu ders örneğine aittir.</p>
+<p>Bir olayın olasılığı 0 ile 1 arasında ifade edilir. %70, ondalık gösterimde 0,70’tir. Sayının gücü, dayanağıyla birlikte anlaşılır. Bir üretim hattında aynı süreç altında tekrarlanan kontrollerin uzun dönem kusur oranından söz edebiliriz. Ertesi günün yağışı gibi tek bir olay içinse elimizdeki ölçümler ve model ışığında değerlendirme yaparız. Bir matematiksel model, hangi sonuçlara ne kadar olasılık verileceğini tutarlı biçimde belirler. Bu seçim eşit olasılık varsayımına, gözlemlere veya mevcut bilgiyi özetleyen başka varsayımlara dayanabilir.</p>
+<p>Tek bir gün, %70’lik bir tahminin kalitesini ölçmek için yeterli değildir. Yağmur yağarsa da yağmazsa da modelin izin verdiği bir sonuç gerçekleşmiştir. Aynı tanımla %70 tahmin verilen çok sayıda durumda olay yaklaşık %70 sıklıkla gerçekleşiyorsa, o düzeydeki tahminler <strong>kalibre</strong> görünür. Bu değerlendirme, tahminleri ortak bir olay tanımı ve karşılaştırılabilir bir kapsam içinde biriktirmeyi gerektirir.</p>
+<p><a href="statistical_thinking.html" class="quarto-xref"><span>Bölüm 29</span></a> bölümünde verinin hangi süreçten geldiğini sorguladık. <a href="descriptive_statistics.html" class="quarto-xref"><span>Bölüm 30</span></a> bölümünde gerçekleşmiş gözlemleri özetledik. Şimdi gerçekleşebilecek sonuçlar için bir model kuracağız. Bölüm sonunda koşullu olasılığı yorumlayabilecek, sayım ve sürekli ölçüm modellerini gerekçeleriyle seçebilecek, hesapladığınız olasılığı R benzetimiyle karşılaştırabileceksiniz. Oran, temel toplam işareti ve R vektör işlemleri başlangıç için yeterlidir. İntegrali bir eğrinin altında biriken alan olarak kullanacağız.</p>
+</section>
+<section id="rastgele-deney-örneklem-uzayı-ve-olaylar" class="level2" data-number="31.2">
+<h2 data-number="31.2" class="anchored" data-anchor-id="rastgele-deney-örneklem-uzayı-ve-olaylar"><span class="header-section-number">31.2</span> Rastgele deney, örneklem uzayı ve olaylar</h2>
+<p>Bir depoda kontrol edilen ürünler için iki özellik kaydedilsin. Ambalaj hasarlı olabilir ve etiket hatalı olabilir. Bir ürünü önceden belirlenen bir kuralla seçip bu iki özelliği kaydetmek bir <strong>rastgele deney</strong> tanımlar. Deneyin tek bir gerçekleşmesinde elde edilen kayıt bir <strong>sonuçtur</strong>. Olası sonuçların tümü <strong>örneklem uzayı</strong> <span class="math inline">\(\Omega\)</span>’yı oluşturur. Bu örnekte dört sonuç vardır: iki özelliğin de bulunmaması, yalnızca hasar, yalnızca etiket hatası ve ikisinin birlikte görülmesi. Dört sonuç olması bunların eşit olasılıklı olduğunu göstermez.</p>
+<p><span class="math inline">\(A\)</span> hasarlı ambalaj olayını, <span class="math inline">\(B\)</span> hatalı etiket olayını göstersin. Bir <strong>olay</strong>, sonuçların bir kümesidir. <span class="math inline">\(A\cup B\)</span>, en az bir sorunun görüldüğü <strong>birleşimdir</strong> ve iki sorunun birlikte görülmesini de kapsar. <span class="math inline">\(A\cap B\)</span>, iki sorunun birlikte görülmesi olan <strong>kesişimdir</strong>. <span class="math inline">\(A^c\)</span>, <span class="math inline">\(A\)</span>’nın <strong>tümleyenidir</strong> ve ambalaj hasarının bulunmadığı sonuçları kapsar. <span class="math inline">\(\varnothing\)</span>, hiçbir sonuç içermeyen boş kümedir. Kesişimleri boş olan olaylar <strong>birbirini dışlar</strong>. Örneğin “yalnız ambalaj hasarı” ve “yalnız etiket hatası” aynı üründe gerçekleşemez.</p>
+<p>Olasılık atamalarının birbiriyle tutarlı olmasını üç temel kural sağlar. Her <span class="math inline">\(A\)</span> olayı için <span class="math inline">\(P(A)\geq0\)</span> olmalıdır. Tüm örneklem uzayının olasılığı <span class="math inline">\(P(\Omega)=1\)</span>’dir. Son olarak birbirini dışlayan olayların birleşiminin olasılığı, olasılıklarının toplamıdır. Bu son aksiyom sayılabilir bir olay dizisi için de geçerlidir. <span class="math inline">\(A_j\)</span> birbirini dışlayan olayları ve <span class="math inline">\(j\)</span> olay numarasını gösterirse:</p>
+<p><span class="math display">\[
+P\!\left(\bigcup_j A_j\right)=\sum_j P(A_j).
+\]</span></p>
+<p>Bir olay ile tümleyeni birbirini dışlar ve birlikte bütün uzayı kapsar. Bu yüzden <span class="math inline">\(P(A)+P(A^c)=1\)</span>, dolayısıyla <span class="math inline">\(P(A^c)=1-P(A)\)</span> olur. <span class="math inline">\(A\)</span> ile <span class="math inline">\(B\)</span> örtüşüyorsa olasılıklarını topladığımızda kesişime iki kez yer veririz. Birini çıkarınca genel toplama kuralı elde edilir <span class="citation" data-cites="diezRundelBarr2019">(<a href="../../references.html#ref-diezRundelBarr2019" role="doc-biblioref">Diez vd. 2019</a>)</span>:</p>
+<p><span class="math display">\[
+\begin{aligned}
+P(A\cup B)&amp;=P(A)+P(B)\\
+&amp;\quad-P(A\cap B).
+\end{aligned}
+\]</span></p>
+<p>Örneğin 100 üründen 20’sinde ambalaj hasarı, 10’unda etiket hatası ve 4’ünde iki sorun birlikte görülmüş olsun. Bu 100 üründen birini eşit olasılıkla seçersek en az bir kusur görme olasılığı <span class="math inline">\((20+10-4)/100=0{,}26\)</span>, hiçbirini görmeme olasılığı 0,74’tür. Bu hesap, söz konusu 100 ürün içindeki rastgele seçimi tanımlar. Gelecekteki üretimin kusur oranını tahmin etmek için hangi ürünlerin denetlendiğini ve sürecin değişip değişmediğini de bilmek gerekir.</p>
+</section>
+<section id="koşullu-olasılık-ve-bağımsızlık" class="level2" data-number="31.3">
+<h2 data-number="31.3" class="anchored" data-anchor-id="koşullu-olasılık-ve-bağımsızlık"><span class="header-section-number">31.3</span> Koşullu olasılık ve bağımsızlık</h2>
+<p><strong>Bir olay hakkında yeni bilgi öğrendiğimizde neden olasılık değerlendirmemiz değişir?</strong> Örneğin seçilen ürünün etiketinin hatalı olduğu söylensin. Artık 100 ürünü eşit biçimde düşünmeyiz. Etiketi hatalı 10 ürün arasında seçim yapılmış olduğunu biliriz. Bunların dördünde ambalaj hasarı vardır. Yeni payda 10’dur ve hasarın koşullu olasılığı <span class="math inline">\(4/10=0{,}40\)</span> olur. Oysa etiket hakkında bilgi gelmeden önce bu olasılık <span class="math inline">\(20/100=0{,}20\)</span> idi.</p>
+<p>Genel olarak <span class="math inline">\(P(A\mid B)\)</span>, <span class="math inline">\(B\)</span> gerçekleştiği bilindiğinde <span class="math inline">\(A\)</span>’nın olasılığıdır. <span class="math inline">\(B\)</span>’yi geçici örneklem uzayı gibi kullanırız. <span class="math inline">\(A\)</span>’nın bu uzay içinde kalan kısmı <span class="math inline">\(A\cap B\)</span>’dir. Toplam olasılığı <span class="math inline">\(P(B)\)</span> olan bu yeni uzayın ölçeğini 1’e getirmek için <span class="math inline">\(P(B)&gt;0\)</span> koşuluyla bu parçayı <span class="math inline">\(P(B)\)</span>’ye böleriz:</p>
+<p><span class="math display">\[
+P(A\mid B)=\frac{P(A\cap B)}{P(B)}.
+\]</span></p>
+<p>Her iki tarafı <span class="math inline">\(P(B)\)</span> ile çarpınca <strong>çarpım kuralı</strong> elde edilir. İki olayın birlikte görülme olasılığı, önce <span class="math inline">\(B\)</span>’nin gerçekleşme olasılığı ile sonra bu koşulda <span class="math inline">\(A\)</span>’nın gerçekleşme olasılığının çarpımıdır:</p>
+<p><span class="math display">\[
+P(A\cap B)=P(B)P(A\mid B).
+\]</span></p>
+<p>Bir olay hakkında bilgi edinmek ötekinin olasılığını değiştirmiyorsa ve ilgili koşulun olasılığı pozitifse, örneğin <span class="math inline">\(P(A\mid B)=P(A)\)</span> ise olaylar <strong>bağımsızdır</strong>. Sıfır olasılıklı olayları da kapsayan genel tanım <span class="math inline">\(P(A\cap B)=P(A)P(B)\)</span> eşitliğidir. Ürün örneğinde kesişim 0,04 iken çarpım <span class="math inline">\(0{,}20\times0{,}10=0{,}02\)</span>’dir. Bu 100 üründen yapılan seçim modelinde olaylar bağımsız değildir.</p>
+<p>Birbirini dışlama, birlikte gerçekleşmenin imkânsız olmasıdır. Bağımsızlık ise bir olayın diğerine ilişkin olasılık bilgisini değiştirmemesiyle ilgilidir. İki olay da pozitif olasılığa sahipse, birbirini dışlamaları bağımsızlığı engeller. Örneğin tek bir ürün “yalnız hasarlı” ise “yalnız etiket hatalı” olma olasılığı sıfıra iner. Bir sonraki örnekte, koşulun yönünü karıştırmanın sonucu nasıl değiştirdiğini göreceğiz.</p>
+</section>
+<section id="bayes-teoremi-ve-tarama-sonucu" class="level2" data-number="31.4">
+<h2 data-number="31.4" class="anchored" data-anchor-id="bayes-teoremi-ve-tarama-sonucu"><span class="header-section-number">31.4</span> Bayes teoremi ve tarama sonucu</h2>
+<p>Tamamen varsayımsal bir taramayı düşünelim. İncelenen durumun yaygınlığı %1, testin <strong>duyarlılığı</strong> %90, <strong>özgüllüğü</strong> %95 olsun. Duyarlılık, durum mevcutken pozitif sonuç verme olasılığıdır. Özgüllük, durum mevcut değilken negatif sonuç verme olasılığıdır. Pozitif sonuç alanların ne kadarında durumun var olduğu ise ayrı bir sorudur. Aşağıdaki sayılar gerçek bir teste ait değildir. Sonuçlar öğretim için beklenen sayı olarak verilmiştir.</p>
+<p>10.000 kişilik bir toplulukta durumun 100 kişide mevcut olmasını bekleriz. Bu kişilerin 90’ı pozitif sonuç alır. Durumun bulunmadığı 9.900 kişinin %5’i, yani 495’i de pozitif sonuç alır. Böylece beklenen 585 pozitif sonucun yalnızca 90’ı durumun mevcut olduğu kişilerden gelir. Nadir bir durum söz konusu olduğunda yanlış pozitiflerin oranı düşük olsa bile bu oran çok geniş bir gruba uygulanır. Koşullu olasılığın yönünü karıştırıp %90 cevabını vermek, yaygınlığı ve bu grubun büyüklüğünü gözden kaçırır.</p>
+<p>Bu örnek için <span class="math inline">\(A\)</span> durumun mevcut olması, <span class="math inline">\(B\)</span> pozitif test sonucudur. Birleşik olayın olasılığını çarpım kuralıyla iki yönde yazalım. <span class="math inline">\(P(A\cap B)\)</span> hem <span class="math inline">\(P(A)P(B\mid A)\)</span> hem de <span class="math inline">\(P(B)P(A\mid B)\)</span>’ye eşittir. <span class="math inline">\(P(B)&gt;0\)</span> olduğunda ikinci ifadeyi <span class="math inline">\(P(A\mid B)\)</span> için çözersek <strong>Bayes teoremi</strong> ortaya çıkar:</p>
+<p><span class="math display">\[
+P(A\mid B)=\frac{P(B\mid A)P(A)}{P(B)}.
+\]</span></p>
+<p>Pozitif sonuçlar birbirini dışlayan iki yoldan gelir. Durum mevcuttur ve test pozitiftir ya da durum mevcut değildir ve test pozitiftir. Bu iki yolun olasılıklarını toplamak <strong>toplam olasılık kuralının</strong> bu örnekteki biçimidir:</p>
+<p><span class="math display">\[
+\begin{aligned}
+P(B)&amp;=P(B\mid A)P(A)\\
+&amp;\quad+P(B\mid A^c)P(A^c).
+\end{aligned}
+\]</span></p>
+<p>Test sonucu bilinmeden önceki <span class="math inline">\(P(A)\)</span> <strong>önsel olasılıktır</strong>. Pozitif sonucu sabit tutup varsayılan duruma göre <span class="math inline">\(P(B\mid A)\)</span> ve <span class="math inline">\(P(B\mid A^c)\)</span> değerlerine baktığımızda, bunlar pozitif verinin iki durum altındaki <strong>olabilirlikleridir</strong>. Durumu bilinmeyen pozitif bir kişi için <span class="math inline">\(P(A\mid B)\)</span> <strong>sonrasal olasılıktır</strong>. Bu bağlamda buna <strong>pozitif öngörü değeri</strong> denir. Duyarlılık <span class="math inline">\(P(B\mid A)\)</span>, özgüllük <span class="math inline">\(P(B^c\mid A^c)\)</span>, yanlış pozitif oranı ise özgüllüğün tümleyeni <span class="math inline">\(P(B\mid A^c)\)</span>’dir <span class="citation" data-cites="diezRundelBarr2019">(<a href="../../references.html#ref-diezRundelBarr2019" role="doc-biblioref">Diez vd. 2019</a>)</span>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>toplam <span class="ot">&lt;-</span> <span class="dv">10000</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>yayginlik <span class="ot">&lt;-</span> <span class="fl">0.01</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>duyarlilik <span class="ot">&lt;-</span> <span class="fl">0.90</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>ozgulluk <span class="ot">&lt;-</span> <span class="fl">0.95</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>mevcut <span class="ot">&lt;-</span> toplam <span class="sc">*</span> yayginlik</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>yok <span class="ot">&lt;-</span> toplam <span class="sc">-</span> mevcut</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>dogru_pozitif <span class="ot">&lt;-</span> mevcut <span class="sc">*</span> duyarlilik</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>yanlis_pozitif <span class="ot">&lt;-</span> yok <span class="sc">*</span> (<span class="dv">1</span> <span class="sc">-</span> ozgulluk)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">data.frame</span>(</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">durum =</span> <span class="fu">c</span>(<span class="st">"Mevcut"</span>, <span class="st">"Mevcut değil"</span>, <span class="st">"Toplam"</span>),</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">pozitif =</span> <span class="fu">c</span>(dogru_pozitif, yanlis_pozitif,</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>              dogru_pozitif <span class="sc">+</span> yanlis_pozitif),</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">negatif =</span> <span class="fu">c</span>(mevcut <span class="sc">-</span> dogru_pozitif, yok <span class="sc">-</span> yanlis_pozitif,</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>              toplam <span class="sc">-</span> dogru_pozitif <span class="sc">-</span> yanlis_pozitif)</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>), <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Durum"</span>, <span class="st">"Pozitif"</span>, <span class="st">"Negatif"</span>))</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Durum</th>
+<th style="text-align: right;">Pozitif</th>
+<th style="text-align: right;">Negatif</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Mevcut</td>
+<td style="text-align: right;">90</td>
+<td style="text-align: right;">10</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Mevcut değil</td>
+<td style="text-align: right;">495</td>
+<td style="text-align: right;">9405</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Toplam</td>
+<td style="text-align: right;">585</td>
+<td style="text-align: right;">9415</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>pozitif <span class="ot">&lt;-</span> duyarlilik <span class="sc">*</span> yayginlik <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">-</span> ozgulluk) <span class="sc">*</span> (<span class="dv">1</span> <span class="sc">-</span> yayginlik)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="at">sayimla =</span> dogru_pozitif <span class="sc">/</span> (dogru_pozitif <span class="sc">+</span> yanlis_pozitif),</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">bayes_ile =</span> duyarlilik <span class="sc">*</span> yayginlik <span class="sc">/</span> pozitif)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  sayimla bayes_ile 
+0.1538462 0.1538462 </code></pre>
+</div>
+</div>
+<p>İki hesap da yaklaşık 0,154 verir. Pozitif sonuç alanların yaklaşık %15,4’ünde durumun mevcut olması, bu varsayımlar altındaki model sonucudur. Aynı test özellikleri korunup yaygınlık değişirse pozitif sonuçların hangi gruplardan geldiği ve dolayısıyla öngörü değeri de değişir.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-prob-bayes-tree" class="quarto-float quarto-figure quarto-figure-center anchored" alt="10.000 kişi ikiye ayrılıyor. Durum mevcut olan 100 kişide 90 pozitif ve 10 negatif, durum mevcut olmayan 9.900 kişide 495 pozitif ve 9.405 negatif bekleniyor. Pozitifler 90 artı 495, toplam 585. Bunların 90'ı doğru pozitif, oran yüzde 15,38.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-prob-bayes-tree-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="probability_distributions_files/figure-html/fig-prob-bayes-tree-1.png" class="img-fluid figure-img" alt="10.000 kişi ikiye ayrılıyor. Durum mevcut olan 100 kişide 90 pozitif ve 10 negatif, durum mevcut olmayan 9.900 kişide 495 pozitif ve 9.405 negatif bekleniyor. Pozitifler 90 artı 495, toplam 585. Bunların 90'ı doğru pozitif, oran yüzde 15,38." width="652">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-prob-bayes-tree-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Şekil&nbsp;31.1: Varsayımsal 10.000 kişilik taramada beklenen doğal frekanslar. Kalın dallar pozitif sonuçları, alttaki kutu pozitif öngörü değerinin paydasını gösterir.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p><a href="#fig-prob-bayes-tree" class="quarto-xref">Şekil&nbsp;<span>31.1</span></a> üzerinde 90 ve 495 pozitif sonuç, farklı ana dallardan aynı kutuya geliyor. Pozitif sonuç verildikten sonra yeni payda iki pozitif dalın toplamı olan 585’tir. Duyarlılığı hesaplarken ise yalnız durumun mevcut olduğu dalın 100 kişisini payda alırız.</p>
+</section>
+<section id="rassal-değişken-ve-olasılık-dağılımı" class="level2" data-number="31.5">
+<h2 data-number="31.5" class="anchored" data-anchor-id="rassal-değişken-ve-olasılık-dağılımı"><span class="header-section-number">31.5</span> Rassal değişken ve olasılık dağılımı</h2>
+<p>Lojistik merkezi, gönderileri “kusurlu” ve “kusursuz” olarak kaydediyor olsun. Üç gönderinin kontrol sonuçlarının sırası kimi sorular için değerlidir. Ancak ayrılması gereken gönderi sayısını planlarken yalnızca toplam kusurlu sayısı yeterlidir. Her olası kontrol sonucunu bu sayıyla eşleyen kurala <strong>rassal değişken</strong> deriz. <span class="math inline">\(X\)</span> bu kuralı, küçük <span class="math inline">\(x\)</span> ise alabileceği belirli bir değeri gösterir. <span class="math inline">\(X=2\)</span> olayı, üç kontrolden tam ikisinin kusurlu olduğu bütün sonuçları kapsar.</p>
+<p>Kusurlu gönderi sayısı 0, 1, 2 veya 3 olabilir. <span class="math inline">\(X\)</span> burada <strong>kesiklidir</strong>. Her değerin olasılığını veren <span class="math inline">\(p_X(x)=P(X=x)\)</span> kuralı <strong>olasılık kütle fonksiyonudur</strong> (<em>probability mass function</em>). Kütleler negatif olamaz ve olası değerlerdeki toplamları 1’dir. Bir sürenin ideal bir ölçümünü modelliyorsak aralık boyunca her gerçek sayı mümkün olabilir. Böyle bir ölçümü sürekli bir modelle temsil ettiğimizde <span class="math inline">\(f(x)\)</span>, <strong>olasılık yoğunluk fonksiyonunun</strong> (<em>probability density function</em>) <span class="math inline">\(x\)</span>’teki değeridir. Olasılık, bir aralık üzerindeki yoğunluk alanıdır:</p>
+<p><span class="math display">\[
+P(a\leq X\leq b)=\int_a^b f(x)\,dx.
+\]</span></p>
+<p><span class="math inline">\(a\)</span> ve <span class="math inline">\(b\)</span> aralığın alt ve üst sınırıdır. <span class="math inline">\(dx\)</span> integrali <span class="math inline">\(x\)</span> boyunca aldığımızı gösterir. Toplam alan 1’dir. Yoğunluğun birimi ölçüm biriminin tersidir. Süre dakika cinsindense yükseklik dakika başına yoğunluktur. Eğri yüksekliği 1’i aşabilir. Alan yine 0 ile 1 arasında kalır. Yoğunlukla tanımlanan sürekli modelde tek noktanın genişliği sıfır olduğundan <span class="math inline">\(P(X=x)=0\)</span>’dır. Bir termometrenin aynı yuvarlanmış değeri tekrar göstermesi buna aykırı değildir. Yuvarlanmış kayıt, alttaki değerlerin bir aralığını temsil eder. <a href="../04-veri-gorsellestirme/plot_types.html" class="quarto-xref"><span>Bölüm 23</span></a> bölümündeki yoğunluk grafiği bu alan fikrinin gözlenen veriye dayalı bir karşılığıdır.</p>
+<p>Her iki model türünde de “bir eşiği aşmama” sorusuna <strong>birikimli dağılım fonksiyonu</strong> (<em>cumulative distribution function</em>) yanıt verir. <span class="math inline">\(F(x)=P(X\leq x)\)</span>, <span class="math inline">\(x\)</span> eşiğine kadar biriken olasılıktır. Kesikli dağılımda <span class="math inline">\(F\)</span>, olası değerlerde kütle kadar sıçrar. Yoğunluğu olan sürekli dağılımda soldan eşik değerine kadar biriken alanı verir. Örneğin <span class="math inline">\(P(a&lt;X\leq b)=F(b)-F(a)\)</span> iki eşik arasında eklenen olasılıktır. Bu yazımda alt uç dışarıda kalır. Kesikli durumda orada bir kütle varsa dışarıda bırakılması önemlidir.</p>
+</section>
+<section id="beklenen-değer-ve-varyans" class="level2" data-number="31.6">
+<h2 data-number="31.6" class="anchored" data-anchor-id="beklenen-değer-ve-varyans"><span class="header-section-number">31.6</span> Beklenen değer ve varyans</h2>
+<p><a href="descriptive_statistics.html" class="quarto-xref"><span>Bölüm 30</span></a> bölümünde ortalamayı gözlenen değerlerin eşit veya belirlenmiş ağırlıklarla hesabı olarak gördük. Modelde ağırlıkları olasılıklar belirler. <strong>Beklenen değer</strong>, olası sonuçların bu ağırlıklarla hesaplanan ortalamasıdır. Bir süreci çok kez aynı koşullarda yürütmeye ilişkin uzun dönem ortalama fikrini taşır. Bir günde gözlenen ortalama ise o günün gerçekleşen ölçümlerinden hesaplanır.</p>
+<p>Kesikli dağılımda <span class="math inline">\(E(X)\)</span>, <span class="math inline">\(X\)</span>’in beklenen değeridir. Toplam, <span class="math inline">\(X\)</span>’in alabileceği bütün <span class="math inline">\(x\)</span> değerleri üzerindedir. Yoğunluğu olan sürekli dağılımda küçük aralıkların olasılığını yoğunluk ile aralık genişliğinin çarpımı gibi düşünürüz. Aralıkları incelttikçe ağırlıklı toplam integrale dönüşür:</p>
+<p><span class="math display">\[
+\begin{aligned}
+E(X)&amp;=\sum_x xP(X=x),\\
+E(X)&amp;=\int_{-\infty}^{\infty}x f(x)\,dx.
+\end{aligned}
+\]</span></p>
+<p>İlk satır kesikli, ikinci satır sürekli model içindir. <span class="math inline">\(-\infty\)</span> ve <span class="math inline">\(\infty\)</span>, bütün gerçek değer aralığını gösterir. Yoğunluk bu aralığın bir kısmında sıfır olabilir. Örneğin bir vardiyada yeniden işlem gerektiren iş sayısı 0, 1 veya 2 ve olasılıkları sırasıyla 0,5, 0,3, 0,2 ise beklenen değeri <span class="math inline">\(0\times0{,}5+1\times0{,}3+2\times0{,}2=0{,}7\)</span> olarak buluruz. Tek vardiyada 0,7 iş görülmez. Yaklaşık on benzer vardiya için toplam yedi işlik bir beklenen yük söz konusudur.</p>
+<p>Varyans, modelin ortalaması çevresindeki kareli uzaklıkların beklenen değeridir. <span class="math inline">\(m=E(X)\)</span> yazalım. Kareyi açınca <span class="math inline">\(X^2-2mX+m^2\)</span> elde edilir. Beklenen değer toplam boyunca ayrışır ve sabitler aynen kalır. Orta terimin beklentisi <span class="math inline">\(-2mE(X)=-2m^2\)</span> olduğundan:</p>
+<p><span class="math display">\[
+\begin{aligned}
+\operatorname{Var}(X)&amp;=E[(X-m)^2]\\
+&amp;=E(X^2)-2mE(X)+m^2\\
+&amp;=E(X^2)-[E(X)]^2.
+\end{aligned}
+\]</span></p>
+<p>Son ifadede <span class="math inline">\(E(X^2)\)</span>, başlangıçta değerlerin karelerini alıp ağırlıklandırır. <span class="math inline">\([E(X)]^2\)</span> ise önce ortalamayı hesaplayıp sonra karesini alır. Vardiya örneğinde <span class="math inline">\(E(X^2)=0{,}3+4\times0{,}2=1{,}1\)</span>, varyans <span class="math inline">\(1{,}1-0{,}7^2=0{,}61\)</span> iş sayısı karesidir. Standart sapma karekök alınarak yeniden iş sayısı birimine döner. Bu hesapta <span class="math inline">\(n-1\)</span> böleni yoktur. Burada örnek veriden varyans tahmin etmek yerine modelin bilinen ağırlıklarını kullanıyoruz.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>is_sayisi <span class="ot">&lt;-</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">2</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>kutle <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="fl">0.3</span>, <span class="fl">0.2</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>beklenen <span class="ot">&lt;-</span> <span class="fu">sum</span>(is_sayisi <span class="sc">*</span> kutle)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>varyans <span class="ot">&lt;-</span> <span class="fu">sum</span>((is_sayisi <span class="sc">-</span> beklenen)<span class="sc">^</span><span class="dv">2</span> <span class="sc">*</span> kutle)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="at">beklenen =</span> beklenen, <span class="at">varyans =</span> varyans,</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">kareler_yoluyla =</span> <span class="fu">sum</span>(is_sayisi<span class="sc">^</span><span class="dv">2</span> <span class="sc">*</span> kutle) <span class="sc">-</span> beklenen<span class="sc">^</span><span class="dv">2</span>)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       beklenen         varyans kareler_yoluyla 
+           0.70            0.61            0.61 </code></pre>
+</div>
+</div>
+<p>Bu hesapların sonlu olması bir koşuldur. Beklenen değerin sonlu tanımlanması için <span class="math inline">\(E(|X|)&lt;\infty\)</span>, sonlu varyans için <span class="math inline">\(E(X^2)&lt;\infty\)</span> yeterlidir ve sonlu varyans ikinci momentin sonlu olmasını gerektirir. Bazı ağır kuyruklu modellerde bu koşullar sağlanmaz. Bu bölümdeki Bernoulli, binom, Poisson ve normal modeller için iki koşul da sağlanır.</p>
+<p>Sonlu beklenen değerleri olan <span class="math inline">\(X\)</span> ve <span class="math inline">\(Y\)</span> için <span class="math inline">\(E(X+Y)=E(X)+E(Y)\)</span> olur. Bağımsızlık gerekmez. Örneğin iki vardiya birbirini etkilese bile beklenen toplam iş sayısı iki beklenen değerin toplamıdır. Sabit <span class="math inline">\(a\)</span> ve <span class="math inline">\(b\)</span> için <span class="math inline">\(E(a+bX)=a+bE(X)\)</span> ve <span class="math inline">\(\operatorname{Var}(a+bX)=b^2\operatorname{Var}(X)\)</span> olur. Sabit kayma, değeri ve merkezini aynı miktarda kaydırır. Ölçek çarpanı ise sapmayı <span class="math inline">\(b\)</span>, kareli sapmayı <span class="math inline">\(b^2\)</span> katına çıkarır. Bağımsız ve sonlu varyanslı <span class="math inline">\(X\)</span> ve <span class="math inline">\(Y\)</span> için <span class="math inline">\(\operatorname{Var}(X+Y)=\operatorname{Var}(X)+\operatorname{Var}(Y)\)</span>. Kare açıldığında iki merkezlenmiş değişkenin çarpımının beklenen değeri, bağımsızlık sayesinde sıfırdır. İki vardiyanın yükleri birlikte artıp azalıyorsa bu çarpımın etkisi göz ardı edilemez.</p>
+</section>
+<section id="kesikli-olasılık-dağılımları" class="level2" data-number="31.7">
+<h2 data-number="31.7" class="anchored" data-anchor-id="kesikli-olasılık-dağılımları"><span class="header-section-number">31.7</span> Kesikli olasılık dağılımları</h2>
+<section id="bernoulli-ve-binom" class="level3" data-number="31.7.1">
+<h3 data-number="31.7.1" class="anchored" data-anchor-id="bernoulli-ve-binom"><span class="header-section-number">31.7.1</span> Bernoulli ve binom</h3>
+<p>Tek bir kontrolde “kusur var” sonucunu 1, “kusur yok” sonucunu 0 olarak kodlayalım. Olasılığı <span class="math inline">\(p\)</span> olan sonuca <strong>başarı</strong> denir. Bu terim sonucun istenen bir olay olduğunu ima etmez. <span class="math inline">\(0\leq p\leq1\)</span> için <span class="math inline">\(P(X=1)=p\)</span>, <span class="math inline">\(P(X=0)=1-p\)</span> ve başka değerlerde kütle sıfırdır. Bu <strong>Bernoulli dağılımıdır</strong>. Beklenen değer <span class="math inline">\(p\)</span>’dir. 0 ve 1’in kareleri kendileri olduğundan <span class="math inline">\(E(X^2)=p\)</span>, dolayısıyla <span class="math inline">\(\operatorname{Var}(X)=p(1-p)\)</span>. Sonuç neredeyse kesin olduğunda yayılım küçüktür. En büyük yayılım iki sonuç eşit olasılıklı olduğunda ortaya çıkar.</p>
+<p>Şimdi aynı kusur olasılığına sahip ve birbirinden bağımsız <span class="math inline">\(n\)</span> kontrol yapalım. <span class="math inline">\(X\)</span>, bu kontrollerdeki toplam kusur sayısı olsun. Tam <span class="math inline">\(k\)</span> kusura ait belirli bir sıranın olasılığı, bağımsızlık nedeniyle <span class="math inline">\(p^k(1-p)^{n-k}\)</span>’dir. Örneğin üç denemede iki kusur, ilk iki konumda veya birinci ve üçüncü ya da son iki konumda olabilir. Bu üç farklı sıra birbirini dışlar. Genel olarak <span class="math inline">\(\binom{n}{k}\)</span>, <span class="math inline">\(n\)</span> konum arasından <span class="math inline">\(k\)</span> konumu sıralamadan seçmenin sayısıdır. <span class="math inline">\(0&lt;p&lt;1\)</span> ve <span class="math inline">\(k=0,1,\ldots,n\)</span> için:</p>
+<p><span class="math display">\[
+P(X=k)=\binom{n}{k}p^k(1-p)^{n-k}.
+\]</span></p>
+<p>Bu <strong>binom dağılımıdır</strong>. <span class="math inline">\(p=0\)</span> veya <span class="math inline">\(p=1\)</span> uçlarında sayı sırasıyla kesin olarak 0 veya <span class="math inline">\(n\)</span> olur. Binom katsayısı olmasaydı yalnızca tek bir kontrol sırasının olasılığını bulurduk. <span class="math inline">\(X\)</span>, <span class="math inline">\(n\)</span> Bernoulli değişkeninin toplamı olduğundan <span class="math inline">\(E(X)=np\)</span>, bağımsızlık nedeniyle <span class="math inline">\(\operatorname{Var}(X)=np(1-p)\)</span>’dir. Bir partiden yerine koymadan önemli sayıda ürün çekiliyorsa, önceki seçimler sıradaki kusur olasılığını değiştirebilir. Ortak makine arızaları da sonuçları birbirine bağlayabilir. Kontrol sayısının sabit olması, tek başına binom modelini gerekçelendirmez <span class="citation" data-cites="diezRundelBarr2019">(<a href="../../references.html#ref-diezRundelBarr2019" role="doc-biblioref">Diez vd. 2019</a>)</span>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>k <span class="ot">&lt;-</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">6</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>binom_kutle <span class="ot">&lt;-</span> <span class="fu">dbinom</span>(k, <span class="at">size =</span> <span class="dv">6</span>, <span class="at">prob =</span> <span class="fl">0.20</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">barplot</span>(binom_kutle, <span class="at">names.arg =</span> k,</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>              <span class="at">xlab =</span> <span class="st">"Kusurlu ürün sayısı"</span>, <span class="at">ylab =</span> <span class="st">"Olasılık kütlesi"</span>,</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>              <span class="at">col =</span> <span class="st">"#47758B"</span>, <span class="at">border =</span> <span class="cn">NA</span>)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-prob-binomial" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Sıfırdan altıya kadar yedi kusur sayısı yer alıyor. En yüksek kütle bir kusurda, yaklaşık 0,39. İki kusurun kütlesi yaklaşık 0,25. Yükseklikler toplamı bir.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-prob-binomial-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="probability_distributions_files/figure-html/fig-prob-binomial-1.png" class="img-fluid figure-img" alt="Sıfırdan altıya kadar yedi kusur sayısı yer alıyor. En yüksek kütle bir kusurda, yaklaşık 0,39. İki kusurun kütlesi yaklaşık 0,25. Yükseklikler toplamı bir." width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-prob-binomial-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Şekil&nbsp;31.2: Altı bağımsız kontrolde kusur olasılığı 0,20 ise kusurlu ürün sayısının binom kütleleri. Çubuk yüksekliği tek bir sayının olasılığıdır.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p><a href="#fig-prob-binomial" class="quarto-xref">Şekil&nbsp;<span>31.2</span></a> üzerinde 0 ile 6 arasındaki her değer ayrı bir olasılık taşır. Tam iki kusurun kütlesi yaklaşık 0,246’dır. En az bir kusurun olasılığı, sıfır kusurun olasılığını 1’den çıkararak yaklaşık 0,738 bulunur. Bu olay için 1 ile 6 arasındaki bütün çubukların yüksekliklerini toplamak da aynı sonucu verir.</p>
+</section>
+<section id="poisson" class="level3" data-number="31.7.2">
+<h3 data-number="31.7.2" class="anchored" data-anchor-id="poisson"><span class="header-section-number">31.7.2</span> Poisson</h3>
+<p>Bir çağrı merkezinde belirli bir 10 dakikalık aralıkta kaç çağrı gelebileceğini düşünelim. Önceden sabit bir müşteri denemesi saymak yerine, bir süre içinde biriken olayları sayarız. Model, çağrıların yaklaşık sabit bir hızla ve birbirini tetiklemeden geldiğini varsayabilir. Eşit sürelerin ortalama yükü benzerse, ayrık aralıklardaki olay sayıları bağımsızsa ve çok kısa bir aralıkta aynı anda birden çok olay görülme olasılığı ihmal edilebiliyorsa <strong>Poisson dağılımı</strong> bir başlangıç modeli olabilir.</p>
+<p><span class="math inline">\(X\)</span> aralıktaki çağrı sayısı, <span class="math inline">\(\lambda&gt;0\)</span> bu aralıkta beklenen çağrı sayısı, <span class="math inline">\(k\)</span> ise negatif olmayan tam sayı olsun. Kütle fonksiyonu şöyledir:</p>
+<p><span class="math display">\[
+P(X=k)=e^{-\lambda}\frac{\lambda^k}{k!}.
+\]</span></p>
+<p><span class="math inline">\(e\)</span> doğal üstel fonksiyonun tabanıdır. <span class="math inline">\(k!\)</span>, 1’den <span class="math inline">\(k\)</span>’ya çarpımdır ve <span class="math inline">\(0!=1\)</span>’dir. Aralığı çok sayıda kısa parçaya ayırıp her birinde az olasılıkla bir çağrı olduğunu düşünmek, binomla bir bağ kurar. Parça sayısı büyüyüp parça başına olasılık küçülürken beklenen toplam <span class="math inline">\(\lambda\)</span> sabit tutulduğunda Poisson kütlesine yaklaşılır. Aynı limitte binom varyansındaki <span class="math inline">\(1-p\)</span> çarpanı 1’e yaklaşır. Poisson modelinde <span class="math inline">\(E(X)=\operatorname{Var}(X)=\lambda\)</span> bulunması bu ilişkiyle uyumludur <span class="citation" data-cites="diezRundelBarr2019">(<a href="../../references.html#ref-diezRundelBarr2019" role="doc-biblioref">Diez vd. 2019</a>)</span>.</p>
+<p>10 dakikada ortalama üç çağrı bekleniyorsa <span class="math inline">\(\lambda=3\)</span> kullanılır. Hız aynı kaldığı sürece 20 dakika için 6 kullanılır. Aşağıdaki iki hesap, tam beş çağrı ile en az beş çağrı arasındaki farkı gösterir:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>lambda <span class="ot">&lt;-</span> <span class="dv">3</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="at">tam_bes =</span> <span class="fu">dpois</span>(<span class="dv">5</span>, lambda),</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">en_az_bes =</span> <span class="fu">ppois</span>(<span class="dv">4</span>, lambda, <span class="at">lower.tail =</span> <span class="cn">FALSE</span>))</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  tam_bes en_az_bes 
+0.1008188 0.1847368 </code></pre>
+</div>
+</div>
+<p>Tam beş çağrının olasılığı yaklaşık %10,1, en az beş çağrının olasılığı %18,5’tir. Çağrıların reklam sonrası kümelenmesi veya sabah ile akşam hızlarının değişmesi bu modeli zayıflatır. Heterojen dönemleri aynı <span class="math inline">\(\lambda\)</span> ile birleştirmek ya da çağrıların birbirine bağlı olması, sayımların varyansının ortalamasından büyük olduğu <strong>aşırı yayılıma</strong> yol açabilir. Sonlu bir veri grubunda ortalama ve varyansın tam eşit olması beklenmez. Kalıcı bir fark, model uygunluğunu araştırmak için işarettir.</p>
+</section>
+</section>
+<section id="sürekli-dağılımlar-ve-normal-dağılım" class="level2" data-number="31.8">
+<h2 data-number="31.8" class="anchored" data-anchor-id="sürekli-dağılımlar-ve-normal-dağılım"><span class="header-section-number">31.8</span> Sürekli dağılımlar ve normal dağılım</h2>
+<p>Bir dolum makinesinin şişelere verdiği sıvı miktarını düşünelim. Makine hedefe yakın çalışıyor ve küçük sapmalar iki yöne dağılabiliyorsa, ölçümü yaklaşık modellemek için simetrik bir yoğunluk düşünülebilir. <strong>Normal dağılım</strong> böyle bir modeldir. <span class="math inline">\(X\sim N(\mu,\sigma^2)\)</span> gösteriminde <span class="math inline">\(\sim\)</span> dağılımı izlemek anlamındadır. <span class="math inline">\(N\)</span> normal dağılımı, <span class="math inline">\(\mu\)</span> konumu ve beklenen değeri, <span class="math inline">\(\sigma&gt;0\)</span> standart sapmayı, <span class="math inline">\(\sigma^2\)</span> varyansı belirtir. Dağılım <span class="math inline">\(\mu\)</span> çevresinde simetriktir. <span class="math inline">\(\sigma\)</span> büyüdüğünde eğri genişler ve toplam alan 1 kaldığı için tepe alçalır.</p>
+<p>Normal modelin yoğunluğu, gerçek sayı doğrusundaki bir <span class="math inline">\(x\)</span> değeri için şöyle yazılır:</p>
+<p><span class="math display">\[
+f(x)=\frac{1}{\sigma\sqrt{2\pi}}
+\exp\!\left(-\frac{(x-\mu)^2}{2\sigma^2}\right).
+\]</span></p>
+<p>Burada <span class="math inline">\(\sigma&gt;0\)</span>, <span class="math inline">\(\pi\)</span> çember sabiti ve <span class="math inline">\(\exp\)</span> doğal üstel fonksiyondur. Üstelin içindeki kare, merkezden aynı uzaklıktaki iki değerin aynı yoğunluğa sahip olmasını sağlar. Merkezde üstelin girdisi sıfırdır ve üstel terim 1 olur. Merkezden uzaklaştıkça girdi daha negatif olur ve eğri alçalır. <span class="math inline">\(\sigma\)</span>, merkezden uzaklığın hangi ölçeğe göre büyük veya küçük sayılacağını belirler.</p>
+<p>Öndeki <span class="math inline">\(1/(\sigma\sqrt{2\pi})\)</span> çarpanı eğrinin yüksekliğini ayarlar. Merkezlenmiş standart ölçekte normal eğrinin ölçeklenmemiş alanı <span class="math inline">\(\sqrt{2\pi}\)</span> değerindedir. Yatay ölçeği <span class="math inline">\(\sigma\)</span> ile genişletmek alanı da <span class="math inline">\(\sigma\)</span> ile çarpar. Bu yüzden toplam alanı 1 yapmak için yükseklik, bu iki çarpanın çarpımına bölünür. Tepe yüksekliği de bu katsayıdır. Bir noktanın olasılığı içinse yüksekliği tek başına kullanamayız.</p>
+<p>Bir miktarın hedefe göre kaç standart sapma yukarıda veya aşağıda olduğunu bilmek, mililitre cinsinden farkı başka süreçlerle karşılaştırmaya yardım eder. Bunun için ölçümden merkezi çıkarıp farkı standart sapmaya böleriz:</p>
+<p><span class="math display">\[
+Z=\frac{X-\mu}{\sigma}.
+\]</span></p>
+<p><span class="math inline">\(Z\)</span> birimsiz standartlaştırılmış değişkendir. Örneğin <span class="math inline">\(X=504\)</span> mL, <span class="math inline">\(\mu=500\)</span> mL ve <span class="math inline">\(\sigma=2\)</span> mL ise <span class="math inline">\(Z=2\)</span>’dir. Beklenen değer ve ölçekleme kuralları <span class="math inline">\(E(Z)=0\)</span>, <span class="math inline">\(\operatorname{Var}(Z)=1\)</span> verir. Doğrusal dönüşüm normal dağılım biçimini koruduğundan, <span class="math inline">\(X\)</span> normalse <span class="math inline">\(Z\sim N(0,1)\)</span> olur. Buna <strong>standart normal dağılım</strong> denir. Başka bir dağılımı aynı şekilde merkezleyip ölçeklemek ilk iki momenti değiştirir, biçimini normal yapmaz.</p>
+<p>Normal modelde ortalamanın bir, iki ve üç standart sapma çevresinde kalan olasılıklar yaklaşık %68,3, %95,4 ve %99,7’dir. Bu oranlar, standart normal eğrinin sırasıyla <span class="math inline">\([-1,1]\)</span>, <span class="math inline">\([-2,2]\)</span> ve <span class="math inline">\([-3,3]\)</span> aralıklarındaki alanlarıdır. Başka bir simetrik dağılım bile farklı alanlara sahip olabilir. Ölçümlerin keskin sınırları, birden fazla kümelenmesi veya belirgin çarpıklığı varsa normal model özellikle kuyruklarda hatalı tahmin verebilir. Normallik değerlendirmesi gerçek sürece ve sorulan aralığa dayanmalıdır <span class="citation" data-cites="diezRundelBarr2019">(<a href="../../references.html#ref-diezRundelBarr2019" role="doc-biblioref">Diez vd. 2019</a>)</span>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>mu <span class="ot">&lt;-</span> <span class="dv">500</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>sigma <span class="ot">&lt;-</span> <span class="dv">2</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="fu">curve</span>(<span class="fu">dnorm</span>(x, <span class="at">mean =</span> mu, <span class="at">sd =</span> sigma), <span class="at">from =</span> <span class="dv">492</span>, <span class="at">to =</span> <span class="dv">508</span>,</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>      <span class="at">xlab =</span> <span class="st">"Dolum miktarı (mL)"</span>, <span class="at">ylab =</span> <span class="st">"Yoğunluk (1/mL)"</span>,</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>      <span class="at">col =</span> <span class="st">"#23495D"</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>bant <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">498</span>, <span class="dv">502</span>, <span class="at">length.out =</span> <span class="dv">200</span>)</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="fu">polygon</span>(<span class="fu">c</span>(bant[<span class="dv">1</span>], bant, <span class="fu">tail</span>(bant, <span class="dv">1</span>)),</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>        <span class="fu">c</span>(<span class="dv">0</span>, <span class="fu">dnorm</span>(bant, mu, sigma), <span class="dv">0</span>),</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>        <span class="at">col =</span> <span class="st">"#A7CADA"</span>, <span class="at">border =</span> <span class="cn">NA</span>)</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="fu">curve</span>(<span class="fu">dnorm</span>(x, <span class="at">mean =</span> mu, <span class="at">sd =</span> sigma), <span class="at">add =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>      <span class="at">col =</span> <span class="st">"#23495D"</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-prob-normal" class="quarto-float quarto-figure quarto-figure-center anchored" alt="500 mL çevresinde simetrik normal yoğunluk eğrisi. 498 ve 502 mL arasındaki orta bölge boyalı ve alanı yaklaşık 0,683. Dikey eksen mL başına yoğunluk.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-prob-normal-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="probability_distributions_files/figure-html/fig-prob-normal-1.png" class="img-fluid figure-img" alt="500 mL çevresinde simetrik normal yoğunluk eğrisi. 498 ve 502 mL arasındaki orta bölge boyalı ve alanı yaklaşık 0,683. Dikey eksen mL başına yoğunluk." width="710">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-prob-normal-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Şekil&nbsp;31.3: 500 mL ortalamalı ve 2 mL standart sapmalı normal model. 498–502 mL aralığının olasılığı taralı alandır.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p><a href="#fig-prob-normal" class="quarto-xref">Şekil&nbsp;<span>31.3</span></a> üzerindeki yükselti, 500 mL civarında değerlerin hangi yoğunlukta toplandığını gösterir. Örneğin 498–502 mL olasılığı, eğrinin bu aralıkta biriken alanıdır. <a href="#fig-prob-binomial" class="quarto-xref">Şekil&nbsp;<span>31.2</span></a> üzerindeki bir çubuğun yüksekliği ise doğrudan tek bir sayının olasılığıydı. Aynı görsel sezgiyi iki farklı modelde uygularken bu ayrımı korumak gerekir.</p>
+</section>
+<section id="r-ile-olasılık-hesaplama-ve-simülasyon" class="level2" data-number="31.9">
+<h2 data-number="31.9" class="anchored" data-anchor-id="r-ile-olasılık-hesaplama-ve-simülasyon"><span class="header-section-number">31.9</span> R ile olasılık hesaplama ve simülasyon</h2>
+<p>Dolum hattı için önce “502 mL’yi aşmayan dolumların oranı nedir?” diye soralım. Bu, birikimli dağılımın 502’deki değeridir. R’de <code>p</code> önekli fonksiyonlar bu soruya yanıt verir. Bir aralığın olasılığını bulmak için iki birikimli değeri çıkarabiliriz. Kesikli sayımda <code>pbinom(2, ...)</code>, tam iki kusuru da dahil eder. “İkiden az” için 1’e kadar biriken olasılığı alırız.</p>
+<p>Bazen soruyu tersinden sorarız. “Dolumların %95’inin altında kalacağı eşik nedir?” sorusu olasılık düzeyini verir ve değeri arar. R’de <code>q</code> öneki bunu hesaplar. Kesikli dağılımda <code>q</code>, birikimli olasılığı istenen düzeye <strong>en az</strong> ulaştıran en küçük destek değerini döndürür. Olasılık basamaklı olduğu için eşik tam %95’e denk gelmeyebilir. Bu ayrım, <a href="descriptive_statistics.html" class="quarto-xref"><span>Bölüm 30</span></a> bölümündeki gözlem kantili ile burada modelden hesaplanan eşik arasındaki bağı da açıklar.</p>
+<p>Bir değerin kütlesini veya yoğunluk yüksekliğini isteyen <code>d</code> önekli çağrılar, model türüne göre farklı sonuçlar verir. <code>dbinom(2, ...)</code> tam iki kusurun olasılığı, <code>dnorm(500, ...)</code> 500 mL’deki yoğunluktur. <span class="math inline">\(X\)</span>’in tam 500 mL olması için normal modelde nokta olasılığı sıfırdır. R’nin normal fonksiyonlarında <code>sd</code> argümanına varyans yerine standart sapma verilir.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="at">binom_kutle_2 =</span> <span class="fu">dbinom</span>(<span class="dv">2</span>, <span class="dv">6</span>, <span class="fl">0.20</span>),</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">binom_en_fazla_2 =</span> <span class="fu">pbinom</span>(<span class="dv">2</span>, <span class="dv">6</span>, <span class="fl">0.20</span>),</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">binom_yuzde_95_esigi =</span> <span class="fu">qbinom</span>(<span class="fl">0.95</span>, <span class="dv">6</span>, <span class="fl">0.20</span>))</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       binom_kutle_2     binom_en_fazla_2 binom_yuzde_95_esigi 
+             0.24576              0.90112              3.00000 </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="at">normal_yogunluk_500 =</span> <span class="fu">dnorm</span>(<span class="dv">500</span>, mu, sigma),</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">normal_en_fazla_502 =</span> <span class="fu">pnorm</span>(<span class="dv">502</span>, mu, sigma),</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">normal_yuzde_95_esigi =</span> <span class="fu">qnorm</span>(<span class="fl">0.95</span>, mu, sigma))</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  normal_yogunluk_500   normal_en_fazla_502 normal_yuzde_95_esigi 
+            0.1994711             0.8413447           503.2897073 </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="dv">2</span> <span class="sc">*</span> <span class="fu">pnorm</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>) <span class="sc">-</span> <span class="dv">1</span></span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.6826895 0.9544997 0.9973002</code></pre>
+</div>
+</div>
+<p>Dolumların yaklaşık %84’ü 502 mL’yi aşmaz. %95 eşiği yaklaşık 503,29 mL’dir. Bu bir model kantilidir. Dolum ortalaması için bir güven aralığı veya makineye ilişkin bir garanti vermez.</p>
+<p><code>r</code> önekli fonksiyonlar modelden yapay gözlemler üretir. Aşağıda her modelden 50.000 bağımsız tekrar üretiyoruz. Bir binom tekrarı, altı bağımsız kontrolün kusur sayısıdır. Bir normal tekrar, tek bir şişenin yapay dolumudur. Sabit tohum hesabın yeniden yapılmasını sağlar. Teorik olasılığı, koşulu sağlayan tekrarların oranıyla karşılaştıralım.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">53</span>)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>tekrar <span class="ot">&lt;-</span> <span class="dv">50000</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>kusur <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(tekrar, <span class="at">size =</span> <span class="dv">6</span>, <span class="at">prob =</span> <span class="fl">0.20</span>)</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>dolum <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(tekrar, <span class="at">mean =</span> mu, <span class="at">sd =</span> sigma)</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">data.frame</span>(</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">olay =</span> <span class="fu">c</span>(<span class="st">"En az bir kusur"</span>, <span class="st">"498–502 mL dolum"</span>),</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">teorik =</span> <span class="fu">c</span>(<span class="dv">1</span> <span class="sc">-</span> <span class="fu">dbinom</span>(<span class="dv">0</span>, <span class="dv">6</span>, <span class="fl">0.20</span>),</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>             <span class="fu">pnorm</span>(<span class="dv">502</span>, mu, sigma) <span class="sc">-</span> <span class="fu">pnorm</span>(<span class="dv">498</span>, mu, sigma)),</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">benzetim =</span> <span class="fu">c</span>(<span class="fu">mean</span>(kusur <span class="sc">&gt;=</span> <span class="dv">1</span>),</span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>               <span class="fu">mean</span>(dolum <span class="sc">&gt;=</span> <span class="dv">498</span> <span class="sc">&amp;</span> dolum <span class="sc">&lt;=</span> <span class="dv">502</span>))</span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>), <span class="at">digits =</span> <span class="dv">4</span>)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">olay</th>
+<th style="text-align: right;">teorik</th>
+<th style="text-align: right;">benzetim</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">En az bir kusur</td>
+<td style="text-align: right;">0.7379</td>
+<td style="text-align: right;">0.7394</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">498–502 mL dolum</td>
+<td style="text-align: right;">0.6827</td>
+<td style="text-align: right;">0.6839</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Oranların yakın çıkması, benzetimde hesapladığımız olayın teorik hesapla uyumlu olduğunu gösterir. <strong>Monte Carlo farkı</strong> sonlu sayıda yapay tekrar kullanmaktan doğar. Daha fazla tekrar genellikle bu dalgalanmayı azaltır. Ancak model yanlışsa benzetim de aynı yanlış varsayımları taşır. Örneğin gerçek dolumlar gün boyunca değişen iki farklı ayardan geliyorsa, tek normal dağılımdan daha çok çizim yapmak modelin bu eksiğini gidermez. Bir sonraki bölümde bu yaklaşımı tek ölçüm yerine, tekrarlanan örneklerden hesaplanan istatistiklere uygulayacağız.</p>
+</section>
+<section id="egzersizler" class="level2" data-number="31.10">
+<h2 data-number="31.10" class="anchored" data-anchor-id="egzersizler"><span class="header-section-number">31.10</span> Egzersizler</h2>
+<ol type="1">
+<li><strong>Kolay.</strong> Bir uygulama “yarın yağış olasılığı %70” diyor. Bu ifadenin yorumlanabilmesi için hangi üç bilgiyi istersiniz? Tek bir kuru gün tahminin kötü olduğunu gösterir mi?</li>
+<li><strong>Kolay.</strong> Yüz üründe 20 ambalaj hasarı, 10 etiket hatası ve dört ortak kusur var. Eşit olasılıklı seçimde hiçbir kusur olmama olasılığını ve etiket hatası biliniyorken ambalaj hasarı olasılığını bulun.</li>
+<li><strong>Orta.</strong> Aynı ürünün “yalnız ambalajı hasarlı” ve “yalnız etiketi hatalı” olaylarını açıklayın. Bu iki olayın bağımsız olup olmadığını gerekçelendirin.</li>
+<li><strong>Orta.</strong> Tarama örneğinde yaygınlık %1 yerine %10 olsun. Duyarlılık ve özgüllük aynıysa 10.000 kişide kaç doğru ve yanlış pozitif beklenir? Pozitif öngörü değerini günlük dille açıklayın.</li>
+<li><strong>Orta.</strong> İki vardiyanın her birindeki yeniden işlem sayısının beklenen değeri 0,7 ve varyansı 0,61. Vardiyalar bağımsızsa toplamın beklenen değeri ve varyansı nedir? Bağımsızlık bilinmezse hangi sonucu koruyabilirsiniz?</li>
+<li><strong>Orta.</strong> Yirmi sabit denemede aynı olasılıkla kusur görülmesi ile bir saatte gelen servis taleplerini karşılaştırın. Her problem için bir model ve onu zayıflatabilecek bir veri üretim özelliği önerin.</li>
+<li><strong>Zor.</strong> <span class="math inline">\(X\sim N(500,2^2)\)</span> modelinde 496–504 mL aralığının olasılığını standartlaştırma yoluyla bulun. Bu olasılığı <code>dnorm(500, 500, 2)</code> çıktısıyla karşılaştırmanın neden uygun olmadığını açıklayın.</li>
+<li><strong>Zor.</strong> Altı bağımsız kontrolde kusur olasılığı 0,20 ise en az iki kusur görme olasılığını R ile hesaplayın. Sonucu 50.000 tekrarlı bir benzetimle karşılaştırın. Aynı makine arızasının ardışık ürünlere etki ettiği bir süreç için yorumu tartışın.</li>
+</ol>
+</section>
+<section id="egzersiz-çözümleri" class="level2" data-number="31.11">
+<h2 data-number="31.11" class="anchored" data-anchor-id="egzersiz-çözümleri"><span class="header-section-number">31.11</span> Egzersiz çözümleri</h2>
+<p><strong>1.</strong> Olayın hangi yağış eşiğiyle tanımlandığını, zaman aralığını ve hangi konum için geçerli olduğunu sorarız. %70’lik bir tahmin gerçekleşmeme olasılığını da içerir. Kalibrasyon hakkında bilgi edinmek için benzer tahminlerin verildiği çok sayıda olayı karşılaştırırız.</p>
+<p><strong>2.</strong> En az bir kusur <span class="math inline">\((20+10-4)/100=0{,}26\)</span> olduğundan hiç kusur olmama olasılığı 0,74’tür. Etiket hatası bilindiğinde seçim uzayı 10 üründür. Bunların dördünde hasar vardır. Sonuç <span class="math inline">\(4/10=0{,}40\)</span>’tır.</p>
+<p><strong>3.</strong> Yalnızca birinci sorunu taşıyan 16 ve yalnızca ikinciyi taşıyan 6 ürün vardır. Olayların her ikisinin de olasılığı pozitiftir. Kesişim boş olduğu için birlikte gerçekleşme olasılığı sıfır, olasılıklarının çarpımı ise pozitiftir. Olaylar birbirini dışlar ve bağımsız değildir.</p>
+<p><strong>4.</strong> Durum mevcut olan 1.000 kişinin 900’ünde doğru pozitif, durumun bulunmadığı 9.000 kişinin %5’inde yani 450’sinde yanlış pozitif beklenir. Pozitif öngörü değeri <span class="math inline">\(900/1350=2/3\)</span>’tür. Bu koşullarda pozitif sonuçların yaklaşık üçte ikisi durumun mevcut olduğu kişilerden gelir. Yaygınlığın artması pozitiflerin bileşimini değiştirmiştir.</p>
+<p><strong>5.</strong> Toplamın beklenen değeri 1,4 iş, bağımsızlık altında varyansı 1,22 iş sayısı karesidir. Bağımsızlık bilinmezse beklenen değer yine toplanabilir. Varyans için yüklerin birlikte değişme biçimini bilmek gerekir.</p>
+<p><strong>6.</strong> Deneme sayısı sabitse, kusur olasılığı aynı ve denemeler bağımsızsa binom uygundur. Bir partideki arıza birkaç ürünü aynı anda etkiliyorsa bağımsızlık kuşkuludur. Bir saatlik talep sayısı için sabit hız ve bağımsız artışlar altında Poisson makul olabilir. Örneğin bir kampanyanın başında isteklerin kümelenmesi bu varsayımları zayıflatır.</p>
+<p><strong>7.</strong> Sınırların z değerleri <span class="math inline">\(-2\)</span> ve 2’dir. Standart normalde <span class="math inline">\(P(-2\leq Z\leq 2)\)</span> yaklaşık 0,9545’tir. <code>dnorm(500, 500, 2)</code> 500 mL’deki yoğunluk yüksekliğidir ve birimi mL başınadır. Bir aralık olasılığı için iki birikimli olasılığın farkı gerekir.</p>
+<p><strong>8.</strong> En az iki olayının tümleyeni en fazla bir olaydır. Benzetimde olayı sağlayan tekrarları sayıp toplam tekrar sayısına böleriz:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">58</span>)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>teorik_iki <span class="ot">&lt;-</span> <span class="fu">pbinom</span>(<span class="dv">1</span>, <span class="at">size =</span> <span class="dv">6</span>, <span class="at">prob =</span> <span class="fl">0.20</span>, <span class="at">lower.tail =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>kusur_tekrar <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(<span class="dv">50000</span>, <span class="at">size =</span> <span class="dv">6</span>, <span class="at">prob =</span> <span class="fl">0.20</span>)</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="at">teorik =</span> teorik_iki, <span class="at">benzetim =</span> <span class="fu">mean</span>(kusur_tekrar <span class="sc">&gt;=</span> <span class="dv">2</span>))</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  teorik benzetim 
+ 0.34464  0.34480 </code></pre>
+</div>
+</div>
+<p>Teorik sonuç yaklaşık 0,345, benzetim sonucu buna yakındır. Benzetim bağımsız kontrolleri varsaydığından, ardışık kusurların ortak bir arızaya bağlı olduğu bir hattı doğrulamaz. Böyle bir hatta önce bağımlılığın üretim riskini nasıl değiştirdiği araştırılır.</p>
+</section>
+<section id="bölüm-özeti" class="level2" data-number="31.12">
+<h2 data-number="31.12" class="anchored" data-anchor-id="bölüm-özeti"><span class="header-section-number">31.12</span> Bölüm özeti</h2>
+<p>Olasılık, açıkça tanımlanmış olaylar hakkındaki belirsizliği bir model içinde sayısallaştırır. Koşullu olasılık yeni bilgiyle paydanın nasıl değiştiğini, Bayes teoremi bu bilgiden bir duruma ilişkin olasılığın nasıl güncellendiğini gösterir. Rassal değişkenler sonuçları sayı olarak temsil etmeyi, dağılımlar ise olası değerlerin kütlesini veya alanını tanımlamayı sağlar. Beklenen değer ve varyans bu dağılımların merkezini ve yayılımını özetler. Binom, Poisson ve normal modeller farklı veri üretim süreçlerine dayanır. 5.4’te bir örneklem istatistiğinin kendisini rassal değişken olarak ele alacağız.</p>
+
+
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="ref-diezRundelBarr2019" class="csl-entry" role="listitem">
+Diez, David, Mine Çetinkaya-Rundel, ve Christopher D. Barr. 2019. <em><span>OpenIntro Statistics</span></em>. 4. bs. OpenIntro. <a href="https://www.openintro.org/book/os/">https://www.openintro.org/book/os/</a>.
+</div>
+</div>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const toggle = window.document.createElement('button');
+      toggle.type = "button";
+      toggle.setAttribute("role", "switch");
+      toggle.setAttribute("aria-checked", "false");
+      toggle.classList.add('top-right');
+      toggle.classList.add('quarto-color-scheme-toggle');
+      toggle.setAttribute("aria-label", "Karanlık modu değiştir");
+      toggle.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      toggle.appendChild(i);
+      // Put the toggle in a landmark of its own, so that landmark navigation
+      // can reach it.
+      //
+      // The container is always a fresh direct child of body, and the toggle is
+      // never moved into page furniture that the theme or the author controls.
+      // The toggle is positioned against the page, so any ancestor that
+      // establishes a containing block captures it: a positioned element or a
+      // grid for position: absolute, and transform, filter, will-change or
+      // contain for position: fixed. A direct child of body has none of these
+      // to inherit, and the shift when one appears is silent and visual.
+      //
+      // ARIA says a document should have at most one banner, and axe reports a
+      // duplicate whether or not the banners carry distinct labels. So use a
+      // header when the page has no banner yet, and a named region otherwise.
+      //
+      // A header is a banner wherever it sits, unless it is inside sectioning
+      // content, so this cannot just look at the children of body: a custom
+      // page layout wraps the title block header in a plain div. An explicit
+      // role="banner" always counts.
+      const sectioning = 'article, aside, main, nav, section, [role="article"], [role="complementary"], [role="main"], [role="navigation"], [role="region"]';
+      const hasBanner = Array.from(
+        window.document.querySelectorAll('header:not([role]), [role="banner"]')
+      ).some(function(el) {
+        return el.hasAttribute("role") || el.closest(sectioning) === null;
+      });
+      const container = window.document.createElement(hasBanner ? "div" : "header");
+      if (hasBanner) {
+        container.setAttribute("role", "region");
+        container.setAttribute("aria-label", "Karanlık modu değiştir");
+      }
+      container.classList.add('quarto-color-scheme-toggle-container');
+      container.appendChild(toggle);
+      window.document.body.appendChild(container);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Kopyalandı");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Kopyalandı");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/mfatihtuzen\.github\.io\/r-programlama\/");
+      const newWindowLabel = "(opens in a new tab)";
+      const newWindowNoteId = "quarto-ext-newwindow-label";
+      // Links reference one hidden label through aria-describedby, so the
+      // announcement never changes their accessible name.
+      var describeNewWindow = (link) => {
+        if (!window.document.getElementById(newWindowNoteId)) {
+          var newWindowNote = window.document.createElement("span");
+          newWindowNote.id = newWindowNoteId;
+          newWindowNote.hidden = true;
+          newWindowNote.textContent = newWindowLabel;
+          window.document.body.appendChild(newWindowNote);
+        }
+        var describedBy = (link.getAttribute("aria-describedby") || "").split(/\s+/).filter(Boolean);
+        if (!describedBy.includes(newWindowNoteId)) {
+          describedBy.push(newWindowNoteId);
+          link.setAttribute("aria-describedby", describedBy.join(" "));
+        }
+      }
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+      window.quartoDecorateExternalLinks = function (root) {
+     var links = (root || window.document).querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+            describeNewWindow(link);
+          if (!link.classList.contains('no-external-icon')) {
+          }
+        }
+      }
+      };
+      window.quartoDecorateExternalLinks(window.document);
+    // Esc closes the popup (WCAG 1.4.13) and focus leaving both trigger and
+    // popup closes it (WCAG 2.4.11); tippy handles neither for interactive popups.
+    const hideOnEscAndFocusOut = {
+      name: 'hideOnEscAndFocusOut',
+      defaultValue: true,
+      fn(instance) {
+        const dismiss = () => {
+          // A show scheduled by the trigger delay would otherwise reopen it
+          instance.clearDelayTimeouts();
+          instance.hide();
+        };
+        const onKeyDown = (event) => {
+          if (event.key !== 'Escape') {
+            return;
+          }
+          // Keep Esc from also reaching page handlers (e.g. reveal.js overview),
+          // except an open reveal.js slide menu, which Esc should close too.
+          // The menu handles keys only when its keyboard option is on.
+          const menuHandlesEsc = window.Reveal?.getPlugin?.('menu')?.isOpen() &&
+            window.Reveal.getConfig().menu?.keyboard !== false;
+          if (!menuHandlesEsc) {
+            event.stopPropagation();
+          }
+          if (instance.popper.contains(window.document.activeElement)) {
+            // Disabled while refocusing so the focus trigger does not reopen it
+            instance.disable();
+            instance.reference.focus();
+            instance.enable();
+          }
+          dismiss();
+        };
+        const onFocusOut = (event) => {
+          const target = event.relatedTarget;
+          if (target && !instance.reference.contains(target) &&
+              !instance.popper.contains(target)) {
+            dismiss();
+          }
+        };
+        // On the trigger too: a click trigger (code-annotations: select) has no
+        // blur handling. Attached for the instance's lifetime so leaving the
+        // trigger also cancels a show still pending on the trigger delay.
+        instance.reference.addEventListener('focusout', onFocusOut);
+        return {
+          onShow() {
+            window.document.addEventListener('keydown', onKeyDown, true);
+            instance.popper.addEventListener('focusout', onFocusOut);
+          },
+          onHide() {
+            window.document.removeEventListener('keydown', onKeyDown, true);
+            instance.popper.removeEventListener('focusout', onFocusOut);
+          },
+          onDestroy() {
+            instance.reference.removeEventListener('focusout', onFocusOut);
+          },
+        };
+      },
+    };
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+        plugins: [hideOnEscAndFocusOut],
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          // Each band is positioned against its own containing block, which is
+          // not the offsetParent of the lines, so place it from client rects.
+          const placeBand = (band, firstEl, lastEl, codeBlock) => {
+            const container = band.offsetParent;
+            if (container === null) {
+              return;
+            }
+            const containerRect = container.getBoundingClientRect();
+            // Reveal.js scales slides with a transform, so convert client
+            // pixels back to the CSS pixels of the container.
+            const scale = containerRect.height / container.offsetHeight || 1;
+            const firstRect = firstEl.getBoundingClientRect();
+            const lastRect = lastEl.getBoundingClientRect();
+            const top = (firstRect.top - containerRect.top) / scale - container.clientTop + container.scrollTop;
+            const height = (lastRect.bottom - firstRect.top) / scale;
+            band.style.top = top - 2 + "px";
+            band.style.height = height + 4 + "px";
+            if (codeBlock) {
+              // Without the copy button wrapper, the containing block is wider
+              // than the code block, so span the code block explicitly.
+              const blockRect = codeBlock.getBoundingClientRect();
+              band.style.left = (blockRect.left - containerRect.left) / scale - container.clientLeft + container.scrollLeft + "px";
+              band.style.width = blockRect.width / scale + "px";
+            }
+          };
+          if (lineIds.length > 0) {
+            const el = window.document.getElementById(lineIds[0]);
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const parent = el.parentElement.parentElement;
+            // cook up a div (if necessary) and position it
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            placeBand(div, el, lastEl, parent.closest("div.sourceCode") || parent);
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            placeBand(gutterDiv, el, lastEl);
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+  <script type="application/javascript">
+  window.quartoScrollableRegionsLabels = {"code":"Kaydırılabilir kod","output":"Kaydırılabilir çıktı"};
+  </script>
+<nav class="page-navigation" aria-label="Sayfa">
+  <div class="nav-page nav-page-previous">
+      <a href="../../chapters/05-temel-istatistik/descriptive_statistics.html" class="pagination-link" aria-label="Betimsel İstatistikler">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Betimsel İstatistikler</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../../chapters/05-temel-istatistik/sampling_distributions.html" class="pagination-link" aria-label="Örnekleme ve Örnekleme Dağılımları">
+        <span class="nav-page-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Örnekleme ve Örnekleme Dağılımları</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>© 2026, <a href="https://www.linkedin.com/in/dr-m-fatih-t-2b2a4328/">Muhammed Fatih Tüzen</a></p>
+</div>   
+    <div class="nav-footer-center">
+
+<div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/MFatihTuzen/r-programlama/edit/main/chapters/05-temel-istatistik/probability_distributions.qmd" class="toc-action"><i class="bi bi-github"></i>Bu sayfayı düzenle</a></li><li><a href="https://github.com/MFatihTuzen/r-programlama/issues/new" class="toc-action"><i class="bi empty"></i>Sorun bildir</a></li></ul></div><div class="cookie-consent-footer"><a href="#" id="open_preferences_center">Cookie Preferences</a></div></div>
+    <div class="nav-footer-right">
+<p>Bu kitap <a href="https://quarto.org/">Quarto</a> ile hazırlanmıştır.</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+<script src="../../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

@@ -1,0 +1,1761 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="tr" xml:lang="tr"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.11.9">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="R programlama, veri analizi ve istatistiksel düşünme üzerine Türkçe açık kaynak kitap.">
+
+<title>29&nbsp; İstatistiksel Düşünmeye Giriş – R Programlama</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../chapters/05-temel-istatistik/descriptive_statistics.html" rel="next">
+<link href="../../chapters/04-veri-gorsellestirme/exporting_graphics.html" rel="prev">
+<link href="../../images/favicon.png" rel="icon" type="image/png">
+<script src="../../site_libs/cookie-consent/cookie-consent.js"></script>
+<link href="../../site_libs/cookie-consent/cookie-consent.css" rel="stylesheet">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/scrollable-regions/scrollable-regions.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-5de16f5e46225c21e2daa90d340bf64f.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-3218d7d29a29f08bc4fdf3802c3e3ca5.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-5de16f5e46225c21e2daa90d340bf64f.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-f08995f13779f27c8b207ab2aba9430d.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-90559a1ce82236f35e86d40c0ff756a0.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-f08995f13779f27c8b207ab2aba9430d.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "Sonuç yok",
+    "search-matching-documents-text": "eşleşen belgeler",
+    "search-copy-link-title": "Aramak için bağlantıyı kopyalayın",
+    "search-hide-matches-text": "Ek eşleşmeleri gizle",
+    "search-more-match-text": "bu belgede bir tane daha eşleşme",
+    "search-more-matches-text": "bu belgede daha fazla eşleşme",
+    "search-clear-button-title": "Temizle",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "İptal et",
+    "search-submit-button-title": "Gönder",
+    "search-label": "Ara"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-X6J60MER5G"></script>
+
+<script type="text/plain" cookie-consent="tracking">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-X6J60MER5G', { 'anonymize_ip': true});
+</script>
+
+<script type="text/javascript" charset="UTF-8">
+document.addEventListener('DOMContentLoaded', function () {
+cookieconsent.run({
+  "notice_banner_type":"simple",
+  "consent_type":"express",
+  "palette":"light",
+  "language":"en",
+  "page_load_consent_levels":["strictly-necessary"],
+  "notice_banner_reject_button_hide":false,
+  "preferences_center_close_button_hide":false,
+  "website_name":""
+  ,
+"language":"tr"
+  });
+});
+</script> 
+  
+<style>html{ scroll-behavior: smooth; }</style>
+<link href="../../site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet">
+<script src="../../site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../../styles.css">
+<meta property="og:title" content="29&nbsp; İstatistiksel Düşünmeye Giriş – R Programlama">
+<meta property="og:description" content="R programlama, veri analizi ve istatistiksel düşünme üzerine Türkçe açık kaynak kitap.">
+<meta property="og:image" content="https://mfatihtuzen.github.io/r-programlama/chapters/05-temel-istatistik/statistical_thinking_files/figure-html/fig-thinking-frame-1.png">
+<meta property="og:site_name" content="R Programlama">
+<meta property="og:image:alt" content="Beş kutu hedef anakütle, örnekleme çerçevesi, seçilen örneklem, ankete katılanlar ve geçerli ölçümler sırasını izler. Dört yan dal çerçeve dışındaki uygun yolcuları, seçilmeyenleri, birim yanıtsızlığını ve madde yanıtsızlığını gösterir.">
+<meta property="og:image:height" content="902">
+<meta property="og:image:width" content="1536">
+<meta name="twitter:title" content="29&nbsp; İstatistiksel Düşünmeye Giriş – R Programlama">
+<meta name="twitter:description" content="R programlama, veri analizi ve istatistiksel düşünme üzerine Türkçe açık kaynak kitap.">
+<meta name="twitter:image" content="https://mfatihtuzen.github.io/r-programlama/chapters/05-temel-istatistik/statistical_thinking_files/figure-html/fig-thinking-frame-1.png">
+<meta name="twitter:image:alt" content="Beş kutu hedef anakütle, örnekleme çerçevesi, seçilen örneklem, ankete katılanlar ve geçerli ölçümler sırasını izler. Dört yan dal çerçeve dışındaki uygun yolcuları, seçilmeyenleri, birim yanıtsızlığını ve madde yanıtsızlığını gösterir.">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="nav-sidebar floating quarto-light"><a id="quarto-skip-link" class="visually-hidden-focusable" href="#quarto-document-content">Skip to main content</a><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          toggle.setAttribute("aria-checked", alternate ? "true" : "false");
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455).
+    // Not run on load: stylesheets are set before first paint there, and
+    // scrolling would undo the scroll to a URL fragment (#14973).
+    // The one pixel nudge keeps the reader where they were.
+    const refreshSafariScrollbar = () => {
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        const scrollY = window.scrollY;
+        window.scrollTo(0, scrollY > 0 ? scrollY - 1 : 1);
+        setTimeout(() => {
+          window.scrollTo(0, scrollY);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      refreshSafariScrollbar();
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav" aria-label="Araç çubuğu">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Kenar çubuğunu değiştir" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="Yol"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../chapters/05-temel-istatistik/statistical_thinking.html">V · Temel İstatistik ve İstatistiksel Çıkarım</a></li><li class="breadcrumb-item"><a href="../../chapters/05-temel-istatistik/statistical_thinking.html"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">İstatistiksel Düşünmeye Giriş</span></a></li></ol></nav>
+        <a class="flex-grow-1" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Ara" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto" aria-label="Internet sitesi">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../../">R Programlama</a> 
+        <div class="sidebar-tools-main tools-wide">
+    <a href="https://github.com/MFatihTuzen/r-programlama" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+    <div class="dropdown">
+      <a href="" title="Share" id="quarto-navigation-tool-dropdown-0" class="quarto-navigation-tool dropdown-toggle px-1" data-bs-toggle="dropdown" aria-expanded="false" role="link" aria-label="Share"><i class="bi bi-share"></i></a>
+      <ul class="dropdown-menu" aria-labelledby="quarto-navigation-tool-dropdown-0">
+          <li>
+            <a class="dropdown-item sidebar-tools-main-item" href="https://twitter.com/intent/tweet?url=|url|">
+              <i class="bi bi-twitter pe-1"></i>
+            Twitter
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item sidebar-tools-main-item" href="https://www.linkedin.com/sharing/share-offsite/?url=|url|">
+              <i class="bi bi-linkedin pe-1"></i>
+            LinkedIn
+            </a>
+          </li>
+      </ul>
+    </div>
+  <button type="button" role="switch" aria-checked="false" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Karanlık modu değiştir" aria-label="Karanlık modu değiştir"><i class="bi"></i></button>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Okuyucu modunu değiştir">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Ara"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Önsöz</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-controls="quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-1-label">I · R Programlamaya Giriş</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-1" aria-labelledby="quarto-sidebar-section-1-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/r_about.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">R Programlama Hakkında</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/R_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">R Çalışma Ortamı</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">R Temel Kullanımı ve İlk Komutlar</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/data_types.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Veri Tipleri ve Yapıları</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/functions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Fonksiyonlar</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/if_else_for.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Karar Yapıları ve Döngüler</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/date_time.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Tarih ve Zaman İşlemleri</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/strings.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Metin İşlemleri</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/apply.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Apply Ailesi</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/import_export.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Verilerin İçe ve Dışa Aktarılması</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-controls="quarto-sidebar-section-2" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-2-label">II · Veri Manipülasyonu ve Dönüştürme</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-2" aria-labelledby="quarto-sidebar-section-2-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/02-veri-manipulasyonu/data_manipulation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Veri Manipülasyonu</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/02-veri-manipulasyonu/data_transformation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Veri Dönüştürme</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/02-veri-manipulasyonu/data_join.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Veri Birleştirme</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-controls="quarto-sidebar-section-3" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-3-label">III · Veri Ön İşleme</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-3" aria-labelledby="quarto-sidebar-section-3-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/03-veri-on-isleme/data_preprocessing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Veri Ön İşlemeye Giriş</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/03-veri-on-isleme/missing_data_imputation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Eksik Veriler ve İmputasyon</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/03-veri-on-isleme/outliers.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Aykırı Gözlemler</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/03-veri-on-isleme/data_transformations.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Veri Dönüşümleri</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/03-veri-on-isleme/scaling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Ölçeklendirme</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/03-veri-on-isleme/feature_engineering.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Özellik Mühendisliğine Giriş</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/03-veri-on-isleme/data_leakage.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Veri Sızıntısı ve Doğru Ön İşleme İş Akışı</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-controls="quarto-sidebar-section-4" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-4-label">IV · Veri Görselleştirme</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-4" aria-labelledby="quarto-sidebar-section-4-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/04-veri-gorsellestirme/data_visualization.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Veri Görselleştirmeye Giriş</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/04-veri-gorsellestirme/ggplot2_basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">ggplot2 Temelleri</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/04-veri-gorsellestirme/plot_types.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Grafik Türleri</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/04-veri-gorsellestirme/grouping_facets.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Gruplandırma ve Facet Yapıları</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/04-veri-gorsellestirme/scales_colors_labels.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Ölçekler, Renkler ve Etiketler</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/04-veri-gorsellestirme/themes_customization.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Grafik Temaları ve Özelleştirme</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/04-veri-gorsellestirme/effective_graphics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Etkili ve Yayın Kalitesinde Grafikler</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/04-veri-gorsellestirme/exporting_graphics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Grafiklerin Dışa Aktarılması</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-controls="quarto-sidebar-section-5" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-5-label">V · Temel İstatistik ve İstatistiksel Çıkarım</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-5" aria-labelledby="quarto-sidebar-section-5-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/05-temel-istatistik/statistical_thinking.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">İstatistiksel Düşünmeye Giriş</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/05-temel-istatistik/descriptive_statistics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Betimsel İstatistikler</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/05-temel-istatistik/probability_distributions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Olasılık ve Olasılık Dağılımları</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/05-temel-istatistik/sampling_distributions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Örnekleme ve Örnekleme Dağılımları</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/05-temel-istatistik/confidence_intervals.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">İstatistiksel Tahmin ve Güven Aralıkları</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/05-temel-istatistik/hypothesis_testing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Hipotez Testlerinin Mantığı</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/05-temel-istatistik/comparing_means.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">Ortalamaların Karşılaştırılması</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/05-temel-istatistik/nonparametric_tests.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">36</span>&nbsp; <span class="chapter-title">Parametrik Olmayan Testler</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/05-temel-istatistik/categorical_association.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">37</span>&nbsp; <span class="chapter-title">Kategorik Veriler ve İlişki Analizi</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/05-temel-istatistik/integrated_analysis.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">38</span>&nbsp; <span class="chapter-title">Bütünleşik İstatistiksel Analiz</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Kaynakça</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" aria-labelledby="toc-title" class="toc-active" data-toc-expanded="2">
+    <h2 id="toc-title">İçindekiler</h2>
+   
+  <ul>
+  <li><a href="#istatistiksel-düşünme-nedir" id="toc-istatistiksel-düşünme-nedir" class="nav-link active" data-scroll-target="#istatistiksel-düşünme-nedir"><span class="header-section-number">29.1</span> İstatistiksel Düşünme Nedir?</a></li>
+  <li><a href="#araştırma-sorusu-ve-veri" id="toc-araştırma-sorusu-ve-veri" class="nav-link" data-scroll-target="#araştırma-sorusu-ve-veri"><span class="header-section-number">29.2</span> Araştırma Sorusu ve Veri</a></li>
+  <li><a href="#anakütle-örneklem-parametre-ve-istatistik" id="toc-anakütle-örneklem-parametre-ve-istatistik" class="nav-link" data-scroll-target="#anakütle-örneklem-parametre-ve-istatistik"><span class="header-section-number">29.3</span> Anakütle, Örneklem, Parametre ve İstatistik</a></li>
+  <li><a href="#betimsel-istatistik-ve-istatistiksel-çıkarım" id="toc-betimsel-istatistik-ve-istatistiksel-çıkarım" class="nav-link" data-scroll-target="#betimsel-istatistik-ve-istatistiksel-çıkarım"><span class="header-section-number">29.4</span> Betimsel İstatistik ve İstatistiksel Çıkarım</a></li>
+  <li><a href="#veri-nasıl-elde-edilir" id="toc-veri-nasıl-elde-edilir" class="nav-link" data-scroll-target="#veri-nasıl-elde-edilir"><span class="header-section-number">29.5</span> Veri Nasıl Elde Edilir?</a></li>
+  <li><a href="#değişkenlik-belirsizlik-ve-yanlılık" id="toc-değişkenlik-belirsizlik-ve-yanlılık" class="nav-link" data-scroll-target="#değişkenlik-belirsizlik-ve-yanlılık"><span class="header-section-number">29.6</span> Değişkenlik, Belirsizlik ve Yanlılık</a></li>
+  <li><a href="#r-ile-gerçek-veri-üzerinden-istatistiksel-düşünme" id="toc-r-ile-gerçek-veri-üzerinden-istatistiksel-düşünme" class="nav-link" data-scroll-target="#r-ile-gerçek-veri-üzerinden-istatistiksel-düşünme"><span class="header-section-number">29.7</span> R ile Gerçek Veri Üzerinden İstatistiksel Düşünme</a></li>
+  <li><a href="#istatistiksel-sonuçları-eleştirel-değerlendirmek" id="toc-istatistiksel-sonuçları-eleştirel-değerlendirmek" class="nav-link" data-scroll-target="#istatistiksel-sonuçları-eleştirel-değerlendirmek"><span class="header-section-number">29.8</span> İstatistiksel Sonuçları Eleştirel Değerlendirmek</a></li>
+  <li><a href="#egzersizler" id="toc-egzersizler" class="nav-link" data-scroll-target="#egzersizler"><span class="header-section-number">29.9</span> Egzersizler</a></li>
+  <li><a href="#egzersiz-çözümleri" id="toc-egzersiz-çözümleri" class="nav-link" data-scroll-target="#egzersiz-çözümleri"><span class="header-section-number">29.10</span> Egzersiz Çözümleri</a></li>
+  <li><a href="#bölüm-özeti" id="toc-bölüm-özeti" class="nav-link" data-scroll-target="#bölüm-özeti"><span class="header-section-number">29.11</span> Bölüm Özeti</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/MFatihTuzen/r-programlama/edit/main/chapters/05-temel-istatistik/statistical_thinking.qmd" class="toc-action"><i class="bi bi-github"></i>Bu sayfayı düzenle</a></li><li><a href="https://github.com/MFatihTuzen/r-programlama/issues/new" class="toc-action"><i class="bi empty"></i>Sorun bildir</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content" tabindex="-1">
+
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="Yol"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../chapters/05-temel-istatistik/statistical_thinking.html">V · Temel İstatistik ve İstatistiksel Çıkarım</a></li><li class="breadcrumb-item"><a href="../../chapters/05-temel-istatistik/statistical_thinking.html"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">İstatistiksel Düşünmeye Giriş</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span id="sec-statistical-thinking" class="quarto-section-identifier"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">İstatistiksel Düşünmeye Giriş</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="istatistiksel-düşünme-nedir" class="level2" data-number="29.1">
+<h2 data-number="29.1" class="anchored" data-anchor-id="istatistiksel-düşünme-nedir"><span class="header-section-number">29.1</span> İstatistiksel Düşünme Nedir?</h2>
+<p>Bir belediye, internet üzerinden düzenlediği toplu taşıma anketine 1.000 yanıt alıyor. Yanıtlayanların %80’i toplu taşımadan memnun olduğunu belirtiyor. Belediye sonucu “Vatandaşlarımızın %80’i toplu taşımadan memnun” başlığıyla duyuruyor.</p>
+<p>Hesap doğru olsa bile başlıktaki “vatandaşlarımızın” sözü yeni bir iddia getiriyor. Ankete kimler erişti? Otobüsü her gün kullananlarla toplu taşımayı çok seyrek kullananların katılma ihtimali benzer miydi? Belediye hizmetlerinden özellikle memnun veya şikâyetçi olanlar ankete daha çok ilgi göstermiş olabilir mi? Sayıyı değerlendirmek için ankete verilen yanıtlar kadar, insanların ankete nasıl ulaştığını da bilmemiz gerekir.</p>
+<p>Bin yanıt, ankete katılanların yanıtlarını ayrıntılı incelemeye olanak verir. Benzer özelliklere sahip çok sayıda kişinin katılması ise katılmayan grupları veriye kendiliğinden dahil etmez. Örneğin ankete erişim ağırlıkla belediyenin mobil uygulamasından sağlandıysa, uygulamayı kullanmayan yolcuların görüşleri az duyulmuş olabilir. <strong>İstatistiksel düşünme</strong>, hesapladığımız değeri araştırma sorusuna, verinin oluşma biçimine ve bu verinin destekleyebileceği iddiaya bağlamayı gerektirir <span class="citation" data-cites="gelmanHillVehtari2020">(<a href="../../references.html#ref-gelmanHillVehtari2020" role="doc-biblioref">Gelman vd. 2020</a>)</span>.</p>
+<p>Yanıtların bir kısmı memnuniyet, bir kısmı memnuniyetsizlik bildiriyorsa gözlenen <strong>değişkenlik</strong> yolcuların deneyimlerinin farklılaşmasıdır. Aynı hedef topluluktan başka yolcular seçebilseydik memnuniyet oranının ne kadar değişebileceği ise <strong>çıkarımsal belirsizlikle</strong> ilgilidir. Örneğin bir ankette 80/100, daha büyük bir ankette 800/1.000 memnun yanıtı alınabilir. Her ikisinde de memnun ve memnun olmayan yanıtların oranı aynıdır. Aynı uygun rastgele örnekleme tasarımı altında daha büyük ankette oran genellikle çekimden çekime daha az dalgalanır. Açık internet anketinde ise yanıt sayısı, katılmayan yolcularla aradaki farkı tek başına açıklamaz.</p>
+<p>Üç soru böylece birbirine bağlanır. Yanıtlar nasıl değişiyor? Gözlenen sonuçtan hedefe geçerken hangi belirsizliklerle karşılaşıyoruz? İddia, hangi topluluk ve hangi koşullar için geçerli? Son soruya cevap verebilmek için önce “memnuniyet” ile kimi ve hangi deneyimi kastettiğimizi belirlemeliyiz.</p>
+<p>Bu bölümün sonunda bir araştırma sorusunu ölçülebilir biçimde kurabilecek, anakütle ve örneklemi aynı problem içinde tanımlayabilecek, bir veriden hangi kapsamda sonuç çıkarılabileceğini açıklayabileceksiniz. R uygulamalarında temel vektör işlemlerinden, <a href="../02-veri-manipulasyonu/data_manipulation.html" class="quarto-xref"><span>Bölüm 11</span></a> bölümündeki grup özetlerinden ve <a href="../04-veri-gorsellestirme/data_visualization.html" class="quarto-xref"><span>Bölüm 21</span></a> bölümündeki grafik okuma yaklaşımından yararlanacağız.</p>
+</section>
+<section id="araştırma-sorusu-ve-veri" class="level2" data-number="29.2">
+<h2 data-number="29.2" class="anchored" data-anchor-id="araştırma-sorusu-ve-veri"><span class="header-section-number">29.2</span> Araştırma Sorusu ve Veri</h2>
+<p>“Toplu taşımadan memnuniyet ne düzeyde?” sorusuyla başlayalım. Belediye bu bilgiyi hat düzenlemeleri için istiyorsa, son bir ay içinde belediye otobüsünü en az bir kez kullanmış 18 yaş ve üzeri kent sakinlerinin deneyimine odaklanabilir. Örneğin şu soruyu sorabiliriz: “Ekim ayında belediye otobüsünü en az bir kez kullanmış 18 yaş ve üzeri kent sakinlerinin ne kadarı son yolculuğunu ‘memnun’ veya ‘çok memnun’ olarak değerlendiriyor?”</p>
+<p>Böyle yazınca <strong>hedef anakütle</strong>, yani hakkında konuşmak istediğimiz topluluk, kimleri kapsadığını belli eder. <strong>Gözlem birimi</strong> bir yolcudur. Bir kişinin bir ayda yirmi kez yolculuk yapması ona yirmi yanıt hakkı verirse hesaplanan oran sık yolculuk edenleri daha fazla yansıtır. Yolculukların niteliğini değerlendirmek istediğimiz başka bir araştırmada birim olarak yolculuğu seçebiliriz. Bu iki birim, iki farklı soruya yanıt verir. Analiz birimini satırların neyi temsil ettiği üzerinden <a href="../03-veri-on-isleme/feature_engineering.html" class="quarto-xref"><span>Bölüm 19</span></a> bölümünde de ele almıştık.</p>
+<p><strong>Değişken</strong>, her katılımcı için kaydettiğimiz yolculuk memnuniyetidir. Beş sıralı yanıt seçeneği kullanıp üstteki iki seçeneği “memnun” olarak kodlayabiliriz. Bu eşik, yanıtları görmeden belirlenirse sonuca bakarak tanımı değiştirme riski azalır. “Son yolculuğunuzu nasıl değerlendirirsiniz?” ile “Yenilenen araçlarımızdan ne kadar memnunsunuz?” ifadeleri farklı deneyimleri çağrıştırır. İkinci ifade yenilemeye dikkat çekerek yanıtı da yönlendirebilir. Sorunun dili, yanıt seçenekleri, sorunun hangi tarihte ve hangi yolla iletildiği ölçümün parçasıdır.</p>
+<p>Zaman da ölçümün anlamını değiştirir. Bir hizmet kesintisinden sonraki hafta alınan yanıtlar o haftanın deneyimini yansıtabilir. Yıl genelini değerlendirmek için farklı dönemlerin kapsanması gerekebilir. Veri toplama başlamadan önce hedef topluluğu, dönemi, ölçüm sorusunu ve sonuçta raporlanacak oranı birlikte belirlemek, aynı sayıdan farklı anlamlar çıkarmayı önler.</p>
+</section>
+<section id="anakütle-örneklem-parametre-ve-istatistik" class="level2" data-number="29.3">
+<h2 data-number="29.3" class="anchored" data-anchor-id="anakütle-örneklem-parametre-ve-istatistik"><span class="header-section-number">29.3</span> Anakütle, Örneklem, Parametre ve İstatistik</h2>
+<p>Anakütleyi araştırma sorusu belirler. Bu örnekte birimler yolculardır. Bir pazar araştırmasında işletmeler, kalite denetiminde ürünler, işlem güvenliğinde banka işlemleri, trafik incelemesinde kazalar, hava kalitesi araştırmasında ise belirli bir ölçüm protokolüne göre elde edilebilecek günlük ölçümler birim olabilir. Aynı ulaşım hattında birim yolcu yerine sefer olsaydı hedefimiz, yolcuların deneyimlerinin ortalamasından seferlerin bir özelliğine kayardı.</p>
+<p>Yolculara nasıl ulaşacağımızı düşünelim. Bir ulaşım kartı listesi, yolculara davet göndermek için <strong>örnekleme çerçevesi</strong> olarak kullanılabilir. İyi bir çerçeve, hedef birimlere erişmeyi sağlar. Kişiselleştirilmemiş kartla ödeme yapan yolcular listede kişi olarak bulunmayabilir. Listede güncel olmayan kayıtlar veya aynı kişiye ait birden fazla kart da bulunabilir. Bu yüzden kime ulaşmak istediğimizle, davet için elimizde hangi birimlerin bulunduğunu ayrı ayrı belirleriz.</p>
+<p>Listeyi uygunluk ve tekillik açısından denetledikten sonra içinden davet edilecek bir <strong>örneklem</strong> seçebiliriz. Bazı davetliler ankete hiç katılmaz. Buna <strong>birim yanıtsızlığı</strong> denir. Ankete katılıp son yolculuk sorusunu boş bırakmak ise <strong>madde yanıtsızlığıdır</strong>. İki durumda da o kişi için geçerli memnuniyet ölçümü elde edemeyiz. Uygun yolcunun çerçevede yer almaması ile seçildiği halde geçerli yanıt vermemesi farklı aşamalardaki sorunlardır. <a href="#fig-thinking-frame" class="quarto-xref">Şekil&nbsp;<span>29.1</span></a> bu aşamaları planlı bir davet araştırması üzerinden gösteriyor. Açık internet anketindeki gönüllü katılımı ayrıca değerlendireceğiz.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-thinking-frame" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Beş kutu hedef anakütle, örnekleme çerçevesi, seçilen örneklem, ankete katılanlar ve geçerli ölçümler sırasını izler. Dört yan dal çerçeve dışındaki uygun yolcuları, seçilmeyenleri, birim yanıtsızlığını ve madde yanıtsızlığını gösterir.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-thinking-frame-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="statistical_thinking_files/figure-html/fig-thinking-frame-1.png" class="img-fluid figure-img" alt="Beş kutu hedef anakütle, örnekleme çerçevesi, seçilen örneklem, ankete katılanlar ve geçerli ölçümler sırasını izler. Dört yan dal çerçeve dışındaki uygun yolcuları, seçilmeyenleri, birim yanıtsızlığını ve madde yanıtsızlığını gösterir." width="768">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-thinking-frame-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Şekil&nbsp;29.1: Planlı bir ankette hedef anakütleden geçerli ölçümlere geçiş. Çerçeve, uygunluk ve tekillik denetiminden sonraki listeyi gösterir.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Şimdi küçük bir belediye hattı düşünelim. Öğretim amacıyla yalnızca 20 uygun yolcu olduğunu ve hepsinin son yolculuğuna ait bekleme süresini bildiğimizi varsayalım. 20 ölçümün toplamı 500 dakika ise yolcuların ortalama bekleme süresi 25 dakikadır. Bu değer, tanımladığımız 20 kişilik anakütleye ait bir <strong>parametredir</strong>. Gerçek bir araştırmada tüm süreleri bilmediğimiz için bu parametreyi bir örneklemden öğrenmeye çalışabiliriz. Örneğin bekleme süreleri 18, 23 ve 31 dakika olan üç yolcunun ortalaması 24 dakikadır. Örneklem verilerinden hesaplanan 24 dakika bir <strong>istatistiktir</strong> ve anakütle ortalamasının tahmini olarak kullanılabilir. Bu üç süre, aşağıdaki yapay anakütleden elle takip edilebilen bir seçimdir. Örneklem istatistiğini bir anakütle parametresini tahmin etmek için kullanma mantığı, örnekleme yoluyla çıkarımın başlangıç noktasıdır <span class="citation" data-cites="ismayKim2020ModernDive">(<a href="../../references.html#ref-ismayKim2020ModernDive" role="doc-biblioref">Ismay ve Kim 2020</a>)</span>.</p>
+<p>Ortalama için bu ayrımı şöyle yazabiliriz:</p>
+<p><span class="math display">\[
+\mu = \frac{1}{N}\sum_{i=1}^{N} y_i, \qquad
+\bar y = \frac{1}{n}\sum_{j=1}^{n} y_{s_j}.
+\]</span></p>
+<p>Burada <span class="math inline">\(N\)</span> anakütledeki yolcu sayısı, <span class="math inline">\(n\)</span> örneklemdeki ölçümlerin sayısıdır. <span class="math inline">\(y_i\)</span>, anakütlede <span class="math inline">\(i\)</span> numaralı yolcunun dakika cinsinden bekleme süresidir. <span class="math inline">\(s_j\)</span>, örneklemdeki <span class="math inline">\(j\)</span>. yolcunun anakütledeki numarasını gösterir. Toplam işareti <span class="math inline">\(\sum\)</span>, belirtilen yolcuların bekleme sürelerini toplar. <span class="math inline">\(\mu\)</span> anakütle ortalaması, <span class="math inline">\(\bar y\)</span> ise örneklem ortalamasıdır. Bu gösterimde örneğe seçilen herkes için ölçüm olduğunu kabul ediyoruz. Yanıtsızlık varsa hangi ölçümlere dayanarak ortalama aldığımızı ayrıca belirtmemiz gerekir.</p>
+<p>Memnuniyet oranında da aynı mantık geçerlidir. “Memnun” ve “çok memnun” yanıtlarını 1, diğer geçerli yanıtları 0 kodlarsak bu değerlerin ortalaması memnuniyet oranını verir. Boş bir yanıtı 0 kodlamak, bilinmeyen görüşü “memnun değil” diye tanımlamış olur. Aynı anakütleden farklı örnekler seçtiğimizde örneklem ortalamalarının değişmesini bekleriz. Bir çekimde 24 dakika bulmamız, 25 dakikalık parametreyi bir dakika eksik tahmin ettiğimizi gösterir. Yöntemin sistematik biçimde düşük tahmin ürettiğini söylemek için, seçim sürecinin tekrarlanan uygulamalarda kısa bekleyenleri kayırıp kayırmadığını incelemek gerekir.</p>
+</section>
+<section id="betimsel-istatistik-ve-istatistiksel-çıkarım" class="level2" data-number="29.4">
+<h2 data-number="29.4" class="anchored" data-anchor-id="betimsel-istatistik-ve-istatistiksel-çıkarım"><span class="header-section-number">29.4</span> Betimsel İstatistik ve İstatistiksel Çıkarım</h2>
+<p>Belediyenin anketinde 1.000 geçerli yanıtın 800’ü memnuniyet bildiriyorsa, “Yanıtlayanların %80’i memnun olduğunu belirtti” cümlesi gözlenen yanıtları özetler. Bu bir <strong>betimsel istatistik</strong> kullanımıdır. İlçe veya yolculuk sıklığı da kaydedildiyse, geçerli yanıtların bu gruplara göre nasıl dağıldığı betimlenebilir. Her oranın paydası belirtilmelidir.</p>
+<p>“Şehirde yaşayanların %80’i memnun” cümlesi, yanıt verenlerden şehir sakinlerine geçer. Üstelik şehir sakinleri arasında hiç otobüse binmemiş kişiler de olabilir. <strong>İstatistiksel çıkarım</strong>, gözlenen veriden tanımlı bir hedefe ilişkin sonuç üretir ve bu geçişteki belirsizliği hesaba katar. Örneğin uygun bir çerçeveden olasılıklı olarak seçilen yolcuların yanıtları, belirli varsayımlarla hedef yolculara ilişkin bir oran tahminine temel olabilir. Hangi varsayımların makul olduğu, davetin kime ulaşabildiğine, kimin katıldığına ve yanıtların neyi ölçtüğüne bağlıdır <span class="citation" data-cites="gelmanHillVehtari2020 rubin1987">(<a href="../../references.html#ref-gelmanHillVehtari2020" role="doc-biblioref">Gelman vd. 2020</a>; <a href="../../references.html#ref-rubin1987" role="doc-biblioref">Rubin 1987</a>)</span>.</p>
+<p>Bir ankette çok sayıda yanıt toplamak, belirli bir örnekleme tasarımında rastgele dalgalanmayı azaltabilir. Yalnızca bir kesime ulaşan bir ankette ise daha çok yanıt, aynı kesimin görüşünü daha ayrıntılı ölçebilir. Örnekleme dağılımı, güven aralığı ve hipotez testi sonraki alt bölümlerde bu tasarım sorularının üzerine kurulacaktır.</p>
+</section>
+<section id="veri-nasıl-elde-edilir" class="level2" data-number="29.5">
+<h2 data-number="29.5" class="anchored" data-anchor-id="veri-nasıl-elde-edilir"><span class="header-section-number">29.5</span> Veri Nasıl Elde Edilir?</h2>
+<p>Anketi belediyenin web sitesinde açık yayımladığımızı düşünelim. Kimin yanıt vereceğine davet edilen bir örneklem üzerinden karar verilmez. Bağlantıyı gören ve katılmak isteyen kişiler kendileri seçilir. Memnuniyet katılma eğilimiyle ilişkiliyse <strong>gönüllü katılım</strong> bir seçilim yanlılığına yol açabilir. Örneğin çok memnun olanlar kadar ciddi sorun yaşayanlar da daha çok yanıt verebilir. Bu bilgi tek başına yanlılığın yönünü göstermez. Buna karşılık planlı bir örneklemde kimlerin davet edildiğini biliyorsak, yanıtsızlığın hangi gruplarda yoğunlaştığını kayıtlarımız izin verdiği ölçüde inceleyebiliriz <span class="citation" data-cites="littleRubin2019 rubin1987">(<a href="../../references.html#ref-littleRubin2019" role="doc-biblioref">Little ve Rubin 2019</a>; <a href="../../references.html#ref-rubin1987" role="doc-biblioref">Rubin 1987</a>)</span>.</p>
+<p><strong>Rastgele örnekleme</strong>, çerçeveden kimlerin seçileceğini bir rastgele mekanizmaya bağlar. Basit rastgele seçimde aynı büyüklükteki her olası örneklemin seçilme olasılığı eşittir. Çerçevenin kapsamadığı yolcular yine seçim dışında kalır. Yanıt vermeyen yolcuların görüşü de seçim yapıldı diye kendiliğinden gözlenmez. Seçilme olasılıklarının bilindiği bir tasarım, örneğin hangi mekanizmayla oluştuğunu açıklamaya ve seçimin getirdiği belirsizliği değerlendirmeye yarar. Bu dayanağı hedef yolculara ilişkin bir sonuca taşımak için çerçevenin kapsamının, ölçümlerin ve yanıtsızlığa ilişkin varsayımların da araştırma sorusuna uygun olması gerekir.</p>
+<p>Belediye bu kez bir dijital eğitim programının çevrim içi işlem becerilerine etkisini öğrenmek istesin. Uygun kent sakinleri listesinden rastgele davetli seçmek, araştırmaya kimin çağrılacağını belirler. Ancak davet edilenlerden yalnızca bir kısmı katılmayı kabul ederse, kabul edenlerin başlangıç becerileri veya internete erişimi diğer davetlilerinkinden farklı olabilir. Araştırma bu aşamadan sonra kabul edenlerle yürütülüyorsa, elde edilen etkinin bütün kente taşınması ayrıca gerekçelendirilmelidir.</p>
+<p>Katılmayı kabul edenleri program teklifi ve bekleme listesi gruplarına <strong>rastgele atamak</strong>, başlangıç becerisi ve internet erişimi gibi özelliklerin iki grupta sistematik olarak farklılaşmasını önlemeye yardımcı olur. Küçük bir deneyde rastlantısal dengesizlikler yine oluşabilir. Gruplar aynı koşullarda izlenir ve ölçülürse atandıkları gruba göre yapılan karşılaştırma, çalışmadaki katılımcılar için <strong>program teklifinin etkisini</strong> değerlendirmeye temel sağlar <span class="citation" data-cites="gelmanHillVehtari2020">(<a href="../../references.html#ref-gelmanHillVehtari2020" role="doc-biblioref">Gelman vd. 2020</a>)</span>.</p>
+<p>Program teklif edilen bazı kişiler eğitime başlamayabilir veya bitirmeyebilir. Teklifin etkisi, bu davranışları da içeren bir sonuçtur. Eğitimi fiilen tamamlamanın etkisi farklı bir soruyu yanıtlar. Tamamlayanlar daha çok zaman ayırabiliyor veya başlangıçta daha istekli olabiliyorsa, onları tamamlamayanlarla karşılaştırmak rastgele atamanın sağladığı dayanağı kaybettirir. Benzer biçimde, son ölçüme özellikle düşük puan alması beklenen kişiler gelmiyorsa, sadece ölçümü bulunanların puanlarını karşılaştırmak gruplar arasındaki farkı çarpıtabilir. Atananların, eğitime katılanların ve son ölçümü tamamlayanların sayısını ayrı izlemek bu yüzden önemlidir.</p>
+<p>Programı kendiliğinden seçenlerle seçmeyenlerin son puanlarını karşılaştırmak <strong>gözlemsel</strong> bir çalışmadır. Araştırmacının program teklifini belirli bir tasarımla uyguladığı durumda ise <strong>deneysel</strong> bir karşılaştırma yapılır. İlk durumda başlangıç becerisi, boş zaman veya internet erişimi hem katılımı hem puanı etkileyebilir. Gözlenen farkı programın etkisi olarak yorumlayabilmek için bu alternatif açıklamaları araştırma tasarımıyla ele almak gerekir.</p>
+</section>
+<section id="değişkenlik-belirsizlik-ve-yanlılık" class="level2" data-number="29.6">
+<h2 data-number="29.6" class="anchored" data-anchor-id="değişkenlik-belirsizlik-ve-yanlılık"><span class="header-section-number">29.6</span> Değişkenlik, Belirsizlik ve Yanlılık</h2>
+<p>Bekleme sürelerine dönelim. Aşağıdaki 20 süreyi öğretim için oluşturduk. Bu kez anakütlenin tamamı kodda yer alıyor. Altışar kişilik iki ayrı örneklem seçiyoruz. Her çekimde bir kişi en fazla bir kez seçiliyor. İkinci çekim yine 20 kişinin tamamından yapıldığı için ilk örneklemde yer alan bir kişi ikinciye de girebilir. İki çekim, örnekleme değişkenliğini görmek için yeterli bir başlangıçtır.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readr)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>bekleme <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">12</span>, <span class="dv">15</span>, <span class="dv">16</span>, <span class="dv">18</span>, <span class="dv">19</span>, <span class="dv">20</span>, <span class="dv">21</span>, <span class="dv">22</span>, <span class="dv">23</span>, <span class="dv">24</span>,</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>             <span class="dv">25</span>, <span class="dv">26</span>, <span class="dv">27</span>, <span class="dv">28</span>, <span class="dv">29</span>, <span class="dv">31</span>, <span class="dv">32</span>, <span class="dv">34</span>, <span class="dv">37</span>, <span class="dv">41</span>)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">51</span>)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>birinci <span class="ot">&lt;-</span> <span class="fu">sample.int</span>(<span class="fu">length</span>(bekleme), <span class="at">size =</span> <span class="dv">6</span>)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>ikinci <span class="ot">&lt;-</span> <span class="fu">sample.int</span>(<span class="fu">length</span>(bekleme), <span class="at">size =</span> <span class="dv">6</span>)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>sureler <span class="ot">&lt;-</span> <span class="fu">list</span>(Anakütle <span class="ot">=</span> bekleme,</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>                <span class="st">"Örneklem 1"</span> <span class="ot">=</span> bekleme[birinci],</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>                <span class="st">"Örneklem 2"</span> <span class="ot">=</span> bekleme[ikinci])</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>ortalamalar <span class="ot">&lt;-</span> <span class="fu">vapply</span>(sureler, mean, <span class="fu">numeric</span>(<span class="dv">1</span>))</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>(</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">grup =</span> <span class="fu">names</span>(sureler),</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">sureler =</span> <span class="fu">vapply</span>(sureler, <span class="cf">function</span>(x) <span class="fu">paste</span>(<span class="fu">sort</span>(x), <span class="at">collapse =</span> <span class="st">", "</span>),</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>                     <span class="fu">character</span>(<span class="dv">1</span>)),</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">ortalama =</span> <span class="fu">unname</span>(ortalamalar)</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>  <span class="at">row.names =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>  <span class="at">digits =</span> <span class="dv">2</span>, <span class="at">format.args =</span> <span class="fu">list</span>(<span class="at">decimal.mark =</span> <span class="st">","</span>),</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>  <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Grup"</span>, <span class="st">"Bekleme süreleri (dakika)"</span>, <span class="st">"Ortalama (dakika)"</span>)</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="tbl-thinking-sampling" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-thinking-sampling-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tablo&nbsp;29.1: Bilinen anakütle ile iki bağımsız örneklemin bekleme süreleri ve ortalamaları
+</figcaption>
+<div aria-describedby="tbl-thinking-sampling-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<table class="cell caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 10%">
+<col style="width: 73%">
+<col style="width: 16%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Grup</th>
+<th style="text-align: left;">Bekleme süreleri (dakika)</th>
+<th style="text-align: right;">Ortalama (dakika)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Anakütle</td>
+<td style="text-align: left;">12, 15, 16, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 31, 32, 34, 37, 41</td>
+<td style="text-align: right;">25,00</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Örneklem 1</td>
+<td style="text-align: left;">21, 22, 25, 27, 28, 37</td>
+<td style="text-align: right;">26,67</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Örneklem 2</td>
+<td style="text-align: left;">15, 19, 20, 24, 26, 32</td>
+<td style="text-align: right;">22,67</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<p><code>sample.int()</code> yolcuların sıra numaralarını seçiyor. <code>bekleme[birinci]</code> ve <code>bekleme[ikinci]</code> bu numaraları sürelerle eşliyor. <code>set.seed()</code> kullanımı aynı rastgele sayı dizisinden başlamamızı sağlıyor. Tohumu iki çekimin arasına yeniden koymadığımız için ikinci seçim ilk çekimin tekrarı olarak kurulmaz.</p>
+<p>Anakütle ortalaması 25,00 dakikadır. Örneklem ortalamaları sırasıyla 26,67 ve 22,67 dakikadır. <a href="#fig-thinking-samples" class="quarto-xref">Şekil&nbsp;<span>29.2</span></a> üzerinde her küçük nokta bir yolcunun süresini, baklava işareti ise ilgili grubun ortalamasını gösteriyor.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>grup_duzeyleri <span class="ot">&lt;-</span> <span class="fu">rev</span>(<span class="fu">names</span>(sureler))</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>gozlemler <span class="ot">&lt;-</span> <span class="fu">stack</span>(sureler) <span class="sc">|&gt;</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">ind =</span> <span class="fu">factor</span>(ind, <span class="at">levels =</span> grup_duzeyleri))</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>ortalamalar_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">ind =</span> <span class="fu">factor</span>(<span class="fu">names</span>(ortalamalar), <span class="at">levels =</span> grup_duzeyleri),</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">values =</span> <span class="fu">unname</span>(ortalamalar)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(gozlemler, <span class="fu">aes</span>(<span class="at">x =</span> values, <span class="at">y =</span> ind)) <span class="sc">+</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> ortalamalar[<span class="dv">1</span>], <span class="at">linetype =</span> <span class="st">"dashed"</span>,</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>             <span class="at">colour =</span> <span class="st">"grey45"</span>) <span class="sc">+</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">position =</span> <span class="fu">position_nudge</span>(<span class="at">y =</span> <span class="fl">0.12</span>), <span class="at">size =</span> <span class="dv">2</span>,</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>             <span class="at">colour =</span> <span class="st">"#33647E"</span>) <span class="sc">+</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> ortalamalar_df, <span class="at">position =</span> <span class="fu">position_nudge</span>(<span class="at">y =</span> <span class="sc">-</span><span class="fl">0.14</span>),</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>             <span class="at">shape =</span> <span class="dv">18</span>, <span class="at">size =</span> <span class="dv">4</span>, <span class="at">colour =</span> <span class="st">"#A33C24"</span>) <span class="sc">+</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Bekleme süresi (dakika)"</span>, <span class="at">y =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">12</span>)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-thinking-samples" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Aynı dakika ekseninde anakütlenin 20 ve her örneklemin 6 noktası var. İki örneklem ortalaması, 25 dakikalık anakütle ortalamasının iki yanında kalıyor.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-thinking-samples-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="statistical_thinking_files/figure-html/fig-thinking-samples-1.png" class="img-fluid figure-img" alt="Aynı dakika ekseninde anakütlenin 20 ve her örneklemin 6 noktası var. İki örneklem ortalaması, 25 dakikalık anakütle ortalamasının iki yanında kalıyor." width="768">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-thinking-samples-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Şekil&nbsp;29.2: Bilinen yapay anakütle ve ondan ayrı ayrı seçilen iki örneklem. Düşey kesikli çizgi anakütle ortalamasını, baklavalar grup ortalamalarını gösterir.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Anakütledeki yolcuların farklı süreler beklemesi <strong>gözlemler arası değişkenliktir</strong>. Her çekimde bu sürelerin farklı bileşimlerinin ortaya çıkması, ortalamaların birbirinden ayrılmasına yol açar. Bu ikinci düzeydeki dalgalanma <strong>örnekleme değişkenliğidir</strong>. Aynı tasarımla çekilen örnekler sistematik olarak uzun veya kısa bekleyenlere yönelmez. Çok sayıda çekimde ortalamaların nasıl dağıldığını ve bu dağılımın yayılımını nasıl özetleyebileceğimizi örnekleme dağılımları bölümünde inceleyeceğiz.</p>
+<p>Şimdi seçim kuralını değiştirelim. Her seferinde en uzun bekleyen altı yolcuyu seçersek ölçümler 29, 31, 32, 34, 37 ve 41 dakika olur. Ortalamaları 34,00 dakikadır. Aynı anakütlede aynı kural tekrarlandığında yine bu kişiler seçilir. 25 dakikadan sapma, bu kez çekimden çekime rastlantısal değişimden değil, uzun bekleme süresine öncelik veren seçim kuralından kaynaklanır. En uzun bekleyen on kişiye çıkmak da kısa bekleyenleri dışarıda bırakır. Daha büyük örnekler rastgele dalgalanmayı azaltabilse de seçimin belirli bir grubu kayırmasını kendiliğinden gidermez.</p>
+<p>Ölçüm hatası başka bir aşamada oluşur. Yolcular süreyi tahminen bildirirse, bazıları gerçek bekleme süresinin üzerinde, bazıları altında değer verebilir. Bekleme süresini kaydeden bir cihaz, kalibrasyon hatası nedeniyle her bekleme süresini gerçekte olduğundan üç dakika uzun ölçüyorsa, ölçümlerde bu kez sistematik olarak aynı yönde bir hata oluşur. Sadece sabahın yoğun saatlerinde ölçüm yapıp gün boyuna genellemek ise günün geri kalanını kapsam dışı bırakır. Daha çok sabah kaydı almak bu kapsam sorununu gidermeyecektir. Bir tahmini değerlendirirken değerin ne kadar dalgalanabileceğini ve veri üretiminin tahmini sürekli bir yöne itip itemeyeceğini ayrı ayrı sorarız.</p>
+</section>
+<section id="r-ile-gerçek-veri-üzerinden-istatistiksel-düşünme" class="level2" data-number="29.7">
+<h2 data-number="29.7" class="anchored" data-anchor-id="r-ile-gerçek-veri-üzerinden-istatistiksel-düşünme"><span class="header-section-number">29.7</span> R ile Gerçek Veri Üzerinden İstatistiksel Düşünme</h2>
+<p><strong>2019 yılında internet kullanım oranı gelir gruplarına göre nasıl farklılaşıyor ve bu sonuçlar hangi ülke/ekonomiler için geçerli?</strong> Bu soru bizi belediye anketindeki payda ve kapsam sorunlarına geri getiriyor. Dünya Bankası’nın World Development Indicators (WDI) verisinden hazırlanmış kitap kesitinde her satır bir ülke veya ekonomiyi gösteriyor <span class="citation" data-cites="worldBankWDI">(<a href="../../references.html#ref-worldBankWDI" role="doc-biblioref">World Bank 2026</a>)</span>. Bir satırdaki internet kullanım yüzdesi ise o ekonomideki nüfusa ilişkin bir göstergedir. 2019, internet göstergesinin gözlem yılıdır. Kitabın veri üretim betiği gelir grubunu ülke metadatasından ülke koduyla birleştiriyor. Metadata, sınıflandırmanın geçerli olduğu dönemi kaydetmediği için grupların 2019’a ait olduğunu doğrulayamıyoruz. Karşılaştırmada dosyada kayıtlı grupları kullanacağız. Sütunun neyi ölçtüğünü, sayıların dağılımına bakmadan önce sözlükten kontrol edelim.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>ulkeler <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/countries.csv"</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">==</span> <span class="dv">2019</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>sozluk <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/indicator_dictionary.csv"</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>internet_tanimi <span class="ot">&lt;-</span> sozluk <span class="sc">|&gt;</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(indicator <span class="sc">==</span> <span class="st">"internet_users_pct"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(wdi_code, unit, description)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="fu">stopifnot</span>(<span class="fu">nrow</span>(ulkeler) <span class="sc">&gt;</span> <span class="dv">0</span>, <span class="sc">!</span><span class="fu">anyNA</span>(ulkeler<span class="sc">$</span>country_code),</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>          <span class="sc">!</span><span class="fu">anyDuplicated</span>(ulkeler<span class="sc">$</span>country_code), <span class="fu">nrow</span>(internet_tanimi) <span class="sc">==</span> <span class="dv">1</span>)</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(internet_tanimi)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 5%">
+<col style="width: 8%">
+<col style="width: 85%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">wdi_code</th>
+<th style="text-align: left;">unit</th>
+<th style="text-align: left;">description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">IT.NET.USER.ZS</td>
+<td style="text-align: left;">percent of population</td>
+<td style="text-align: left;">Internet users are individuals who have used the Internet (from any location) in the last 3 months. The Internet can be used via a computer, mobile phone, personal digital assistant, games machine, digital TV etc.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>kapsam <span class="ot">&lt;-</span> ulkeler <span class="sc">|&gt;</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">toplam =</span> <span class="fu">n</span>(),</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">gecerli =</span> <span class="fu">sum</span>(<span class="sc">!</span><span class="fu">is.na</span>(internet_users_pct)),</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">eksik =</span> toplam <span class="sc">-</span> gecerli)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(kapsam, <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Toplam ekonomi"</span>, <span class="st">"Geçerli"</span>, <span class="st">"Eksik"</span>))</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: right;">Toplam ekonomi</th>
+<th style="text-align: right;">Geçerli</th>
+<th style="text-align: right;">Eksik</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">217</td>
+<td style="text-align: right;">189</td>
+<td style="text-align: right;">28</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Sözlükteki <code>IT.NET.USER.ZS</code> göstergesi, <strong>son üç ayda herhangi bir yerden internet kullanmış bireylerin nüfus içindeki yüzdesini</strong> ifade eder. Evde internet bağlantısı bulunan hanelerin oranı ya da düzenli kullanım sıklığı farklı ölçümlerdir. Yüzdeler 0–100 ölçeğinde saklandığı için 80 değeri %80 olarak okunur. Bu kesitte 217 ekonomi var. Bunların 189 tanesinde geçerli, 28 tanesinde eksik internet kullanımı değeri bulunuyor. Bir satırdaki <code>NA</code>, o ekonomi için bu kesitte geçerli değer bulunmadığını gösterir. 0 ise ölçülen oranın sıfır olduğunu ifade eder. Eksikliklerin incelenmesi için <a href="../03-veri-on-isleme/missing_data_imputation.html" class="quarto-xref"><span>Bölüm 15</span></a> bölümüne başvurabilirsiniz.</p>
+<p>Gelir gruplarını düşükten yükseğe sıralayıp her grupta toplam kayıt sayısını, geçerli kayıt sayısını ve geçerli değerlerin medyanını hesaplayalım. Medyan sıralanmış ülke yüzdelerinin ortasındaki değeri özetler. Grubun uç değerlerinden daha az etkilenir. Dağılımın grup içinde ne kadar değiştiğini ise noktaları ayrıca göstererek inceleyeceğiz.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>gelir_duzeyi <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Low income"</span>, <span class="st">"Lower middle income"</span>,</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>                  <span class="st">"Upper middle income"</span>, <span class="st">"High income"</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>gelir_adi <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Düşük"</span>, <span class="st">"Alt orta"</span>, <span class="st">"Üst orta"</span>, <span class="st">"Yüksek"</span>)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>ulkeler <span class="ot">&lt;-</span> ulkeler <span class="sc">|&gt;</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">gelir =</span> <span class="fu">factor</span>(income_group, <span class="at">levels =</span> gelir_duzeyi,</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>                        <span class="at">labels =</span> gelir_adi))</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>gelir_ozet <span class="ot">&lt;-</span> ulkeler <span class="sc">|&gt;</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(gelir, <span class="at">.drop =</span> <span class="cn">FALSE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">toplam =</span> <span class="fu">n</span>(),</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>            <span class="at">gecerli =</span> <span class="fu">sum</span>(<span class="sc">!</span><span class="fu">is.na</span>(internet_users_pct)),</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>            <span class="at">eksik =</span> toplam <span class="sc">-</span> gecerli,</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>            <span class="at">medyan =</span> <span class="fu">median</span>(internet_users_pct, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>            <span class="at">.groups =</span> <span class="st">"drop"</span>)</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>  gelir_ozet, <span class="at">digits =</span> <span class="dv">2</span>, <span class="at">format.args =</span> <span class="fu">list</span>(<span class="at">decimal.mark =</span> <span class="st">","</span>),</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Gelir grubu"</span>, <span class="st">"Toplam"</span>, <span class="st">"Geçerli"</span>, <span class="st">"Eksik"</span>, <span class="st">"Medyan (%)"</span>)</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Gelir grubu</th>
+<th style="text-align: right;">Toplam</th>
+<th style="text-align: right;">Geçerli</th>
+<th style="text-align: right;">Eksik</th>
+<th style="text-align: right;">Medyan (%)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Düşük</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">12,10</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Alt orta</td>
+<td style="text-align: right;">47</td>
+<td style="text-align: right;">46</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">36,41</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Üst orta</td>
+<td style="text-align: right;">59</td>
+<td style="text-align: right;">55</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">66,65</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Yüksek</td>
+<td style="text-align: right;">86</td>
+<td style="text-align: right;">66</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">87,38</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Bu özetin paydası gelir grubuna göre değişir. Örneğin yüksek gelir grubunun medyanı, 86 ekonominin tamamına ait bir medyan olarak raporlanamaz. Bu grupta 66 ekonominin geçerli değeri vardır. Düşük gelir grubunda ise 25 ekonomiden 22’si hesaplamaya katılır. Eksik değerleri sıfırla doldursaydık, örneğin yüksek gelir grubundaki 20 eksik kaydı gözlenmiş en düşük değerler gibi kullanırdık. Eksik ekonomilerin gerçek değerlerini bilmediğimiz için geçerli kayıtlarla hesaplanan medyanın grup genelindeki medyandan ne yönde sapacağını bu tablodan çıkaramayız. Örneğin eksik ekonomiler çoğunlukla düşük kullanımlıysa, değerleri hesaba katmak sıralamanın ortasını aşağı çekebilir. Çoğunlukla yüksek kullanımlıysa tersi olabilir. Geçerli kayıtların sayısı medyanın kaç değere dayandığını gösterir. Eksik değerlerin sıralamanın neresine gireceği konusunda bilgi vermez.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>gelir_etiketi <span class="ot">&lt;-</span> <span class="fu">setNames</span>(</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">paste0</span>(gelir_ozet<span class="sc">$</span>gelir, <span class="st">" ("</span>, gelir_ozet<span class="sc">$</span>gecerli, <span class="st">"/"</span>,</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>         gelir_ozet<span class="sc">$</span>toplam, <span class="st">")"</span>),</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  gelir_ozet<span class="sc">$</span>gelir</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>internet_gozlemleri <span class="ot">&lt;-</span> ulkeler <span class="sc">|&gt;</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(internet_users_pct))</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(internet_gozlemleri, <span class="fu">aes</span>(<span class="at">x =</span> internet_users_pct, <span class="at">y =</span> gelir)) <span class="sc">+</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">position =</span> <span class="fu">position_jitter</span>(<span class="at">width =</span> <span class="dv">0</span>, <span class="at">height =</span> <span class="fl">0.13</span>, <span class="at">seed =</span> <span class="dv">51</span>),</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">alpha =</span> <span class="fl">0.58</span>, <span class="at">size =</span> <span class="fl">1.8</span>, <span class="at">colour =</span> <span class="st">"#33647E"</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> <span class="fu">filter</span>(gelir_ozet, gecerli <span class="sc">&gt;</span> <span class="dv">0</span>),</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">x =</span> medyan, <span class="at">y =</span> gelir),</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">inherit.aes =</span> <span class="cn">FALSE</span>, <span class="at">shape =</span> <span class="dv">18</span>, <span class="at">size =</span> <span class="dv">4</span>, <span class="at">colour =</span> <span class="st">"#A33C24"</span>,</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">position =</span> <span class="fu">position_nudge</span>(<span class="at">y =</span> <span class="sc">-</span><span class="fl">0.19</span>)</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">100</span>, <span class="dv">20</span>), <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">100</span>)) <span class="sc">+</span></span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_discrete</span>(<span class="at">labels =</span> gelir_etiketi) <span class="sc">+</span></span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"İnternet kullanan nüfus (%)"</span>,</span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Kayıtlı gelir grubu (geçerli/toplam)"</span>,</span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>       <span class="at">caption =</span> <span class="st">"Kaynak: Dünya Bankası WDI, kitap verileri, 2019 kesiti."</span>) <span class="sc">+</span></span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">12</span>)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-thinking-wdi" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Dört gelir grubundaki ülke yüzdeleri ortak eksende gösteriliyor. Medyan düşük gelir grubunda yaklaşık yüzde 12, yüksek gelir grubunda yüzde 87. Grup içi değerler değişiyor ve bazı grupların değerleri örtüşüyor.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-thinking-wdi-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="statistical_thinking_files/figure-html/fig-thinking-wdi-1.png" class="img-fluid figure-img" alt="Dört gelir grubundaki ülke yüzdeleri ortak eksende gösteriliyor. Medyan düşük gelir grubunda yaklaşık yüzde 12, yüksek gelir grubunda yüzde 87. Grup içi değerler değişiyor ve bazı grupların değerleri örtüşüyor." width="825">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-thinking-wdi-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Şekil&nbsp;29.3: WDI kitap kesitindeki 2019 internet kullanım yüzdeleri, dosyada kayıtlı gelir gruplarına göre. Küçük noktalar geçerli ülke/ekonomi değerleri, baklavalar grup medyanlarıdır. Eksen etiketleri geçerli/toplam kayıt sayısını verir.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p><a href="#fig-thinking-wdi" class="quarto-xref">Şekil&nbsp;<span>29.3</span></a> grafiğinde yüksek gelir grubundaki gözlemler genel olarak daha yüksek kullanım yüzdelerinde toplanıyor. Düşük gelir grubunun medyanı %12,10, yüksek gelir grubunun medyanı %87,38. Öte yandan grup içindeki değerler tek bir sayıya sıkışmıyor ve bazı grupların değerleri örtüşüyor. Noktalar üst üste yığılmasın diye yalnızca grup yönünde hafifçe kaydırıldı. Yatay konumlar gözlenen yüzdeleri koruyor. Medyanla birlikte ham gözlemleri sunmanın yararını <a href="../04-veri-gorsellestirme/effective_graphics.html" class="quarto-xref"><span>Bölüm 27</span></a> bölümünde görmüştük.</p>
+<p>Ekonomilerin ortalaması alınsaydı her ekonomi bir kez sayılırdı. Örneğin nüfusu 100 bin olan bir ekonomide kullanım %90, nüfusu 900 bin olan bir ekonomide %40 ise ülke yüzdelerinin eşit ağırlıklı ortalaması %65’tir. Birlikte ele alınan nüfusun kullanım oranı ise, iki ölçümün tanımı ve paydaları uyumlu kabul edildiğinde, <span class="math inline">\((90\,000 + 360\,000) / 1\,000\,000 = 0{,}45\)</span>, yani %45 olur. İlk hesap “bir ekonomiye eşit ağırlık verirsek ortalama yüzde kaç?” sorusunu, ikincisi “bu ekonomilerde yaşayan bireylerin ne kadarı internet kullanıyor?” sorusunu yanıtlar. İkinci hedef için nüfus ağırlıkları göstergenin paydasıyla ve gözlem dönemiyle uyumlu olmalıdır. Eksik ekonomileri dışarıda bırakan nüfus ağırlıklı bir oran da yalnızca hesaplamaya giren nüfusu kapsar. Medyan ise ülke yüzdelerinin sıralamasına dayanır. Paydanın toplulaştırmaya etkisini <a href="../04-veri-gorsellestirme/effective_graphics.html#fig-effective-denominator" class="quarto-xref">Şekil&nbsp;<span>27.2</span></a> üzerinde başka bir örnekte incelemiştik.</p>
+<p>Buradaki veri, dünya ekonomileri arasından bilinen seçim olasılıklarıyla çekilmiş bir örneklem olarak tasarlanmamıştır. Özetler, <strong>2019 kitap kesitinde ilgili göstergesi bulunan ülke ve ekonomileri</strong> betimler. Gelir grubu ile internet kullanımı arasındaki gözlemsel fark, gelirin artmasının tek başına internet kullanımını artıracağını göstermez. Altyapı, fiyat ve eğitim gibi başka özellikler de iki göstergeyle ilişkili olabilir. Grup medyanlarının farkı burada betimsel bir sonuç olarak raporlanır.</p>
+</section>
+<section id="istatistiksel-sonuçları-eleştirel-değerlendirmek" class="level2" data-number="29.8">
+<h2 data-number="29.8" class="anchored" data-anchor-id="istatistiksel-sonuçları-eleştirel-değerlendirmek"><span class="header-section-number">29.8</span> İstatistiksel Sonuçları Eleştirel Değerlendirmek</h2>
+<p>Başlangıçtaki duyuruya dönelim. “Vatandaşlarımızın %80’i memnun” ifadesini değerlendirirken önce paydanın kimlerden oluştuğunu kontrol ederiz. Sonra ölçümün hangi sorudan geldiğini, katılım yolunun kimleri kapsadığını ve eksik yanıtların nasıl işlendiğini sorarız. Aynı kontrolü WDI grafiğine uyguladığımızda ekonomileri bireylerden, mevcut kayıtları hedef kapsamdan ve gözlemsel farkı nedensel etkiden ayırabiliriz.</p>
+<p>Büyük örneklemler, uygun koşullarda örnekleme dalgalanmasını azaltabilir. Temsil gücü ise seçim ve yanıt süreçlerine bağlıdır. Örneklem istatistiği hedef parametrenin bir tahmini olabilir ve aynı tasarımla toplanan başka bir örnekte değişebilir. Verideki bir ilişkiyi etki olarak yorumlayabilmek için iki grubun nasıl oluştuğunu bilmek gerekir. Eksik kayıtların sıfırla doldurulması ölçüme yeni bir varsayım ekler. Ülke düzeyindeki bir ortalamanın bireylere ait bir oran olarak aktarılması da benzer bir yorum değişikliğidir. Her iki durumda da hesap yapılabilir, fakat hesaplanan niceliğin anlamı değişir.</p>
+<p>Belediye duyurusunun istatistiksel açıdan daha açık bir biçimi şöyle olabilir:</p>
+<blockquote class="blockquote">
+<p>İnternet üzerinden gönüllü katılımla yürütülen ankette, memnuniyet sorusuna geçerli yanıt veren 1.000 kişinin 800’ü (%80) toplu taşımadan memnun olduğunu belirtti. Bu oran anketi yanıtlayanları betimliyor. Tüm kent sakinlerine veya tüm toplu taşıma kullanıcılarına genelleme yapabilmek için kimlerin ankete eriştiği, katılımın nasıl gerçekleştiği ve katılmayanların görüşlerinin nasıl temsil edileceği konusunda ek bilgi gerekiyor.</p>
+</blockquote>
+</section>
+<section id="egzersizler" class="level2" data-number="29.9">
+<h2 data-number="29.9" class="anchored" data-anchor-id="egzersizler"><span class="header-section-number">29.9</span> Egzersizler</h2>
+<ol type="1">
+<li><strong>Kolay.</strong> “Kentte ulaşım iyi mi?” sorusunu ölçülebilir hâle getirin. Hedef anakütleyi, gözlem birimini, dönemi ve ölçümünüzü belirtin.</li>
+<li><strong>Kolay.</strong> Bir hattın 20 yolcusunun tamamı için ortalama bekleme 25 dakika, bu yolculardan seçilen altı kişide 27 dakika olsun. Parametreyi ve istatistiği belirleyin. Fark tek başına yanlılığı gösterir mi?</li>
+<li><strong>Orta.</strong> Yalnızca kişiselleştirilmiş ulaşım kartı bulunan yolcular davet listesine girebiliyor. Rastgele davet edilenlerin bir kısmı ankete katılmıyor, katılanların bir kısmı da memnuniyet sorusunu boş bırakıyor. Üç farklı kapsam veya eksiklik aşamasını belirleyin.</li>
+<li><strong>Orta.</strong> Yapay bekleme verisinden farklı bir tohumla 10 kişilik iki örneklem alın. Ortalamaları karşılaştırın. Bu iki sonuçtan, daha büyük örneklerin her çekimde 25 dakikaya daha yakın olacağı çıkarılabilir mi?</li>
+<li><strong>Orta.</strong> Bir haber “Yüksek gelir internet kullanımını artırdı ve yüksek gelirli ülkelerde yaşayanların %87,38’i internet kullanıyor” diyor. İddianın nedensellik, payda ve kapsam açısından hangi sorunları taşıdığını açıklayın. WDI tablosunu kullanarak daha uygun bir sonuç paragrafı yazın. Nüfusa ilişkin birleşik bir oran için hangi ek bilgilere ihtiyaç olduğunu belirtin.</li>
+<li><strong>Zor.</strong> Belediye, dijital eğitimi seçenlerin son test puanı daha yüksek diye “Program puanları artırdı” diyor. Alternatif bir açıklama verin. Rastgele davet ile rastgele atamanın bu araştırmada cevapladığı soruları ayırın.</li>
+</ol>
+</section>
+<section id="egzersiz-çözümleri" class="level2" data-number="29.10">
+<h2 data-number="29.10" class="anchored" data-anchor-id="egzersiz-çözümleri"><span class="header-section-number">29.10</span> Egzersiz Çözümleri</h2>
+<p><strong>Çözüm 1.</strong> “Ekim ayında işe gitmek için belediye otobüsünü kullanan 18 yaş ve üzeri kent sakinlerinin ne kadarı, son işe gidiş yolculuğunda bekleme süresini ‘kabul edilebilir’ veya ‘çok iyi’ buldu?” Hedef bu kullanıcılardır. Birim kişidir ve kişi başına bir yolculuk değerlendirilir. Basamakların nasıl sorulacağını belirtmek ölçümün tekrar edilebilmesini sağlar. Bu soru tüm ulaşım kalitesi yerine, belirli bir hizmet deneyimine odaklanır.</p>
+<p><strong>Çözüm 2.</strong> 25 dakika 20 yolcunun anakütle ortalaması, 27 dakika altı yolcunun örneklem ortalamasıdır. Yolcular rastgele seçilse bile her çekimde biraz farklı bir süre bileşimi gelebilir. Yanlılık tartışması için örneğin yalnızca yoğun saatteki yolcuların seçilip seçilmediğine ve sürelerin nasıl ölçüldüğüne bakarız.</p>
+<p><strong>Çözüm 3.</strong> Kişiselleştirilmemiş kart kullanan uygun yolcunun listeden dışarıda kalması çerçevenin kapsam sorunudur. Davet alıp ankete hiç katılmamak birim yanıtsızlığıdır. Ankete katılıp memnuniyet sorusunu boş bırakmak madde yanıtsızlığıdır. İlk sorun uygun bir ek çerçeve gerektirebilir. Diğer ikisini incelemek için davet, katılım ve madde yanıtı sayıları ayrı izlenir.</p>
+<p><strong>Çözüm 4.</strong> İki örneklemi aynı anakütleden ayrı ayrı çekiyoruz:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">82</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>ornek_a <span class="ot">&lt;-</span> <span class="fu">sample</span>(bekleme, <span class="at">size =</span> <span class="dv">10</span>)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>ornek_b <span class="ot">&lt;-</span> <span class="fu">sample</span>(bekleme, <span class="at">size =</span> <span class="dv">10</span>)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">c</span>(<span class="at">anakutle =</span> <span class="fu">mean</span>(bekleme),</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>        <span class="at">ornek_a =</span> <span class="fu">mean</span>(ornek_a),</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>        <span class="at">ornek_b =</span> <span class="fu">mean</span>(ornek_b)), <span class="dv">2</span>)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>anakutle  ornek_a  ornek_b 
+    25.0     27.1     23.0 </code></pre>
+</div>
+</div>
+<p>İki örnekten biri ortalamaya diğerinden daha yakın olabilir. Tek tek çekimler için yakınlık garantisi yoktur. Genel dalgalanmayı karşılaştırmak için her büyüklükte çok sayıda örnek alıp ortalamaların dağılımını incelemek gerekir.</p>
+<p><strong>Çözüm 5.</strong> Haber, gözlemsel farkı nedensel etki ve ülke medyanını bireylerin oranı olarak okuyor. Ayrıca 20 ekonomide ölçüm eksik. Uygun bir paragraf şöyle olabilir. “Dosyada yüksek gelir grubunda kayıtlı 86 ekonominin 66’sında 2019 internet kullanım ölçümü bulunuyordu. Bu 66 ekonomide ülke düzeyi yüzdelerin medyanı %87,38’di. Bu özet geçerli ölçümü olan ekonomileri betimliyor. Gelir grubu ile kullanım arasındaki fark; altyapı, fiyat veya eğitim gibi başka etkenlerle de ilişkili olabilir.” Birleşik nüfus oranı için her ekonominin göstergeyle uyumlu nüfus paydasını, internet kullananların sayısını veya bu sayıyı verecek uyumlu yüzdeyi ve eksik ekonomilerin kapsamının nasıl ele alınacağını bilmek gerekir.</p>
+<p><strong>Çözüm 6.</strong> Örneğin başlangıçta dijital becerisi yüksek kişilerin programa katılmaya daha istekli olması, son puan farkının bir kısmını açıklayabilir. Rastgele davet, uygun listeden kimlerin araştırmaya çağrıldığıyla ilgilidir. Davet sonrasındaki katılmama genellemenin kapsamını etkiler. Kabul edenleri program ve bekleme listesine rastgele atamak, bu katılımcılar içinde program teklifinin etkisini incelemeyi sağlar. Atandığı hâlde programı tamamlamayanlar da grup karşılaştırmasının hedef kitlesine dahildir. Son ölçüm kaybı, özellikle gruplara ve beceri düzeyine göre farklılaşıyorsa etki yorumunu zayıflatabilir.</p>
+</section>
+<section id="bölüm-özeti" class="level2" data-number="29.11">
+<h2 data-number="29.11" class="anchored" data-anchor-id="bölüm-özeti"><span class="header-section-number">29.11</span> Bölüm Özeti</h2>
+<p>Bir sayının anlamı, neyin ve kimin ölçüldüğüne bağlıdır. Hedef anakütle ve ölçüm tanımlandığında parametrenin ne olduğunu söyleyebilir, gözlenen bir istatistiğin onu nasıl tahmin ettiğini tartışabiliriz. Rastgele seçim, atama, yanıtsızlık ve ölçüm hatası, veri ile iddia arasındaki bağı farklı aşamalarda etkiler. Yapay örnek iki çekimin farklı ortalamalar üretebildiğini, WDI örneği ise gerçek bir karşılaştırmada paydanın ve veri kapsamının yorumu nasıl belirlediğini gösterdi. Sonraki alt bölümde, bu sınırları akılda tutarak gözlenen bir dağılımı merkez ve yayılım ölçüleriyle özetleyeceğiz.</p>
+
+
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="ref-gelmanHillVehtari2020" class="csl-entry" role="listitem">
+Gelman, Andrew, Jennifer Hill, ve Aki Vehtari. 2020. <em>Regression and Other Stories</em>. Cambridge University Press. <a href="https://doi.org/10.1017/9781139161879">https://doi.org/10.1017/9781139161879</a>.
+</div>
+<div id="ref-ismayKim2020ModernDive" class="csl-entry" role="listitem">
+Ismay, Chester, ve Albert Y. Kim. 2020. <em>Statistical Inference via Data Science: A <span>ModernDive</span> into <span>R</span> and the Tidyverse</em>. <a href="https://github.com/ModernDive/ModernDive_book/tree/v1.1.0">https://github.com/ModernDive/ModernDive_book/tree/v1.1.0</a>.
+</div>
+<div id="ref-littleRubin2019" class="csl-entry" role="listitem">
+Little, Roderick J. A., ve Donald B. Rubin. 2019. <em>Statistical Analysis with Missing Data</em>. 3. bs. Wiley. <a href="https://doi.org/10.1002/9781119482260">https://doi.org/10.1002/9781119482260</a>.
+</div>
+<div id="ref-rubin1987" class="csl-entry" role="listitem">
+Rubin, Donald B. 1987. <em>Multiple Imputation for Nonresponse in Surveys</em>. Wiley. <a href="https://doi.org/10.1002/9780470316696">https://doi.org/10.1002/9780470316696</a>.
+</div>
+<div id="ref-worldBankWDI" class="csl-entry" role="listitem">
+World Bank. 2026. <em>World Development Indicators</em>. DataBank. <a href="https://databank.worldbank.org/source/world-development-indicators">https://databank.worldbank.org/source/world-development-indicators</a>.
+</div>
+</div>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const toggle = window.document.createElement('button');
+      toggle.type = "button";
+      toggle.setAttribute("role", "switch");
+      toggle.setAttribute("aria-checked", "false");
+      toggle.classList.add('top-right');
+      toggle.classList.add('quarto-color-scheme-toggle');
+      toggle.setAttribute("aria-label", "Karanlık modu değiştir");
+      toggle.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      toggle.appendChild(i);
+      // Put the toggle in a landmark of its own, so that landmark navigation
+      // can reach it.
+      //
+      // The container is always a fresh direct child of body, and the toggle is
+      // never moved into page furniture that the theme or the author controls.
+      // The toggle is positioned against the page, so any ancestor that
+      // establishes a containing block captures it: a positioned element or a
+      // grid for position: absolute, and transform, filter, will-change or
+      // contain for position: fixed. A direct child of body has none of these
+      // to inherit, and the shift when one appears is silent and visual.
+      //
+      // ARIA says a document should have at most one banner, and axe reports a
+      // duplicate whether or not the banners carry distinct labels. So use a
+      // header when the page has no banner yet, and a named region otherwise.
+      //
+      // A header is a banner wherever it sits, unless it is inside sectioning
+      // content, so this cannot just look at the children of body: a custom
+      // page layout wraps the title block header in a plain div. An explicit
+      // role="banner" always counts.
+      const sectioning = 'article, aside, main, nav, section, [role="article"], [role="complementary"], [role="main"], [role="navigation"], [role="region"]';
+      const hasBanner = Array.from(
+        window.document.querySelectorAll('header:not([role]), [role="banner"]')
+      ).some(function(el) {
+        return el.hasAttribute("role") || el.closest(sectioning) === null;
+      });
+      const container = window.document.createElement(hasBanner ? "div" : "header");
+      if (hasBanner) {
+        container.setAttribute("role", "region");
+        container.setAttribute("aria-label", "Karanlık modu değiştir");
+      }
+      container.classList.add('quarto-color-scheme-toggle-container');
+      container.appendChild(toggle);
+      window.document.body.appendChild(container);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Kopyalandı");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Kopyalandı");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/mfatihtuzen\.github\.io\/r-programlama\/");
+      const newWindowLabel = "(opens in a new tab)";
+      const newWindowNoteId = "quarto-ext-newwindow-label";
+      // Links reference one hidden label through aria-describedby, so the
+      // announcement never changes their accessible name.
+      var describeNewWindow = (link) => {
+        if (!window.document.getElementById(newWindowNoteId)) {
+          var newWindowNote = window.document.createElement("span");
+          newWindowNote.id = newWindowNoteId;
+          newWindowNote.hidden = true;
+          newWindowNote.textContent = newWindowLabel;
+          window.document.body.appendChild(newWindowNote);
+        }
+        var describedBy = (link.getAttribute("aria-describedby") || "").split(/\s+/).filter(Boolean);
+        if (!describedBy.includes(newWindowNoteId)) {
+          describedBy.push(newWindowNoteId);
+          link.setAttribute("aria-describedby", describedBy.join(" "));
+        }
+      }
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+      window.quartoDecorateExternalLinks = function (root) {
+     var links = (root || window.document).querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+            describeNewWindow(link);
+          if (!link.classList.contains('no-external-icon')) {
+          }
+        }
+      }
+      };
+      window.quartoDecorateExternalLinks(window.document);
+    // Esc closes the popup (WCAG 1.4.13) and focus leaving both trigger and
+    // popup closes it (WCAG 2.4.11); tippy handles neither for interactive popups.
+    const hideOnEscAndFocusOut = {
+      name: 'hideOnEscAndFocusOut',
+      defaultValue: true,
+      fn(instance) {
+        const dismiss = () => {
+          // A show scheduled by the trigger delay would otherwise reopen it
+          instance.clearDelayTimeouts();
+          instance.hide();
+        };
+        const onKeyDown = (event) => {
+          if (event.key !== 'Escape') {
+            return;
+          }
+          // Keep Esc from also reaching page handlers (e.g. reveal.js overview),
+          // except an open reveal.js slide menu, which Esc should close too.
+          // The menu handles keys only when its keyboard option is on.
+          const menuHandlesEsc = window.Reveal?.getPlugin?.('menu')?.isOpen() &&
+            window.Reveal.getConfig().menu?.keyboard !== false;
+          if (!menuHandlesEsc) {
+            event.stopPropagation();
+          }
+          if (instance.popper.contains(window.document.activeElement)) {
+            // Disabled while refocusing so the focus trigger does not reopen it
+            instance.disable();
+            instance.reference.focus();
+            instance.enable();
+          }
+          dismiss();
+        };
+        const onFocusOut = (event) => {
+          const target = event.relatedTarget;
+          if (target && !instance.reference.contains(target) &&
+              !instance.popper.contains(target)) {
+            dismiss();
+          }
+        };
+        // On the trigger too: a click trigger (code-annotations: select) has no
+        // blur handling. Attached for the instance's lifetime so leaving the
+        // trigger also cancels a show still pending on the trigger delay.
+        instance.reference.addEventListener('focusout', onFocusOut);
+        return {
+          onShow() {
+            window.document.addEventListener('keydown', onKeyDown, true);
+            instance.popper.addEventListener('focusout', onFocusOut);
+          },
+          onHide() {
+            window.document.removeEventListener('keydown', onKeyDown, true);
+            instance.popper.removeEventListener('focusout', onFocusOut);
+          },
+          onDestroy() {
+            instance.reference.removeEventListener('focusout', onFocusOut);
+          },
+        };
+      },
+    };
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+        plugins: [hideOnEscAndFocusOut],
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          // Each band is positioned against its own containing block, which is
+          // not the offsetParent of the lines, so place it from client rects.
+          const placeBand = (band, firstEl, lastEl, codeBlock) => {
+            const container = band.offsetParent;
+            if (container === null) {
+              return;
+            }
+            const containerRect = container.getBoundingClientRect();
+            // Reveal.js scales slides with a transform, so convert client
+            // pixels back to the CSS pixels of the container.
+            const scale = containerRect.height / container.offsetHeight || 1;
+            const firstRect = firstEl.getBoundingClientRect();
+            const lastRect = lastEl.getBoundingClientRect();
+            const top = (firstRect.top - containerRect.top) / scale - container.clientTop + container.scrollTop;
+            const height = (lastRect.bottom - firstRect.top) / scale;
+            band.style.top = top - 2 + "px";
+            band.style.height = height + 4 + "px";
+            if (codeBlock) {
+              // Without the copy button wrapper, the containing block is wider
+              // than the code block, so span the code block explicitly.
+              const blockRect = codeBlock.getBoundingClientRect();
+              band.style.left = (blockRect.left - containerRect.left) / scale - container.clientLeft + container.scrollLeft + "px";
+              band.style.width = blockRect.width / scale + "px";
+            }
+          };
+          if (lineIds.length > 0) {
+            const el = window.document.getElementById(lineIds[0]);
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const parent = el.parentElement.parentElement;
+            // cook up a div (if necessary) and position it
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            placeBand(div, el, lastEl, parent.closest("div.sourceCode") || parent);
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            placeBand(gutterDiv, el, lastEl);
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+  <script type="application/javascript">
+  window.quartoScrollableRegionsLabels = {"code":"Kaydırılabilir kod","output":"Kaydırılabilir çıktı"};
+  </script>
+<nav class="page-navigation" aria-label="Sayfa">
+  <div class="nav-page nav-page-previous">
+      <a href="../../chapters/04-veri-gorsellestirme/exporting_graphics.html" class="pagination-link" aria-label="Grafiklerin Dışa Aktarılması">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Grafiklerin Dışa Aktarılması</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../../chapters/05-temel-istatistik/descriptive_statistics.html" class="pagination-link" aria-label="Betimsel İstatistikler">
+        <span class="nav-page-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Betimsel İstatistikler</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>© 2026, <a href="https://www.linkedin.com/in/dr-m-fatih-t-2b2a4328/">Muhammed Fatih Tüzen</a></p>
+</div>   
+    <div class="nav-footer-center">
+
+<div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/MFatihTuzen/r-programlama/edit/main/chapters/05-temel-istatistik/statistical_thinking.qmd" class="toc-action"><i class="bi bi-github"></i>Bu sayfayı düzenle</a></li><li><a href="https://github.com/MFatihTuzen/r-programlama/issues/new" class="toc-action"><i class="bi empty"></i>Sorun bildir</a></li></ul></div><div class="cookie-consent-footer"><a href="#" id="open_preferences_center">Cookie Preferences</a></div></div>
+    <div class="nav-footer-right">
+<p>Bu kitap <a href="https://quarto.org/">Quarto</a> ile hazırlanmıştır.</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+<script src="../../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

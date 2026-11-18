@@ -1,0 +1,1885 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="tr" xml:lang="tr"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.11.9">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="R programlama, veri analizi ve istatistiksel düşünme üzerine Türkçe açık kaynak kitap.">
+
+<title>35&nbsp; Ortalamaların Karşılaştırılması – R Programlama</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../chapters/05-temel-istatistik/nonparametric_tests.html" rel="next">
+<link href="../../chapters/05-temel-istatistik/hypothesis_testing.html" rel="prev">
+<link href="../../images/favicon.png" rel="icon" type="image/png">
+<script src="../../site_libs/cookie-consent/cookie-consent.js"></script>
+<link href="../../site_libs/cookie-consent/cookie-consent.css" rel="stylesheet">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/scrollable-regions/scrollable-regions.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-5de16f5e46225c21e2daa90d340bf64f.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-3218d7d29a29f08bc4fdf3802c3e3ca5.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-5de16f5e46225c21e2daa90d340bf64f.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-f08995f13779f27c8b207ab2aba9430d.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-90559a1ce82236f35e86d40c0ff756a0.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-f08995f13779f27c8b207ab2aba9430d.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "Sonuç yok",
+    "search-matching-documents-text": "eşleşen belgeler",
+    "search-copy-link-title": "Aramak için bağlantıyı kopyalayın",
+    "search-hide-matches-text": "Ek eşleşmeleri gizle",
+    "search-more-match-text": "bu belgede bir tane daha eşleşme",
+    "search-more-matches-text": "bu belgede daha fazla eşleşme",
+    "search-clear-button-title": "Temizle",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "İptal et",
+    "search-submit-button-title": "Gönder",
+    "search-label": "Ara"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-X6J60MER5G"></script>
+
+<script type="text/plain" cookie-consent="tracking">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-X6J60MER5G', { 'anonymize_ip': true});
+</script>
+
+<script type="text/javascript" charset="UTF-8">
+document.addEventListener('DOMContentLoaded', function () {
+cookieconsent.run({
+  "notice_banner_type":"simple",
+  "consent_type":"express",
+  "palette":"light",
+  "language":"en",
+  "page_load_consent_levels":["strictly-necessary"],
+  "notice_banner_reject_button_hide":false,
+  "preferences_center_close_button_hide":false,
+  "website_name":""
+  ,
+"language":"tr"
+  });
+});
+</script> 
+  
+<style>html{ scroll-behavior: smooth; }</style>
+<link href="../../site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet">
+<script src="../../site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../../styles.css">
+<meta property="og:title" content="35&nbsp; Ortalamaların Karşılaştırılması – R Programlama">
+<meta property="og:description" content="R programlama, veri analizi ve istatistiksel düşünme üzerine Türkçe açık kaynak kitap.">
+<meta property="og:image" content="https://mfatihtuzen.github.io/r-programlama/chapters/05-temel-istatistik/comparing_means_files/figure-html/fig-means-paired-1.png">
+<meta property="og:site_name" content="R Programlama">
+<meta property="og:image:alt" content="Önce ve sonra olmak üzere iki sütun. Sekiz çizginin çoğu yükseliyor, biri yatay, biri düşüyor. Kesikli ortalama çizgisi üç puan yükseliyor.">
+<meta property="og:image:height" content="768">
+<meta property="og:image:width" content="1305">
+<meta name="twitter:title" content="35&nbsp; Ortalamaların Karşılaştırılması – R Programlama">
+<meta name="twitter:description" content="R programlama, veri analizi ve istatistiksel düşünme üzerine Türkçe açık kaynak kitap.">
+<meta name="twitter:image" content="https://mfatihtuzen.github.io/r-programlama/chapters/05-temel-istatistik/comparing_means_files/figure-html/fig-means-paired-1.png">
+<meta name="twitter:image:alt" content="Önce ve sonra olmak üzere iki sütun. Sekiz çizginin çoğu yükseliyor, biri yatay, biri düşüyor. Kesikli ortalama çizgisi üç puan yükseliyor.">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="nav-sidebar floating quarto-light"><a id="quarto-skip-link" class="visually-hidden-focusable" href="#quarto-document-content">Skip to main content</a><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          toggle.setAttribute("aria-checked", alternate ? "true" : "false");
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455).
+    // Not run on load: stylesheets are set before first paint there, and
+    // scrolling would undo the scroll to a URL fragment (#14973).
+    // The one pixel nudge keeps the reader where they were.
+    const refreshSafariScrollbar = () => {
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        const scrollY = window.scrollY;
+        window.scrollTo(0, scrollY > 0 ? scrollY - 1 : 1);
+        setTimeout(() => {
+          window.scrollTo(0, scrollY);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      refreshSafariScrollbar();
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav" aria-label="Araç çubuğu">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Kenar çubuğunu değiştir" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="Yol"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../chapters/05-temel-istatistik/statistical_thinking.html">V · Temel İstatistik ve İstatistiksel Çıkarım</a></li><li class="breadcrumb-item"><a href="../../chapters/05-temel-istatistik/comparing_means.html"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">Ortalamaların Karşılaştırılması</span></a></li></ol></nav>
+        <a class="flex-grow-1" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Ara" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto" aria-label="Internet sitesi">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../../">R Programlama</a> 
+        <div class="sidebar-tools-main tools-wide">
+    <a href="https://github.com/MFatihTuzen/r-programlama" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+    <div class="dropdown">
+      <a href="" title="Share" id="quarto-navigation-tool-dropdown-0" class="quarto-navigation-tool dropdown-toggle px-1" data-bs-toggle="dropdown" aria-expanded="false" role="link" aria-label="Share"><i class="bi bi-share"></i></a>
+      <ul class="dropdown-menu" aria-labelledby="quarto-navigation-tool-dropdown-0">
+          <li>
+            <a class="dropdown-item sidebar-tools-main-item" href="https://twitter.com/intent/tweet?url=|url|">
+              <i class="bi bi-twitter pe-1"></i>
+            Twitter
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item sidebar-tools-main-item" href="https://www.linkedin.com/sharing/share-offsite/?url=|url|">
+              <i class="bi bi-linkedin pe-1"></i>
+            LinkedIn
+            </a>
+          </li>
+      </ul>
+    </div>
+  <button type="button" role="switch" aria-checked="false" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Karanlık modu değiştir" aria-label="Karanlık modu değiştir"><i class="bi"></i></button>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Okuyucu modunu değiştir">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Ara"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Önsöz</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-controls="quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-1-label">I · R Programlamaya Giriş</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-1" aria-labelledby="quarto-sidebar-section-1-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/r_about.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">R Programlama Hakkında</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/R_intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">R Çalışma Ortamı</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">R Temel Kullanımı ve İlk Komutlar</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/data_types.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Veri Tipleri ve Yapıları</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/functions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Fonksiyonlar</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/if_else_for.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Karar Yapıları ve Döngüler</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/date_time.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Tarih ve Zaman İşlemleri</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/strings.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Metin İşlemleri</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/apply.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Apply Ailesi</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/01-giris/import_export.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Verilerin İçe ve Dışa Aktarılması</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-controls="quarto-sidebar-section-2" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-2-label">II · Veri Manipülasyonu ve Dönüştürme</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-2" aria-labelledby="quarto-sidebar-section-2-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/02-veri-manipulasyonu/data_manipulation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Veri Manipülasyonu</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/02-veri-manipulasyonu/data_transformation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Veri Dönüştürme</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/02-veri-manipulasyonu/data_join.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Veri Birleştirme</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" aria-controls="quarto-sidebar-section-3" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-3-label">III · Veri Ön İşleme</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-3" aria-labelledby="quarto-sidebar-section-3-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/03-veri-on-isleme/data_preprocessing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Veri Ön İşlemeye Giriş</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/03-veri-on-isleme/missing_data_imputation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Eksik Veriler ve İmputasyon</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/03-veri-on-isleme/outliers.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Aykırı Gözlemler</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/03-veri-on-isleme/data_transformations.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Veri Dönüşümleri</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/03-veri-on-isleme/scaling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Ölçeklendirme</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/03-veri-on-isleme/feature_engineering.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Özellik Mühendisliğine Giriş</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/03-veri-on-isleme/data_leakage.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Veri Sızıntısı ve Doğru Ön İşleme İş Akışı</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" aria-controls="quarto-sidebar-section-4" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-4-label">IV · Veri Görselleştirme</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-4" aria-labelledby="quarto-sidebar-section-4-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/04-veri-gorsellestirme/data_visualization.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Veri Görselleştirmeye Giriş</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/04-veri-gorsellestirme/ggplot2_basics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">ggplot2 Temelleri</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/04-veri-gorsellestirme/plot_types.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Grafik Türleri</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/04-veri-gorsellestirme/grouping_facets.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Gruplandırma ve Facet Yapıları</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/04-veri-gorsellestirme/scales_colors_labels.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Ölçekler, Renkler ve Etiketler</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/04-veri-gorsellestirme/themes_customization.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Grafik Temaları ve Özelleştirme</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/04-veri-gorsellestirme/effective_graphics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Etkili ve Yayın Kalitesinde Grafikler</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/04-veri-gorsellestirme/exporting_graphics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Grafiklerin Dışa Aktarılması</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <button type="button" class="sidebar-item-text sidebar-item-toggle sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" aria-controls="quarto-sidebar-section-5" aria-expanded="true">
+ <span class="menu-text" id="quarto-sidebar-section-5-label">V · Temel İstatistik ve İstatistiksel Çıkarım</span><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      <ul id="quarto-sidebar-section-5" aria-labelledby="quarto-sidebar-section-5-label" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/05-temel-istatistik/statistical_thinking.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">İstatistiksel Düşünmeye Giriş</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/05-temel-istatistik/descriptive_statistics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Betimsel İstatistikler</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/05-temel-istatistik/probability_distributions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Olasılık ve Olasılık Dağılımları</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/05-temel-istatistik/sampling_distributions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Örnekleme ve Örnekleme Dağılımları</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/05-temel-istatistik/confidence_intervals.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">İstatistiksel Tahmin ve Güven Aralıkları</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/05-temel-istatistik/hypothesis_testing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Hipotez Testlerinin Mantığı</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/05-temel-istatistik/comparing_means.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">Ortalamaların Karşılaştırılması</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/05-temel-istatistik/nonparametric_tests.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">36</span>&nbsp; <span class="chapter-title">Parametrik Olmayan Testler</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/05-temel-istatistik/categorical_association.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">37</span>&nbsp; <span class="chapter-title">Kategorik Veriler ve İlişki Analizi</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../chapters/05-temel-istatistik/integrated_analysis.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">38</span>&nbsp; <span class="chapter-title">Bütünleşik İstatistiksel Analiz</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Kaynakça</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" aria-labelledby="toc-title" class="toc-active" data-toc-expanded="2">
+    <h2 id="toc-title">İçindekiler</h2>
+   
+  <ul>
+  <li><a href="#önce-araştırma-tasarımına-bakmak" id="toc-önce-araştırma-tasarımına-bakmak" class="nav-link active" data-scroll-target="#önce-araştırma-tasarımına-bakmak"><span class="header-section-number">35.1</span> Önce araştırma tasarımına bakmak</a></li>
+  <li><a href="#tek-örneklem-bir-hattı-referansla-karşılaştırmak" id="toc-tek-örneklem-bir-hattı-referansla-karşılaştırmak" class="nav-link" data-scroll-target="#tek-örneklem-bir-hattı-referansla-karşılaştırmak"><span class="header-section-number">35.2</span> Tek örneklem: Bir hattı referansla karşılaştırmak</a></li>
+  <li><a href="#iki-bağımsız-hat-farkın-belirsizliği-iki-kaynaktan-gelir" id="toc-iki-bağımsız-hat-farkın-belirsizliği-iki-kaynaktan-gelir" class="nav-link" data-scroll-target="#iki-bağımsız-hat-farkın-belirsizliği-iki-kaynaktan-gelir"><span class="header-section-number">35.3</span> İki bağımsız hat: Farkın belirsizliği iki kaynaktan gelir</a>
+  <ul>
+  <li><a href="#welch-yöntemi" id="toc-welch-yöntemi" class="nav-link" data-scroll-target="#welch-yöntemi"><span class="header-section-number">35.3.1</span> Welch yöntemi</a></li>
+  <li><a href="#ortak-varyans-varsayılırsa-student-yöntemi" id="toc-ortak-varyans-varsayılırsa-student-yöntemi" class="nav-link" data-scroll-target="#ortak-varyans-varsayılırsa-student-yöntemi"><span class="header-section-number">35.3.2</span> Ortak varyans varsayılırsa Student yöntemi</a></li>
+  </ul></li>
+  <li><a href="#eşleştirilmiş-ölçüm-bir-kişinin-değişimini-izlemek" id="toc-eşleştirilmiş-ölçüm-bir-kişinin-değişimini-izlemek" class="nav-link" data-scroll-target="#eşleştirilmiş-ölçüm-bir-kişinin-değişimini-izlemek"><span class="header-section-number">35.4</span> Eşleştirilmiş ölçüm: Bir kişinin değişimini izlemek</a></li>
+  <li><a href="#üç-bağımsız-hat-anovanın-sorduğu-soru" id="toc-üç-bağımsız-hat-anovanın-sorduğu-soru" class="nav-link" data-scroll-target="#üç-bağımsız-hat-anovanın-sorduğu-soru"><span class="header-section-number">35.5</span> Üç bağımsız hat: ANOVA’nın sorduğu soru</a>
+  <ul>
+  <li><a href="#kareler-toplamından-f-oranına" id="toc-kareler-toplamından-f-oranına" class="nav-link" data-scroll-target="#kareler-toplamından-f-oranına"><span class="header-section-number">35.5.1</span> Kareler toplamından F oranına</a></li>
+  <li><a href="#elle-hesap-ve-r-ile-doğrulama" id="toc-elle-hesap-ve-r-ile-doğrulama" class="nav-link" data-scroll-target="#elle-hesap-ve-r-ile-doğrulama"><span class="header-section-number">35.5.2</span> Elle hesap ve R ile doğrulama</a></li>
+  <li><a href="#genel-testten-farkların-raporuna" id="toc-genel-testten-farkların-raporuna" class="nav-link" data-scroll-target="#genel-testten-farkların-raporuna"><span class="header-section-number">35.5.3</span> Genel testten farkların raporuna</a></li>
+  </ul></li>
+  <li><a href="#varsayımları-değerlendirmek-ve-etkiyi-raporlamak" id="toc-varsayımları-değerlendirmek-ve-etkiyi-raporlamak" class="nav-link" data-scroll-target="#varsayımları-değerlendirmek-ve-etkiyi-raporlamak"><span class="header-section-number">35.6</span> Varsayımları değerlendirmek ve etkiyi raporlamak</a></li>
+  <li><a href="#benzetim-tip-i-hata-varyans-ve-büyüklüğe-nasıl-bağlı" id="toc-benzetim-tip-i-hata-varyans-ve-büyüklüğe-nasıl-bağlı" class="nav-link" data-scroll-target="#benzetim-tip-i-hata-varyans-ve-büyüklüğe-nasıl-bağlı"><span class="header-section-number">35.7</span> Benzetim: Tip I hata varyans ve büyüklüğe nasıl bağlı?</a></li>
+  <li><a href="#egzersizler" id="toc-egzersizler" class="nav-link" data-scroll-target="#egzersizler"><span class="header-section-number">35.8</span> Egzersizler</a></li>
+  <li><a href="#egzersiz-çözümleri" id="toc-egzersiz-çözümleri" class="nav-link" data-scroll-target="#egzersiz-çözümleri"><span class="header-section-number">35.9</span> Egzersiz çözümleri</a></li>
+  <li><a href="#bölüm-özeti" id="toc-bölüm-özeti" class="nav-link" data-scroll-target="#bölüm-özeti"><span class="header-section-number">35.10</span> Bölüm özeti</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/MFatihTuzen/r-programlama/edit/main/chapters/05-temel-istatistik/comparing_means.qmd" class="toc-action"><i class="bi bi-github"></i>Bu sayfayı düzenle</a></li><li><a href="https://github.com/MFatihTuzen/r-programlama/issues/new" class="toc-action"><i class="bi empty"></i>Sorun bildir</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content" tabindex="-1">
+
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="Yol"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../chapters/05-temel-istatistik/statistical_thinking.html">V · Temel İstatistik ve İstatistiksel Çıkarım</a></li><li class="breadcrumb-item"><a href="../../chapters/05-temel-istatistik/comparing_means.html"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">Ortalamaların Karşılaştırılması</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span id="sec-comparing-means" class="quarto-section-identifier"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">Ortalamaların Karşılaştırılması</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="önce-araştırma-tasarımına-bakmak" class="level2" data-number="35.1">
+<h2 data-number="35.1" class="anchored" data-anchor-id="önce-araştırma-tasarımına-bakmak"><span class="header-section-number">35.1</span> Önce araştırma tasarımına bakmak</h2>
+<p>Bir kalite mühendisi, hattın hedefi olan 500 gramla gözlenen paket ortalamasını karşılaştırabilir. Aynı mühendis ikinci bir hat devreye girdiğinde iki hattın ortalamaları arasındaki farkı merak edebilir. Bir eğitim araştırmasında ise iki sütun, farklı kişilerin puanlarını değil, aynı kişilerin önceki ve sonraki ölçümlerini içerebilir. Üç durumda da bir fark hesaplarız. Ancak farkın ne kadar dalgalanacağını belirleyen veri üretim süreci değişir.</p>
+<p>İşe ölçüm birimini, hedeflenen topluluğu ve farkın yönünü belirleyerek başlayın. Değişken sayısal olsa bile araştırma sorusu ortalama yerine örneğin ağır kusurların oranına veya tipik paketin medyanına ilişkin olabilir. Ortalama uygun bir hedefse referans değerin sabit mi, yoksa başka bir örneklemden tahmin edilmiş mi olduğunu sorun. İki ölçüm aynı birime aitse hangi kayıtların birbirine bağlı olduğu önemlidir. Bağımsız gruplarda büyüklükler ve yayılımlar, bir grubun farkın belirsizliğine ne kadar katkı verdiğini belirler.</p>
+<p><a href="hypothesis_testing.html" class="quarto-xref"><span>Bölüm 34</span></a> ve <a href="confidence_intervals.html" class="quarto-xref"><span>Bölüm 33</span></a> bölümlerindeki karar ve aralık mantığını burada bu tasarımlara uygulayacağız. Okur bölüm sonunda tek grubun referansla farkını, iki bağımsız grubun farkını ve eşleştirilmiş farkı ayırabilecek, üç veya daha fazla bağımsız grup için ANOVA’nın neyi sınadığını açıklayabilecektir.</p>
+</section>
+<section id="tek-örneklem-bir-hattı-referansla-karşılaştırmak" class="level2" data-number="35.2">
+<h2 data-number="35.2" class="anchored" data-anchor-id="tek-örneklem-bir-hattı-referansla-karşılaştırmak"><span class="header-section-number">35.2</span> Tek örneklem: Bir hattı referansla karşılaştırmak</h2>
+<p><a href="hypothesis_testing.html" class="quarto-xref"><span>Bölüm 34</span></a> bölümündeki sekiz yapay paket ağırlığına dönelim. Paket gözlem birimidir. Hedef, aynı süreç koşullarında üretilen paketlerin ortalama ağırlığı <span class="math inline">\(\mu\)</span> ve referans <span class="math inline">\(\mu_0=500\)</span> gramdır. Her iki yöndeki sapma önemliyse <span class="math inline">\(H_0:\mu=\mu_0\)</span> iddiasını <span class="math inline">\(H_1:\mu\ne\mu_0\)</span> alternatifine karşı sınarız. <span class="math inline">\(\bar X\)</span> örneklem ortalaması, <span class="math inline">\(S\)</span> örneklem standart sapması, <span class="math inline">\(n\)</span> paket sayısıdır. Standartlaştırılmış fark şöyledir:</p>
+<p><span class="math display">\[
+T=\frac{\bar X-\mu_0}{S/\sqrt n}.
+\]</span></p>
+<p>Pay gram cinsinden sapmadır. Payda da gram cinsindendir ve ortalamanın tahmini standart hatasıdır. <a href="confidence_intervals.html" class="quarto-xref"><span>Bölüm 33</span></a> bölümünde gördüğümüz gibi bağımsız normal ölçümlerde ortalama ile örneklem varyansı bağımsızdır. Varyans tahmininin <span class="math inline">\(n-1\)</span> serbestlik derecesiyle ölçeklenmesi, <span class="math inline">\(H_0\)</span> altında bu orana <span class="math inline">\(t_{n-1}\)</span> dağılımını verir. Buradaki <span class="math inline">\(t_{n-1}\)</span>, <span class="math inline">\(n-1\)</span> serbestlik dereceli Student dağılımını gösterir <span class="citation" data-cites="casellaBerger2002">(<a href="../../references.html#ref-casellaBerger2002" role="doc-biblioref">Casella ve Berger 2002</a>)</span>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>paket <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">487</span>, <span class="dv">490</span>, <span class="dv">493</span>, <span class="dv">496</span>, <span class="dv">498</span>, <span class="dv">500</span>, <span class="dv">504</span>, <span class="dv">508</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>referans <span class="ot">&lt;-</span> <span class="dv">500</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">length</span>(paket)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>fark_tek <span class="ot">&lt;-</span> <span class="fu">mean</span>(paket) <span class="sc">-</span> referans</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>sh_tek <span class="ot">&lt;-</span> <span class="fu">sd</span>(paket) <span class="sc">/</span> <span class="fu">sqrt</span>(n)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>t_tek <span class="ot">&lt;-</span> fark_tek <span class="sc">/</span> sh_tek</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>sderece_tek <span class="ot">&lt;-</span> n <span class="sc">-</span> <span class="dv">1</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>p_tek <span class="ot">&lt;-</span> <span class="dv">2</span> <span class="sc">*</span> <span class="fu">pt</span>(<span class="sc">-</span><span class="fu">abs</span>(t_tek), <span class="at">df =</span> sderece_tek)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>aralik_tek <span class="ot">&lt;-</span> fark_tek <span class="sc">+</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>, <span class="dv">1</span>) <span class="sc">*</span> <span class="fu">qt</span>(<span class="fl">0.975</span>, sderece_tek) <span class="sc">*</span> sh_tek</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>tek <span class="ot">&lt;-</span> <span class="fu">t.test</span>(paket, <span class="at">mu =</span> referans)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">rbind</span>(</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">Elle =</span> <span class="fu">c</span>(t_tek, sderece_tek, p_tek, aralik_tek),</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">R =</span> <span class="fu">c</span>(tek<span class="sc">$</span>statistic, tek<span class="sc">$</span>parameter, tek<span class="sc">$</span>p.value, tek<span class="sc">$</span>conf.int <span class="sc">-</span> referans)</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>), <span class="dv">3</span>)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>          t df                   
+Elle -1.207  7 0.267 -8.878 2.878
+R    -1.207  7 0.267 -8.878 2.878</code></pre>
+</div>
+</div>
+<p>İlk iki sütun test istatistiğini ve serbestlik derecesini, üçüncüsü çift yönlü p-değerini verir. Son iki sütun <strong>fark</strong> için %95 güven aralığıdır. R tek örneklem çıktısında doğrudan <span class="math inline">\(\mu\)</span> için aralık verdiğinden, bu aralığın iki ucundan 500 çıkardık. Tahmin −3 gram ve fark aralığı yaklaşık −8,88 ile 2,88 gramdır. <span class="math inline">\(t\approx-1{,}207\)</span> ve <span class="math inline">\(p\approx0{,}267\)</span> olduğundan %5 düzeyinde ret çıkmaz. Bu veri, süreçte önemli sayılabilecek bir eksik dolumu da dışlamıyor. Üretim toleransı veya karar kuralı ayrıca belirtilmelidir. Sonuç bu yapay örneğin temsil ettiği bağımsız paket modeline aittir. Birbirine yakın zamanlarda çıkan paketler ortak bir arızadan etkileniyorsa bağımsızlık yeniden düşünülmelidir.</p>
+</section>
+<section id="iki-bağımsız-hat-farkın-belirsizliği-iki-kaynaktan-gelir" class="level2" data-number="35.3">
+<h2 data-number="35.3" class="anchored" data-anchor-id="iki-bağımsız-hat-farkın-belirsizliği-iki-kaynaktan-gelir"><span class="header-section-number">35.3</span> İki bağımsız hat: Farkın belirsizliği iki kaynaktan gelir</h2>
+<p>A ve B hatlarından farklı paketler seçelim. Hedef <span class="math inline">\(\Delta=\mu_1-\mu_2\)</span>, yani A ortalaması eksi B ortalamasıdır. <span class="math inline">\(\mu_i\)</span>, <span class="math inline">\(i=1,2\)</span> numaralı hattın ortalaması, <span class="math inline">\(\bar X_i\)</span> o hattın örneklem ortalaması, <span class="math inline">\(n_i\)</span> paket sayısı ve <span class="math inline">\(\sigma_i^2\)</span> paket ağırlıklarının anakütle varyansıdır. Her hat kendi içinde bağımsız ölçümler üretirse, <a href="sampling_distributions.html" class="quarto-xref"><span>Bölüm 32</span></a> bölümünden <span class="math inline">\(\bar X_i\)</span> varyansı <span class="math inline">\(\sigma_i^2/n_i\)</span> olur.</p>
+<p>İki ortalama da değişebilir. A ortalamasının yüksek çıkması farkı artırır, B ortalamasının yüksek çıkması farkı azaltır. Buna rağmen <strong>yayılımlar toplanır</strong>. Çünkü B ortalamasına uygulanan eksi işareti kareli yayılımı değiştirmez ve gruplar bağımsızsa kovaryans sıfırdır:</p>
+<p><span class="math display">\[
+\begin{aligned}
+&amp;\operatorname{Var}(\bar X_1-\bar X_2)\\
+&amp;\quad=\operatorname{Var}(\bar X_1)
+  +\operatorname{Var}(\bar X_2)\\
+&amp;\quad=\frac{\sigma_1^2}{n_1}+\frac{\sigma_2^2}{n_2}.
+\end{aligned}
+\]</span></p>
+<p>Standart hata bu toplamın kareköküdür. Aynı malzeme partisinden eş zamanlı olarak seçilen paketler veya seri bağımlılığı tasarımı değiştirir. Bu durumda kovaryansı sıfır saymak ya da her hattın tamamını bağımsız kabul etmek için ek gerekçe gerekir.</p>
+<section id="welch-yöntemi" class="level3" data-number="35.3.1">
+<h3 data-number="35.3.1" class="anchored" data-anchor-id="welch-yöntemi"><span class="header-section-number">35.3.1</span> Welch yöntemi</h3>
+<p>Anakütle varyanslarını bilmiyorsak, <span class="math inline">\(s_1^2\)</span> ve <span class="math inline">\(s_2^2\)</span> örneklem varyanslarını kullanırız. <span class="math inline">\(v_1=s_1^2/n_1\)</span> ve <span class="math inline">\(v_2=s_2^2/n_2\)</span> her hattın tahmini katkısı olsun. <span class="math inline">\(H_0:\Delta=0\)</span> için Welch istatistiği ve yaklaşık serbestlik derecesi şöyledir:</p>
+<p><span class="math display">\[
+t=\frac{\bar X_1-\bar X_2}{\sqrt{v_1+v_2}}.
+\]</span></p>
+<p><span class="math display">\[
+\nu\approx\frac{(v_1+v_2)^2}
+{\dfrac{v_1^2}{n_1-1}+\dfrac{v_2^2}{n_2-1}}.
+\]</span></p>
+<p>Welch–Satterthwaite yaklaşımı, iki ayrı varyans tahmininin toplamını benzer dalgalanmaya sahip tek bir ölçekle temsil eder. Bu ölçeğe karşılık gelen <span class="math inline">\(\nu\)</span>, gerçek gözlem sayısı değil <strong>etkin serbestlik derecesidir</strong>. Tam sayı olması gerekmez. Belirsizliğin çoğu küçük bir örneklemden geliyorsa, <span class="math inline">\(\nu\)</span> o örneklemin serbestlik derecesine yaklaşabilir. Aralık, gözlenen farkın çevresine <span class="math inline">\(\sqrt{v_1+v_2}\)</span> ile <span class="math inline">\(\nu\)</span> serbestlik dereceli uygun t kantilinin çarpımını ekleyip çıkararak elde edilir <span class="citation" data-cites="welch1947 casellaBerger2002">(<a href="../../references.html#ref-welch1947" role="doc-biblioref">Welch 1947</a>; <a href="../../references.html#ref-casellaBerger2002" role="doc-biblioref">Casella ve Berger 2002</a>)</span>.</p>
+<p>Welch, bağımsız iki grup için iyi bir başlangıçtır. İki yayılımı zorla eşitlemeden her grubun belirsizlik katkısını taşır. Küçük ve çok çarpık örneklerde veya bağımlı ölçümlerde otomatik bir güvence sağlamaz. R’nin bağımsız iki örneklemde <code>t.test()</code> varsayılanı <code>var.equal = FALSE</code> olduğu için Welch’tir.</p>
+</section>
+<section id="ortak-varyans-varsayılırsa-student-yöntemi" class="level3" data-number="35.3.2">
+<h3 data-number="35.3.2" class="anchored" data-anchor-id="ortak-varyans-varsayılırsa-student-yöntemi"><span class="header-section-number">35.3.2</span> Ortak varyans varsayılırsa Student yöntemi</h3>
+<p>İki hattın aynı anakütle varyansına sahip olduğunu gerekçelendirebiliyorsak iki örneklem varyansı birleştirilebilir. Her örnekte kendi ortalaması hesaplandığı için <span class="math inline">\(i\)</span> grubunda <span class="math inline">\(n_i-1\)</span> serbestlik derecesi kalır. Kareli sapma toplamı bu nedenle <span class="math inline">\((n_i-1)s_i^2\)</span> değeridir. İki toplamı ortak serbestlik derecesine bölersek havuzlanmış varyans <span class="math inline">\(s_p^2\)</span> elde edilir:</p>
+<p><span class="math display">\[
+s_p^2=\frac{(n_1-1)s_1^2+(n_2-1)s_2^2}
+{n_1+n_2-2}.
+\]</span></p>
+<p>Standart hata ve sıfır farkı sınayan istatistik artık ortak ölçeği kullanır:</p>
+<p><span class="math display">\[
+\begin{aligned}
+\operatorname{SE}_p&amp;=s_p\sqrt{1/n_1+1/n_2},\\
+t&amp;=\frac{\bar X_1-\bar X_2}{\operatorname{SE}_p}.
+\end{aligned}
+\]</span></p>
+<p>Bağımsız normal ortak varyans modelinde referans dağılımının serbestlik derecesi <span class="math inline">\(n_1+n_2-2\)</span> olur. Küçük grup daha değişkense havuzlama büyük ve daha dar grubun varyansına fazla ağırlık verebilir. Oysa küçük değişken grubun katkısı, <span class="math inline">\(s_i^2/n_i\)</span> nedeniyle farkın gerçek belirsizliğinde büyük olabilir. Bu yanlış birleşim aralığı gereğinden daraltabilir. Ters eşleşme aralığı fazla genişletebilir. Dengeli büyüklüklerde ve benzer varyanslarda iki yöntem çoğu zaman yakın sonuç verir. Bir varyans ön testinde ret çıkmaması eşitliği doğrulamaz. Üstelik ön testin sonucuna göre yöntem değiştirmek, hata özellikleri ayrı değerlendirilmesi gereken birleşik bir prosedür kurar.</p>
+<p>Aşağıdaki iki örneklem öğretim için, her biri kendi normal dağılımından bağımsız olarak üretiliyor. Küçük ve daha değişken A hattı için model ortalaması 502, standart sapması 7 gram. B için model ortalaması 498, standart sapması 2 gram. Bunlar bilinen yapay veri üretim değerleridir. Analizde yayılımı yine örneklerden tahmin ediyoruz. <code>var.equal = TRUE</code> ikinci yöntemin ortak varyans varsayımını etkinleştirir.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">5701</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>A <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">12</span>, <span class="at">mean =</span> <span class="dv">502</span>, <span class="at">sd =</span> <span class="dv">7</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>B <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">32</span>, <span class="at">mean =</span> <span class="dv">498</span>, <span class="at">sd =</span> <span class="dv">2</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>n1 <span class="ot">&lt;-</span> <span class="fu">length</span>(A)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>n2 <span class="ot">&lt;-</span> <span class="fu">length</span>(B)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>s1 <span class="ot">&lt;-</span> <span class="fu">sd</span>(A)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>s2 <span class="ot">&lt;-</span> <span class="fu">sd</span>(B)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>fark_ab <span class="ot">&lt;-</span> <span class="fu">mean</span>(A) <span class="sc">-</span> <span class="fu">mean</span>(B)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>v1 <span class="ot">&lt;-</span> s1<span class="sc">^</span><span class="dv">2</span> <span class="sc">/</span> n1</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>v2 <span class="ot">&lt;-</span> s2<span class="sc">^</span><span class="dv">2</span> <span class="sc">/</span> n2</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>sh_w <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(v1 <span class="sc">+</span> v2)</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>nu <span class="ot">&lt;-</span> (v1 <span class="sc">+</span> v2)<span class="sc">^</span><span class="dv">2</span> <span class="sc">/</span> (v1<span class="sc">^</span><span class="dv">2</span> <span class="sc">/</span> (n1 <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">+</span> v2<span class="sc">^</span><span class="dv">2</span> <span class="sc">/</span> (n2 <span class="sc">-</span> <span class="dv">1</span>))</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>t_w <span class="ot">&lt;-</span> fark_ab <span class="sc">/</span> sh_w</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>aralik_w <span class="ot">&lt;-</span> fark_ab <span class="sc">+</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>, <span class="dv">1</span>) <span class="sc">*</span> <span class="fu">qt</span>(<span class="fl">0.975</span>, nu) <span class="sc">*</span> sh_w</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>sp2 <span class="ot">&lt;-</span> ((n1 <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">*</span> s1<span class="sc">^</span><span class="dv">2</span> <span class="sc">+</span> (n2 <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">*</span> s2<span class="sc">^</span><span class="dv">2</span>) <span class="sc">/</span> (n1 <span class="sc">+</span> n2 <span class="sc">-</span> <span class="dv">2</span>)</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>sh_p <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(sp2 <span class="sc">*</span> (<span class="dv">1</span> <span class="sc">/</span> n1 <span class="sc">+</span> <span class="dv">1</span> <span class="sc">/</span> n2))</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>welch <span class="ot">&lt;-</span> <span class="fu">t.test</span>(A, B)</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>student <span class="ot">&lt;-</span> <span class="fu">t.test</span>(A, B, <span class="at">var.equal =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">rbind</span>(<span class="at">A =</span> <span class="fu">c</span>(<span class="at">n =</span> n1, <span class="at">ortalama =</span> <span class="fu">mean</span>(A), <span class="at">ss =</span> s1),</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>                  <span class="at">B =</span> <span class="fu">c</span>(<span class="at">n =</span> n2, <span class="at">ortalama =</span> <span class="fu">mean</span>(B), <span class="at">ss =</span> s2)), <span class="at">digits =</span> <span class="dv">2</span>)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: right;">n</th>
+<th style="text-align: right;">ortalama</th>
+<th style="text-align: right;">ss</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">A</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">501.93</td>
+<td style="text-align: right;">9.22</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">B</td>
+<td style="text-align: right;">32</td>
+<td style="text-align: right;">498.14</td>
+<td style="text-align: right;">1.84</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">data.frame</span>(</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  Yöntem <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"Welch"</span>, <span class="st">"Student"</span>),</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">t =</span> <span class="fu">c</span>(t_w, fark_ab <span class="sc">/</span> sh_p),</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">sd =</span> <span class="fu">c</span>(nu, n1 <span class="sc">+</span> n2 <span class="sc">-</span> <span class="dv">2</span>),</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">p =</span> <span class="fu">c</span>(welch<span class="sc">$</span>p.value, student<span class="sc">$</span>p.value)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>), <span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Yöntem</th>
+<th style="text-align: right;">t</th>
+<th style="text-align: right;">sd</th>
+<th style="text-align: right;">p</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Welch</td>
+<td style="text-align: right;">1.415</td>
+<td style="text-align: right;">11.33</td>
+<td style="text-align: right;">0.184</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Student</td>
+<td style="text-align: right;">2.252</td>
+<td style="text-align: right;">42.00</td>
+<td style="text-align: right;">0.030</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">rbind</span>(<span class="at">Welch =</span> aralik_w, <span class="at">Student =</span> <span class="fu">as.numeric</span>(student<span class="sc">$</span>conf.int)),</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>             <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Alt (g)"</span>, <span class="st">"Üst (g)"</span>), <span class="at">digits =</span> <span class="dv">2</span>)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: right;">Alt (g)</th>
+<th style="text-align: right;">Üst (g)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Welch</td>
+<td style="text-align: right;">-2.09</td>
+<td style="text-align: right;">9.67</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Student</td>
+<td style="text-align: right;">0.39</td>
+<td style="text-align: right;">7.19</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Tahmini A−B farkı 3,79 gramdır. Welch için standart hata yaklaşık 2,68 gram, etkin serbestlik derecesi 11,33 ve p-değeri 0,184’tür. %95 aralık −2,09–9,67 gramdır. Havuzlanmış Student hesabında serbestlik derecesi 42, p-değeri 0,030 ve aralık 0,39–7,19 gramdır. Fark aynı paketlerden hesaplandığından iki yöntemde aynı kalır. Welch’te A’nın daha büyük yayılımı ayrı bir standart hata katkısı olarak korunur. Student’ta B’nin daha fazla gözlemi ortak varyansı aşağı çeker. Bu örnekte Student aralığı daha dardır. Gerçek veri üretimi eşit varyans içermediğinden bu dar aralık daha iyi ölçüm yapıldığı anlamına gelmez. Welch aralığında sıfıra yakın ve üretim için anlamlı olabilecek pozitif farkları ayrı değerlendirin. Sonucun yönü A eksi B’ye göredir. Gerçek hatlarda çizelge, ürün türü veya bakım geçmişi farklıysa bir farkı tek başına makineye bağlayamayız.</p>
+</section>
+</section>
+<section id="eşleştirilmiş-ölçüm-bir-kişinin-değişimini-izlemek" class="level2" data-number="35.4">
+<h2 data-number="35.4" class="anchored" data-anchor-id="eşleştirilmiş-ölçüm-bir-kişinin-değişimini-izlemek"><span class="header-section-number">35.4</span> Eşleştirilmiş ölçüm: Bir kişinin değişimini izlemek</h2>
+<p>Bir eğitimde aynı katılımcılara önce ve sonra başarı testi uygulansın. Önceki yüksek puanlı kişilerin sonraki puanları da yüksek kalabilir. Burada iki bağımsız puan listesi yerine <strong>kişiler arasında bağımsız, kişi içinde bağlantılı</strong> ölçümler vardır. <span class="math inline">\(i\)</span> kişisinin önce ve sonra puanları sırasıyla <span class="math inline">\(Y_{i,\mathrm{önce}}\)</span> ve <span class="math inline">\(Y_{i,\mathrm{sonra}}\)</span> olsun. Farkı şöyle tanımlarız:</p>
+<p><span class="math display">\[
+D_i=Y_{i,\mathrm{sonra}}-Y_{i,\mathrm{önce}}.
+\]</span></p>
+<p>Hedef <span class="math inline">\(\mu_D\)</span>, bu kişi içi farkların anakütle ortalamasıdır. <span class="math inline">\(\bar D\)</span> gözlenen farkların ortalaması, <span class="math inline">\(s_D\)</span> farkların örneklem standart sapması, <span class="math inline">\(n\)</span> tam çiftlerin sayısı, <span class="math inline">\(\mu_{D,0}\)</span> referans farktır. Değişim yok iddiasında <span class="math inline">\(\mu_{D,0}=0\)</span> alırız:</p>
+<p><span class="math display">\[
+T=\frac{\bar D-\mu_{D,0}}{s_D/\sqrt n}.
+\]</span></p>
+<p>Bu, farklara uygulanan tek örneklem t-testidir. Normal model gerekçesi önceki ve sonraki puanların ayrı biçimlerine değil, <strong>farkların</strong> dağılımına ve kişiler arasındaki bağımsızlığa ilişkindir.</p>
+<p>Neden iki bağımsız grup gibi hesap yapmıyoruz? <span class="math inline">\(Y_s\)</span> sonraki, <span class="math inline">\(Y_o\)</span> önceki puanı göstersin. Ortalamaları çıkarıp kare açıldığında iki varyansın yanında işareti negatif bir çapraz terim kalır:</p>
+<p><span class="math display">\[
+\begin{aligned}
+\operatorname{Var}(Y_s-Y_o)
+&amp;=\operatorname{Var}(Y_s)+\operatorname{Var}(Y_o)\\
+&amp;\quad-2\operatorname{Cov}(Y_s,Y_o).
+\end{aligned}
+\]</span></p>
+<p><span class="math inline">\(\operatorname{Cov}\)</span>, iki puanın kendi ortalamalarından sapmalarının çarpımının beklenen değeridir. Kişi içi kovaryans pozitifse bu terim, iki puanın ayrı yayılımlarının toplamını azaltır. Örneğin bir kişinin yüksek başlangıç başarısı iki ölçümü de yukarı taşıyorsa fark almak o ortak düzeyi kısmen giderir. Negatif kovaryansta farkın varyansı artabilir. Eşleştirme daha küçük standart hatayı her koşulda garanti etmez <span class="citation" data-cites="diezRundelBarr2019">(<a href="../../references.html#ref-diezRundelBarr2019" role="doc-biblioref">Diez vd. 2019</a>)</span>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>once <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">42</span>, <span class="dv">48</span>, <span class="dv">50</span>, <span class="dv">56</span>, <span class="dv">60</span>, <span class="dv">65</span>, <span class="dv">73</span>, <span class="dv">77</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>sonra <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">46</span>, <span class="dv">49</span>, <span class="dv">56</span>, <span class="dv">56</span>, <span class="dv">65</span>, <span class="dv">68</span>, <span class="dv">71</span>, <span class="dv">84</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>degisim <span class="ot">&lt;-</span> sonra <span class="sc">-</span> once</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>fark_testi <span class="ot">&lt;-</span> <span class="fu">t.test</span>(degisim, <span class="at">mu =</span> <span class="dv">0</span>)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>esli_test <span class="ot">&lt;-</span> <span class="fu">t.test</span>(sonra, once, <span class="at">paired =</span> <span class="cn">TRUE</span>, <span class="at">mu =</span> <span class="dv">0</span>)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="fu">rbind</span>(<span class="at">Fark =</span> <span class="fu">c</span>(<span class="fu">mean</span>(degisim), fark_testi<span class="sc">$</span>statistic, fark_testi<span class="sc">$</span>parameter,</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>               fark_testi<span class="sc">$</span>p.value, fark_testi<span class="sc">$</span>conf.int),</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>      Eşli <span class="ot">=</span> <span class="fu">c</span>(esli_test<span class="sc">$</span>estimate, esli_test<span class="sc">$</span>statistic, esli_test<span class="sc">$</span>parameter,</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>               esli_test<span class="sc">$</span>p.value, esli_test<span class="sc">$</span>conf.int))</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>              t df                             
+Fark 3 2.722456  7 0.02966017 0.394311 5.605689
+Eşli 3 2.722456  7 0.02966017 0.394311 5.605689</code></pre>
+</div>
+</div>
+<p>İki çağrı da aynı sekiz farkı kullanır. Çıktı sırasıyla ortalama değişimi, t istatistiğini, serbestlik derecesini, p-değerini ve aralık uçlarını verir. Ortalama değişim 3 puandır. <span class="math inline">\(t\)</span> yaklaşık 2,72, serbestlik derecesi 7, p-değeri 0,030 ve %95 aralık 0,39–5,61 puandır. Aralık, her kişinin aynı ölçüm birimindeki sonraki eksi önceki farkını hedefler. İki gruba ait ayrı aralıkların örtüşmesi, bu fark aralığını vermez.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>eski <span class="ot">&lt;-</span> <span class="fu">par</span>(<span class="at">mar =</span> <span class="fu">c</span>(<span class="fl">3.4</span>, <span class="fl">4.3</span>, <span class="fl">1.1</span>, <span class="fl">0.7</span>), <span class="at">mgp =</span> <span class="fu">c</span>(<span class="fl">2.3</span>, <span class="fl">0.6</span>, <span class="dv">0</span>))</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>), <span class="fu">range</span>(<span class="fu">c</span>(once, sonra)), <span class="at">type =</span> <span class="st">"n"</span>, <span class="at">xaxt =</span> <span class="st">"n"</span>,</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">""</span>, <span class="at">ylab =</span> <span class="st">"Başarı puanı"</span>)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="fu">axis</span>(<span class="dv">1</span>, <span class="at">at =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>), <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Önce"</span>, <span class="st">"Sonra"</span>))</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="fu">segments</span>(<span class="dv">1</span>, once, <span class="dv">2</span>, sonra, <span class="at">col =</span> <span class="st">"#47758B"</span>, <span class="at">lwd =</span> <span class="fl">1.5</span>)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="fu">points</span>(<span class="fu">rep</span>(<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>), <span class="at">each =</span> <span class="fu">length</span>(once)), <span class="fu">c</span>(once, sonra), <span class="at">pch =</span> <span class="dv">16</span>,</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>       <span class="at">col =</span> <span class="st">"#245773"</span>)</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>), <span class="fu">c</span>(<span class="fu">mean</span>(once), <span class="fu">mean</span>(sonra)), <span class="at">lwd =</span> <span class="dv">3</span>, <span class="at">lty =</span> <span class="dv">2</span>, <span class="at">col =</span> <span class="st">"#9D3825"</span>)</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(eski)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-means-paired" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Önce ve sonra olmak üzere iki sütun. Sekiz çizginin çoğu yükseliyor, biri yatay, biri düşüyor. Kesikli ortalama çizgisi üç puan yükseliyor.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-means-paired-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="comparing_means_files/figure-html/fig-means-paired-1.png" class="img-fluid figure-img" alt="Önce ve sonra olmak üzere iki sütun. Sekiz çizginin çoğu yükseliyor, biri yatay, biri düşüyor. Kesikli ortalama çizgisi üç puan yükseliyor." width="652">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-means-paired-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Şekil&nbsp;35.1: Sekiz yapay katılımcının önce ve sonra puanları. Çizgiler aynı kişiye ait ölçümleri bağlar. Kalın kesikli çizgi iki zamanın ortalamalarını gösterir.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p><a href="#fig-means-paired" class="quarto-xref">Şekil&nbsp;<span>35.1</span></a>, bazı kişilerin puanının düştüğünü veya değişmediğini de gösterir. Ortalama artış her bireyin kazanımını ifade etmez. Eğitimden önce ve sonra ölçülen fark, tek başına değişimin eğitimden kaynaklandığını da göstermez. Alıştırma etkisi, zamanla gelişme veya aynı dönemdeki başka uygulamalar da fark yaratabilir. Öğrenci eşlerini kimlikle kurmak gerekir. Bir puan eksikse o kişiden tam fark hesaplanamaz. Eksikliğin hangi kişilerde oluştuğu, tam çiftlerin neyi temsil ettiğini etkiler.</p>
+</section>
+<section id="üç-bağımsız-hat-anovanın-sorduğu-soru" class="level2" data-number="35.5">
+<h2 data-number="35.5" class="anchored" data-anchor-id="üç-bağımsız-hat-anovanın-sorduğu-soru"><span class="header-section-number">35.5</span> Üç bağımsız hat: ANOVA’nın sorduğu soru</h2>
+<p>Üç hattı aynı denetimde karşılaştırırken üç çift için ayrı ayrı %5 test yapmak aile düzeyinde yanlış ret olasılığını artırabilir. Aynı hattı paylaşan çiftlerin testleri genellikle bağımlıdır. <a href="hypothesis_testing.html" class="quarto-xref"><span>Bölüm 34</span></a> bölümündeki bağımsız test çarpımı bu duruma aynen uygulanmaz. <strong>Tek yönlü varyans analizi</strong> (ANOVA) önce ortak bir soru sorar. <span class="math inline">\(k\)</span> grup sayısı ve <span class="math inline">\(\mu_i\)</span> grubun anakütle ortalaması ise:</p>
+<p><span class="math display">\[
+H_0:\quad \mu_1=\mu_2=\cdots=\mu_k.
+\]</span></p>
+<p>Alternatif bu eşitliğin en az bir yerde bozulmasıdır. Örneğin yalnız C hattı farklı, A ile B aynı olabilir. Testin fikri, grup merkezlerinin birbirinden uzaklığını, her grubun kendi içindeki gürültüyle karşılaştırmaktır.</p>
+<section id="kareler-toplamından-f-oranına" class="level3" data-number="35.5.1">
+<h3 data-number="35.5.1" class="anchored" data-anchor-id="kareler-toplamından-f-oranına"><span class="header-section-number">35.5.1</span> Kareler toplamından F oranına</h3>
+<p><span class="math inline">\(y_{ij}\)</span>, <span class="math inline">\(i\)</span> grubundaki <span class="math inline">\(j\)</span> ölçümü olsun. <span class="math inline">\(n_i\)</span> grubun büyüklüğü, <span class="math inline">\(N=\sum_i n_i\)</span> toplam ölçüm sayısıdır. <span class="math inline">\(\bar y_i\)</span> grubun ortalaması, <span class="math inline">\(\bar y\)</span> bütün ölçümlerin ortak ortalamasıdır. Gruplar eşit büyüklükte değilse <span class="math inline">\(\bar y\)</span>, grup ortalamalarının <span class="math inline">\(n_i\)</span> ile ağırlıklandırılmış ortalamasıdır. Her gözlemin genel merkezden farkı iki adıma ayrılır:</p>
+<p><span class="math display">\[
+y_{ij}-\bar y=(y_{ij}-\bar y_i)+(\bar y_i-\bar y).
+\]</span></p>
+<p>Kareleri açıp bütün ölçümler üzerinde toplarız. Bir grubun çapraz terimi, o grubun merkezinin genel merkezden farkının bir sabit katıyla <span class="math inline">\(\sum_j(y_{ij}-\bar y_i)\)</span> çarpımıdır. Son toplam sıfırdır. Böylece üç kareler toplamı, <span class="math inline">\(SS\)</span>, şu şekilde tanımlanır:</p>
+<p><span class="math display">\[
+\begin{aligned}
+SS_{\mathrm{toplam}}&amp;=\sum_i\sum_j(y_{ij}-\bar y)^2,\\
+SS_{\mathrm{iç}}&amp;=\sum_i\sum_j(y_{ij}-\bar y_i)^2,\\
+SS_{\mathrm{arası}}&amp;=\sum_i n_i(\bar y_i-\bar y)^2.
+\end{aligned}
+\]</span></p>
+<p><span class="math display">\[
+SS_{\mathrm{toplam}}=SS_{\mathrm{iç}}+SS_{\mathrm{arası}}.
+\]</span></p>
+<p>Grup ortalaması çıkarıldığında her grupta sapmaların toplamı sıfırdır. Bu yüzden grup içinde toplam <span class="math inline">\(\sum_i(n_i-1)=N-k\)</span> serbestlik derecesi kalır. Grup ortalamalarının genel merkezden ağırlıklı sapmaları da sıfır toplamlıdır. Grup arasında <span class="math inline">\(k-1\)</span> serbestlik derecesi vardır. Kareler toplamlarını serbestlik derecelerine bölerek ortalama kareleri, <span class="math inline">\(MS\)</span>, elde ederiz:</p>
+<p><span class="math display">\[
+\begin{aligned}
+MS_{\mathrm{arası}}&amp;=\frac{SS_{\mathrm{arası}}}{k-1},\\
+MS_{\mathrm{iç}}&amp;=\frac{SS_{\mathrm{iç}}}{N-k}.
+\end{aligned}
+\]</span></p>
+<p><span class="math display">\[
+F=\frac{MS_{\mathrm{arası}}}{MS_{\mathrm{iç}}}.
+\]</span></p>
+<p>Bağımsız normal hatalar ve ortak pozitif hata varyansı altında <span class="math inline">\(H_0\)</span> doğruysa iki ortalama kare aynı varyansın ayrı tahminleridir. Normal modelde birbirinden bağımsız ölçekli ki-kare bileşenlerinden gelirler. Oran bu nedenle <span class="math inline">\(k-1\)</span> pay ve <span class="math inline">\(N-k\)</span> payda serbestlik dereceli F dağılımını izler. Ortalamalar ayrıştığında gruplar arası ortalama kareye sistematik fark da eklenebilir. Büyük F, bu gürültü düzeyinde grubun merkezlerinin beklenenden uzak olduğunu gösterir. p-değeri F referans dağılımının sağ kuyruğudur <span class="citation" data-cites="casellaBerger2002">(<a href="../../references.html#ref-casellaBerger2002" role="doc-biblioref">Casella ve Berger 2002</a>)</span>.</p>
+</section>
+<section id="elle-hesap-ve-r-ile-doğrulama" class="level3" data-number="35.5.2">
+<h3 data-number="35.5.2" class="anchored" data-anchor-id="elle-hesap-ve-r-ile-doğrulama"><span class="header-section-number">35.5.2</span> Elle hesap ve R ile doğrulama</h3>
+<p>Üç hattın dengeli bir pilot denetimini temsil eden yeni, elle kurulmuş yapay ölçümler kullanalım. Burada her satır ayrı bir pakettir. Bu küçük tablo matematiği izlemek içindir. Klasik F ve Tukey sonuçlarını yorumlarken bağımsız normal ortak varyans modelini öğretim varsayımı olarak kullanıyoruz.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>pilot <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">hat =</span> <span class="fu">factor</span>(<span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span>), <span class="at">each =</span> <span class="dv">5</span>)),</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">gram =</span> <span class="fu">c</span>(<span class="dv">498</span>, <span class="dv">499</span>, <span class="dv">500</span>, <span class="dv">501</span>, <span class="dv">502</span>,</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>           <span class="dv">499</span>, <span class="dv">500</span>, <span class="dv">501</span>, <span class="dv">502</span>, <span class="dv">503</span>,</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>           <span class="dv">502</span>, <span class="dv">503</span>, <span class="dv">504</span>, <span class="dv">505</span>, <span class="dv">506</span>)</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>genel <span class="ot">&lt;-</span> <span class="fu">mean</span>(pilot<span class="sc">$</span>gram)</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>grup_ort <span class="ot">&lt;-</span> <span class="fu">tapply</span>(pilot<span class="sc">$</span>gram, pilot<span class="sc">$</span>hat, mean)</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>merkez <span class="ot">&lt;-</span> <span class="fu">unname</span>(grup_ort[pilot<span class="sc">$</span>hat])</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="fu">nrow</span>(pilot)</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>k <span class="ot">&lt;-</span> <span class="fu">nlevels</span>(pilot<span class="sc">$</span>hat)</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>ss_toplam <span class="ot">&lt;-</span> <span class="fu">sum</span>((pilot<span class="sc">$</span>gram <span class="sc">-</span> genel)<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>ss_ic <span class="ot">&lt;-</span> <span class="fu">sum</span>((pilot<span class="sc">$</span>gram <span class="sc">-</span> merkez)<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>ss_arasi <span class="ot">&lt;-</span> <span class="fu">sum</span>((merkez <span class="sc">-</span> genel)<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>F_elle <span class="ot">&lt;-</span> (ss_arasi <span class="sc">/</span> (k <span class="sc">-</span> <span class="dv">1</span>)) <span class="sc">/</span> (ss_ic <span class="sc">/</span> (N <span class="sc">-</span> k))</span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>p_F <span class="ot">&lt;-</span> <span class="fu">pf</span>(F_elle, k <span class="sc">-</span> <span class="dv">1</span>, N <span class="sc">-</span> k, <span class="at">lower.tail =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>uyum <span class="ot">&lt;-</span> <span class="fu">aov</span>(gram <span class="sc">~</span> hat, <span class="at">data =</span> pilot)</span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="at">toplam =</span> ss_toplam, <span class="at">ic =</span> ss_ic, <span class="at">arasi =</span> ss_arasi, <span class="at">F =</span> F_elle, <span class="at">p =</span> p_F)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      toplam           ic        arasi            F            p 
+73.333333333 30.000000000 43.333333333  8.666666667  0.004687259 </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(uyum)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>            Df Sum Sq Mean Sq F value  Pr(&gt;F)   
+hat          2  43.33   21.67   8.667 0.00469 **
+Residuals   12  30.00    2.50                   
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>ab_pilot <span class="ot">&lt;-</span> <span class="fu">subset</span>(pilot, hat <span class="sc">!=</span> <span class="st">"C"</span>, <span class="at">drop =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>F_ab <span class="ot">&lt;-</span> <span class="fu">anova</span>(<span class="fu">aov</span>(gram <span class="sc">~</span> hat, <span class="at">data =</span> ab_pilot))[<span class="dv">1</span>, <span class="st">"F value"</span>]</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>t_ab <span class="ot">&lt;-</span> <span class="fu">t.test</span>(gram <span class="sc">~</span> hat, <span class="at">data =</span> ab_pilot, <span class="at">var.equal =</span> <span class="cn">TRUE</span>)<span class="sc">$</span>statistic</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="at">F_iki_grup =</span> F_ab, <span class="at">t_kare =</span> <span class="fu">unname</span>(t_ab<span class="sc">^</span><span class="dv">2</span>))</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>F_iki_grup     t_kare 
+         1          1 </code></pre>
+</div>
+</div>
+<p><span class="math inline">\(SS_{\mathrm{iç}}=30\)</span>, <span class="math inline">\(SS_{\mathrm{arası}}=43{,}33\)</span> ve <span class="math inline">\(SS_{\mathrm{toplam}}=73{,}33\)</span> g² değerlerini verir. Ortalamalar 500, 501 ve 504 gramdır. <span class="math inline">\(F\approx8{,}67\)</span>, serbestlik dereceleri 2 ve 12, p-değeri yaklaşık 0,0047’dir. Aynı veri, aynı ortak varyans modeli ve iki grup ile klasik F değeri, iki taraflı havuzlanmış t istatistiğinin karesidir. Bu eşitlik A ve B’nin pilot alt kümesinde doğrulanır. Karşılaştırma, başka tasarımlara veya kullanılan tüm testlere otomatik olarak taşınmaz.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>eski <span class="ot">&lt;-</span> <span class="fu">par</span>(<span class="at">mar =</span> <span class="fu">c</span>(<span class="fl">3.6</span>, <span class="fl">4.3</span>, <span class="fl">1.1</span>, <span class="fl">0.8</span>), <span class="at">mgp =</span> <span class="fu">c</span>(<span class="fl">2.3</span>, <span class="fl">0.6</span>, <span class="dv">0</span>))</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>konum <span class="ot">&lt;-</span> <span class="fu">as.integer</span>(pilot<span class="sc">$</span>hat) <span class="sc">+</span> <span class="fu">rep</span>(<span class="fu">seq</span>(<span class="sc">-</span><span class="fl">0.15</span>, <span class="fl">0.15</span>, <span class="at">length.out =</span> <span class="dv">5</span>), <span class="dv">3</span>)</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(konum, pilot<span class="sc">$</span>gram, <span class="at">type =</span> <span class="st">"n"</span>, <span class="at">xaxt =</span> <span class="st">"n"</span>, <span class="at">xlab =</span> <span class="st">"Üretim hattı"</span>,</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">"Paket ağırlığı (g)"</span>, <span class="at">xlim =</span> <span class="fu">c</span>(<span class="fl">0.65</span>, <span class="fl">3.35</span>))</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="fu">axis</span>(<span class="dv">1</span>, <span class="at">at =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>, <span class="at">labels =</span> <span class="fu">levels</span>(pilot<span class="sc">$</span>hat))</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h =</span> genel, <span class="at">lty =</span> <span class="dv">2</span>, <span class="at">lwd =</span> <span class="fl">1.6</span>)</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="fu">segments</span>(konum, merkez, konum, pilot<span class="sc">$</span>gram, <span class="at">col =</span> <span class="st">"#47758B"</span>)</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="fu">points</span>(konum, pilot<span class="sc">$</span>gram, <span class="at">pch =</span> <span class="dv">16</span>, <span class="at">col =</span> <span class="st">"#245773"</span>)</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a><span class="fu">points</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>, grup_ort, <span class="at">pch =</span> <span class="dv">18</span>, <span class="at">cex =</span> <span class="fl">1.7</span>, <span class="at">col =</span> <span class="st">"#9D3825"</span>)</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(eski)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-means-variance" class="quarto-float quarto-figure quarto-figure-center anchored" alt="A, B ve C hatlarında beşer paket. Hat ortalamaları 500, 501 ve 504 gram; kesikli genel merkez yaklaşık 501,67 gram. Noktalardan hat ortalamalarına çizgiler grup içi sapmalardır.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-means-variance-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="comparing_means_files/figure-html/fig-means-variance-1.png" class="img-fluid figure-img" alt="A, B ve C hatlarında beşer paket. Hat ortalamaları 500, 501 ve 504 gram; kesikli genel merkez yaklaşık 501,67 gram. Noktalardan hat ortalamalarına çizgiler grup içi sapmalardır." width="691">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-means-variance-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Şekil&nbsp;35.2: Yapay pilotta noktalar paketler, baklavalar hat ortalamalarıdır. İnce düşey çizgiler paketlerin kendi hat ortalamalarına uzaklığını, kesikli yatay çizgi genel ortalamayı gösterir.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p><a href="#fig-means-variance" class="quarto-xref">Şekil&nbsp;<span>35.2</span></a> üzerinde gözlemden baklavaya olan mesafe grup içi katkıyı, baklavanın kesikli çizgiden uzaklığı gruplar arası katkıyı anlatır. İkinci katkı grup büyüklüğüyle ağırlıklandırılır. F testi baklavaların hepsinin farklı olduğunu veya hangi çiftin ayrıştığını söylemez.</p>
+</section>
+<section id="genel-testten-farkların-raporuna" class="level3" data-number="35.5.3">
+<h3 data-number="35.5.3" class="anchored" data-anchor-id="genel-testten-farkların-raporuna"><span class="header-section-number">35.5.3</span> Genel testten farkların raporuna</h3>
+<p>Klasik ANOVA için normal biçim, her grubun kendi ortalaması etrafındaki <strong>hatalara</strong> aittir. Üç ayrı ortalama varsa ham ağırlıkların birleşik histogramı çok tepeli olabilir. Bu durum tek başına varsayım ihlali değildir. Varyanslar farklıysa <code>oneway.test(..., var.equal = FALSE)</code> ile Welch ANOVA düşünülebilir. Aynı genel eşitlik sorusunu sınar. Grupları ayrı varyanslarla ağırlıklandırır ve düzeltilmiş bir F başvurusu kullanır. Bağımsızlığı ve anlamlı bir hata modeli gerekliliğini korur.</p>
+<p>Klasik model makulse, <strong>Tukey HSD</strong> bir çift ailesindeki bütün ikili farklar için ayarlanmış p-değerleri ve eşzamanlı güven aralıkları verir. Dengeli ve bağımsız normal ortak varyans modelinde bu aralıklar aile olarak yorumlanır. Tek tek %95 aralıklar vermek, bütün çiftlerin aynı anda kapsanmasını %95 düzeyinde kontrol etmez. Tukey’nin dengeli tasarım gerekçesi ile R’nin ılımlı dengesizlikteki uyarlaması, belirgin farklı varyansları düzeltmez.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">oneway.test</span>(gram <span class="sc">~</span> hat, <span class="at">data =</span> pilot, <span class="at">var.equal =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    One-way analysis of means (not assuming equal variances)
+
+data:  gram and hat
+F = 8, num df = 2, denom df = 8, p-value = 0.01235</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">TukeyHSD</span>(uyum, <span class="st">"hat"</span>)<span class="sc">$</span>hat, <span class="dv">3</span>)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>    diff    lwr   upr p adj
+B-A    1 -1.668 3.668 0.591
+C-A    4  1.332 6.668 0.005
+C-B    3  0.332 5.668 0.028</code></pre>
+</div>
+</div>
+<p>Aynı pilot veride Welch ANOVA yaklaşık <span class="math inline">\(F=8\)</span>, pay ve payda dereceleri 2 ve 8, p-değeri 0,0123 verir. Klasik sonuçtan farklı referans kullanır. Tukey tablosunda <code>C-A</code> işareti, C ortalamasından A ortalamasının çıkarıldığını gösterir. Bu pilot örnekte C−A farkı 4 gramdır ve eşzamanlı aralığı sıfırı dışarıda bırakır. A ile B arasında eşitlik kanıtlanmış olmaz. Bu adımda önemli olan, yalnız ayarlanmış p-değerlerini sıralamak yerine hangi büyüklükteki gram farklarının verilerle uyumlu olduğunu ve ailenin nasıl tanımlandığını göstermektir.</p>
+</section>
+</section>
+<section id="varsayımları-değerlendirmek-ve-etkiyi-raporlamak" class="level2" data-number="35.6">
+<h2 data-number="35.6" class="anchored" data-anchor-id="varsayımları-değerlendirmek-ve-etkiyi-raporlamak"><span class="header-section-number">35.6</span> Varsayımları değerlendirmek ve etkiyi raporlamak</h2>
+<p>Araştırma tasarımı bağımsızlık hakkında ilk kanıttır. Bir Q–Q grafiği aynı üretim partisinden gelen paketlerin bağlantısını gösteremez. Ölçümler sıralı toplanmışsa süreçte kayma, kümelenme ve bir paketin birden fazla kez ölçülmesi incelenmelidir. Grup büyüklükleri çok farklıysa, varyans farkının hangi grupla eşleştiğine bakın. Ham noktalar ve grup özetleri asimetriyi ve sıra dışı değerleri görünür kılar. Klasik ANOVA için grup ortalamaları çıkarıldıktan sonra artıkların Q–Q grafiği ve grup bazında yayılımı, hata modelinin nasıl çalıştığını incelemek için yararlıdır. Eşli analizde ise aynı incelemeyi farklar üzerinden yaparız.</p>
+<p>Küçük örneklemde grafikler veya Shapiro–Wilk ve Levene gibi testler sınırlı bilgi taşır. Büyük bir p-değeri varsayımı doğrulamaz. Çok büyük örneklerde önemsiz bir şekil sapması bile küçük p-değeri üretebilir. Belirgin bir uç gözlem varsa önce veri kaydını ve süreci inceleyin. Yalnız p-değerini iyileştirmek için paketi çıkarma kararı vermeyin. Bağımlılık için uygun tasarım modeli, ağır çarpıklık için sağlam özet veya uygun başka bir yöntem gerekebilir. Sıra temelli yöntemler 5.8’de ele alınacaktır ve her biri otomatik olarak aynı ortalama farkını sınamaz.</p>
+<p>Tek grup için <strong>ortalama eksi referans</strong>, bağımsız iki grup için <strong>A eksi B</strong>, eşli tasarım için <strong>kişilerin sonraki eksi önceki farklarının ortalaması</strong> raporlanır. Gram ya da puan, genellikle etkinin en anlaşılır ölçüsüdür. Standartlaştırılmış bir etki karşılaştırılacaksa kullanılan ölçek belirtilmelidir. Örneğin tek grupta gözlem standart sapması, eşli tasarımda farkların standart sapması ve iki grupta ortak veya ayrı yayılım farklı sorulara karşılık gelir. Küçük p-değeri, farkın üretim toleransını aştığını garanti etmez. Güven aralığının toleransa göre konumu, tahminin hangi pratik sonuçlarla uyumlu olduğunu gösterir.</p>
+</section>
+<section id="benzetim-tip-i-hata-varyans-ve-büyüklüğe-nasıl-bağlı" class="level2" data-number="35.7">
+<h2 data-number="35.7" class="anchored" data-anchor-id="benzetim-tip-i-hata-varyans-ve-büyüklüğe-nasıl-bağlı"><span class="header-section-number">35.7</span> Benzetim: Tip I hata varyans ve büyüklüğe nasıl bağlı?</h2>
+<p>Ortalaması aynı olan iki bağımsız normal süreçten <span class="math inline">\(n_1=12\)</span> ve <span class="math inline">\(n_2=36\)</span> paket alalım. Her durumda iki test de gerçek sıfır farkını %5 düzeyinde sınayacak. İlk senaryoda küçük grupta standart sapma 8, büyük grupta 2 gram. İkinci senaryoda yayılımlar tersine çevriliyor. Sabit tohumla her koşul için 20.000 bağımsız çift örneklem üretiyoruz. Aynı tekrar üzerinde Welch ve Student hesaplarını uygulamak, ret oranlarını ortak yapay veride karşılaştırmamızı sağlar.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">5702</span>)</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>tekrar <span class="ot">&lt;-</span> <span class="dv">20000</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>n_kucuk <span class="ot">&lt;-</span> <span class="dv">12</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>n_buyuk <span class="ot">&lt;-</span> <span class="dv">36</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>alfa <span class="ot">&lt;-</span> <span class="fl">0.05</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>satir_ozeti <span class="ot">&lt;-</span> <span class="cf">function</span>(n, sigma) {</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">rnorm</span>(tekrar <span class="sc">*</span> n, <span class="at">mean =</span> <span class="dv">500</span>, <span class="at">sd =</span> sigma), <span class="at">nrow =</span> tekrar)</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>  m <span class="ot">&lt;-</span> <span class="fu">rowMeans</span>(x)</span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">ort =</span> m, <span class="at">var =</span> <span class="fu">rowSums</span>((x <span class="sc">-</span> m)<span class="sc">^</span><span class="dv">2</span>) <span class="sc">/</span> (n <span class="sc">-</span> <span class="dv">1</span>))</span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>ret_orani <span class="ot">&lt;-</span> <span class="cf">function</span>(sigma1, sigma2) {</span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>  a <span class="ot">&lt;-</span> <span class="fu">satir_ozeti</span>(n_kucuk, sigma1)</span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a>  b <span class="ot">&lt;-</span> <span class="fu">satir_ozeti</span>(n_buyuk, sigma2)</span>
+<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a>  delta <span class="ot">&lt;-</span> a<span class="sc">$</span>ort <span class="sc">-</span> b<span class="sc">$</span>ort</span>
+<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a>  v1 <span class="ot">&lt;-</span> a<span class="sc">$</span>var <span class="sc">/</span> n_kucuk</span>
+<span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a>  v2 <span class="ot">&lt;-</span> b<span class="sc">$</span>var <span class="sc">/</span> n_buyuk</span>
+<span id="cb20-19"><a href="#cb20-19" aria-hidden="true" tabindex="-1"></a>  nu <span class="ot">&lt;-</span> (v1 <span class="sc">+</span> v2)<span class="sc">^</span><span class="dv">2</span> <span class="sc">/</span> (v1<span class="sc">^</span><span class="dv">2</span> <span class="sc">/</span> (n_kucuk <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">+</span> v2<span class="sc">^</span><span class="dv">2</span> <span class="sc">/</span> (n_buyuk <span class="sc">-</span> <span class="dv">1</span>))</span>
+<span id="cb20-20"><a href="#cb20-20" aria-hidden="true" tabindex="-1"></a>  ortak <span class="ot">&lt;-</span> ((n_kucuk <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">*</span> a<span class="sc">$</span>var <span class="sc">+</span> (n_buyuk <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">*</span> b<span class="sc">$</span>var) <span class="sc">/</span></span>
+<span id="cb20-21"><a href="#cb20-21" aria-hidden="true" tabindex="-1"></a>    (n_kucuk <span class="sc">+</span> n_buyuk <span class="sc">-</span> <span class="dv">2</span>)</span>
+<span id="cb20-22"><a href="#cb20-22" aria-hidden="true" tabindex="-1"></a>  tw <span class="ot">&lt;-</span> delta <span class="sc">/</span> <span class="fu">sqrt</span>(v1 <span class="sc">+</span> v2)</span>
+<span id="cb20-23"><a href="#cb20-23" aria-hidden="true" tabindex="-1"></a>  tp <span class="ot">&lt;-</span> delta <span class="sc">/</span> <span class="fu">sqrt</span>(ortak <span class="sc">*</span> (<span class="dv">1</span> <span class="sc">/</span> n_kucuk <span class="sc">+</span> <span class="dv">1</span> <span class="sc">/</span> n_buyuk))</span>
+<span id="cb20-24"><a href="#cb20-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(<span class="at">Welch =</span> <span class="fu">mean</span>(<span class="dv">2</span> <span class="sc">*</span> <span class="fu">pt</span>(<span class="sc">-</span><span class="fu">abs</span>(tw), nu) <span class="sc">&lt;=</span> alfa),</span>
+<span id="cb20-25"><a href="#cb20-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">Student =</span> <span class="fu">mean</span>(<span class="dv">2</span> <span class="sc">*</span> <span class="fu">pt</span>(<span class="sc">-</span><span class="fu">abs</span>(tp), n_kucuk <span class="sc">+</span> n_buyuk <span class="sc">-</span> <span class="dv">2</span>) <span class="sc">&lt;=</span> alfa))</span>
+<span id="cb20-26"><a href="#cb20-26" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb20-27"><a href="#cb20-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-28"><a href="#cb20-28" aria-hidden="true" tabindex="-1"></a>retler <span class="ot">&lt;-</span> <span class="fu">rbind</span>(<span class="st">"Küçük grup daha değişken"</span> <span class="ot">=</span> <span class="fu">ret_orani</span>(<span class="dv">8</span>, <span class="dv">2</span>),</span>
+<span id="cb20-29"><a href="#cb20-29" aria-hidden="true" tabindex="-1"></a>                <span class="st">"Büyük grup daha değişken"</span> <span class="ot">=</span> <span class="fu">ret_orani</span>(<span class="dv">2</span>, <span class="dv">8</span>))</span>
+<span id="cb20-30"><a href="#cb20-30" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(retler, <span class="at">digits =</span> <span class="dv">4</span>)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: right;">Welch</th>
+<th style="text-align: right;">Student</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Küçük grup daha değişken</td>
+<td style="text-align: right;">0.0488</td>
+<td style="text-align: right;">0.2369</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Büyük grup daha değişken</td>
+<td style="text-align: right;">0.0482</td>
+<td style="text-align: right;">0.0032</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Her iki senaryoda da ret bir <strong>Tip I hatadır</strong>. Student yönteminde küçük ve çok değişken grup varken oran %5’in üstüne, büyük ve çok değişken grup varken altına gidebilir. Bunun nedeni ortalama farkının gerçek varyansının <span class="math inline">\(\sigma_1^2/n_1+\sigma_2^2/n_2\)</span> olmasıdır. Havuzlanmış yöntem, daha çok serbestlik derecesi olan grubun yayılımını fazla temsil eder. Bu tohumla küçük grup daha değişkenken Welch %4,88, Student %23,69 ret verdi. Ters durumda oranlar %4,82 ve %0,32 oldu. Kuramsal bir kontrol de yapılabilir. Normal modelde örneklem ortalamalarından bağımsız olan iki örneklem varyansının ki-kare dağılımları üzerinden ret olasılıklarını sayısal olarak ortalamak, ilk durumda Welch için %5,03 ve Student için %23,58 verir. İkinci durumda aynı sırayla %4,99 ve %0,25 bulunur. Bu benzetim iki belirli normal senaryoya aittir. Örneğin %5 civarındaki bir ret oranında 20.000 tekrarın Monte Carlo standart hatası yaklaşık 0,15 yüzde puandır. Aynı büyüklük ve varyans eşleşmesi korunmadan bu sayıları başka tasarımlara taşımayız.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>eski <span class="ot">&lt;-</span> <span class="fu">par</span>(<span class="at">mar =</span> <span class="fu">c</span>(<span class="fl">3.7</span>, <span class="fl">8.4</span>, <span class="fl">1.0</span>, <span class="fl">0.7</span>), <span class="at">mgp =</span> <span class="fu">c</span>(<span class="fl">2.4</span>, <span class="fl">0.7</span>, <span class="dv">0</span>))</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="dv">100</span> <span class="sc">*</span> <span class="fu">range</span>(<span class="fu">c</span>(retler, alfa)), <span class="fu">c</span>(<span class="fl">0.65</span>, <span class="fl">2.55</span>), <span class="at">type =</span> <span class="st">"n"</span>,</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">yaxt =</span> <span class="st">"n"</span>, <span class="at">xlab =</span> <span class="st">"Gerçek ret oranının benzetim tahmini (%)"</span>, <span class="at">ylab =</span> <span class="st">""</span>)</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="fu">axis</span>(<span class="dv">2</span>, <span class="at">at =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">1</span>), <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Küçük grup daha</span><span class="sc">\n</span><span class="st"> değişken"</span>,</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>                                  <span class="st">"Büyük grup daha</span><span class="sc">\n</span><span class="st"> değişken"</span>),</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>     <span class="at">las =</span> <span class="dv">1</span>, <span class="at">cex.axis =</span> <span class="fl">0.82</span>)</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v =</span> <span class="dv">100</span> <span class="sc">*</span> alfa, <span class="at">lty =</span> <span class="dv">2</span>)</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a><span class="fu">points</span>(<span class="dv">100</span> <span class="sc">*</span> retler[, <span class="st">"Welch"</span>], <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">1</span>) <span class="sc">+</span> <span class="fl">0.12</span>, <span class="at">pch =</span> <span class="dv">16</span>,</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">col =</span> <span class="st">"#245773"</span>, <span class="at">cex =</span> <span class="fl">1.25</span>)</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a><span class="fu">points</span>(<span class="dv">100</span> <span class="sc">*</span> retler[, <span class="st">"Student"</span>], <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">1</span>) <span class="sc">-</span> <span class="fl">0.12</span>, <span class="at">pch =</span> <span class="dv">17</span>,</span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>       <span class="at">col =</span> <span class="st">"#9D3825"</span>, <span class="at">cex =</span> <span class="fl">1.25</span>)</span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">"topright"</span>, <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">"Welch"</span>, <span class="st">"Student"</span>), <span class="at">pch =</span> <span class="fu">c</span>(<span class="dv">16</span>, <span class="dv">17</span>),</span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>       <span class="at">col =</span> <span class="fu">c</span>(<span class="st">"#245773"</span>, <span class="st">"#9D3825"</span>), <span class="at">bty =</span> <span class="st">"n"</span>)</span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(eski)</span></code></pre></div><button title="Panoya Kopyala" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-means-type1" class="quarto-float quarto-figure quarto-figure-center anchored" alt="İki senaryonun her birinde Welch noktası yüzde 5'e yakın. Student, küçük grup daha değişkense yüzde 5'in belirgin üstünde, büyük grup daha değişkense altında.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-means-type1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="comparing_means_files/figure-html/fig-means-type1-1.png" class="img-fluid figure-img" alt="İki senaryonun her birinde Welch noktası yüzde 5'e yakın. Student, küçük grup daha değişkense yüzde 5'in belirgin üstünde, büyük grup daha değişkense altında." width="691">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-means-type1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Şekil&nbsp;35.3: Eşit ortalamalı iki normal grupta Student ve Welch testlerinin benzetim ret oranları. Düşey kesikli çizgi nominal %5 düzeyidir.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p><a href="#fig-means-type1" class="quarto-xref">Şekil&nbsp;<span>35.3</span></a> üzerindeki Student noktalarının yön değiştirmesi, eşit varyans varsayımı bozulduğunda hatanın her zaman aynı yönde olmadığını gösterir. Hangi grubun daha değişken olduğunu örneklem büyüklükleriyle birlikte okumak gerekir.</p>
+</section>
+<section id="egzersizler" class="level2" data-number="35.8">
+<h2 data-number="35.8" class="anchored" data-anchor-id="egzersizler"><span class="header-section-number">35.8</span> Egzersizler</h2>
+<ol type="1">
+<li><strong>Kolay.</strong> Aynı kişilerin iki ölçümü, iki farklı hat ve bir hat ile sabit referans için analiz birimini ve uygun ortalama farkını tanımlayın.</li>
+<li><strong>Kolay.</strong> Sekiz paketlik örnekte −3 gram fark ve yaklaşık −8,88 ile 2,88 gram aralığı nasıl raporlanır? Neden 500 gramın doğrulandığı sonucu çıkmaz?</li>
+<li><strong>Orta.</strong> Bağımsız iki grupta <span class="math inline">\(s_1=8\)</span>, <span class="math inline">\(n_1=16\)</span>, <span class="math inline">\(s_2=3\)</span>, <span class="math inline">\(n_2=36\)</span>. Farkın Welch standart hatasını ve etkin serbestlik derecesini bulun. Hangi grup daha çok belirsizlik getiriyor?</li>
+<li><strong>Orta.</strong> Önce puanları 50, 60, 70 ve sonra puanları 53, 61, 76 olsun. Kişi farklarını, ortalamasını ve farkların örneklem varyansını hesaplayın. Pozitif kovaryans ile ayrı varyansları toplamak arasındaki farkı açıklayın.</li>
+<li><strong>Orta.</strong> Pilot ANOVA’da 500, 501 ve 504 gramlık grup ortalamaları için genel ortalamayı ve gruplar arası kareler toplamını yeniden hesaplayın. Her grupta beş ölçüm var. Grup içi toplam 30 ise F nedir?</li>
+<li><strong>Orta.</strong> Üç hattın birleşik histogramı iki tepeli ve her birinin kendi artıkları yaklaşık simetrik olsun. Bu bilgi tek başına klasik ANOVA’yı geçersiz kılar mı? Hangi ek koşulları araştırırsınız?</li>
+<li><strong>Zor.</strong> Küçük grubun varyansı büyük olduğunda havuzlanmış yöntemle Welch neden farklı standart hatalar verebilir? Varyans ve büyüklük eşleşmesi tersine döndüğünde Tip I hata neden aynı yönde değişmeyebilir?</li>
+<li><strong>Zor.</strong> Genel F testi küçük p-değeri verdiğinde hangi ortalamaların farklı olduğu belirlenmiş midir? Tukey aralıklarını hangi hata ailesi ve model altında yorumlarsınız?</li>
+<li><strong>Zor.</strong> 0,2 gramlık ortalama farkın %95 aralığı 0,1–0,3 gram ve üretim açısından önemli sayılan fark 2 gram olsun. İstatistiksel karar ve üretim kararı hakkında ayrı ayrı ne söyleyebilirsiniz? Gözlemsel tasarımda nedensellik için neye ihtiyacınız var?</li>
+</ol>
+</section>
+<section id="egzersiz-çözümleri" class="level2" data-number="35.9">
+<h2 data-number="35.9" class="anchored" data-anchor-id="egzersiz-çözümleri"><span class="header-section-number">35.9</span> Egzersiz çözümleri</h2>
+<p><strong>1.</strong> Aynı kişinin iki ölçümünde birim kişidir ve fark sonraki eksi önceki puandır. İki hatta birim pakettir ve hedef iki hat ortalamasının farkıdır. Tek hatta yine paket ölçülür, fakat karşılaştırma örneklem ortalamasıyla belirsizliği olmayan referans arasındadır.</p>
+<p><strong>2.</strong> “Sekiz yapay pakette tahmin edilen fark −3 gramdır. Bağımsız normal ölçüm modeliyle fark için %95 t aralığı yaklaşık −8,88–2,88 gramdır.” Aralık sıfırı da önemli olabilecek negatif sapmaları da içerir. Reddetmeme, ortalamanın kesin olarak 500 olduğunu veya pratik eşdeğerliği göstermez.</p>
+<p><strong>3.</strong> Katkılar <span class="math inline">\(64/16=4\)</span> ve <span class="math inline">\(9/36=0{,}25\)</span> olduğundan standart hata <span class="math inline">\(\sqrt{4{,}25}\)</span>, yaklaşık 2,062 birimdir. Welch–Satterthwaite hesabıyla <span class="math inline">\(\nu\)</span> yaklaşık 16,91’dır. Belirsizliğin çoğu daha küçük ve daha değişken birinci gruptan gelir. Bu nedenle etkin serbestlik derecesi 15’e, toplam 50’den daha yakındır.</p>
+<p><strong>4.</strong> Farklar 3, 1 ve 6, ortalama <span class="math inline">\(10/3\)</span> puandır. Örneklem fark varyansı <span class="math inline">\(19/3\)</span>, yaklaşık 6,33 puan karedir. Önce ve sonra puanları kişi içinde birlikte yükseldiğinden kovaryans pozitiftir. İki ayrı varyansın toplamından kovaryansın iki katını çıkarmak, farkların gerçekten gözlenen saçılımını verir.</p>
+<p><strong>5.</strong> Genel ortalama <span class="math inline">\(1505/3\)</span>, yaklaşık 501,67 gramdır. Her grubun genel merkezden kareli sapmasını beşle çarpıp topladığımızda grup arası toplam <span class="math inline">\(130/3\)</span> g² olur. Grup içi ortalama kare <span class="math inline">\(30/12=2{,}5\)</span> g²’dir. Grup arası ortalama kare <span class="math inline">\(65/3\)</span> g² olduğundan F yaklaşık 8,67’dir.</p>
+<p><strong>6.</strong> Ortalamalar ayrıştığında birleşik histogramda birden fazla tepe olabilir. Hat bazındaki hataların biçimi hedeflenir. Önce süreç ve ölçümlerin bağımsızlığı, sonra grup yayılımları, uç değerler ve Q–Q görünümü incelenir. Belirgin farklı varyanslar varsa Welch ANOVA düşünülebilir.</p>
+<p><strong>7.</strong> Ortak varyans büyük grubun kareli sapmalarına daha çok ağırlık verir. Büyük grup daha az değişkense havuz fazla dar kalabilir. Farkın gerçek varyansında ise küçük grubun yüksek varyansı, küçük örneklem böleniyle daha da önem kazanır. Eşleşmeyi ters çevirmek havuzun bu kez gereğinden büyük standart hata vermesine yol açabilir.</p>
+<p><strong>8.</strong> Genel test, ortak ortalama iddiasına ilişkin kanıt verir. Hangi çiftin ayrıştığını belirlemek için çiftlere ilişkin aralıklar gerekir. Tukey’nin aile kontrolü, tanımlanan bütün ikili farklar ve klasik bağımsız, normal, ortak varyans modeli içindir. Koşullar değiştiğinde aynı aralıkları koşulsuz kullanmayız.</p>
+<p><strong>9.</strong> Sıfır aralığın dışında olduğundan, karşılık gelen çift yönlü testte ortalama farkı için ret kararı çıkar. Aralığın tamamı 2 gramın altında kaldığından büyüklük üretim ölçütüne göre önemsiz olabilir. Bu yorum güven aralığının kapsama dayanağına bağlıdır. Nedensellik, grupların oluşumu ve başka etkenleri dışlamaya yarayan bir tasarım veya açık varsayımlar gerektirir.</p>
+</section>
+<section id="bölüm-özeti" class="level2" data-number="35.10">
+<h2 data-number="35.10" class="anchored" data-anchor-id="bölüm-özeti"><span class="header-section-number">35.10</span> Bölüm özeti</h2>
+<p>Ortalama karşılaştırmasında önce hangi farkın hedeflendiği ve hangi gözlemlerin bağlantılı olduğu belirlenir. Welch her grubun varyansını ayrı kullanır, Student gerekçeli bir ortak varyans modeline dayanır. Eşleştirilmiş test aynı kişinin farkını analiz eder. ANOVA, birden çok grubun merkezlerinin ayrışmasını grup içi yayılımla karşılaştırır. Etki tahmini, aralık, p-değeri ve tasarım sınırları birlikte raporlandığında sonucun bilimsel anlamı değerlendirilebilir.</p>
+
+
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="ref-casellaBerger2002" class="csl-entry" role="listitem">
+Casella, George, ve Roger L. Berger. 2002. <em>Statistical Inference</em>. 2. bs. Duxbury/Thomson Learning.
+</div>
+<div id="ref-diezRundelBarr2019" class="csl-entry" role="listitem">
+Diez, David, Mine Çetinkaya-Rundel, ve Christopher D. Barr. 2019. <em><span>OpenIntro Statistics</span></em>. 4. bs. OpenIntro. <a href="https://www.openintro.org/book/os/">https://www.openintro.org/book/os/</a>.
+</div>
+<div id="ref-welch1947" class="csl-entry" role="listitem">
+Welch, B. L. 1947. <span>“The Generalization of Student’s Problem when Several Different Population Variances Are Involved”</span>. <em>Biometrika</em> 34 (1–2): 28-35. <a href="https://doi.org/10.1093/biomet/34.1-2.28">https://doi.org/10.1093/biomet/34.1-2.28</a>.
+</div>
+</div>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const toggle = window.document.createElement('button');
+      toggle.type = "button";
+      toggle.setAttribute("role", "switch");
+      toggle.setAttribute("aria-checked", "false");
+      toggle.classList.add('top-right');
+      toggle.classList.add('quarto-color-scheme-toggle');
+      toggle.setAttribute("aria-label", "Karanlık modu değiştir");
+      toggle.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      toggle.appendChild(i);
+      // Put the toggle in a landmark of its own, so that landmark navigation
+      // can reach it.
+      //
+      // The container is always a fresh direct child of body, and the toggle is
+      // never moved into page furniture that the theme or the author controls.
+      // The toggle is positioned against the page, so any ancestor that
+      // establishes a containing block captures it: a positioned element or a
+      // grid for position: absolute, and transform, filter, will-change or
+      // contain for position: fixed. A direct child of body has none of these
+      // to inherit, and the shift when one appears is silent and visual.
+      //
+      // ARIA says a document should have at most one banner, and axe reports a
+      // duplicate whether or not the banners carry distinct labels. So use a
+      // header when the page has no banner yet, and a named region otherwise.
+      //
+      // A header is a banner wherever it sits, unless it is inside sectioning
+      // content, so this cannot just look at the children of body: a custom
+      // page layout wraps the title block header in a plain div. An explicit
+      // role="banner" always counts.
+      const sectioning = 'article, aside, main, nav, section, [role="article"], [role="complementary"], [role="main"], [role="navigation"], [role="region"]';
+      const hasBanner = Array.from(
+        window.document.querySelectorAll('header:not([role]), [role="banner"]')
+      ).some(function(el) {
+        return el.hasAttribute("role") || el.closest(sectioning) === null;
+      });
+      const container = window.document.createElement(hasBanner ? "div" : "header");
+      if (hasBanner) {
+        container.setAttribute("role", "region");
+        container.setAttribute("aria-label", "Karanlık modu değiştir");
+      }
+      container.classList.add('quarto-color-scheme-toggle-container');
+      container.appendChild(toggle);
+      window.document.body.appendChild(container);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Kopyalandı");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Kopyalandı");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/mfatihtuzen\.github\.io\/r-programlama\/");
+      const newWindowLabel = "(opens in a new tab)";
+      const newWindowNoteId = "quarto-ext-newwindow-label";
+      // Links reference one hidden label through aria-describedby, so the
+      // announcement never changes their accessible name.
+      var describeNewWindow = (link) => {
+        if (!window.document.getElementById(newWindowNoteId)) {
+          var newWindowNote = window.document.createElement("span");
+          newWindowNote.id = newWindowNoteId;
+          newWindowNote.hidden = true;
+          newWindowNote.textContent = newWindowLabel;
+          window.document.body.appendChild(newWindowNote);
+        }
+        var describedBy = (link.getAttribute("aria-describedby") || "").split(/\s+/).filter(Boolean);
+        if (!describedBy.includes(newWindowNoteId)) {
+          describedBy.push(newWindowNoteId);
+          link.setAttribute("aria-describedby", describedBy.join(" "));
+        }
+      }
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+      window.quartoDecorateExternalLinks = function (root) {
+     var links = (root || window.document).querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+            describeNewWindow(link);
+          if (!link.classList.contains('no-external-icon')) {
+          }
+        }
+      }
+      };
+      window.quartoDecorateExternalLinks(window.document);
+    // Esc closes the popup (WCAG 1.4.13) and focus leaving both trigger and
+    // popup closes it (WCAG 2.4.11); tippy handles neither for interactive popups.
+    const hideOnEscAndFocusOut = {
+      name: 'hideOnEscAndFocusOut',
+      defaultValue: true,
+      fn(instance) {
+        const dismiss = () => {
+          // A show scheduled by the trigger delay would otherwise reopen it
+          instance.clearDelayTimeouts();
+          instance.hide();
+        };
+        const onKeyDown = (event) => {
+          if (event.key !== 'Escape') {
+            return;
+          }
+          // Keep Esc from also reaching page handlers (e.g. reveal.js overview),
+          // except an open reveal.js slide menu, which Esc should close too.
+          // The menu handles keys only when its keyboard option is on.
+          const menuHandlesEsc = window.Reveal?.getPlugin?.('menu')?.isOpen() &&
+            window.Reveal.getConfig().menu?.keyboard !== false;
+          if (!menuHandlesEsc) {
+            event.stopPropagation();
+          }
+          if (instance.popper.contains(window.document.activeElement)) {
+            // Disabled while refocusing so the focus trigger does not reopen it
+            instance.disable();
+            instance.reference.focus();
+            instance.enable();
+          }
+          dismiss();
+        };
+        const onFocusOut = (event) => {
+          const target = event.relatedTarget;
+          if (target && !instance.reference.contains(target) &&
+              !instance.popper.contains(target)) {
+            dismiss();
+          }
+        };
+        // On the trigger too: a click trigger (code-annotations: select) has no
+        // blur handling. Attached for the instance's lifetime so leaving the
+        // trigger also cancels a show still pending on the trigger delay.
+        instance.reference.addEventListener('focusout', onFocusOut);
+        return {
+          onShow() {
+            window.document.addEventListener('keydown', onKeyDown, true);
+            instance.popper.addEventListener('focusout', onFocusOut);
+          },
+          onHide() {
+            window.document.removeEventListener('keydown', onKeyDown, true);
+            instance.popper.removeEventListener('focusout', onFocusOut);
+          },
+          onDestroy() {
+            instance.reference.removeEventListener('focusout', onFocusOut);
+          },
+        };
+      },
+    };
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+        plugins: [hideOnEscAndFocusOut],
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          // Each band is positioned against its own containing block, which is
+          // not the offsetParent of the lines, so place it from client rects.
+          const placeBand = (band, firstEl, lastEl, codeBlock) => {
+            const container = band.offsetParent;
+            if (container === null) {
+              return;
+            }
+            const containerRect = container.getBoundingClientRect();
+            // Reveal.js scales slides with a transform, so convert client
+            // pixels back to the CSS pixels of the container.
+            const scale = containerRect.height / container.offsetHeight || 1;
+            const firstRect = firstEl.getBoundingClientRect();
+            const lastRect = lastEl.getBoundingClientRect();
+            const top = (firstRect.top - containerRect.top) / scale - container.clientTop + container.scrollTop;
+            const height = (lastRect.bottom - firstRect.top) / scale;
+            band.style.top = top - 2 + "px";
+            band.style.height = height + 4 + "px";
+            if (codeBlock) {
+              // Without the copy button wrapper, the containing block is wider
+              // than the code block, so span the code block explicitly.
+              const blockRect = codeBlock.getBoundingClientRect();
+              band.style.left = (blockRect.left - containerRect.left) / scale - container.clientLeft + container.scrollLeft + "px";
+              band.style.width = blockRect.width / scale + "px";
+            }
+          };
+          if (lineIds.length > 0) {
+            const el = window.document.getElementById(lineIds[0]);
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const parent = el.parentElement.parentElement;
+            // cook up a div (if necessary) and position it
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            placeBand(div, el, lastEl, parent.closest("div.sourceCode") || parent);
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            placeBand(gutterDiv, el, lastEl);
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+  <script type="application/javascript">
+  window.quartoScrollableRegionsLabels = {"code":"Kaydırılabilir kod","output":"Kaydırılabilir çıktı"};
+  </script>
+<nav class="page-navigation" aria-label="Sayfa">
+  <div class="nav-page nav-page-previous">
+      <a href="../../chapters/05-temel-istatistik/hypothesis_testing.html" class="pagination-link" aria-label="Hipotez Testlerinin Mantığı">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">Hipotez Testlerinin Mantığı</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../../chapters/05-temel-istatistik/nonparametric_tests.html" class="pagination-link" aria-label="Parametrik Olmayan Testler">
+        <span class="nav-page-text"><span class="chapter-number">36</span>&nbsp; <span class="chapter-title">Parametrik Olmayan Testler</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>© 2026, <a href="https://www.linkedin.com/in/dr-m-fatih-t-2b2a4328/">Muhammed Fatih Tüzen</a></p>
+</div>   
+    <div class="nav-footer-center">
+
+<div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/MFatihTuzen/r-programlama/edit/main/chapters/05-temel-istatistik/comparing_means.qmd" class="toc-action"><i class="bi bi-github"></i>Bu sayfayı düzenle</a></li><li><a href="https://github.com/MFatihTuzen/r-programlama/issues/new" class="toc-action"><i class="bi empty"></i>Sorun bildir</a></li></ul></div><div class="cookie-consent-footer"><a href="#" id="open_preferences_center">Cookie Preferences</a></div></div>
+    <div class="nav-footer-right">
+<p>Bu kitap <a href="https://quarto.org/">Quarto</a> ile hazırlanmıştır.</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+<script src="../../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>
