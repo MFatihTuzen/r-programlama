@@ -70,7 +70,7 @@ $$
 \bar y = \frac{1}{n}\sum_{j=1}^{n} y_{s_j}.
 $$
 
-Burada \(N\) anakütledeki yolcu sayısı, \(n\) örneklemdeki ölçümlerin sayısıdır. \(y_i\), anakütlede \(i\) numaralı yolcunun dakika cinsinden bekleme süresidir. \(s_j\), örneklemdeki \(j\). yolcunun anakütledeki numarasını gösterir. Toplam işareti \(\sum\), belirtilen yolcuların bekleme sürelerini toplar. \(\mu\) anakütle ortalaması, \(\bar y\) ise örneklem ortalamasıdır. Bu gösterimde örneğe seçilen herkes için ölçüm olduğunu kabul ediyoruz. Yanıtsızlık varsa hangi ölçümlere dayanarak ortalama aldığımızı ayrıca belirtmemiz gerekir.
+Burada $N$ anakütledeki yolcu sayısı, $n$ örneklemdeki ölçümlerin sayısıdır. $y_i$, anakütlede $i$ numaralı yolcunun dakika cinsinden bekleme süresidir. $s_j$, örneklemdeki $j$. yolcunun anakütledeki numarasını gösterir. Toplam işareti $\sum$, belirtilen yolcuların bekleme sürelerini toplar. $\mu$ anakütle ortalaması, $\bar y$ ise örneklem ortalamasıdır. Bu gösterimde örneğe seçilen herkes için ölçüm olduğunu kabul ediyoruz. Yanıtsızlık varsa hangi ölçümlere dayanarak ortalama aldığımızı ayrıca belirtmemiz gerekir.
 
 Memnuniyet oranında da aynı mantık geçerlidir. “Memnun” ve “çok memnun” yanıtlarını 1, diğer geçerli yanıtları 0 kodlarsak bu değerlerin ortalaması memnuniyet oranını verir. Boş bir yanıtı 0 kodlamak, bilinmeyen görüşü “memnun değil” diye tanımlamış olur. Aynı anakütleden farklı örnekler seçtiğimizde örneklem ortalamalarının değişmesini bekleriz. Bir çekimde 24 dakika bulmamız, 25 dakikalık parametreyi bir dakika eksik tahmin ettiğimizi gösterir. Yöntemin sistematik biçimde düşük tahmin ürettiğini söylemek için, seçim sürecinin tekrarlanan uygulamalarda kısa bekleyenleri kayırıp kayırmadığını incelemek gerekir.
 
@@ -101,7 +101,8 @@ Programı kendiliğinden seçenlerle seçmeyenlerin son puanlarını karşılaş
 Bekleme sürelerine dönelim. Aşağıdaki 20 süreyi öğretim için oluşturduk. Bu kez anakütlenin tamamı kodda yer alıyor. Altışar kişilik iki ayrı örneklem seçiyoruz. Her çekimde bir kişi en fazla bir kez seçiliyor. İkinci çekim yine 20 kişinin tamamından yapıldığı için ilk örneklemde yer alan bir kişi ikinciye de girebilir. İki çekim, örnekleme değişkenliğini görmek için yeterli bir başlangıçtır.
 
 ```{r}
-#| label: thinking-sampling
+#| label: tbl-thinking-sampling
+#| tbl-cap: "Bilinen anakütle ile iki bağımsız örneklemin bekleme süreleri ve ortalamaları"
 
 library(dplyr)
 library(ggplot2)
@@ -125,6 +126,7 @@ knitr::kable(
                      character(1)),
     ortalama = unname(ortalamalar)
   ),
+  row.names = FALSE,
   digits = 2, format.args = list(decimal.mark = ","),
   col.names = c("Grup", "Bekleme süreleri (dakika)", "Ortalama (dakika)")
 )
@@ -258,7 +260,7 @@ ggplot(internet_gozlemleri, aes(x = internet_users_pct, y = gelir)) +
 
 @fig-thinking-wdi grafiğinde yüksek gelir grubundaki gözlemler genel olarak daha yüksek kullanım yüzdelerinde toplanıyor. Düşük gelir grubunun medyanı %12,10, yüksek gelir grubunun medyanı %87,38. Öte yandan grup içindeki değerler tek bir sayıya sıkışmıyor ve bazı grupların değerleri örtüşüyor. Noktalar üst üste yığılmasın diye yalnızca grup yönünde hafifçe kaydırıldı. Yatay konumlar gözlenen yüzdeleri koruyor. Medyanla birlikte ham gözlemleri sunmanın yararını @sec-effective-graphics bölümünde görmüştük.
 
-Ekonomilerin ortalaması alınsaydı her ekonomi bir kez sayılırdı. Örneğin nüfusu 100 bin olan bir ekonomide kullanım %90, nüfusu 900 bin olan bir ekonomide %40 ise ülke yüzdelerinin eşit ağırlıklı ortalaması %65'tir. Birlikte ele alınan nüfusun kullanım oranı ise, iki ölçümün tanımı ve paydaları uyumlu kabul edildiğinde, \((90\,000 + 360\,000) / 1\,000\,000 = 0{,}45\), yani %45 olur. İlk hesap “bir ekonomiye eşit ağırlık verirsek ortalama yüzde kaç?” sorusunu, ikincisi “bu ekonomilerde yaşayan bireylerin ne kadarı internet kullanıyor?” sorusunu yanıtlar. İkinci hedef için nüfus ağırlıkları göstergenin paydasıyla ve gözlem dönemiyle uyumlu olmalıdır. Eksik ekonomileri dışarıda bırakan nüfus ağırlıklı bir oran da yalnızca hesaplamaya giren nüfusu kapsar. Medyan ise ülke yüzdelerinin sıralamasına dayanır. Paydanın toplulaştırmaya etkisini @fig-effective-denominator üzerinde başka bir örnekte incelemiştik.
+Ekonomilerin ortalaması alınsaydı her ekonomi bir kez sayılırdı. Örneğin nüfusu 100 bin olan bir ekonomide kullanım %90, nüfusu 900 bin olan bir ekonomide %40 ise ülke yüzdelerinin eşit ağırlıklı ortalaması %65'tir. Birlikte ele alınan nüfusun kullanım oranı ise, iki ölçümün tanımı ve paydaları uyumlu kabul edildiğinde, $(90\,000 + 360\,000) / 1\,000\,000 = 0{,}45$, yani %45 olur. İlk hesap “bir ekonomiye eşit ağırlık verirsek ortalama yüzde kaç?” sorusunu, ikincisi “bu ekonomilerde yaşayan bireylerin ne kadarı internet kullanıyor?” sorusunu yanıtlar. İkinci hedef için nüfus ağırlıkları göstergenin paydasıyla ve gözlem dönemiyle uyumlu olmalıdır. Eksik ekonomileri dışarıda bırakan nüfus ağırlıklı bir oran da yalnızca hesaplamaya giren nüfusu kapsar. Medyan ise ülke yüzdelerinin sıralamasına dayanır. Paydanın toplulaştırmaya etkisini @fig-effective-denominator üzerinde başka bir örnekte incelemiştik.
 
 Buradaki veri, dünya ekonomileri arasından bilinen seçim olasılıklarıyla çekilmiş bir örneklem olarak tasarlanmamıştır. Özetler, **2019 kitap kesitinde ilgili göstergesi bulunan ülke ve ekonomileri** betimler. Gelir grubu ile internet kullanımı arasındaki gözlemsel fark, gelirin artmasının tek başına internet kullanımını artıracağını göstermez. Altyapı, fiyat ve eğitim gibi başka özellikler de iki göstergeyle ilişkili olabilir. Grup medyanlarının farkı burada betimsel bir sonuç olarak raporlanır.
 
