@@ -93,7 +93,7 @@ $$
 \sigma_N^2=\frac{1}{N}\sum_{i=1}^{N}(y_i-\mu)^2.
 $$
 
-Yerine koymadan basit rastgele seçimde her çekim sırası, tek başına, listeyi eşit olasılıkla temsil eder. Ancak ilk seçimin ortalamadan farkı pozitifse kalan listenin ortalaması düşer. İlk fark $y_i-\mu$ ise, kalanların merkezinin farkı bunun negatifinin $N-1$'e bölümüdür. Bu farkla ilk çekimin farkını çarpıp bütün ilk seçimler üzerinden ortalayınca iki farklı çekimin kovaryansı $-\sigma_N^2/(N-1)$ olur. Kovaryans, merkezlenmiş iki değerin çarpımının beklenen değeridir.
+Yerine koymadan basit rastgele seçimde her çekim sırası, tek başına, listeyi eşit olasılıkla temsil eder. Bir yolcunun seçilmesi kalan listenin bileşimini değiştirir. Örnek listeyi daha fazla kapsadıkça dışarıda kalabilecek yolcu sayısı azalır ve ortalama daha az dalgalanır. İlk seçimin ortalamadan farkı pozitifse kalan listenin ortalaması düşer. İlk fark $y_i-\mu$ ise, kalanların merkezinin farkı bunun negatifinin $N-1$'e bölümüdür. Bu farkla ilk çekimin farkını çarpıp bütün ilk seçimler üzerinden ortalayınca iki farklı çekimin kovaryansı $-\sigma_N^2/(N-1)$ olur. Kovaryans, merkezlenmiş iki değerin çarpımının beklenen değeridir.
 
 Toplamın varyansında $n$ tek-çekim katkısı ve $n(n-1)$ sıralı çiftin kovaryansı vardır. Bunları toplayıp $n^2$'ye bölünce $N>1$ ve $1\leq n\leq N$ için:
 

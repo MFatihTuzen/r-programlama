@@ -1,0 +1,376 @@
+# İstatistiksel Tahmin ve Güven Aralıkları {#sec-confidence-intervals}
+
+## Tek bir tahmin neden yeterli değildir?
+
+Bir belediye, son bir ayda otobüse binmiş yolcuların memnuniyet oranını öğrenmek istiyor. Örnekleme mekanizmasının bu hedef topluluğa uygun olduğunu varsayalım. Seçilen 100 kişiden 60'ı memnun olduğunu söylüyor. Gözlenen %60 bir **nokta tahminidir**. Başka 100 yolcu seçilseydi sonuç %57 veya %64 çıkabilirdi. Aynı yöntemle 1.000 bağımsız yolcu seçilseydi bu dalgalanmanın daha küçük olmasını beklerdik. Ancak listede gece otobüslerini kullananlar eksikse, daha çok gündüz yolcusu ölçmek bu kapsam sorununu çözmez.
+
+@sec-sampling-distributions bölümünde tahmin edicinin aynı araştırma tekrarlandığında alabileceği değerleri inceledik. Şimdi bu bilgiyi kullanarak gözlenen bir tahminin çevresine, belirli bir kapsama amacıyla tasarlanmış sınırlar koyacağız. Bölüm sonunda okur nokta tahmini ile aralık tahminini ayırabilecek, güven düzeyini tekrar eden örneklemeler üzerinden yorumlayabilecek ve ortalama, oran ve medyan için kullanılan yöntemlerin dayanaklarını açıklayabilecektir. Betimsel standart sapma, örnekleme dağılımı ve normal kantiller ön bilgimizdir.
+
+## Tahmin ile belirsizlik ölçüsü
+
+Yolcuların hedef topluluktaki memnuniyet oranı $p$ olsun. Başarı sayısı $X$ ve örneklem büyüklüğü $n$ üzerinden tanımlanan $\hat p=X/n$ **tahmin edicidir**. Örnek henüz seçilmeden değeri değişebilir. Gözlenen $X=60$ ve $n=100$ ile çıkan 0,60 ise bu kuralın bir kez uygulanmış sonucudur. Nokta tahmini, hedef için tek bir sayı verir. Aralık tahmini, aynı veriden iki sınır üretir. Bu sınırlar da örnekten örneğe değişir.
+
+**Standart hata**, tahmin edicinin örnekleme dağılımındaki standart sapmadır. Güven aralığı ise belli bir yöntemle hesaplanan alt ve üst sınırdır. Birçok simetrik yöntemde aralığın yarı genişliği, standart hatanın kritik değerle çarpımıdır. Kritik değer, kapsama hedefimize göre seçilir. Örnekleme tasarımı, gözlem sayısı, değişkenlik ve seçtiğimiz yöntem aralığı birlikte belirler. Bir yöntemin kapsama özelliği değerlendirilirken bu unsurların hangilerinin sabit tutulduğu açık olmalıdır.
+
+## %95 güven ne anlama gelir?
+
+Aynı hedef topluluktan aynı tasarımla 100 yolcu seçtiğimizi, her defasında aynı kuralla bir aralık oluşturduğumuzu düşünelim. Anakütle oranı sabit kalır. Yeni örnekler farklı tahmin ve sınırlar üretir. Yöntem bu koşullarda %95 kapsama sağlıyorsa uzun dönemde aralıkların yaklaşık %95'i gerçek oranı içerir. %95, veri görülmeden önceki **aralık üretme kuralının** başarısına ilişkin bir ifadedir [@diezRundelBarr2019; @gelmanHillVehtari2020].
+
+“Gerçek oran hesapladığım aralığın içinde %95 olasılıkla bulunuyor” cümlesi, parametreye bir olasılık dağılımı yükler. Buradaki sıkçı kurulumda parametre sabittir. Veriyi gördükten sonra sınırlar da belirlenmiştir. Hesaplanan aralık gerçek parametreyi ya kapsar ya kapsamaz. Bilmediğimiz şey hangisinin gerçekleştiğidir. Bayesçi bir **güvenilirlik aralığı** (*credible interval*) ise bir önsel dağılım ve olabilirlik modeli altında parametrenin sonrasal olasılığına ilişkin bir ifade kurabilir. Aynı yüzde kullanılsa bile bu iki yorumun dayandığı olasılık farklıdır.
+
+**Nominal güven düzeyi** yöntemi kurarken hedeflediğimiz yüzdedir. **Gerçek kapsama**, belirtilen tasarım ve gerçek parametre altında yöntemin aralıklarının parametreyi içerme olasılığıdır. Bazı modellerde bunlar tam eşleşir. Yaklaşık veya kesikli yöntemlerde gerçek kapsama parametreye ve örnek büyüklüğüne göre değişebilir. Bir benzetimde ölçülen kapsama oranı da sonlu tekrarların rastgele özetidir. Bu üç niceliği ileride ayrı ayrı göreceğiz.
+
+## Normal ortalama modeliyle aralığı kurmak
+
+Bir dolum hattındaki bağımsız ölçümlerin normal dağıldığını ve süreç standart sapması $\sigma=4$ mL'nin bu ideal örnekte bilindiğini varsayalım. Hedef ortalama $\mu$, ölçüm sayısı $n$, rassal örneklem ortalaması $\bar X$ olsun. @sec-sampling-distributions bölümünden ortalamanın standart hatası $\sigma/\sqrt n$ değeridir. Normal model altında ortalamanın dağılımı da normal olduğundan şu standartlaştırılmış nicelik tam olarak standart normal dağılır:
+
+$$
+Z=\frac{\bar X-\mu}{\sigma/\sqrt n}.
+$$
+
+İki taraflı bir aralık için dışarıda kalacak toplam olasılık $\alpha$ olsun. Simetriden dolayı her kuyruğa $\alpha/2$ ayırırız. $z=z_{1-\alpha/2}$, standart normal dağılımın soldan $1-\alpha/2$ olasılığı biriktirdiği **kritik değerdir**. Dolayısıyla:
+
+$$
+P(-z\leq Z\leq z)=1-\alpha.
+$$
+
+Şimdi odaktaki olayı değiştirmeden onu $\mu$ için yazalım. $h=\sigma/\sqrt n$ pozitif standart hatadır. Önce eşitsizliğin her yanını $h$ ile çarparız. Ardından $\mu$ ortada kalacak biçimde düzenleriz:
+
+$$
+\begin{aligned}
+-zh &\leq \bar X-\mu\leq zh\\
+\bar X-zh &\leq \mu\leq \bar X+zh.
+\end{aligned}
+$$
+
+İki satır aynı olayı tanımlar. Böylece alt sınır $\bar X-zh$, üst sınır $\bar X+zh$ olan rassal aralık $\mu$ değerini $1-\alpha$ olasılıkla kapsar. Veri gözlendiğinde $\bar X$ yerine sayısal ortalama $\bar x$ konur. Güven düzeyi %90, %95 ve %99 olduğunda iki kuyruk için kritik değer yaklaşık 1,645, 1,960 ve 2,576'dır. Ortadaki alanı büyütmek için her iki sınırı da uzaklaştırırız.
+
+## Standart sapma bilinmediğinde: t aralığı
+
+Gerçek süreçte $\sigma$ genellikle bilinmez. Örneklem standart sapması $s$ onun yerine konduğunda payda da örnekten örneğe değişir. Küçük bir örneklemde $s$ tesadüfen küçük çıkabilir. Bu durumda ortalamanın merkezden sapması, hesaplanan ölçeğe göre büyük görünür. Dolayısıyla normal kritik değeri aynen kullanmak, ölçeğin tahmin edilmesiyle gelen dalgalanmayı gözden kaçırır.
+
+Bağımsız ve aynı normal dağılımdan gelen, pozitif varyanslı $n>1$ gözlem için örneklem ortalaması ve örneklem varyansı birbirinden bağımsızdır. Ölçeklenmiş varyans $(n-1)s^2/\sigma^2$ ise $n-1$ serbestlik dereceli bir ki-kare dağılımı izler. Standart normal payı, bu ki-kare değişkeninin kendi serbestlik derecesine bölümünün kareköküyle böleriz. Bu bölen $s/\sigma$ değerine eşittir ve oran Student t dağılımını izler. Tam türetimin ana fikri budur [@diezRundelBarr2019; @gelmanHillVehtari2020].
+
+$$
+T=\frac{\bar X-\mu}{s/\sqrt n}
+\sim t_{n-1}.
+$$
+
+Serbestlik derecesi $n-1$, @sec-descriptive-statistics bölümündeki gibi sapmaların toplamının sıfır olmasından gelir. t eğrisi simetriktir ve özellikle az serbestlik derecesinde normalden daha ağır kuyruklara sahiptir. Aynı merkezi olasılığı yakalamak için daha büyük bir kritik değer gerekir. $t_{1-\alpha/2,n-1}$ ilgili t dağılımının soldan $1-\alpha/2$ olasılık biriktiren kantilidir. Aynı eşitsizlik düzenlemesiyle gözlenen aralık elde edilir:
+
+$$
+\bar x\ \pm\ t_{1-\alpha/2,n-1}\frac{s}{\sqrt n}.
+$$
+
+Küçük örneklemlerde belirgin çarpıklık ve uç gözlemler olduğunda t aralığının tam kapsama gerekçesi zayıflar. Daha büyük bağımsız örneklerde, sonlu pozitif varyans ve standart sapmanın tutarlı biçimde tahmin edilmesi gibi uygun koşullar altında merkezi limit teoremi yaklaşık bir dayanak sağlar. Bağımlı ölçümlere veya ağır kuyruklu her dağılıma aynı formülü uygulayamayız.
+
+Aşağıdaki sekiz değer öğretim için oluşturulmuş tek bir dolum örneğidir. Aynı veriye iki farklı koşulla bakıyoruz. İlkinde $\sigma=4$ mL bildiğimizi, ikincisinde saçılımı veriden tahmin ettiğimizi varsayıyoruz. Aralığı önce açık biçimde hesaplıyor, ardından R'nin tek örneklem t çıktısıyla doğruluyoruz.
+
+```{r}
+#| label: ci-mean
+
+dolum <- c(494, 496, 498, 499, 501, 502, 504, 506)
+n_dolum <- length(dolum)
+ortalama <- mean(dolum)
+s_dolum <- sd(dolum)
+sigma_bilinen <- 4
+guven <- 0.95
+z <- qnorm((1 + guven) / 2)
+
+normal_ci <- ortalama + c(-1, 1) * z * sigma_bilinen / sqrt(n_dolum)
+t_ci <- ortalama + c(-1, 1) * qt((1 + guven) / 2, df = n_dolum - 1) *
+  s_dolum / sqrt(n_dolum)
+t_kontrol <- t.test(dolum, conf.level = guven)$conf.int
+
+knitr::kable(rbind(Normal = normal_ci, t = t_ci, R_t = as.numeric(t_kontrol)),
+             digits = 2, col.names = c("Alt (mL)", "Üst (mL)"))
+```
+
+Merkez her iki yöntemde 500 mL'dir. Normal aralık yaklaşık 497,23–502,77 mL, t aralığı 496,63–503,37 mL'dir. Burada hem kullanılan kantil hem kullanılan yayılım ölçüsü farklıdır. Bu tek örnek, iki yöntemin her veri setinde aynı genişlik sırasını vereceğini göstermez. Yöntem seçimi, `t.test()` çıktısını görmekten önce ölçümlerin tasarımına ve hangi niceliklerin bilindiğine dayanır.
+
+## Aralık ne zaman daralır?
+
+Normal modelde tam genişlik kritik değerin ve standart hatanın çarpımının iki katıdır. Güven düzeyini artırmak kuyruklara daha az olasılık bırakır ve kritik değeri büyütür. Daha değişken bir süreçte $\sigma$ artar ve aynı örneklem büyüklüğünde aralık genişler. Aynı bağımsız model, aynı $\sigma$ ve aynı güven düzeyinde örneklem büyüklüğünü dörtle çarparsak $\sqrt n$ iki katına çıkar. Böylece standart hata ve normal aralık genişliği yarıya iner.
+
+```{r}
+#| label: ci-width
+
+duzey <- c(0.90, 0.95, 0.99)
+kritik <- qnorm((1 + duzey) / 2)
+knitr::kable(data.frame(
+  guven = duzey, kritik = kritik,
+  genislik_n_25 = 2 * kritik * 4 / sqrt(25),
+  genislik_n_100 = 2 * kritik * 4 / sqrt(100),
+  genislik_sigma_8 = 2 * kritik * 8 / sqrt(25)
+), digits = 2)
+```
+
+Son sütunda $n=25$ sabit tutuldu ve süreç standart sapması 8 mL'ye çıkarıldı. Tabloda aynı büyüklük için %99 aralığının %90 aralığından daha geniş, aynı güven düzeyi için $n=100$ aralığının $n=25$ aralığının yarısı olduğu görülür. t aralığında örnek büyüdükçe kritik değer de değişir. Ayrıca gerçek örneklerde $s$ sabit kalmaz. Kapsam yanlılığı veya sistematik yanıtsızlık varsa daha dar bir aralık, yanlış hedef çevresinde daha kesin bir ölçüm anlamına gelebilir.
+
+## Bir oran için Wald ve Wilson aralıkları
+
+Şimdi 100 yolcunun 60'ının memnun olduğunu söylediği ankete dönelim. Bağımsız, aynı $p$ başarı olasılığına sahip Bernoulli yanıtlarında $X$ binom dağılımına sahiptir. @sec-sampling-distributions bölümünde gördüğümüz gibi $\hat p=X/n$ tahmin edicisinin standart hatası, $p(1-p)/n$ varyansının kareköküdür. $p$ bilinmediği için Wald yöntemi bu varyansı gözlenen $\hat p$ değerinde değerlendirir:
+
+$$
+\widehat{\operatorname{SE}}(\hat p)
+=\sqrt{\frac{\hat p(1-\hat p)}{n}}.
+$$
+
+Wald aralığı, standart normal yaklaşımı ve bu yerine koyma adımıyla $\hat p\pm z\,\widehat{\operatorname{SE}}(\hat p)$ olur. Buradaki $z$, önceki iki taraflı kritik değerdir. Hesap kolaydır. Yine de küçük örneklemde veya $p$ 0 ya da 1'e yakınken dağılım çarpık ve basamaklıdır. Üstelik tahmin edilen standart hata, uçta küçük çıkabilir. Örneğin 20 kişide bir başarı gözlendiğinde alt sınır sıfırın altına iner. Hiç başarı gözlenmezse tahmini standart hata sıfırdır ve Wald aralığı tek bir noktaya çöker. Sıfır başarı, gerçek başarının imkânsız olduğuna dair kesin kanıt sağlamaz. Wald'ın kapsama sorunları, basit örnek büyüklüğü kurallarının gösterebildiğinden daha kalıcı olabilir [@brownCaiDasGupta2001].
+
+### Wilson sınırları nereden gelir?
+
+Wilson yöntemi şu soruyla başlar. Aday bir $p$ değeri gerçekten parametre olsaydı, gözlenen $\hat p$ o adaydan ne kadar uzak olurdu? Bu kez uzaklığı aday $p$ değerinin öngördüğü standart hataya böleriz. $0<p<1$ için normal skor yaklaşımında gözlenen uzaklık en fazla $z$ standart hata ise adayı aralığa alırız:
+
+$$
+\frac{(\hat p-p)^2}{p(1-p)/n}\leq z^2.
+$$
+
+Pozitif paydayla çarpınca sol tarafa tüm terimleri toplayabiliriz. Bilinmeyen burada aday $p$ değeridir. Eşitsizlik aşağıdaki ikinci derece ifadeye dönüşür:
+
+$$
+\begin{aligned}
+(n+z^2)p^2
+&-(2n\hat p+z^2)p\\
+&+n\hat p^2\leq 0.
+\end{aligned}
+$$
+
+$p^2$ katsayısı pozitiftir. Dolayısıyla uygun adaylar iki kök arasında kalır. Eşitliğin köklerini merkez ve yarı genişlik biçiminde yazmak, kapalı formülü okumayı kolaylaştırır. $D=1+z^2/n$ ortak bölen, $c$ aralığın merkezi ve $w$ yarı genişliği olsun:
+
+$$
+\begin{aligned}
+c&=\frac{\hat p+z^2/(2n)}{D},\\
+w&=\frac{z}{D}
+\sqrt{\frac{\hat p(1-\hat p)}{n}+\frac{z^2}{4n^2}}.
+\end{aligned}
+$$
+
+Wilson aralığı $[c-w,c+w]$ olur. Merkez, özellikle küçük örneklemlerde, $\hat p$ ile 0,5 arasında bir noktaya kayar. Boş başarı ve tam başarı durumlarında uç değerler ikinci derece eşitsizlikten, yani iç adayların sınırından elde edilir. Hiç başarı yoksa alt sınır 0, üst sınır $z^2/(n+z^2)$ değeridir. Sınırlar 0–1 içinde kalır. Altta yatan skor yaklaşımı yine yaklaşıktır. Binom dağılımının basamakları nedeniyle Wilson kapsaması da her $p$ değerinde tam %95 değildir [@brownCaiDasGupta2001].
+
+Aşağıdaki işlev verilen başarı sayıları için formülleri doğrudan uygular. Vektör girdisi, aynı hesabı benzetimdeki her örneğe ayrı ayrı yapmamızı sağlar. Uç durumlarda formüllerin tam sınır olan 0 veya 1'i döndürmesini açıkça sağlıyoruz.
+
+```{r}
+#| label: ci-proportion
+
+oran_araligi <- function(x, n, guven = 0.95) {
+  phat <- x / n
+  z <- qnorm((1 + guven) / 2)
+  wald_yari <- z * sqrt(phat * (1 - phat) / n)
+  d <- 1 + z^2 / n
+  merkez <- (phat + z^2 / (2 * n)) / d
+  yari <- (z / d) * sqrt(phat * (1 - phat) / n + z^2 / (4 * n^2))
+  data.frame(
+    wald_alt = phat - wald_yari, wald_ust = phat + wald_yari,
+    wilson_alt = ifelse(x == 0, 0, merkez - yari),
+    wilson_ust = ifelse(x == n, 1, merkez + yari)
+  )
+}
+
+basari <- c(60, 1, 0)
+n_oran <- c(100, 20, 20)
+oran_ornekleri <- oran_araligi(basari, n_oran)
+knitr::kable(cbind(basari, n = n_oran, oran_ornekleri), digits = 3)
+```
+
+100 kişide 60 başarı için iki yöntem birbirine yakın sonuç verir. 20 kişide bir başarı için Wald negatif bir alt sınır verirken Wilson bunu pozitif tutar. 20 kişide sıfır başarı için Wald yalnız 0'ı içerir. Wilson üst sınırı yaklaşık 0,161 olur. R'nin `binom.test()` aralığı ise Wilson'dan farklıdır. Bu işlev, binom kuyruklarını tersine çeviren Clopper–Pearson aralığını verir. Bu aralığın model altındaki kapsaması nominal düzeyin altına düşmez ve bazı parametrelerde onu aşar. Aşağıdaki görselde Wald değerlerini kesmeden gösteriyoruz. Bir alt sınırı sıfıra çekmek aralığın görünümünü değiştirir. Ancak [0,1] içindeki gerçek bir $p$ için bu kesme, tek başına kapsama olayını değiştirmez.
+
+```{r}
+#| label: fig-ci-proportion
+#| fig-width: 7
+#| fig-height: 3.8
+#| fig-cap: "Üç varsayımsal başarı sayısı için iki taraflı %95 Wald ve Wilson aralıkları. Dikey kesikli çizgi oranların doğal alt sınırı olan sıfırı gösterir."
+#| fig-alt: "60 bölü 100 örneğinde iki aralık yakın. 1 bölü 20 için Wald sıfırın altına taşıyor. 0 bölü 20 için Wald sıfıra çöküyor, Wilson sıfırdan yaklaşık 0,161'e uzanıyor."
+
+library(ggplot2)
+
+durum <- factor(c("60 / 100", "1 / 20", "0 / 20"),
+                levels = c("0 / 20", "1 / 20", "60 / 100"))
+oran_grafik <- rbind(
+  data.frame(durum, yontem = "Wald", alt = oran_ornekleri$wald_alt,
+             ust = oran_ornekleri$wald_ust),
+  data.frame(durum, yontem = "Wilson", alt = oran_ornekleri$wilson_alt,
+             ust = oran_ornekleri$wilson_ust)
+)
+oran_grafik$y <- as.integer(oran_grafik$durum) +
+  ifelse(oran_grafik$yontem == "Wald", 0.12, -0.12)
+
+ggplot(oran_grafik, aes(y = y, colour = yontem)) +
+  geom_vline(xintercept = 0, linetype = "dashed", colour = "grey50") +
+  geom_segment(aes(x = alt, xend = ust, yend = y, linetype = yontem),
+               linewidth = 0.9) +
+  geom_point(aes(x = alt, shape = yontem), size = 2) +
+  geom_point(aes(x = ust, shape = yontem), size = 2) +
+  scale_y_continuous(breaks = seq_along(levels(durum)), labels = levels(durum)) +
+  scale_colour_manual(values = c(Wald = "#A33D29", Wilson = "#245773")) +
+  labs(x = "Memnuniyet oranı", y = "Başarı / örneklem büyüklüğü",
+       colour = NULL, linetype = NULL, shape = NULL) +
+  theme_minimal(base_size = 12) +
+  theme(legend.position = "bottom", plot.background = element_rect(fill = "white", colour = NA))
+```
+
+@fig-ci-proportion, özellikle sıfır başarının iki yöntemde neden farklı yorumlandığını görünür kılar. Wilson, gözlenen 0 değerini korur ve onunla uyumlu pozitif adayları da aralığa alır.
+
+## Bootstrap ile yeniden örnekleme
+
+Bir bekleme süresi araştırmasında tipik süreyi medyanla özetlemek isteyebiliriz. Ortalamanın standart hatası için kullandığımız formül medyana doğrudan uygulanmaz. Elimizde tek bir bağımsız örneklem varsa **bootstrap**, gözlenen değerlerin dağılımını anakütlenin yaklaşık bir temsili olarak kullanır. Bir bootstrap örneği için, gözlenen listedeki değerlerden listenin uzunluğu kadar **yerine koyarak** çekeriz. Bazı değerler tekrar eder, bazıları hiç gelmez. Her yeni listeden medyan hesaplanır. Tekrarların ürettiği medyan dağılımı, orijinal örnekleme değişkenliğini yaklaşık olarak yansıtır [@ismayKim2020ModernDive].
+
+Bu işlem anakütleden yeni yolcular seçmez. Orijinal listedeki bilgiyle sınırlıdır. Örneklemde uzun beklemeler hiç bulunmuyorsa yeniden örnekleme bunları üretemez. Öğretim için aşağıdaki dokuz süreyi kullanıyoruz. Önce tek bir yeniden örneklemle mekanizmayı görünür kılıyoruz. Ardından 5.000 tekrarın medyanlarının %2,5 ve %97,5 kantillerini alarak **yüzdelik bootstrap aralığını** elde ediyoruz.
+
+```{r}
+#| label: ci-bootstrap
+
+bekleme <- c(6, 7, 8, 8, 9, 11, 12, 15, 24)
+set.seed(5501)
+tek_boot <- sample(bekleme, size = length(bekleme), replace = TRUE)
+rbind(gozlenen = bekleme, bootstrap = tek_boot)
+
+tekrar_boot <- 5000
+boot_medyan <- replicate(tekrar_boot,
+                         median(sample(bekleme, size = length(bekleme), replace = TRUE)))
+boot_ci <- quantile(boot_medyan, c(0.025, 0.975))
+c(gozlenen_medyan = median(bekleme), bootstrap_se = sd(boot_medyan), boot_ci)
+```
+
+```{r}
+#| label: fig-ci-bootstrap
+#| fig-width: 7
+#| fig-height: 3.8
+#| fig-cap: "Yapay bekleme örneğinden yerine koyarak üretilen 5.000 bootstrap medyanı. Kesikli çizgiler yüzdelik aralık sınırlarıdır."
+#| fig-alt: "Medyanların sütunları kaydedilmiş dakika değerlerinde kümeleniyor. Ortadaki düz çizgi gözlenen medyanı, iki kesikli çizgi bootstrap yüzdelik sınırlarını gösteriyor."
+
+ggplot(data.frame(medyan = boot_medyan), aes(x = medyan)) +
+  geom_bar(width = 0.72, fill = "#47758B") +
+  geom_vline(xintercept = median(bekleme), colour = "#222222", linewidth = 0.8) +
+  geom_vline(xintercept = boot_ci, linetype = "dashed", colour = "#A33D29",
+             linewidth = 0.9) +
+  labs(x = "Bootstrap medyanı (dakika)", y = "Tekrar sayısı") +
+  theme_minimal(base_size = 12) +
+  theme(plot.background = element_rect(fill = "white", colour = NA))
+```
+
+Gözlenen medyan 9 dakikadır. Bu tekrarlar için medyanın bootstrap standart hatası yaklaşık 1,81 dakika, yüzdelik aralığı 7–15 dakikadır. @fig-ci-bootstrap üzerinde medyanlar, örnekteki belirli değerlerde birikir. Küçük ve bağlı değerleri olan örneklerde bootstrap dağılımı bu yüzden basamaklı ve asimetrik olabilir. Yüzdelik yöntemin nominal kapsaması otomatik olarak gerçekleşmez. Uç değer bir yeniden örneklemde birden çok kez seçilebilir ve duyarlı istatistiklerin kuyruklarını kuvvetle etkileyebilir. Medyan genellikle ortalamadan daha dayanıklıdır. Buna rağmen çok küçük örnek, anakütle medyanının çevresini yeterince temsil etmeyebilir. Aynı araç içindeki yolcular gibi bağımlı birimlerde tek tek kişileri bağımsız çekmek, bağımlılığı siler. Yeniden örnekleme birimi tasarıma uygun seçilmelidir.
+
+## Kapsamayı benzetimle görmek
+
+Şimdi gerçek parametreyi bildiğimiz bir düzeneğe geçelim. Her biri 12 bağımsız normal ölçüm içeren 2.000 yeni örnek üreteceğiz. Modelin ortalaması 500 mL, standart sapması 4 mL'dir. Her örnekten iki taraflı %95 t aralığı hesaplayıp 500'ün sınırlar arasında olup olmadığını kaydedeceğiz. Her aralık farklı örneğe karşılık gelir. Bir yöntemi değerlendirirken aynı veri üzerinde tekrar tekrar aralık üretmiyoruz.
+
+```{r}
+#| label: ci-normal-coverage
+
+set.seed(5502)
+tekrar_t <- 2000
+n_t <- 12
+mu_model <- 500
+sigma_model <- 4
+ornekler <- matrix(rnorm(tekrar_t * n_t, mu_model, sigma_model), nrow = tekrar_t)
+merkezler <- rowMeans(ornekler)
+yarilar <- qt(0.975, df = n_t - 1) * apply(ornekler, 1, sd) / sqrt(n_t)
+t_araliklari <- data.frame(
+  tekrar = seq_len(tekrar_t), alt = merkezler - yarilar, ust = merkezler + yarilar
+)
+t_araliklari$kapsar <- with(t_araliklari, alt <= mu_model & mu_model <= ust)
+c(kapsayan = sum(t_araliklari$kapsar), oran = mean(t_araliklari$kapsar),
+  teorik_MC_sh = sqrt(0.95 * 0.05 / tekrar_t))
+```
+
+```{r}
+#| label: fig-ci-coverage
+#| fig-width: 7
+#| fig-height: 5.3
+#| fig-cap: "2.000 normal model tekrarının ilk 50 t aralığı. Dikey çizgi sabit gerçek ortalamayı gösterir. Kapsama oranı bütün tekrarlar üzerinden hesaplanmıştır."
+#| fig-alt: "Elli yatay aralıktan çoğu 500 mL'deki dikey çizgiyi kesiyor. Kesmeyenler kesikli çizgi ve farklı renkle gösteriliyor. Aralıklar özgün tekrar sırasında."
+
+ilk <- head(t_araliklari, 50)
+ilk$durum <- ifelse(ilk$kapsar, "Kapsıyor", "Kapsamıyor")
+
+ggplot(ilk, aes(y = tekrar, colour = durum, linetype = durum)) +
+  geom_vline(xintercept = mu_model, colour = "#333333", linewidth = 0.75) +
+  geom_segment(aes(x = alt, xend = ust, yend = tekrar), linewidth = 0.75) +
+  scale_colour_manual(values = c(Kapsıyor = "#245773", Kapsamıyor = "#A33D29")) +
+  scale_linetype_manual(values = c(Kapsıyor = "solid", Kapsamıyor = "dashed")) +
+  labs(x = "Ortalama için güven aralığı (mL)", y = "Tekrar numarası",
+       colour = NULL, linetype = NULL) +
+  theme_minimal(base_size = 12) +
+  theme(legend.position = "bottom", plot.background = element_rect(fill = "white", colour = NA))
+```
+
+@fig-ci-coverage üzerindeki dik çizgi sabittir. Değişen, örnekten hesaplanan aralıklardır. Toplam 2.000 aralığın 1.903'ü 500 mL'yi kapsadı. Gözlenen %95,15, teorik %95'in bir Monte Carlo tahminidir. Kapsama göstergesi 0 veya 1 olduğu için 2.000 bağımsız tekrarda oranın teorik Monte Carlo standart hatası yaklaşık 0,0049, yani yarım yüzde puandır. Sonlu bir çalışmada oranın tam 0,95 çıkmasını beklemeyiz.
+
+İkinci deneyde $n=20$ ve gerçek başarı olasılığı $p=0{,}05$ olsun. Aynı 20.000 bağımsız binom örneğine hem Wald hem Wilson yöntemini uyguluyoruz. Böylece yöntemler aynı başarı sayıları üzerinden karşılaştırılıyor. İki aralık da nominal %95 düzeyinde. Bu kez gerçek kapsama, mümkün olan 21 başarı sayısının binom olasılıklarını toplayarak da bulunabilir.
+
+```{r}
+#| label: ci-binomial-coverage
+
+set.seed(5503)
+tekrar_p <- 20000
+n_model <- 20
+p_model <- 0.05
+x_tekrar <- rbinom(tekrar_p, size = n_model, prob = p_model)
+
+kapsama <- function(aralik, p) {
+  cbind(Wald = aralik$wald_alt <= p & p <= aralik$wald_ust,
+        Wilson = aralik$wilson_alt <= p & p <= aralik$wilson_ust)
+}
+
+gozlenen_kapsama <- colMeans(kapsama(oran_araligi(x_tekrar, n_model), p_model))
+olasi_x <- 0:n_model
+kutle <- dbinom(olasi_x, size = n_model, prob = p_model)
+tam_kapsama <- colSums(kapsama(oran_araligi(olasi_x, n_model), p_model) * kutle)
+knitr::kable(rbind(Benzetim = gozlenen_kapsama, "Binom toplamı" = tam_kapsama),
+             digits = 4)
+```
+
+Binom toplamına göre bu koşulda gerçek kapsama Wald için %63,89, Wilson için %92,45'tir. Benzetim sırasıyla %64,19 ve %92,49 verdi. Wald, sıfır başarı görülen örneklerde gerçek pozitif oranı kapsayamaz. Bu örneklerin olasılığı $0{,}95^{20}$, yaklaşık %36'dır. Wilson sıfır başarı durumunda da pozitif adayları kapsar. Benzetim ve binom toplamı arasındaki küçük fark Monte Carlo değişkenliğiyle uyumludur. Yöntemlerin bu parametredeki sırası, tüm olası $n$ ve $p$ değerlerine ilişkin bir garanti vermez [@brownCaiDasGupta2001].
+
+## Bir aralıktan hangi sonuçları çıkarabiliriz?
+
+Dolum örneğindeki güven aralığının hedefi **ortalama dolumdur**. İçerdiği aralıkta gözlemlerin %95'inin bulunması gerekmez. Gelecekteki tek bir şişenin dolumunu öngörmek için başka bir soru sorarız. Aynı bağımsız normal modelde, $\sigma$ biliniyorsa yeni bir dolumla örneklem ortalaması arasındaki farkın standart sapması $\sigma\sqrt{1+1/n}$ değeridir. Yeni şişenin kendi değişkenliği de belirsizliğe eklendiği için olağan %95 **tahmin aralığı** ortalama güven aralığından daha geniştir. Örneğin $\sigma=4$ ve $n=25$ için ortalama aralığının yarı genişliği yaklaşık 1,57 mL, tek yeni şişe için yaklaşık 8,00 mL'dir.
+
+Bir aralık, tahmini ve pratik açıdan makul görülebilecek değer aralığını birlikte tartışmamıza yardım eder. Örneğin iki sürecin ortalama farkına ilişkin dar bir aralık, tüm değerleri üretim açısından önemsiz bir bölgede kalıyorsa mühendislik kararı için sınırlı bir farkı ortaya koyabilir. Gözlemsel bir karşılaştırmada dar aralık nedensellik kanıtı sağlamaz. Aralığı gördükten sonra ölçümü, alt grubu veya güven düzeyini yalnızca istenen sonucu verdiği için seçmek de tekrar edilen prosedürü değiştirir. Önceden belirlenmiş aralık için hesaplanan kapsama böyle bir seçim kuralına aynen taşınamaz. 5.6'da aday değerlerin verilerle uyuşmasını hipotez testleri üzerinden ele alacağız.
+
+## Egzersizler
+
+1. **Kolay.** Rastgele seçilen 100 yolcudan 60'ı memnun. Nokta tahmini nedir? Aynı araştırmadan elde edilen %95 aralığının neyi eklediğini ve kapsam eksiği varsa neyi çözemediğini açıklayın.
+2. **Kolay.** “Parametre %95 olasılıkla aralığımızda ve yolcuların %95'i de bu aralıktadır.” Cümleyi sıkçı çerçeveye uygun şekilde düzeltin.
+3. **Orta.** Bağımsız normal ölçümlerde $\sigma=4$, $n=25$ ve $\bar x=500$ olsun. %90 ve %99 ortalama aralıklarını bulun. Aynı koşullarda $n=100$ olursa genişlikleri nasıl değişir?
+4. **Orta.** Dolum örneğindeki sekiz değerden $\sigma$ bilinmiyorken %95 aralığını kurun. Örneklem standart sapmasının ve serbestlik derecesinin formüle nerede girdiğini açıklayın.
+5. **Orta.** 20 kişilik bağımsız Bernoulli örneğinde hiç başarı yok. Wald ve Wilson üst sınırlarını karşılaştırın. Sıfır başarının parametre hakkında neden kesinlik yaratmadığını açıklayın.
+6. **Orta.** 6, 7, 8, 8 ve 9 dakikalık veriden mümkün bir bootstrap örneği yazın. Örneğinizdeki medyanı hesaplayın. 12 dakikalık bir değer üretilebilir mi?
+7. **Zor.** Ortalama kapsama deneyinde 2.000 tekrardan 1.890'ı gerçek değeri içerirse gözlenen kapsama nedir? Farkı Monte Carlo standart hatasıyla karşılaştırın. Bir çalışmada gözlenen oranın nominal değerin altında olması ne gösterir?
+8. **Zor.** R ile $n=20$, $p=0{,}10$ için Wald ve Wilson kapsamasını 10.000 tekrarla karşılaştırın. Aynı parametrede binom toplamını hesaplayın. Sonuçların niçin yalnızca bu senaryoyu değerlendirdiğini açıklayın.
+
+## Egzersiz çözümleri
+
+**1.** Nokta tahmini $60/100=0{,}60$ değeridir. Aralık, belirli bir seçme tasarımı ve yöntem altında örnekleme değişkenliğine göre oluşturulan alt ve üst sınırı verir. Listede hiç bulunmayan yolcuların görüşü bu hesaptan çıkmaz.
+
+**2.** “Aynı varsayımlar altında aynı örnekleme ve aralık oluşturma kuralını tekrarladığımızda aralıkların yaklaşık %95'inin sabit parametreyi kapsamasını bekleriz.” Bu ifade, yöntemin gerçekten %95 kapsadığı koşullar için geçerlidir. Yolcuların bireysel sonuçlarının yayılımı başka bir niceliktir.
+
+**3.** Standart hata $4/5=0{,}8$ birimdir. %90 için $500\pm1{,}645(0{,}8)$, yaklaşık 498,68–501,32. %99 için $500\pm2{,}576(0{,}8)$, yaklaşık 497,94–502,06 bulunur. $n=100$ olduğunda standart hata 0,4 ve aynı düzeylerde aralık genişlikleri yarısı olur.
+
+**4.** Örneklem ortalaması 500, $s=\sqrt{114/7}$ mL ve serbestlik derecesi 7'dir. $s/\sqrt 8$ standart hata tahminidir. %95 t kantili yaklaşık 2,365 olduğundan sınırlar yaklaşık 496,63 ve 503,37 mL'dir. Model bağımsız normal gözlemlere dayanır.
+
+**5.** Wald'ın üst sınırı sıfırdır. Wilson'ın üst sınırı yaklaşık 0,161'dir. Gözlenen sıfır, 20 denemede hiç başarı gelmediğini söyler. Küçük ama pozitif bir başarı olasılığı da bu sonucu üretebilir.
+
+**6.** Örneğin 6, 6, 8, 9, 9 olası bir yeniden örneklemdir. Medyan 8'dir. Örnek yalnızca kayıtlı değerlerden çekildiği için 12 üretilemez. Tek bir yeniden örneklem yerine çok sayıda tekrar medyanın yaklaşık dağılımını verir.
+
+**7.** Gözlenen oran $1890/2000=0{,}945$ olur. Nominal düzeyden 0,005 fark, yaklaşık bir Monte Carlo standart hatasıdır. Bu büyüklükte bir sapma, yöntemin %95 kapsadığı durumda da makuldür. Yöntem varsayımlarını ve daha geniş bir tekrar deneyini incelemeden sistematik düşük kapsama sonucu çıkaramayız.
+
+**8.** Teorik kapsama için her başarı sayısının oluşturduğu aralığın 0,10'u içerip içermediğini belirleyip ilgili olasılıkları toplarız. Benzetim aynı hesabı rastgele çekilen başarı sayıları üzerinden yaklaşık yapar.
+
+```{r}
+#| label: ci-solution-coverage
+
+set.seed(5508)
+x_alistirma <- rbinom(10000, size = 20, prob = 0.10)
+benzetim_alistirma <- colMeans(kapsama(oran_araligi(x_alistirma, 20), 0.10))
+tam_alistirma <- colSums(kapsama(oran_araligi(0:20, 20), 0.10) *
+                           dbinom(0:20, 20, 0.10))
+rbind(Benzetim = benzetim_alistirma, "Binom toplamı" = tam_alistirma)
+```
+
+Benzetim oranları teorik değerlere yakındır. Bir sonraki tohumda küçük farklar görülebilir. Binom toplamı, burada kullanılan $n$, $p$, güven düzeyi ve aralık kurallarına özgüdür. Bu girdiler değiştiğinde hangi başarı sayılarının gerçek değeri kapsadığı ve onların olasılıkları değişebilir.
+
+## Bölüm özeti
+
+Nokta tahmini hedef için bir sayı verir. Güven aralığı, seçilen örnekleme ve hesaplama kuralıyla o tahminin belirsizliğini ifade eder. Sıkçı güven düzeyi, tekrarlar boyunca sabit hedefin kapsanmasına ilişkindir. Normal ve t aralıkları ölçeğin bilinişine, Wald ve Wilson oran aralıkları ise belirsizliği değerlendirdikleri parametre değerine göre ayrılır. Bootstrap, gözlenen örneklemin izin verdiği ölçüde yeniden örnekleme yapar. Bir aralığın genişliği, kapsaması ve araştırma kapsamı birlikte değerlendirilmelidir.
