@@ -101,7 +101,8 @@ Programı kendiliğinden seçenlerle seçmeyenlerin son puanlarını karşılaş
 Bekleme sürelerine dönelim. Aşağıdaki 20 süreyi öğretim için oluşturduk. Bu kez anakütlenin tamamı kodda yer alıyor. Altışar kişilik iki ayrı örneklem seçiyoruz. Her çekimde bir kişi en fazla bir kez seçiliyor. İkinci çekim yine 20 kişinin tamamından yapıldığı için ilk örneklemde yer alan bir kişi ikinciye de girebilir. İki çekim, örnekleme değişkenliğini görmek için yeterli bir başlangıçtır.
 
 ```{r}
-#| label: thinking-sampling
+#| label: tbl-thinking-sampling
+#| tbl-cap: "Bilinen anakütle ile iki bağımsız örneklemin bekleme süreleri ve ortalamaları"
 
 library(dplyr)
 library(ggplot2)
