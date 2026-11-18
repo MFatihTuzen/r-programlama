@@ -112,7 +112,8 @@ c(sayimla = dogru_pozitif / (dogru_pozitif + yanlis_pozitif),
 #| fig-cap: "Varsayımsal 10.000 kişilik taramada beklenen doğal frekanslar. Kalın dallar pozitif sonuçları, alttaki kutu pozitif öngörü değerinin paydasını gösterir."
 #| fig-alt: "10.000 kişi ikiye ayrılıyor. Durum mevcut olan 100 kişide 90 pozitif ve 10 negatif, durum mevcut olmayan 9.900 kişide 495 pozitif ve 9.405 negatif bekleniyor. Pozitifler 90 artı 495, toplam 585. Bunların 90'ı doğru pozitif, oran yüzde 15,38."
 
-adet <- function(x) formatC(round(x), format = "f", digits = 0, big.mark = ".")
+adet <- function(x) formatC(round(x), format = "f", digits = 0, big.mark = ".",
+                            decimal.mark = ",")
 eski_par <- par(mar = rep(0.2, 4))
 plot.new()
 plot.window(xlim = c(0, 10), ylim = c(0, 8))

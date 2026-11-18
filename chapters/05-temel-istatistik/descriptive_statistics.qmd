@@ -226,9 +226,10 @@ ozet_olculer <- function(x) {
   c(ortalama = mean(x), medyan = median(x), aciklik = diff(range(x)),
     IQR = IQR(x), standart_sapma = sd(x))
 }
-knitr::kable(rbind(ilk = ozet_olculer(kira),
-                   degisen = ozet_olculer(kira_uzun_kuyruk)),
-             digits = 2)
+kira_karsilastirma <- cbind(İlk = ozet_olculer(kira),
+                            Değişen = ozet_olculer(kira_uzun_kuyruk))
+rownames(kira_karsilastirma) <- c("Ortalama", "Medyan", "Açıklık", "IQR", "Standart sapma")
+knitr::kable(kira_karsilastirma, digits = 2, col.names = c("İlk", "Değişen"))
 ```
 
 Standart sapma 3,54'ten yaklaşık 21,27 bin TL'ye yükselir. Yüksek gözlemin yalnızca kendi kareli sapması değişmez. Ortalama yer değiştirdiği için geri kalan gözlemlerin merkeze uzaklığı da değişir. Sıralamaya dayalı medyan ve IQR, bu tür değişikliklere görece **dayanıklıdır**. @sec-outliers bölümünde kullanılan MAD de benzer biçimde medyan çevresindeki mutlak sapmaların medyanına dayanır. Buradaki amaç hangi değerin silineceğine karar vermek değil, farklı özetlerin verideki değişime ne yanıt verdiğini anlamaktır [@hampel1986].
@@ -305,8 +306,16 @@ ozet_wdi <- bind_rows(lapply(ulkeler[gostergeler], function(x) {
 })) |>
   mutate(gosterge = gosterge_adi, .before = 1)
 
-knitr::kable(ozet_wdi, digits = 2,
-             format.args = list(decimal.mark = ",", big.mark = "."))
+wdi_olculer <- t(as.matrix(ozet_wdi[-1]))
+rownames(wdi_olculer) <- c("Toplam", "Geçerli", "Eksik", "Ortalama",
+                           "Medyan", "Q1", "Q3", "IQR")
+wdi_gosterim <- apply(wdi_olculer, 2, function(x) {
+  c(formatC(x[1:3], format = "d"),
+    formatC(x[4:8], format = "f", digits = 2, decimal.mark = ",", big.mark = "."))
+})
+rownames(wdi_gosterim) <- rownames(wdi_olculer)
+knitr::kable(wdi_gosterim, col.names = c("GSYH/kişi", "Yaşam bekl."),
+             align = c("r", "r"))
 ```
 
 Kişi başına GSYH için 217 ekonomiden 211'inde geçerli değer var. Bu 211 değerin eşit ağırlıklı ortalaması yaklaşık 19.101, medyanı 7.037 cari ABD doları. Ortadaki yarı yaklaşık 2.515 ile 25.155 dolar arasında. Ortalamanın medyandan belirgin yüksek olmasına karşılık, yaşam beklentisinde iki ölçü daha yakın. Geçerli 217 kayıtta ortalama 73,03, medyan 74,17 yıl ve orta bölgenin genişliği yaklaşık 11,48 yıl. Bu iki farkın anlamını dağılımlarla birlikte okuyalım.

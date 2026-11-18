@@ -97,7 +97,7 @@ par(eski)
 
 ## Küçük p-değeri neden ret kararına yol açar?
 
-Bir kalite kontrol kuralı, 500 gramlık bir hatta gereksiz yere alarm vermeyi sınırlamak isteyebilir. Önceden belirlenen **anlamlılık düzeyi** $\alpha$, sıfır hipotezi doğruyken yanlış ret olasılığı için hedeflenen üst sınırdır. Küçük p-değerleri, referans modele göre sıradışı bölgelere karşılık gelir. Bu bölgede kalındığında ret kararı verirsek hata olasılığı şu ilişkiyle kontrol edilir:
+Bir kalite kontrol kuralı, 500 gramlık bir hatta gereksiz yere alarm vermeyi sınırlamak isteyebilir. Önceden belirlenen **anlamlılık düzeyi** $\alpha$, sıfır hipotezi doğruyken yanlış ret olasılığı için hedeflenen üst sınırdır. Küçük p-değerleri, referans modele göre sıradışı bölgelere karşılık gelir. Geçerli bir p-değeriyle bu bölgede kalındığında ret kararı verirsek hata olasılığı aşağıdaki üst sınırı aşmaz. Yaklaşık referans dağılımına dayanan p-değerlerinde kontrol de yaklaşık olabilir:
 
 $$
 P_{H_0}(p\leq\alpha)\leq\alpha.
