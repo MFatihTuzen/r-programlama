@@ -8,6 +8,10 @@ Hesap doğru olsa bile başlıktaki “vatandaşlarımızın” sözü yeni bir 
 
 Bin yanıt, ankete katılanların yanıtlarını ayrıntılı incelemeye olanak verir. Benzer özelliklere sahip çok sayıda kişinin katılması ise katılmayan grupları veriye kendiliğinden dahil etmez. Örneğin ankete erişim ağırlıkla belediyenin mobil uygulamasından sağlandıysa, uygulamayı kullanmayan yolcuların görüşleri az duyulmuş olabilir. **İstatistiksel düşünme**, hesapladığımız değeri araştırma sorusuna, verinin oluşma biçimine ve bu verinin destekleyebileceği iddiaya bağlamayı gerektirir [@gelmanHillVehtari2020].
 
+Yanıtların bir kısmı memnuniyet, bir kısmı memnuniyetsizlik bildiriyorsa gözlenen **değişkenlik** yolcuların deneyimlerinin farklılaşmasıdır. Aynı hedef topluluktan başka yolcular seçebilseydik memnuniyet oranının ne kadar değişebileceği ise **çıkarımsal belirsizlikle** ilgilidir. Örneğin bir ankette 80/100, daha büyük bir ankette 800/1.000 memnun yanıtı alınabilir. Her ikisinde de memnun ve memnun olmayan yanıtların oranı aynıdır. Aynı uygun rastgele örnekleme tasarımı altında daha büyük ankette oran genellikle çekimden çekime daha az dalgalanır. Açık internet anketinde ise yanıt sayısı, katılmayan yolcularla aradaki farkı tek başına açıklamaz.
+
+Üç soru böylece birbirine bağlanır. Yanıtlar nasıl değişiyor? Gözlenen sonuçtan hedefe geçerken hangi belirsizliklerle karşılaşıyoruz? İddia, hangi topluluk ve hangi koşullar için geçerli? Son soruya cevap verebilmek için önce “memnuniyet” ile kimi ve hangi deneyimi kastettiğimizi belirlemeliyiz.
+
 Bu bölümün sonunda bir araştırma sorusunu ölçülebilir biçimde kurabilecek, anakütle ve örneklemi aynı problem içinde tanımlayabilecek, bir veriden hangi kapsamda sonuç çıkarılabileceğini açıklayabileceksiniz. R uygulamalarında temel vektör işlemlerinden, @sec-data-manipulation bölümündeki grup özetlerinden ve @sec-data-visualization bölümündeki grafik okuma yaklaşımından yararlanacağız.
 
 ## Araştırma Sorusu ve Veri
@@ -22,38 +26,42 @@ Zaman da ölçümün anlamını değiştirir. Bir hizmet kesintisinden sonraki h
 
 ## Anakütle, Örneklem, Parametre ve İstatistik
 
+Anakütleyi araştırma sorusu belirler. Bu örnekte birimler yolculardır. Bir pazar araştırmasında işletmeler, kalite denetiminde ürünler, işlem güvenliğinde banka işlemleri, trafik incelemesinde kazalar, hava kalitesi araştırmasında ise belirli bir ölçüm protokolüne göre elde edilebilecek günlük ölçümler birim olabilir. Aynı ulaşım hattında birim yolcu yerine sefer olsaydı hedefimiz, yolcuların deneyimlerinin ortalamasından seferlerin bir özelliğine kayardı.
+
 Yolculara nasıl ulaşacağımızı düşünelim. Bir ulaşım kartı listesi, yolculara davet göndermek için **örnekleme çerçevesi** olarak kullanılabilir. İyi bir çerçeve, hedef birimlere erişmeyi sağlar. Kişiselleştirilmemiş kartla ödeme yapan yolcular listede kişi olarak bulunmayabilir. Listede güncel olmayan kayıtlar veya aynı kişiye ait birden fazla kart da bulunabilir. Bu yüzden kime ulaşmak istediğimizle, davet için elimizde hangi birimlerin bulunduğunu ayrı ayrı belirleriz.
 
-Listeyi uygunluk ve tekillik açısından denetledikten sonra içinden davet edilecek bir **örneklem** seçebiliriz. Bazı davetliler ankete hiç katılmaz. Bazıları katılır ve son yolculuk sorusunu boş bırakır. İki durumda da o kişi için geçerli memnuniyet ölçümü elde edemeyiz. Uygun yolcunun çerçevede yer almaması ile seçildiği halde geçerli yanıt vermemesi farklı aşamalardaki sorunlardır. @fig-thinking-frame bu aşamaları planlı bir davet araştırması üzerinden gösteriyor. Açık internet anketindeki gönüllü katılımı ayrıca değerlendireceğiz.
+Listeyi uygunluk ve tekillik açısından denetledikten sonra içinden davet edilecek bir **örneklem** seçebiliriz. Bazı davetliler ankete hiç katılmaz. Buna **birim yanıtsızlığı** denir. Ankete katılıp son yolculuk sorusunu boş bırakmak ise **madde yanıtsızlığıdır**. İki durumda da o kişi için geçerli memnuniyet ölçümü elde edemeyiz. Uygun yolcunun çerçevede yer almaması ile seçildiği halde geçerli yanıt vermemesi farklı aşamalardaki sorunlardır. @fig-thinking-frame bu aşamaları planlı bir davet araştırması üzerinden gösteriyor. Açık internet anketindeki gönüllü katılımı ayrıca değerlendireceğiz.
 
 ```{r}
 #| label: fig-thinking-frame
 #| echo: false
 #| fig-width: 8
 #| fig-height: 4.7
-#| fig-cap: "Planlı bir anketin kapsam ve seçim aşamaları. Çerçeve kutusu, liste uygunluk ve tekillik açısından denetlendikten sonraki durumu gösterir."
-#| fig-alt: "Hedef anakütleden çerçeveye, çerçeveden davet edilen örnekleme ve geçerli ölçümlere inen dört kutu. Yan dallar sırasıyla liste dışında kalan yolcuları, davet edilmeyen birimleri ve yanıtsızlık ya da boş maddeyi gösterir."
+#| fig-cap: "Planlı bir ankette hedef anakütleden geçerli ölçümlere geçiş. Çerçeve, uygunluk ve tekillik denetiminden sonraki listeyi gösterir."
+#| fig-alt: "Beş kutu hedef anakütle, örnekleme çerçevesi, seçilen örneklem, ankete katılanlar ve geçerli ölçümler sırasını izler. Dört yan dal çerçeve dışındaki uygun yolcuları, seçilmeyenleri, birim yanıtsızlığını ve madde yanıtsızlığını gösterir."
 
 par(mar = rep(0.4, 4))
 plot.new()
-plot.window(xlim = c(0, 10), ylim = c(0, 8))
-asama_y <- c(7, 5, 3, 1)
+plot.window(xlim = c(0, 10), ylim = c(0, 10))
+asama_y <- c(9, 7, 5, 3, 1)
 asama <- c("Hedef anakütle", "Örnekleme çerçevesi",
-           "Seçilen örneklem", "Geçerli ölçümler")
-yan_dal <- c("Çerçevede bulunmayan\nuygun yolcular",
-             "Davet için\nseçilmeyen birimler",
-             "Yanıt vermeyenler veya\nsoruyu boş bırakanlar")
+           "Seçilen örneklem", "Ankete katılanlar", "Geçerli ölçümler")
+yan_dal <- c("Kapsam dışında\nKayıt listesinde bulunmayan uygun yolcular",
+             "Davet için seçilmeyen birimler",
+             "Birim yanıtsızlığı\nAnkete katılmayan davetliler",
+             "Madde yanıtsızlığı\nMemnuniyet sorusunu boş bırakanlar")
 rect(0.45, asama_y - 0.48, 4.6, asama_y + 0.48,
      col = "#EAF3F7", border = "#335B70")
 text(2.53, asama_y, asama, font = 2)
-arrows(2.53, asama_y[-4] - 0.5, 2.53, asama_y[-1] + 0.52,
+gecis_y <- asama_y[-length(asama_y)]
+arrows(2.53, gecis_y - 0.5, 2.53, asama_y[-1] + 0.52,
        length = 0.09, col = "#335B70")
-arrows(4.63, asama_y[-4], 5.38, asama_y[-4],
+arrows(4.63, gecis_y, 5.38, gecis_y,
        length = 0.09, col = "#606060")
-text(5.58, asama_y[-4], yan_dal, adj = c(0, 0.5), cex = 0.95)
+text(5.58, gecis_y, yan_dal, adj = c(0, 0.5), cex = 0.9)
 ```
 
-Şimdi küçük bir belediye hattı düşünelim. Öğretim amacıyla yalnızca 20 uygun yolcu olduğunu ve hepsinin son yolculuğuna ait bekleme süresini bildiğimizi varsayalım. 20 ölçümün toplamı 500 dakika ise yolcuların ortalama bekleme süresi 25 dakikadır. Bu değer, tanımladığımız 20 kişilik anakütleye ait bir **parametredir**. Gerçek bir araştırmada tüm süreleri bilmediğimiz için bu parametreyi bir örneklemden öğrenmeye çalışabiliriz. Örneğin üç yolcunun bekleme süreleri 18, 23 ve 31 dakika olsaydı bu üç gözlemin ortalaması 24 dakika olurdu. Örneklem verilerinden hesaplanan 24 dakika bir **istatistiktir** ve anakütle ortalamasının tahmini olarak kullanılabilir. Bu üç süre, aşağıdaki yapay anakütleden elle takip edilebilen bir seçimdir.
+Şimdi küçük bir belediye hattı düşünelim. Öğretim amacıyla yalnızca 20 uygun yolcu olduğunu ve hepsinin son yolculuğuna ait bekleme süresini bildiğimizi varsayalım. 20 ölçümün toplamı 500 dakika ise yolcuların ortalama bekleme süresi 25 dakikadır. Bu değer, tanımladığımız 20 kişilik anakütleye ait bir **parametredir**. Gerçek bir araştırmada tüm süreleri bilmediğimiz için bu parametreyi bir örneklemden öğrenmeye çalışabiliriz. Örneğin bekleme süreleri 18, 23 ve 31 dakika olan üç yolcunun ortalaması 24 dakikadır. Örneklem verilerinden hesaplanan 24 dakika bir **istatistiktir** ve anakütle ortalamasının tahmini olarak kullanılabilir. Bu üç süre, aşağıdaki yapay anakütleden elle takip edilebilen bir seçimdir. Örneklem istatistiğini bir anakütle parametresini tahmin etmek için kullanma mantığı, örnekleme yoluyla çıkarımın başlangıç noktasıdır [@ismayKim2020ModernDive].
 
 Ortalama için bu ayrımı şöyle yazabiliriz:
 
@@ -64,7 +72,7 @@ $$
 
 Burada \(N\) anakütledeki yolcu sayısı, \(n\) örneklemdeki ölçümlerin sayısıdır. \(y_i\), anakütlede \(i\) numaralı yolcunun dakika cinsinden bekleme süresidir. \(s_j\), örneklemdeki \(j\). yolcunun anakütledeki numarasını gösterir. Toplam işareti \(\sum\), belirtilen yolcuların bekleme sürelerini toplar. \(\mu\) anakütle ortalaması, \(\bar y\) ise örneklem ortalamasıdır. Bu gösterimde örneğe seçilen herkes için ölçüm olduğunu kabul ediyoruz. Yanıtsızlık varsa hangi ölçümlere dayanarak ortalama aldığımızı ayrıca belirtmemiz gerekir.
 
-Memnuniyet oranında da aynı mantık geçerlidir. “Memnun” ve “çok memnun” yanıtlarını 1, diğer geçerli yanıtları 0 kodlarsak bu değerlerin ortalaması memnuniyet oranını verir. Boş bir yanıtı 0 kodlamak, bilinmeyen görüşü “memnun değil” diye tanımlamış olur. Aynı anakütleden farklı örnekler seçtiğimizde örneklem ortalamalarının değişmesini bekleriz. Bir örneğin sonucunun parametreye eşit çıkmaması kendi başına veri hatası veya sistematik yanlılık kanıtı vermez.
+Memnuniyet oranında da aynı mantık geçerlidir. “Memnun” ve “çok memnun” yanıtlarını 1, diğer geçerli yanıtları 0 kodlarsak bu değerlerin ortalaması memnuniyet oranını verir. Boş bir yanıtı 0 kodlamak, bilinmeyen görüşü “memnun değil” diye tanımlamış olur. Aynı anakütleden farklı örnekler seçtiğimizde örneklem ortalamalarının değişmesini bekleriz. Bir çekimde 24 dakika bulmamız, 25 dakikalık parametreyi bir dakika eksik tahmin ettiğimizi gösterir. Yöntemin sistematik biçimde düşük tahmin ürettiğini söylemek için, seçim sürecinin tekrarlanan uygulamalarda kısa bekleyenleri kayırıp kayırmadığını incelemek gerekir.
 
 ## Betimsel İstatistik ve İstatistiksel Çıkarım
 
@@ -78,11 +86,15 @@ Bir ankette çok sayıda yanıt toplamak, belirli bir örnekleme tasarımında r
 
 Anketi belediyenin web sitesinde açık yayımladığımızı düşünelim. Kimin yanıt vereceğine davet edilen bir örneklem üzerinden karar verilmez. Bağlantıyı gören ve katılmak isteyen kişiler kendileri seçilir. Memnuniyet katılma eğilimiyle ilişkiliyse **gönüllü katılım** bir seçilim yanlılığına yol açabilir. Örneğin çok memnun olanlar kadar ciddi sorun yaşayanlar da daha çok yanıt verebilir. Bu bilgi tek başına yanlılığın yönünü göstermez. Buna karşılık planlı bir örneklemde kimlerin davet edildiğini biliyorsak, yanıtsızlığın hangi gruplarda yoğunlaştığını kayıtlarımız izin verdiği ölçüde inceleyebiliriz [@littleRubin2019; @rubin1987].
 
-**Rastgele örnekleme**, çerçeveden kimlerin seçileceğini bir rastgele mekanizmaya bağlar. Basit rastgele seçimde aynı büyüklükteki her olası örneklemin seçilme olasılığı eşittir. Çerçevenin kapsamadığı yolcular yine seçim dışında kalır. Yanıt vermeyen yolcuların görüşü de seçim yapıldı diye kendiliğinden gözlenmez. Temsil gücünü değerlendirirken çerçeveyi, seçim sürecini ve gerçekleşen yanıtları birlikte incelemek gerekir.
+**Rastgele örnekleme**, çerçeveden kimlerin seçileceğini bir rastgele mekanizmaya bağlar. Basit rastgele seçimde aynı büyüklükteki her olası örneklemin seçilme olasılığı eşittir. Çerçevenin kapsamadığı yolcular yine seçim dışında kalır. Yanıt vermeyen yolcuların görüşü de seçim yapıldı diye kendiliğinden gözlenmez. Seçilme olasılıklarının bilindiği bir tasarım, örneğin hangi mekanizmayla oluştuğunu açıklamaya ve seçimin getirdiği belirsizliği değerlendirmeye yarar. Bu dayanağı hedef yolculara ilişkin bir sonuca taşımak için çerçevenin kapsamının, ölçümlerin ve yanıtsızlığa ilişkin varsayımların da araştırma sorusuna uygun olması gerekir.
 
-Belediye bu kez bir dijital eğitim programının çevrim içi işlem becerilerine etkisini öğrenmek istesin. Uygun kent sakinleri listesinden rastgele davetli seçmek, araştırmanın kimleri temsil edebileceğiyle ilgilidir. Katılmayı kabul edenleri program ve bekleme listesi gruplarına **rastgele atamak** ise bu katılımcılar içinde karşılaştırılabilir gruplar kurmaya yardım eder. Önceden belirlenmiş bir beceri ölçümü iki grupta aynı biçimde uygulanırsa, atanan gruplar arasındaki fark program teklifinin etkisini değerlendirmeye temel olabilir. Gruplardan birinde son ölçüme daha az kişi gelirse ya da bekleme listesindekiler de aynı eğitime erişirse, yorum için bu süreçleri ayrıca incelemek gerekir. Başlangıçtaki gönüllü katılım da sonucun bütün kente nasıl taşınabileceğini sınırlar [@gelmanHillVehtari2020].
+Belediye bu kez bir dijital eğitim programının çevrim içi işlem becerilerine etkisini öğrenmek istesin. Uygun kent sakinleri listesinden rastgele davetli seçmek, araştırmaya kimin çağrılacağını belirler. Ancak davet edilenlerden yalnızca bir kısmı katılmayı kabul ederse, kabul edenlerin başlangıç becerileri veya internete erişimi diğer davetlilerinkinden farklı olabilir. Araştırma bu aşamadan sonra kabul edenlerle yürütülüyorsa, elde edilen etkinin bütün kente taşınması ayrıca gerekçelendirilmelidir.
 
-Programı kendiliğinden seçenlerle seçmeyenlerin son puanlarını karşılaştırmak **gözlemsel** bir çalışmadır. Başlangıç becerisi, boş zaman veya internet erişimi hem katılımı hem puanı etkileyebilir. Araştırmacının program teklifini belirli bir tasarımla uyguladığı durumda ise **deneysel** bir karşılaştırma yapılır. Bir grafikte birlikte hareket eden iki değişken, hangi tasarımla ölçüldükleri bilinmeden bir sebep-sonuç sırasına yerleştirilemez.
+Katılmayı kabul edenleri program teklifi ve bekleme listesi gruplarına **rastgele atamak**, başlangıç becerisi ve internet erişimi gibi özelliklerin iki grupta sistematik olarak farklılaşmasını önlemeye yardımcı olur. Küçük bir deneyde rastlantısal dengesizlikler yine oluşabilir. Gruplar aynı koşullarda izlenir ve ölçülürse atandıkları gruba göre yapılan karşılaştırma, çalışmadaki katılımcılar için **program teklifinin etkisini** değerlendirmeye temel sağlar [@gelmanHillVehtari2020].
+
+Program teklif edilen bazı kişiler eğitime başlamayabilir veya bitirmeyebilir. Teklifin etkisi, bu davranışları da içeren bir sonuçtur. Eğitimi fiilen tamamlamanın etkisi farklı bir soruyu yanıtlar. Tamamlayanlar daha çok zaman ayırabiliyor veya başlangıçta daha istekli olabiliyorsa, onları tamamlamayanlarla karşılaştırmak rastgele atamanın sağladığı dayanağı kaybettirir. Benzer biçimde, son ölçüme özellikle düşük puan alması beklenen kişiler gelmiyorsa, sadece ölçümü bulunanların puanlarını karşılaştırmak gruplar arasındaki farkı çarpıtabilir. Atananların, eğitime katılanların ve son ölçümü tamamlayanların sayısını ayrı izlemek bu yüzden önemlidir.
+
+Programı kendiliğinden seçenlerle seçmeyenlerin son puanlarını karşılaştırmak **gözlemsel** bir çalışmadır. Araştırmacının program teklifini belirli bir tasarımla uyguladığı durumda ise **deneysel** bir karşılaştırma yapılır. İlk durumda başlangıç becerisi, boş zaman veya internet erişimi hem katılımı hem puanı etkileyebilir. Gözlenen farkı programın etkisi olarak yorumlayabilmek için bu alternatif açıklamaları araştırma tasarımıyla ele almak gerekir.
 
 ## Değişkenlik, Belirsizlik ve Yanlılık
 
@@ -106,7 +118,16 @@ sureler <- list(Anakütle = bekleme,
                 "Örneklem 1" = bekleme[birinci],
                 "Örneklem 2" = bekleme[ikinci])
 ortalamalar <- vapply(sureler, mean, numeric(1))
-round(ortalamalar, 2)
+knitr::kable(
+  data.frame(
+    grup = names(sureler),
+    sureler = vapply(sureler, function(x) paste(sort(x), collapse = ", "),
+                     character(1)),
+    ortalama = unname(ortalamalar)
+  ),
+  digits = 2, format.args = list(decimal.mark = ","),
+  col.names = c("Grup", "Bekleme süreleri (dakika)", "Ortalama (dakika)")
+)
 ```
 
 `sample.int()` yolcuların sıra numaralarını seçiyor. `bekleme[birinci]` ve `bekleme[ikinci]` bu numaraları sürelerle eşliyor. `set.seed()` kullanımı aynı rastgele sayı dizisinden başlamamızı sağlıyor. Tohumu iki çekimin arasına yeniden koymadığımız için ikinci seçim ilk çekimin tekrarı olarak kurulmaz.
@@ -141,11 +162,13 @@ ggplot(gozlemler, aes(x = values, y = ind)) +
 
 Anakütledeki yolcuların farklı süreler beklemesi **gözlemler arası değişkenliktir**. Her çekimde bu sürelerin farklı bileşimlerinin ortaya çıkması, ortalamaların birbirinden ayrılmasına yol açar. Bu ikinci düzeydeki dalgalanma **örnekleme değişkenliğidir**. Aynı tasarımla çekilen örnekler sistematik olarak uzun veya kısa bekleyenlere yönelmez. Çok sayıda çekimde ortalamaların nasıl dağıldığını ve bu dağılımın yayılımını nasıl özetleyebileceğimizi örnekleme dağılımları bölümünde inceleyeceğiz.
 
+Şimdi seçim kuralını değiştirelim. Her seferinde en uzun bekleyen altı yolcuyu seçersek ölçümler 29, 31, 32, 34, 37 ve 41 dakika olur. Ortalamaları `r formatC(mean(tail(sort(bekleme), 6)), digits = 2, format = "f", decimal.mark = ",")` dakikadır. Aynı anakütlede aynı kural tekrarlandığında yine bu kişiler seçilir. 25 dakikadan sapma, bu kez çekimden çekime rastlantısal değişimden değil, uzun bekleme süresine öncelik veren seçim kuralından kaynaklanır. En uzun bekleyen on kişiye çıkmak da kısa bekleyenleri dışarıda bırakır. Daha büyük örnekler rastgele dalgalanmayı azaltabilse de seçimin belirli bir grubu kayırmasını kendiliğinden gidermez.
+
 Ölçüm hatası başka bir aşamada oluşur. Yolcular süreyi tahminen bildirirse, bazıları gerçek bekleme süresinin üzerinde, bazıları altında değer verebilir. Bir duraktaki saat bütün yolculukların beklemesine üç dakika ekliyorsa, bu kez ölçüm hatası sistematik olarak aynı yöndedir. Sadece sabahın yoğun saatlerinde ölçüm yapıp gün boyuna genellemek ise günün geri kalanını kapsam dışı bırakır. Daha çok sabah kaydı almak bu kapsam sorununu gidermeyecektir. Bir tahmini değerlendirirken değerin ne kadar dalgalanabileceğini ve veri üretiminin tahmini sürekli bir yöne itip itemeyeceğini ayrı ayrı sorarız.
 
 ## R ile Gerçek Veri Üzerinden İstatistiksel Düşünme
 
-**2019 yılında internet kullanım oranı gelir gruplarına göre nasıl farklılaşıyor ve bu sonuçlar hangi ülke/ekonomiler için geçerli?** Bu soru bizi belediye anketindeki payda ve kapsam sorunlarına geri getiriyor. Dünya Bankası'nın World Development Indicators (WDI) verisinden hazırlanmış kitap kesitinde her satır bir ülke veya ekonomiyi gösteriyor [@worldBankWDI]. Bir satırdaki internet kullanım yüzdesi ise o ekonomideki nüfusa ilişkin bir göstergedir. Sütunun neyi ölçtüğünü, sayıların dağılımına bakmadan önce sözlükten kontrol edelim.
+**2019 yılında internet kullanım oranı gelir gruplarına göre nasıl farklılaşıyor ve bu sonuçlar hangi ülke/ekonomiler için geçerli?** Bu soru bizi belediye anketindeki payda ve kapsam sorunlarına geri getiriyor. Dünya Bankası'nın World Development Indicators (WDI) verisinden hazırlanmış kitap kesitinde her satır bir ülke veya ekonomiyi gösteriyor [@worldBankWDI]. Bir satırdaki internet kullanım yüzdesi ise o ekonomideki nüfusa ilişkin bir göstergedir. 2019, internet göstergesinin gözlem yılıdır. Kitabın veri üretim betiği gelir grubunu ülke metadatasından ülke koduyla birleştiriyor. Metadata, sınıflandırmanın geçerli olduğu dönemi kaydetmediği için grupların 2019'a ait olduğunu doğrulayamıyoruz. Karşılaştırmada dosyada kayıtlı grupları kullanacağız. Sütunun neyi ölçtüğünü, sayıların dağılımına bakmadan önce sözlükten kontrol edelim.
 
 ```{r}
 #| label: thinking-wdi-scope
@@ -197,13 +220,13 @@ knitr::kable(
 )
 ```
 
-Bu özetin paydası gelir grubuna göre değişir. Örneğin yüksek gelir grubunun medyanı, 86 ekonominin tamamına ait bir medyan olarak raporlanamaz. Bu grupta 66 ekonominin geçerli değeri vardır. Düşük gelir grubunda ise 25 ekonomiden 22'si hesaplamaya katılır. Eksik değerleri sıfırla doldursaydık, örneğin yüksek gelir grubundaki 20 eksik kaydı gözlenmiş en düşük değerler gibi kullanırdık. Eksik ekonomilerin gerçek değerlerini bilmediğimiz için geçerli kayıtlarla hesaplanan medyanın grup genelindeki medyandan ne yönde sapacağını bu tablodan çıkaramayız.
+Bu özetin paydası gelir grubuna göre değişir. Örneğin yüksek gelir grubunun medyanı, 86 ekonominin tamamına ait bir medyan olarak raporlanamaz. Bu grupta 66 ekonominin geçerli değeri vardır. Düşük gelir grubunda ise 25 ekonomiden 22'si hesaplamaya katılır. Eksik değerleri sıfırla doldursaydık, örneğin yüksek gelir grubundaki 20 eksik kaydı gözlenmiş en düşük değerler gibi kullanırdık. Eksik ekonomilerin gerçek değerlerini bilmediğimiz için geçerli kayıtlarla hesaplanan medyanın grup genelindeki medyandan ne yönde sapacağını bu tablodan çıkaramayız. Örneğin eksik ekonomiler çoğunlukla düşük kullanımlıysa, değerleri hesaba katmak sıralamanın ortasını aşağı çekebilir. Çoğunlukla yüksek kullanımlıysa tersi olabilir. Geçerli kayıtların sayısı medyanın kaç değere dayandığını gösterir. Eksik değerlerin sıralamanın neresine gireceği konusunda bilgi vermez.
 
 ```{r}
 #| label: fig-thinking-wdi
 #| fig-width: 8.6
 #| fig-height: 4
-#| fig-cap: "2019 WDI kesitinde gelir grubuna göre internet kullanımı. Küçük noktalar geçerli ülke/ekonomi değerleri, baklavalar grup medyanlarıdır. Eksen etiketleri geçerli/toplam kayıt sayısını verir."
+#| fig-cap: "WDI kitap kesitindeki 2019 internet kullanım yüzdeleri, dosyada kayıtlı gelir gruplarına göre. Küçük noktalar geçerli ülke/ekonomi değerleri, baklavalar grup medyanlarıdır. Eksen etiketleri geçerli/toplam kayıt sayısını verir."
 #| fig-alt: "Dört gelir grubundaki ülke yüzdeleri ortak eksende gösteriliyor. Medyan düşük gelir grubunda yaklaşık yüzde 12, yüksek gelir grubunda yüzde 87. Grup içi değerler değişiyor ve bazı grupların değerleri örtüşüyor."
 
 gelir_etiketi <- setNames(
@@ -228,14 +251,14 @@ ggplot(internet_gozlemleri, aes(x = internet_users_pct, y = gelir)) +
   scale_x_continuous(breaks = seq(0, 100, 20), limits = c(0, 100)) +
   scale_y_discrete(labels = gelir_etiketi) +
   labs(x = "İnternet kullanan nüfus (%)",
-       y = "Gelir grubu (geçerli/toplam)",
+       y = "Kayıtlı gelir grubu (geçerli/toplam)",
        caption = "Kaynak: Dünya Bankası WDI, kitap verileri, 2019 kesiti.") +
   theme_minimal(base_size = 12)
 ```
 
 @fig-thinking-wdi grafiğinde yüksek gelir grubundaki gözlemler genel olarak daha yüksek kullanım yüzdelerinde toplanıyor. Düşük gelir grubunun medyanı %12,10, yüksek gelir grubunun medyanı %87,38. Öte yandan grup içindeki değerler tek bir sayıya sıkışmıyor ve bazı grupların değerleri örtüşüyor. Noktalar üst üste yığılmasın diye yalnızca grup yönünde hafifçe kaydırıldı. Yatay konumlar gözlenen yüzdeleri koruyor. Medyanla birlikte ham gözlemleri sunmanın yararını @sec-effective-graphics bölümünde görmüştük.
 
-Ekonomilerin ortalaması alınsaydı her ekonomi bir kez sayılırdı. Örneğin nüfusu 100 bin olan bir ekonomide kullanım %90, nüfusu 900 bin olan bir ekonomide %40 ise ülke yüzdelerinin eşit ağırlıklı ortalaması %65'tir. Birlikte ele alınan nüfusun kullanım oranı ise, iki ölçümün tanımı ve paydaları uyumlu kabul edildiğinde, \((90\,000 + 360\,000) / 1\,000\,000 = 0{,}45\), yani %45 olur. Medyan da ülke yüzdelerinin sıralamasına dayanır. Paydanın toplulaştırmaya etkisini @fig-effective-denominator üzerinde başka bir örnekte incelemiştik.
+Ekonomilerin ortalaması alınsaydı her ekonomi bir kez sayılırdı. Örneğin nüfusu 100 bin olan bir ekonomide kullanım %90, nüfusu 900 bin olan bir ekonomide %40 ise ülke yüzdelerinin eşit ağırlıklı ortalaması %65'tir. Birlikte ele alınan nüfusun kullanım oranı ise, iki ölçümün tanımı ve paydaları uyumlu kabul edildiğinde, \((90\,000 + 360\,000) / 1\,000\,000 = 0{,}45\), yani %45 olur. İlk hesap “bir ekonomiye eşit ağırlık verirsek ortalama yüzde kaç?” sorusunu, ikincisi “bu ekonomilerde yaşayan bireylerin ne kadarı internet kullanıyor?” sorusunu yanıtlar. İkinci hedef için nüfus ağırlıkları göstergenin paydasıyla ve gözlem dönemiyle uyumlu olmalıdır. Eksik ekonomileri dışarıda bırakan nüfus ağırlıklı bir oran da yalnızca hesaplamaya giren nüfusu kapsar. Medyan ise ülke yüzdelerinin sıralamasına dayanır. Paydanın toplulaştırmaya etkisini @fig-effective-denominator üzerinde başka bir örnekte incelemiştik.
 
 Buradaki veri, dünya ekonomileri arasından bilinen seçim olasılıklarıyla çekilmiş bir örneklem olarak tasarlanmamıştır. Özetler, **2019 kitap kesitinde ilgili göstergesi bulunan ülke ve ekonomileri** betimler. Gelir grubu ile internet kullanımı arasındaki gözlemsel fark, gelirin artmasının tek başına internet kullanımını artıracağını göstermez. Altyapı, fiyat ve eğitim gibi başka özellikler de iki göstergeyle ilişkili olabilir. Grup medyanlarının farkı burada betimsel bir sonuç olarak raporlanır.
 
@@ -255,7 +278,7 @@ Belediye duyurusunun istatistiksel açıdan daha açık bir biçimi şöyle olab
 2. **Kolay.** Bir hattın 20 yolcusunun tamamı için ortalama bekleme 25 dakika, bu yolculardan seçilen altı kişide 27 dakika olsun. Parametreyi ve istatistiği belirleyin. Fark tek başına yanlılığı gösterir mi?
 3. **Orta.** Yalnızca kişiselleştirilmiş ulaşım kartı bulunan yolcular davet listesine girebiliyor. Rastgele davet edilenlerin bir kısmı ankete katılmıyor, katılanların bir kısmı da memnuniyet sorusunu boş bırakıyor. Üç farklı kapsam veya eksiklik aşamasını belirleyin.
 4. **Orta.** Yapay bekleme verisinden farklı bir tohumla 10 kişilik iki örneklem alın. Ortalamaları karşılaştırın. Bu iki sonuçtan, daha büyük örneklerin her çekimde 25 dakikaya daha yakın olacağı çıkarılabilir mi?
-5. **Orta.** WDI tablosundaki yüksek gelir grubunun geçerli veriler üzerinden medyanını bir cümlede raporlayın. Nüfusa ilişkin bir oran raporlamak için hangi ek bilgilere ihtiyaç vardır?
+5. **Orta.** Bir haber “Yüksek gelir internet kullanımını artırdı ve yüksek gelirli ülkelerde yaşayanların %87,38'i internet kullanıyor” diyor. İddianın nedensellik, payda ve kapsam açısından hangi sorunları taşıdığını açıklayın. WDI tablosunu kullanarak daha uygun bir sonuç paragrafı yazın. Nüfusa ilişkin birleşik bir oran için hangi ek bilgilere ihtiyaç olduğunu belirtin.
 6. **Zor.** Belediye, dijital eğitimi seçenlerin son test puanı daha yüksek diye “Program puanları artırdı” diyor. Alternatif bir açıklama verin. Rastgele davet ile rastgele atamanın bu araştırmada cevapladığı soruları ayırın.
 
 ## Egzersiz Çözümleri
@@ -281,9 +304,9 @@ round(c(anakutle = mean(bekleme),
 
 İki örnekten biri ortalamaya diğerinden daha yakın olabilir. Tek tek çekimler için yakınlık garantisi yoktur. Genel dalgalanmayı karşılaştırmak için her büyüklükte çok sayıda örnek alıp ortalamaların dağılımını incelemek gerekir.
 
-**Çözüm 5.** “2019 WDI kitap kesitinde internet kullanımı ölçümü bulunan 66/86 yüksek gelirli ekonomide ülke yüzdelerinin medyanı %87,38'di.” Birleşik nüfus oranı için her ekonominin göstergeyle uyumlu nüfus paydasını, internet kullananların sayısını veya bu sayıyı verecek uyumlu yüzdeyi ve eksik ekonomilerin kapsamının nasıl ele alınacağını bilmek gerekir.
+**Çözüm 5.** Haber, gözlemsel farkı nedensel etki ve ülke medyanını bireylerin oranı olarak okuyor. Ayrıca 20 ekonomide ölçüm eksik. Uygun bir paragraf şöyle olabilir. “Dosyada yüksek gelir grubunda kayıtlı 86 ekonominin 66'sında 2019 internet kullanım ölçümü bulunuyordu. Bu 66 ekonomide ülke düzeyi yüzdelerin medyanı %87,38'di. Bu özet geçerli ölçümü olan ekonomileri betimliyor. Gelir grubu ile kullanım arasındaki fark; altyapı, fiyat veya eğitim gibi başka etkenlerle de ilişkili olabilir.” Birleşik nüfus oranı için her ekonominin göstergeyle uyumlu nüfus paydasını, internet kullananların sayısını veya bu sayıyı verecek uyumlu yüzdeyi ve eksik ekonomilerin kapsamının nasıl ele alınacağını bilmek gerekir.
 
-**Çözüm 6.** Örneğin başlangıçta dijital becerisi yüksek kişilerin programa katılmaya daha istekli olması, son puan farkının bir kısmını açıklayabilir. Rastgele davet, uygun listeden kimlerin araştırmaya çağrıldığıyla ilgilidir. Davet sonrasındaki katılmama genellemenin kapsamını etkiler. Kabul edenleri program ve bekleme listesine rastgele atamak, bu katılımcılar içinde program teklifinin etkisini incelemeyi sağlar. Gruplardaki son ölçüm kayıpları ayrıca izlenir.
+**Çözüm 6.** Örneğin başlangıçta dijital becerisi yüksek kişilerin programa katılmaya daha istekli olması, son puan farkının bir kısmını açıklayabilir. Rastgele davet, uygun listeden kimlerin araştırmaya çağrıldığıyla ilgilidir. Davet sonrasındaki katılmama genellemenin kapsamını etkiler. Kabul edenleri program ve bekleme listesine rastgele atamak, bu katılımcılar içinde program teklifinin etkisini incelemeyi sağlar. Atandığı hâlde programı tamamlamayanlar da grup karşılaştırmasının hedef kitlesine dahildir. Son ölçüm kaybı, özellikle gruplara ve beceri düzeyine göre farklılaşıyorsa etki yorumunu zayıflatabilir.
 
 ## Bölüm Özeti
 
