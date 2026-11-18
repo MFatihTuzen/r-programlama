@@ -30,7 +30,7 @@ Kitap yalnızca R sözdizimini anlatmayı değil; veri analizi sürecini baştan
 
 Kitap ana bölümler (Parts) halinde geliştirilecektir.
 
-Her ana bölüm tamamlandığında içerik ve `CHANGELOG.md` güncellenir; Git etiketi, GitHub Release ve duyuru ise ayrı, doğrulanan yayın adımlarıdır.
+Her ana bölüm tamamlandığında içerik ve mevcut proje belgeleri güncellenir; Git etiketi, GitHub Release ve duyuru ise ayrı, doğrulanan yayın adımlarıdır. Depoda `CHANGELOG.md` bulunmuyorsa varmış gibi gösterilmez.
 
 Kalite, geliştirme hızından daha önceliklidir.
 
@@ -38,14 +38,15 @@ Kalite, geliştirme hızından daha önceliklidir.
 
 # Tamamlanan ve GitHub'a Aktarılan Bölümler
 
-Part I–IV (toplam **28 alt bölüm**) kitabın yayımlanan kapsamını oluşturur. Kullanıcının bildirdiğine göre kitap render edilerek GitHub Pages'e gönderilmiştir. **GitHub Release/etiketlerinin varlığı ayrıca doğrulanmalıdır**; kitapta içerik bulunması bir Release yayımlandığı anlamına gelmez.
+Part I–V (toplam **38 alt bölüm**) kitabın yayımlanan kapsamını oluşturur. `v0.5.0` etiketi ve GitHub Release'i doğrulanmıştır. Önceki sürümlerden `v0.4.0` için GitHub'da etiket veya Release bulunmamaktadır; mevcut olmayan sürümler yayımlanmış gibi gösterilmez.
 
 | Ana bölüm | Alt bölüm | Durum | Sürüm hedefi |
 |---|---:|---|---|
 | Part I — R Programlamaya Giriş | 10 | Tamamlandı, depoda | v0.1.0 |
 | Part II — Veri Manipülasyonu ve Dönüştürme | 3 | Tamamlandı, depoda | v0.2.0 |
 | Part III — Veri Ön İşleme | 7 | Tamamlandı, depoda | v0.3.0 |
-| Part IV — Veri Görselleştirme | 8 | Tamamlandı, depoda ve kullanıcının bildirimine göre yayımlandı | v0.4.0 |
+| Part IV — Veri Görselleştirme | 8 | Tamamlandı, yayımlanan kitapta; ayrı `v0.4.0` etiketi/Release bulunmuyor | v0.4.0 | 
+| Part V — Temel İstatistik ve İstatistiksel Çıkarım | 10 | Tamamlandı; GitHub Pages ve Release yayımlandı | v0.5.0 |
 
 ## Part IV — Veri Görselleştirme: Tamamlanan kapsam
 
@@ -66,9 +67,9 @@ Part I–IV (toplam **28 alt bölüm**) kitabın yayımlanan kapsamını oluştu
 
 ---
 
-## Part V — Temel İstatistik ve İstatistiksel Çıkarım (geliştirme dalında entegre)
+## Part V — Temel İstatistik ve İstatistiksel Çıkarım (tamamlandı ve yayımlandı)
 
-**Kapsam kararı (18 Kasım 2026):** Dengeli yaklaşım benimsendi: konu derinliği, sezgisel teori, basitten zora R uygulamaları, yorumlama, varsayımlar, simülasyonlar, grafikler ve doğrulanmış akademik/teknik kaynaklar. Kod kataloğu oluşturulmayacak. Alt bölüm başlıkları çalışma taslağıdır; yazım başlamadan ayrıntıları gözden geçirilecektir.
+**Kapsam ve teslim (18 Kasım 2026):** Dengeli yaklaşım uygulandı: sezgisel teori, basitten zora R uygulamaları, varsayımlar, simülasyonlar, grafikler ve doğrulanmış kaynaklar. On bölüm ve 81 çözümlü egzersiz tamamlandı; bütünleşik bilimsel ve teknik denetimin ardından Quarto kitabına eklendi.
 
 1. 5.1 İstatistiksel Düşünmeye Giriş
 2. 5.2 Betimsel İstatistikler
@@ -83,7 +84,7 @@ Part I–IV (toplam **28 alt bölüm**) kitabın yayımlanan kapsamını oluştu
 
 Ayrıntılı öğretim planı, kapsam sınırları, kontrol listeleri ve kaynak stratejisi: [`PART_V_PLAN.md`](PART_V_PLAN.md).
 
-On alt bölüm yazıldı, bütünleşik bilimsel denetim tamamlandı ve içerik geliştirme dalındaki Quarto kitap sırasına eklendi. GitHub Pages yayını ayrı onay bekliyor. `v0.5.0` gelecek yayın için hedef sürümdür.
+On alt bölüm `main` dalına entegre edilerek GitHub Actions ile `gh-pages` dalına dağıtıldı. Yayın iş akışı başarılıdır. [`v0.5.0` GitHub Release](https://github.com/MFatihTuzen/r-programlama/releases/tag/v0.5.0) yayımlandı; sürüm etiketi `d26d1efd0cbb3593a71f649c721bee27dea4764b` commit'ini işaret ediyor.
 
 ## Part VI–VIII — Önerilen devam planı
 
@@ -111,6 +112,20 @@ Planlanan geliştirmeler:
 - Daha fazla diyagram ve şema
 - Görsellerin standartlaştırılması
 - Kod bloklarının gözden geçirilmesi
+
+### Açık veri üretim bakımı — WDI
+
+Part V öncesi teknik inceleme, depodaki kayıtlı WDI CSV anlık görüntüleriyle `R/build_book_data.R` çıktıları arasında **şema ve dosya kapsamı uyumsuzlukları** saptadı. Güncel betik üzerinde kaynak düzeyinde kontrol edildi:
+
+- Uzun tabloda kayıtlı `indicator_label` alanı üretilmiyor.
+- `indicator_dictionary.csv`, `quality_report.csv` ve `build_summary.json` dosyaları betik tarafından yazılmıyor.
+- Kayıtlı metadata ve seçim/kapsam raporlarındaki bazı alanlar betiğin mevcut çıktı şemasında yok.
+- `data-raw/wdi_cache` dizini oluşturuluyor fakat betikte önbellek okuma/yazma uygulanmıyor.
+- Yıl üst sınırı `Sys.Date()` ile değişiyor; güncel WDI kaynağı ve paket sürümü de zaman içinde değişebiliyor.
+
+**Önerilen bakım:** Çıktı şemalarını kayıtlı veri ve gösterge sözlüğüyle eşleştir; veri sürümünü, referans yılını, WDI/API erişim tarihini ve paket sürümlerini sabitle veya kayıt altına al; üretim sonrasında kapsam, birim, anahtar benzersizliği ve dosya bütünlüğünü otomatik kontrol et. Mevcut yayımlanmış CSV dosyalarını bu işlem yapılmadan yeniden oluşturup üzerine yazma.
+
+Tarihsel kaynak: [Part V öncesi değerlendirme arşivi](docs/archive/part-v-oncesi-degerlendirme-2026-11.md). Bu, doğrulanmış bir bakım ihtiyacıdır; Part V'in yayımlanmış analizlerinin hatalı olduğu anlamına gelmez.
 
 ---
 
@@ -154,6 +169,6 @@ Her ana bölüm için sürüm hedefi bulunur; gerçek etiket ve GitHub Release d
 - v0.2.0 → Veri Manipülasyonu ve Dönüştürme
 - v0.3.0 → Veri Ön İşleme
 - v0.4.0 → Veri Görselleştirme
-- v0.5.0 → Temel İstatistik ve İstatistiksel Çıkarım (**hedef; yayımlanmadı**)
+- v0.5.0 → Temel İstatistik ve İstatistiksel Çıkarım (**etiket ve GitHub Release yayımlandı**)
 
 İlk tam sürüm (v1.0.0), kitabın planlanan temel kapsamı tamamlandığında yayımlanacaktır.
